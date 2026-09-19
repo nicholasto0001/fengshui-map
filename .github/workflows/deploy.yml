@@ -27,6 +27,12 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+
+      # Bake the commit into the page and publish it alongside, so a visitor
+      # holding a cached copy can be told a newer one exists.
+      - name: Stamp build
+        run: python3 pipeline/stamp_build.py "$(git rev-parse --short HEAD)"
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

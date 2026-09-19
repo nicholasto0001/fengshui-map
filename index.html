@@ -200,6 +200,17 @@
   }
   #toast.show{opacity:1}
 
+  #updatebar{
+    position:fixed; z-index:700; left:50%; transform:translateX(-50%);
+    bottom:calc(74px + var(--safe-b)); display:flex; align-items:center; gap:12px;
+    background:var(--ink); color:#fff; border-radius:999px; padding:9px 9px 9px 18px;
+    box-shadow:0 3px 14px rgba(0,0,0,.28); font-size:13.5px; font-weight:600;
+  }
+  #updatebar button{
+    border:0; background:#fff; color:var(--ink); font:inherit; font-weight:700;
+    padding:7px 15px; border-radius:999px; cursor:pointer;
+  }
+
   /* ---------- bottom sheet ---------- */
   /* Three snap points, the way every native map app behaves. Opening a
      building used to fill the screen, leaving no map to steer by — half is
@@ -489,6 +500,11 @@
 
 <div id="toast"></div>
 
+<div id="updatebar" hidden>
+  <span>有新版本</span>
+  <button id="btnReload">更新</button>
+</div>
+
 <div id="sheet">
   <div id="grip"><div class="bar"></div><div id="griptext">撳任何一棟樓睇風水評分</div></div>
   <div id="sheetbody"></div>
@@ -521,7 +537,9 @@ const TILE = "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz";
 const DATA = "data/tiles";
 // Bump on every release. Shown in the overview sheet so a stale cached page is
 // identifiable at a glance — otherwise there is no way to tell.
-const APP_VERSION = "v14";
+const APP_VERSION = "v15";
+// Replaced at deploy time by pipeline/stamp_build.py; "dev" when run locally.
+const BUILD_ID = "dev";
 
 // ---------------------------------------------------------------------------
 // Analytics
@@ -552,6 +570,28 @@ function track(event, params){
   // answers "how many, how long, doing what".
   gtag("config", GA_ID, {anonymize_ip: true, app_version: APP_VERSION});
 })();
+
+// ---------------------------------------------------------------------------
+// Keep visitors on the current build.
+//
+// HTML gets cached, so someone who visited last week can keep seeing last
+// week's page forever with no hint that anything moved. version.json is
+// fetched uncached and compared with the id baked into this file; a mismatch
+// means a newer deploy exists and the page offers to pick it up.
+// ---------------------------------------------------------------------------
+async function checkForUpdate(){
+  if(BUILD_ID === "dev") return;               // local runs are never stale
+  try{
+    const v = await (await fetch("version.json", {cache:"no-store"})).json();
+    if(!v.build || v.build === BUILD_ID) return;
+    track("update_available", {from: BUILD_ID, to: v.build});
+    const bar = document.getElementById("updatebar");
+    bar.hidden = false;
+  }catch{}
+}
+addEventListener("load", () => setTimeout(checkForUpdate, 2500));
+setInterval(checkForUpdate, 10 * 60 * 1000);
+addEventListener("visibilitychange", () => { if(!document.hidden) checkForUpdate(); });
 
 // How long people actually stay, reported once on the way out. Without this
 // a session that ends by closing the tab reports no duration at all.
@@ -1620,6 +1660,12 @@ document.getElementById("btnLoc").addEventListener("click",()=>{
     },
     ()=>toast("定位失敗，請允許位置權限"),
     {enableHighAccuracy:true,timeout:8000});
+});
+
+document.getElementById("btnReload").addEventListener("click", ()=>{
+  track("update_applied", {from: BUILD_ID});
+  // Cache-busting query: a plain reload can be served the cached HTML again.
+  location.replace(location.pathname + "?u=" + Date.now() + location.hash);
 });
 
 document.getElementById("introGo").addEventListener("click",()=>{

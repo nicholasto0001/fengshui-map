@@ -82,10 +82,14 @@ jobs:
 
       # Keep the raw pipeline outputs out of the published site — they are
       # working files, tens of MB each, and nothing on the page fetches them.
+      - name: Stamp build
+        run: python3 pipeline/stamp_build.py "$(git rev-parse --short HEAD)-$(date -u +%Y%m%d)"
+
       - name: Stage the site
         run: |
           mkdir -p _site
-          cp index.html _site/
+          cp index.html version.json _site/
+          cp og.png favicon.ico apple-touch-icon.png icon-192.png icon-512.png manifest.webmanifest _site/ 2>/dev/null || true
           cp -r data _site/data
           rm -f _site/data/buildings.json _site/data/scores.json _site/data/op.json
           du -sh _site
