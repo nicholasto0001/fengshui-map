@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#1b4f8f">
+<title>香港風水地圖 · 九運</title>
+<meta name="description" content="香港逐棟樓宇九運風水評分地圖">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#f4f3f0; --card:#ffffff; --line:#e3e2dd;
+    --ink:#0b0b0b; --ink2:#55534e; --ink3:#86847d;
+    --brand:#1b4f8f;
+    /* sequential blue ramp, light -> dark */
+    --s1:#9ec5f4; --s2:#6da7ec; --s3:#3987e5; --s4:#256abf; --s5:#184f95; --s6:#0d366b;
+    --shadow: 0 2px 10px rgba(0,0,0,.10), 0 1px 3px rgba(0,0,0,.06);
+    --safe-b: env(safe-area-inset-bottom, 0px);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{height:100%;margin:0}
+  body{
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Noto Sans HK","PingFang HK","Microsoft JhengHei",sans-serif;
+    color:var(--ink); background:var(--bg); overflow:hidden;
+  }
+  #map{position:fixed; inset:0; background:#dfe6ea}
+
+  /* ---------- top search ---------- */
+  #top{
+    position:fixed; z-index:600; top:0; left:0; right:0;
+    padding:10px 10px 0; display:flex; gap:8px; align-items:flex-start;
+    pointer-events:none;
+  }
+  #searchwrap{flex:1; min-width:0; pointer-events:auto; max-width:560px}
+  .searchbar{
+    display:flex; align-items:center; gap:8px; background:var(--card);
+    border-radius:26px; box-shadow:var(--shadow); padding:0 6px 0 14px; height:48px;
+  }
+  .searchbar svg{flex:0 0 18px; opacity:.5}
+  #q{
+    flex:1; min-width:0; border:0; outline:0; background:transparent;
+    font:inherit; font-size:16px; height:100%; color:var(--ink);
+  }
+  #q::placeholder{color:var(--ink3)}
+  #clear{
+    border:0; background:transparent; font-size:20px; color:var(--ink3);
+    width:34px; height:34px; border-radius:50%; cursor:pointer; display:none;
+  }
+  #clear:hover{background:var(--bg)}
+  #results{
+    margin:6px 0 0; padding:6px; list-style:none; background:var(--card);
+    border-radius:14px; box-shadow:var(--shadow); max-height:46vh; overflow-y:auto; display:none;
+  }
+  #results.show{display:block}
+  #results li{padding:10px 12px; border-radius:10px; cursor:pointer}
+  #results li:active,#results li:hover{background:var(--bg)}
+  #results .nm{font-weight:600; font-size:14.5px}
+  #results .ad{color:var(--ink3); font-size:12.5px; margin-top:1px}
+  #results .pill{
+    float:right; font-size:12px; font-weight:700; font-variant-numeric:tabular-nums;
+    color:#fff; border-radius:999px; padding:2px 9px; margin-left:8px;
+  }
+  #results .empty{color:var(--ink3); font-size:13.5px; padding:10px 12px; cursor:default}
+
+  /* ---------- right buttons ---------- */
+  #tools{display:flex; flex-direction:column; gap:8px; pointer-events:auto}
+  .tbtn{
+    width:48px; height:48px; border-radius:50%; border:0; background:var(--card);
+    box-shadow:var(--shadow); cursor:pointer; display:grid; place-items:center;
+    font-size:19px; color:var(--ink2); padding:0;
+  }
+  .tbtn:active{background:var(--bg)}
+  .tbtn.on{background:var(--brand); color:#fff}
+
+  /* ---------- layer menu ---------- */
+  #layers{
+    position:fixed; z-index:620; top:66px; right:10px; background:var(--card);
+    border-radius:14px; box-shadow:var(--shadow); padding:6px; display:none; width:186px;
+  }
+  #layers.show{display:block}
+  #layers button{
+    display:block; width:100%; text-align:left; border:0; background:transparent;
+    font:inherit; font-size:14px; padding:10px 12px; border-radius:10px; cursor:pointer; color:var(--ink);
+  }
+  #layers button:hover{background:var(--bg)}
+  #layers button.sel{background:var(--bg); font-weight:600}
+  #layers button.sel::after{content:"✓"; float:right; color:var(--brand)}
+  #layers .sep{height:1px; background:var(--line); margin:5px 8px}
+  #layers .note{font-size:11.5px; color:var(--ink3); padding:2px 12px 8px; line-height:1.45}
+
+  /* ---------- status toast ---------- */
+  #toast{
+    position:fixed; z-index:610; top:70px; left:50%; transform:translateX(-50%);
+    background:rgba(20,20,20,.86); color:#fff; border-radius:999px;
+    padding:7px 16px; font-size:13px; box-shadow:var(--shadow);
+    pointer-events:none; opacity:0; transition:opacity .18s; max-width:88vw;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  #toast.show{opacity:1}
+
+  /* ---------- bottom sheet ---------- */
+  #sheet{
+    position:fixed; z-index:640; left:0; right:0; bottom:0;
+    background:var(--card); border-radius:18px 18px 0 0; box-shadow:0 -3px 18px rgba(0,0,0,.14);
+    transform:translateY(calc(100% - 62px)); transition:transform .26s cubic-bezier(.32,.72,0,1);
+    max-height:min(72vh, 620px); display:flex; flex-direction:column;
+  }
+  #sheet.open{transform:translateY(0)}
+  #grip{
+    flex:0 0 auto; padding:9px 16px calc(12px + var(--safe-b)); cursor:pointer; user-select:none;
+  }
+  #grip .bar{width:38px; height:4px; border-radius:2px; background:var(--line); margin:0 auto 9px}
+  #griptext{font-size:13.5px; color:var(--ink2); text-align:center}
+  #sheetbody{
+    flex:1 1 auto; overflow-y:auto; padding:0 16px calc(22px + var(--safe-b));
+    -webkit-overflow-scrolling:touch;
+  }
+  .bname{font-size:19px; font-weight:700; margin:0 0 2px; line-height:1.25}
+  .ben{font-size:12.5px; color:var(--ink3); margin:0 0 14px}
+  .scorerow{display:flex; align-items:center; gap:14px; margin-bottom:16px}
+  .bigscore{
+    width:72px; height:72px; flex:0 0 72px; border-radius:50%; display:grid; place-items:center;
+    color:#fff; font-size:25px; font-weight:700; font-variant-numeric:tabular-nums;
+  }
+  .verdict{font-size:17px; font-weight:700; margin:0 0 2px}
+  .vsub{font-size:12.5px; color:var(--ink3); margin:0}
+  .bars{margin-bottom:16px}
+  .bars .r{display:grid; grid-template-columns:64px 1fr 38px; align-items:center; gap:10px; margin:6px 0}
+  .bars .lb{font-size:13px; color:var(--ink2)}
+  .bars .tk{background:var(--bg); border-radius:4px; height:10px}
+  .bars .fl{height:10px; border-radius:0 4px 4px 0}
+  .bars .vl{text-align:right; font-size:13px; font-variant-numeric:tabular-nums}
+  dl.facts{display:grid; grid-template-columns:auto 1fr; gap:6px 14px; margin:0 0 16px}
+  dl.facts dt{color:var(--ink3); font-size:13px}
+  dl.facts dd{margin:0; font-size:13.5px; font-variant-numeric:tabular-nums}
+  .gmaps{
+    display:block; text-align:center; text-decoration:none; font-size:14px; font-weight:600;
+    color:var(--brand); border:1px solid var(--line); border-radius:12px; padding:11px; margin-bottom:14px;
+  }
+  .gmaps:active{background:var(--bg)}
+  .caveat{font-size:11.5px; color:var(--ink3); line-height:1.5; border-top:1px solid var(--line); padding-top:12px}
+  .caveat a{color:var(--ink2)}
+
+  /* legend inside sheet */
+  .legend{margin:2px 0 16px}
+  .legend .lbar{display:flex; height:11px; border-radius:3px; overflow:hidden}
+  .legend .lbar span{flex:1}
+  .legend .lt{display:flex; justify-content:space-between; font-size:11px; color:var(--ink3); margin-top:5px; font-variant-numeric:tabular-nums}
+  .dlist{list-style:none; margin:0 0 16px; padding:0}
+  .dlist li{display:grid; grid-template-columns:66px 1fr 36px; align-items:center; gap:9px; padding:3px 0; font-size:13px; cursor:pointer; border-radius:6px}
+  .dlist li:active{background:var(--bg)}
+  .dlist .dn{color:var(--ink2)}
+  .dlist .tk{background:var(--bg); border-radius:3px; height:9px}
+  .dlist .fl{height:9px; border-radius:0 3px 3px 0}
+  .dlist .dv{text-align:right; font-variant-numeric:tabular-nums}
+
+  /* ---------- onboarding ---------- */
+  #intro{
+    position:fixed; inset:0; z-index:900; background:rgba(12,14,18,.62);
+    display:grid; place-items:center; padding:22px; backdrop-filter:blur(3px);
+  }
+  #intro.hide{display:none}
+  .card{
+    background:var(--card); border-radius:20px; padding:26px 22px 20px; max-width:380px; width:100%;
+    box-shadow:0 10px 40px rgba(0,0,0,.3);
+  }
+  .card h1{font-size:21px; margin:0 0 4px}
+  .card .tag{font-size:13px; color:var(--ink3); margin:0 0 18px}
+  .card ol{margin:0 0 18px; padding-left:20px; font-size:14.5px; line-height:1.85; color:var(--ink2)}
+  .card ol b{color:var(--ink)}
+  .card .warn{font-size:11.5px; color:var(--ink3); line-height:1.5; margin:0 0 16px}
+  .card button{
+    width:100%; border:0; background:var(--brand); color:#fff; font:inherit; font-size:16px;
+    font-weight:600; padding:14px; border-radius:13px; cursor:pointer;
+  }
+  .card button:active{opacity:.85}
+
+  .leaflet-container{font:inherit}
+  .leaflet-control-attribution{font-size:10px; padding:0 5px}
+  .leaflet-control-zoom{display:none}
+  .dmark{
+    display:grid; place-items:center; border-radius:50%; color:#fff; font-weight:700;
+    font-size:12px; font-variant-numeric:tabular-nums; border:2px solid rgba(255,255,255,.9);
+    box-shadow:0 1px 5px rgba(0,0,0,.3);
+  }
+  .dlabel{
+    position:absolute; left:50%; transform:translateX(-50%); top:100%; margin-top:2px;
+    font-size:11px; color:#1a1a1a; white-space:nowrap; text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff;
+    font-weight:600;
+  }
+  @media (min-width:760px){
+    #sheet{left:auto; right:14px; bottom:14px; width:390px; border-radius:18px;
+           transform:translateY(calc(100% - 62px)); max-height:min(80vh,700px)}
+    #sheet.open{transform:translateY(0)}
+    #grip{padding-bottom:12px}
+    #sheetbody{padding-bottom:20px}
+  }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<div id="top">
+  <div id="searchwrap">
+    <div class="searchbar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="搜尋屋苑、大廈或地址" autocomplete="off" enterkeyhint="search">
+      <button id="clear" aria-label="清除">×</button>
+    </div>
+    <ul id="results"></ul>
+  </div>
+  <div id="tools">
+    <button class="tbtn" id="btnLayers" title="地圖樣式" aria-label="地圖樣式">◲</button>
+    <button class="tbtn" id="btnLoc" title="我的位置" aria-label="我的位置">◉</button>
+  </div>
+</div>
+
+<div id="layers">
+  <button data-base="street" class="sel">街道圖</button>
+  <button data-base="satellite">衛星圖</button>
+  <div class="sep"></div>
+  <button data-base="google">Google 地圖</button>
+  <p class="note" id="gnote">需要你自己嘅 Google Maps API key。撳一下輸入。</p>
+</div>
+
+<div id="toast"></div>
+
+<div id="sheet">
+  <div id="grip"><div class="bar"></div><div id="griptext">撳任何一棟樓睇風水評分</div></div>
+  <div id="sheetbody"></div>
+</div>
+
+<div id="intro">
+  <div class="card">
+    <h1>香港風水地圖</h1>
+    <p class="tag">三元九運 · 第九運（2024–2043）</p>
+    <ol>
+      <li><b>搜尋</b>屋苑或地址，或者直接喺地圖揾</li>
+      <li><b>放大</b>之後每棟樓都會上色，顏色越深風水分越高</li>
+      <li><b>撳一撳</b>任何一棟樓，睇佢嘅評分拆解</li>
+    </ol>
+    <p class="warn">評分根據公開地理數據同三元九運山水方位計算，屬於「外巒頭」地理分析，並唔包括坐向飛星盤或室內風水。僅供參考，不構成置業建議。</p>
+    <button id="introGo">開始</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* =========================================================================
+   Data sources — all free, no API key
+   basemap/label tiles : Lands Department  (mapapi.geodata.gov.hk)
+   address lookup      : Digital Policy Office ALS (als.gov.hk)
+   feng shui scores    : HKFengShui_WFL1 public feature layer (2023 snapshot)
+   ========================================================================= */
+const FS   = "https://services4.arcgis.com/jim2f7B8UyqRDApI/arcgis/rest/services/HKFengShui_WFL1/FeatureServer/0";
+const ALS  = "https://www.als.gov.hk/lookup";
+const TILE = "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz";
+const BUILDING_ZOOM = 15;
+
+const FIELDS = ["FID","OFFICIAL_1","OFFICIALBU","NAME_TC","TOPHEIGHT","NUMABOVEGR",
+  "Mt_Dir_8","Mt_NearDIS","Wt_Dir_8","Wt_NearDIS","Traffic","MWDir8Scor","MWDir4Scor",
+  "EnvirSco_1","Traffic100","Ancil100","TotalSco_1"].join(",");
+
+const BREAKS = [35,42,48,54,60];
+const RAMP   = ["#9ec5f4","#6da7ec","#3987e5","#256abf","#184f95","#0d366b"];
+const colorFor = v => (v==null||isNaN(v)) ? "#b9b7b0"
+  : RAMP[BREAKS.findIndex(b=>v<b) === -1 ? RAMP.length-1 : BREAKS.findIndex(b=>v<b)];
+
+function verdict(v){
+  if (v==null||isNaN(v)) return ["未有評分",""];
+  if (v>=60) return ["大吉","全港前 7%"];
+  if (v>=54) return ["吉","高於平均一個標準差"];
+  if (v>=48) return ["平穩","接近全港平均"];
+  if (v>=42) return ["略遜","低於全港平均"];
+  if (v>=35) return ["欠佳","全港後兩成"];
+  return ["差","全港最低 6%"];
+}
+
+const DIR_TC={N:"北",NE:"東北",E:"東",SE:"東南",S:"南",SW:"西南",W:"西",NW:"西北"};
+const dirTC = d => (d&&DIR_TC[d]) ? DIR_TC[d] : "—";
+const num = (v,d=1)=> (v==null||isNaN(v)) ? "—" : Number(v).toFixed(d);
+const clean = s => (!s||s==="N/A"||s==="NULL"||!String(s).trim()) ? null : String(s).trim();
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---------------------------------------------------------------- map --- */
+const map = L.map("map",{
+  center:[22.3450,114.1400], zoom:11, minZoom:10, maxZoom:19,
+  maxBounds:[[22.10,113.78],[22.62,114.47]], maxBoundsViscosity:.9,
+  zoomControl:false, attributionControl:true,
+});
+L.control.attribution({prefix:false}).addTo(map);
+
+const ATTR = 'Map from Lands Department · 評分 HKFengShui_WFL1 (2023)';
+const bases = {
+  street: L.layerGroup([
+    L.tileLayer(TILE+"/basemap/WGS84/{z}/{x}/{y}.png",{minZoom:10,maxZoom:19,attribution:ATTR}),
+    L.tileLayer(TILE+"/label/hk/tc/WGS84/{z}/{x}/{y}.png",{minZoom:10,maxZoom:19}),
+  ]),
+  satellite: L.layerGroup([
+    L.tileLayer(TILE+"/imagery/WGS84/{z}/{x}/{y}.png",{minZoom:10,maxZoom:19,attribution:ATTR}),
+    L.tileLayer(TILE+"/label/hk/tc/WGS84/{z}/{x}/{y}.png",{minZoom:10,maxZoom:19}),
+  ]),
+};
+let currentBase = "street";
+bases.street.addTo(map);
+
+function setBase(name){
+  if (name==="google"){ enableGoogle(); return; }
+  Object.values(bases).forEach(l=>map.removeLayer(l));
+  bases[name].addTo(map);
+  currentBase = name;
+  markBase(name);
+  buildingLayer.bringToFront();
+}
+function markBase(name){
+  document.querySelectorAll('#layers button[data-base]').forEach(b=>
+    b.classList.toggle('sel', b.dataset.base===name));
+}
+
+/* Google basemap — optional, needs the user's own API key (billing required) */
+function enableGoogle(){
+  let key = localStorage.getItem("gmapsKey") || "";
+  key = prompt(
+    "貼上你嘅 Google Maps API key\n\n"+
+    "Google 地圖需要你自己開一個 Google Cloud 帳戶同啟用付費先用得（每月有免費額度）。\n"+
+    "留空並確定 = 清除已儲存嘅 key。", key) ?? null;
+  if (key===null) return;
+  key = key.trim();
+  if (!key){ localStorage.removeItem("gmapsKey"); toast("已清除 Google key"); setBase(currentBase==="google"?"street":currentBase); return; }
+  localStorage.setItem("gmapsKey", key);
+  loadGoogle(key);
+}
+function loadGoogle(key){
+  if (bases.google){ Object.values(bases).forEach(l=>map.removeLayer(l)); bases.google.addTo(map);
+    currentBase="google"; markBase("google"); buildingLayer.bringToFront(); return; }
+  toast("載入 Google 地圖…");
+  const s=document.createElement("script");
+  s.src=`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&v=weekly&callback=__gmReady`;
+  s.onerror=()=>toast("Google 地圖載入失敗，請檢查 API key");
+  window.__gmReady=()=>{
+    try{
+      // Google tiles through Leaflet's tile interface via the Maps JS tile server
+      bases.google = L.tileLayer(
+        "https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+        {minZoom:10,maxZoom:19,attribution:"© Google"});
+      Object.values(bases).forEach(l=>map.removeLayer(l));
+      bases.google.addTo(map); currentBase="google"; markBase("google");
+      buildingLayer.bringToFront();
+      toast("已切換到 Google 地圖");
+    }catch(e){ toast("Google 地圖載入失敗"); }
+  };
+  document.head.appendChild(s);
+}
+if (localStorage.getItem("gmapsKey")) document.getElementById("gnote").textContent="已儲存 key。撳一下切換或更改。";
+
+/* -------------------------------------------------------------- toast --- */
+const toastEl=document.getElementById("toast"); let toastT=null;
+function toast(msg,ms=2200){
+  clearTimeout(toastT);
+  if(!msg){toastEl.classList.remove("show");return;}
+  toastEl.textContent=msg; toastEl.classList.add("show");
+  if(ms) toastT=setTimeout(()=>toastEl.classList.remove("show"),ms);
+}
+
+/* ---------------------------------------------------- building layer --- */
+let minSel=null, reqSeq=0;
+const buildingLayer=L.geoJSON(null,{
+  style:f=>styleFor(f,f.properties.FID===minSel),
+  onEachFeature:(f,l)=>{
+    l.on("click",()=>{ select(f.properties,l); });
+  },
+}).addTo(map);
+
+function styleFor(f,sel){
+  return {fillColor:colorFor(f.properties.TotalSco_1), fillOpacity:.85,
+          color:sel?"#0b0b0b":"#ffffff", weight:sel?2.6:1, opacity:1};
+}
+
+async function loadBuildings(){
+  const z=map.getZoom();
+  if (z<BUILDING_ZOOM){ buildingLayer.clearLayers(); return; }
+  districtLayer.clearLayers();
+  const b=map.getBounds(), my=++reqSeq;
+  const p=new URLSearchParams({
+    geometry:JSON.stringify({xmin:b.getWest(),ymin:b.getSouth(),xmax:b.getEast(),ymax:b.getNorth(),spatialReference:{wkid:4326}}),
+    geometryType:"esriGeometryEnvelope", inSR:"4326", outSR:"4326",
+    spatialRel:"esriSpatialRelIntersects", where:"1=1", outFields:FIELDS,
+    returnGeometry:"true", geometryPrecision:"6", resultRecordCount:"2000", f:"geojson",
+  });
+  try{
+    const gj=await (await fetch(`${FS}/query?${p}`)).json();
+    if(my!==reqSeq) return;
+    buildingLayer.clearLayers();
+    if((gj.features||[]).length) buildingLayer.addData(gj);
+    if(gj.properties&&gj.properties.exceededTransferLimit) toast("樓宇太多，請再放大啲");
+  }catch(e){ if(my===reqSeq) toast("載入失敗，請檢查網絡"); }
+}
+
+/* -------------------------------------------------- district overview --- */
+const districtLayer=L.layerGroup().addTo(map);
+let districtData=[];
+const DISTRICT_CENTRE={
+  "中西區":[22.2830,114.1450],"灣仔區":[22.2780,114.1750],"東區":[22.2830,114.2250],
+  "南區":[22.2450,114.1600],"油尖旺區":[22.3120,114.1720],"深水埗區":[22.3300,114.1600],
+  "九龍城區":[22.3300,114.1900],"黃大仙區":[22.3420,114.1980],"觀塘區":[22.3150,114.2250],
+  "葵青區":[22.3620,114.1300],"荃灣區":[22.3750,114.1150],"屯門區":[22.3900,113.9750],
+  "元朗區":[22.4420,114.0250],"北區":[22.4950,114.1380],"大埔區":[22.4500,114.1700],
+  "沙田區":[22.3820,114.1900],"西貢區":[22.3350,114.2800],"離島區":[22.2600,113.9450],
+};
+async function loadDistricts(){
+  const p=new URLSearchParams({
+    where:"1=1",
+    outStatistics:JSON.stringify([
+      {statisticType:"avg",onStatisticField:"TotalSco_1",outStatisticFieldName:"av"},
+      {statisticType:"count",onStatisticField:"FID",outStatisticFieldName:"n"}]),
+    groupByFieldsForStatistics:"NAME_TC", orderByFields:"av DESC", f:"json",
+  });
+  try{
+    const d=await (await fetch(`${FS}/query?${p}`)).json();
+    districtData=(d.features||[]).map(f=>f.attributes).filter(a=>a.NAME_TC&&DISTRICT_CENTRE[a.NAME_TC]);
+    drawDistricts();
+    if(!minSel) showOverview();
+  }catch(e){ toast("分區數據載入失敗"); }
+}
+function drawDistricts(){
+  districtLayer.clearLayers();
+  if(map.getZoom()>=BUILDING_ZOOM) return;
+  districtData.forEach(a=>{
+    const c=DISTRICT_CENTRE[a.NAME_TC];
+    const icon=L.divIcon({
+      className:"", iconSize:[40,40], iconAnchor:[20,20],
+      html:`<div class="dmark" style="width:40px;height:40px;background:${colorFor(a.av)}">${a.av.toFixed(0)}
+              <div class="dlabel">${a.NAME_TC.replace("區","")}</div></div>`,
+    });
+    L.marker(c,{icon}).addTo(districtLayer)
+      .on("click",()=>{ map.flyTo(c,15,{duration:.8}); toast(`${a.NAME_TC} 平均 ${a.av.toFixed(1)} 分`); });
+  });
+}
+
+/* --------------------------------------------------------- the sheet --- */
+const sheet=document.getElementById("sheet");
+const sheetBody=document.getElementById("sheetbody");
+const gripText=document.getElementById("griptext");
+document.getElementById("grip").addEventListener("click",()=>sheet.classList.toggle("open"));
+
+function openSheet(){ sheet.classList.add("open"); }
+
+function select(p,layer){
+  minSel=p.FID;
+  buildingLayer.setStyle(f=>styleFor(f,f.properties.FID===minSel));
+  if(layer) layer.bringToFront();
+  renderBuilding(p, layer);
+  openSheet();
+}
+
+function renderBuilding(p, layer){
+  const nmTC=clean(p.OFFICIAL_1), nmEN=clean(p.OFFICIALBU);
+  const title=nmTC||nmEN||"未命名樓宇";
+  const t=p.TotalSco_1, [vd,vs]=verdict(t);
+  gripText.textContent=`${title} · ${num(t,1)} 分`;
+
+  let ll=null;
+  try{ const c=layer&&layer.getBounds&&layer.getBounds().getCenter(); if(c) ll=[c.lat,c.lng]; }catch{}
+
+  const bar=(lb,v)=>`<div class="r"><span class="lb">${lb}</span>
+    <div class="tk"><div class="fl" style="width:${Math.max(2,Math.min(100,v||0))}%;background:${colorFor(v)}"></div></div>
+    <span class="vl">${num(v,0)}</span></div>`;
+
+  sheetBody.innerHTML=`
+    <p class="bname">${esc(title)}</p>
+    ${nmTC&&nmEN?`<p class="ben">${esc(nmEN)}</p>`:`<p class="ben">${esc(clean(p.NAME_TC)||"")}</p>`}
+    <div class="scorerow">
+      <div class="bigscore" style="background:${colorFor(t)}">${num(t,0)}</div>
+      <div><p class="verdict">${vd}</p><p class="vsub">${vs} · 總分 ${num(t,1)} / 100</p></div>
+    </div>
+    <div class="bars">
+      ${bar("環境",p.EnvirSco_1)}${bar("交通",p.Traffic100)}${bar("配套",p.Ancil100)}
+    </div>
+    <dl class="facts">
+      <dt>山在</dt><dd>${dirTC(clean(p.Mt_Dir_8))}方　${num(p.Mt_NearDIS,0)} 米</dd>
+      <dt>水在</dt><dd>${dirTC(clean(p.Wt_Dir_8))}方　${num(p.Wt_NearDIS,0)} 米</dd>
+      <dt>山水配對</dt><dd>${p.MWDir8Scor>0?`合九運格局（${p.MWDir8Scor}/9）`:"不成對，此項 0 分"}</dd>
+      <dt>所在區</dt><dd>${esc(clean(p.NAME_TC)||"—")}</dd>
+      <dt>樓頂高程</dt><dd>${num(p.TOPHEIGHT,0)} 米(mPD)${p.NUMABOVEGR?`　${num(p.NUMABOVEGR,0)} 層`:""}</dd>
+    </dl>
+    ${ll?`<a class="gmaps" target="_blank" rel="noopener"
+        href="https://www.google.com/maps/search/?api=1&query=${ll[0]},${ll[1]}">喺 Google Maps 開啟 ↗</a>`:""}
+    <p class="caveat">
+      <b>評分點嚟？</b>八成睇「環境」：山水相對方位（九運洛書飛星，山南水北為上格）同山水距離；
+      一成半睇配套（醫院、警署、油站、橋樑、消防局距離）；半成睇車流。
+      屬外巒頭地理分析，<b>唔包括坐向飛星盤、建成年份元運、單位樓層同室內佈局</b>。<br>
+      數據為 2023 年公開圖層，底層約 2021–2022 年，新樓盤可能未收錄。僅供參考。
+    </p>`;
+}
+
+function showOverview(){
+  gripText.textContent="十八區風水排名 · 撳我";
+  const lo=Math.min(...districtData.map(a=>a.av)), hi=Math.max(...districtData.map(a=>a.av));
+  sheetBody.innerHTML=`
+    <p class="bname">香港九運風水地圖</p>
+    <p class="ben">全港 62,751 棟樓宇 · 平均 48.9 分</p>
+    <div class="legend">
+      <div class="lbar">${RAMP.map(c=>`<span style="background:${c}"></span>`).join("")}</div>
+      <div class="lt"><span>24 分</span><span>48</span><span>91 分</span></div>
+    </div>
+    <p class="vsub" style="margin-bottom:10px">撳分區泡泡放大，或者直接放大地圖睇逐棟樓。</p>
+    <ul class="dlist">${districtData.map(a=>{
+      const w=8+92*(a.av-lo)/Math.max(.001,hi-lo);
+      return `<li data-d="${esc(a.NAME_TC)}">
+        <span class="dn">${esc(a.NAME_TC)}</span>
+        <div class="tk"><div class="fl" style="width:${w.toFixed(1)}%;background:${colorFor(a.av)}"></div></div>
+        <span class="dv">${a.av.toFixed(1)}</span></li>`;}).join("")}</ul>
+    <p class="caveat">評分屬外巒頭地理分析，唔包括坐向飛星盤或室內風水。數據為 2023 年公開圖層。僅供參考，不構成置業建議。</p>`;
+  sheetBody.querySelectorAll(".dlist li").forEach(li=>li.addEventListener("click",()=>{
+    const c=DISTRICT_CENTRE[li.dataset.d]; if(c){ map.flyTo(c,15,{duration:.8}); sheet.classList.remove("open"); }
+  }));
+}
+
+/* ---------------------------------------------------------- searching --- */
+const qEl=document.getElementById("q"), resEl=document.getElementById("results"), clearBtn=document.getElementById("clear");
+let searchT=null;
+qEl.addEventListener("input",()=>{
+  clearBtn.style.display=qEl.value?"block":"none";
+  clearTimeout(searchT);
+  if(qEl.value.trim().length<2){ resEl.classList.remove("show"); return; }
+  searchT=setTimeout(doSearch,320);
+});
+qEl.addEventListener("keydown",e=>{ if(e.key==="Enter"){ clearTimeout(searchT); doSearch(); qEl.blur(); }});
+clearBtn.addEventListener("click",()=>{ qEl.value=""; clearBtn.style.display="none"; resEl.classList.remove("show"); qEl.focus(); });
+document.addEventListener("click",e=>{ if(!document.getElementById("searchwrap").contains(e.target)) resEl.classList.remove("show"); });
+
+async function doSearch(){
+  const q=qEl.value.trim(); if(q.length<2) return;
+  resEl.innerHTML=`<li class="empty">搜尋中…</li>`; resEl.classList.add("show");
+  let hits=await searchLayer(q);
+  if(!hits.length) hits=await searchALS(q);
+  if(!hits.length){ resEl.innerHTML=`<li class="empty">搵唔到「${esc(q)}」，試下屋苑名或街道名。</li>`; return; }
+  resEl.innerHTML=hits.map((h,i)=>`<li data-i="${i}">
+      ${h.score!=null?`<span class="pill" style="background:${colorFor(h.score)}">${h.score.toFixed(0)}</span>`:""}
+      <div class="nm">${esc(h.name||"—")}</div><div class="ad">${esc(h.note||"")}</div></li>`).join("");
+  [...resEl.querySelectorAll("li[data-i]")].forEach(li=>
+    li.addEventListener("click",()=>goto(hits[+li.dataset.i])));
+}
+
+async function searchLayer(q){
+  const e=q.replace(/'/g,"''");
+  const p=new URLSearchParams({
+    where:`OFFICIAL_1 LIKE '%${e}%' OR UPPER(OFFICIALBU) LIKE UPPER('%${e}%')`,
+    outFields:FIELDS, returnGeometry:"true", geometryPrecision:"6", outSR:"4326",
+    orderByFields:"TotalSco_1 DESC", resultRecordCount:"10", f:"geojson",
+  });
+  try{
+    const gj=await (await fetch(`${FS}/query?${p}`)).json();
+    return (gj.features||[]).map(f=>({
+      kind:"layer",
+      name:clean(f.properties.OFFICIAL_1)||clean(f.properties.OFFICIALBU)||"未命名樓宇",
+      note:clean(f.properties.NAME_TC)||"",
+      score:f.properties.TotalSco_1, feature:f,
+    }));
+  }catch{ return []; }
+}
+async function searchALS(q){
+  try{
+    const d=await (await fetch(`${ALS}?q=${encodeURIComponent(q)}&n=8`,{headers:{Accept:"application/json"}})).json();
+    return (d.SuggestedAddress||[]).map(s=>{
+      const pa=s.Address.PremisesAddress, c=pa.ChiPremisesAddress||{}, en=pa.EngPremisesAddress||{};
+      const g=pa.GeospatialInformation||{}, st=c.ChiStreet||{};
+      return{ kind:"als", score:null,
+        name:c.BuildingName||en.BuildingName||((st.StreetName||"")+(st.BuildingNoFrom||"")),
+        note:[(c.ChiEstate||{}).EstateName,(st.StreetName||"")+(st.BuildingNoFrom?` ${st.BuildingNoFrom}號`:""),(c.ChiDistrict||{}).DcDistrict].filter(Boolean).join(" · "),
+        lat:+g.Latitude, lng:+g.Longitude };
+    }).filter(x=>x.lat&&x.lng);
+  }catch{ return []; }
+}
+
+function centroid(geom){
+  const pts=[]; (function w(a){ typeof a[0]==="number"?pts.push(a):a.forEach(w); })(geom.coordinates);
+  if(!pts.length) return null;
+  return [pts.reduce((s,p)=>s+p[1],0)/pts.length, pts.reduce((s,p)=>s+p[0],0)/pts.length];
+}
+function goto(h){
+  resEl.classList.remove("show"); qEl.blur();
+  if(h.kind==="layer"){
+    const c=centroid(h.feature.geometry);
+    if(c) map.setView(c,17);
+    minSel=h.feature.properties.FID;
+    renderBuilding(h.feature.properties,null);
+    openSheet();
+    setTimeout(loadBuildings,400);
+  }else{
+    map.setView([h.lat,h.lng],17);
+    L.circleMarker([h.lat,h.lng],{radius:8,color:"#fff",weight:3,fillColor:"#e0562a",fillOpacity:1}).addTo(map);
+    toast("撳附近嘅樓宇睇評分");
+    setTimeout(loadBuildings,400);
+  }
+}
+
+/* --------------------------------------------------------- UI wiring --- */
+document.getElementById("btnLayers").addEventListener("click",e=>{
+  e.stopPropagation(); document.getElementById("layers").classList.toggle("show");
+});
+document.addEventListener("click",e=>{
+  const l=document.getElementById("layers");
+  if(!l.contains(e.target)&&e.target.id!=="btnLayers") l.classList.remove("show");
+});
+document.querySelectorAll('#layers button[data-base]').forEach(b=>
+  b.addEventListener("click",()=>{ setBase(b.dataset.base); document.getElementById("layers").classList.remove("show"); }));
+
+document.getElementById("btnLoc").addEventListener("click",()=>{
+  if(!navigator.geolocation){ toast("此瀏覽器唔支援定位"); return; }
+  toast("定位中…",6000);
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      const{latitude:la,longitude:ln}=pos.coords;
+      if(la<22.1||la>22.62||ln<113.78||ln>114.47){ toast("你唔喺香港範圍內"); return; }
+      map.setView([la,ln],17);
+      L.circleMarker([la,ln],{radius:8,color:"#fff",weight:3,fillColor:"#1b4f8f",fillOpacity:1}).addTo(map);
+      toast("已定位");
+    },
+    ()=>toast("定位失敗，請允許位置權限"),
+    {enableHighAccuracy:true,timeout:8000});
+});
+
+document.getElementById("introGo").addEventListener("click",()=>{
+  document.getElementById("intro").classList.add("hide");
+  localStorage.setItem("seenIntro","1");
+  openSheet();
+});
+if(localStorage.getItem("seenIntro")) document.getElementById("intro").classList.add("hide");
+
+map.on("moveend zoomend",()=>{ loadBuildings(); drawDistricts(); });
+map.whenReady(()=>{ loadDistricts(); loadBuildings(); });
+setTimeout(()=>{ if(localStorage.getItem("seenIntro")) openSheet(); },600);
+</script>
+</body>
+</html>

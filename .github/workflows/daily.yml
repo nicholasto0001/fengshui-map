@@ -1,0 +1,71 @@
+name: Daily rebuild and deploy
+
+# Rebuilds Feng Shui scores from live CSDI data every morning and publishes
+# the site to GitHub Pages. New developments appear in CSDI continuously, so a
+# daily run keeps the map current without anyone touching it.
+
+on:
+  schedule:
+    - cron: "0 21 * * *"   # 05:00 Hong Kong time (UTC+8)
+  workflow_dispatch:        # lets you trigger a run by hand from the Actions tab
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r pipeline/requirements.txt
+
+      # Terrain and coastline barely change. Rebuild monthly (day 1) or when
+      # the file is missing, not on every daily run.
+      - name: Rebuild terrain reference
+        run: |
+          if [ ! -f data/terrain.json ] || [ "$(date -u +%d)" = "01" ]; then
+            python pipeline/reconstruct_terrain.py
+          else
+            echo "terrain.json present, skipping (rebuilds on the 1st)"
+          fi
+
+      - name: Fetch current building stock from CSDI
+        run: python pipeline/fetch_buildings.py
+
+      - name: Fetch negative ancillary facilities
+        run: python pipeline/fetch_facilities.py
+        continue-on-error: true   # a CSDI outage should not block the whole run
+
+      - name: Score
+        run: python pipeline/score.py
+
+      - name: Commit refreshed data
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --staged --quiet; then
+            echo "no change today"
+          else
+            git commit -m "data: daily rebuild $(date -u +%Y-%m-%d)"
+            git push
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4
