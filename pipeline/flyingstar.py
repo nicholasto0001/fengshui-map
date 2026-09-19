@@ -120,7 +120,7 @@ def chart(year: int, facing_deg: float) -> dict:
     mountain_chart = _fly(sit_star, _direction_for_star(sit_star, yuan, sit_m[3]))
     facing_chart = _fly(face_star, _direction_for_star(face_star, yuan, face_m[3]))
 
-    return {
+    out = {
         "period": period,
         "sitting": sit_m[0], "facing": face_m[0],
         "sit_palace": sit_palace, "face_palace": face_palace,
@@ -130,6 +130,8 @@ def chart(year: int, facing_deg: float) -> dict:
         "facing_chart": facing_chart,
         "pattern": classify(period, sit_palace, face_palace, mountain_chart, facing_chart),
     }
+    out["now"] = evaluate_now(out)
+    return out
 
 
 def classify(period: int, sit_palace: str, face_palace: str,
@@ -149,6 +151,48 @@ def classify(period: int, sit_palace: str, face_palace: str,
     if m_at_sit and f_at_sit:
         return {"code": "雙星到坐", "meaning": "旺丁不旺財", "rank": 3}
     return {"code": "其他", "meaning": "非四大格局", "rank": 3}
+
+
+CURRENT_PERIOD = 9          # 2024-2043
+
+
+def evaluate_now(c: dict, now_period: int = CURRENT_PERIOD) -> dict:
+    """How the chart stands in the CURRENT period, not its own.
+
+    `pattern` is fixed at construction: a 八運 building that was 旺山旺向 was
+    旺 during 2004-2023. Saying that and stopping implies it is still good now,
+    which is the opposite of what 玄空 teaches — the 8 star went 退氣 in 2024.
+
+    What matters today is where the CURRENT period's star sits:
+      向星 at the facing palace  -> 旺財 (prosperous wealth)
+      山星 at the sitting palace -> 旺丁 (prosperous people)
+      向星 in the centre         -> 入囚, the classic trapped chart
+    """
+    face_p, sit_p = c["face_palace"], c["sit_palace"]
+    m, f = c["mountain_chart"], c["facing_chart"]
+
+    wealth = f[face_p] == now_period
+    people = m[sit_p] == now_period
+    trapped = f["C"] == now_period
+
+    if trapped:
+        code, meaning = "入囚", "向星當運入中宮，氣被困"
+    elif wealth and people:
+        code, meaning = "當運旺山旺向", "九運丁財兩旺"
+    elif wealth:
+        code, meaning = "當運旺財", "九運利財，丁位需佈局"
+    elif people:
+        code, meaning = "當運旺丁", "九運利人丁，財位需佈局"
+    else:
+        code, meaning = "當運平平", "九運當旺星未到坐向"
+
+    return {
+        "code": code, "meaning": meaning,
+        "wealth": wealth, "people": people, "trapped": trapped,
+        "aged": c["period"] != now_period,
+        "mountain_star_at_sit": m[sit_p],
+        "facing_star_at_face": f[face_p],
+    }
 
 
 def render(c: dict) -> str:

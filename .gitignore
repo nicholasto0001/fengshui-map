@@ -7,4 +7,8 @@ __pycache__/
 # Committing them would add a fresh 48 MB blob to history every single day.
 data/buildings.json
 data/scores.json
-data/tiles/
+data/op.json
+
+# data/tiles/ IS tracked: it is what the site actually serves. CI regenerates
+# it daily and deploys straight to Pages without committing, so history only
+# grows when we refresh it deliberately.

@@ -167,6 +167,24 @@
   }
   .note-foot b{color:var(--ink2); font-weight:600}
 
+  /* ---------- 理氣 block ---------- */
+  .liqi{
+    background:linear-gradient(180deg,#fbf9f4,#f7f4ec); border:1px solid #ece6d8;
+    border-radius:14px; padding:14px 15px; margin:0 0 16px;
+  }
+  .liqi-hd{
+    font-size:10.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+    color:#9b8b63; margin-bottom:6px;
+  }
+  .liqi-now{font-size:19px; font-weight:700; margin:0 0 2px; color:#4a3a18}
+  .liqi-sub{font-size:12.5px; color:var(--ink2); margin:0}
+  .liqi-warn{
+    font-size:11px; color:var(--ink3); line-height:1.5; margin:11px 0 0;
+    padding-top:9px; border-top:1px dashed #e0d7c2;
+  }
+  .liqi-none{background:var(--bg); border-color:var(--line)}
+  .liqi-none .liqi-hd{color:var(--ink3)}
+
   /* legend inside sheet */
   .legend{margin:2px 0 16px}
   .legend .lbar{display:flex; height:11px; border-radius:3px; overflow:hidden}
@@ -271,19 +289,36 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 /* =========================================================================
-   Data sources — all free, no API key
-   basemap/label tiles : Lands Department  (mapapi.geodata.gov.hk)
-   address lookup      : Digital Policy Office ALS (als.gov.hk)
-   feng shui scores    : HKFengShui_WFL1 public feature layer (2023 snapshot)
+   Data sources
+   basemap/label tiles : Lands Department  (mapapi.geodata.gov.hk, no key)
+   address lookup      : Digital Policy Office ALS (als.gov.hk, no key)
+   scores + footprints : our own pipeline, rebuilt daily from CSDI
    ========================================================================= */
-const FS   = "https://services4.arcgis.com/jim2f7B8UyqRDApI/arcgis/rest/services/HKFengShui_WFL1/FeatureServer/0";
 const ALS  = "https://www.als.gov.hk/lookup";
 const TILE = "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz";
-const BUILDING_ZOOM = 15;
+const DATA = "data/tiles";
+const TILE_Z = 14;              // must match pipeline/build_tiles.py
+const BUILDING_ZOOM = 15;       // below this, show the district overview
 
-const FIELDS = ["FID","OFFICIAL_1","OFFICIALBU","NAME_TC","TOPHEIGHT","NUMABOVEGR",
-  "Mt_Dir_8","Mt_NearDIS","Wt_Dir_8","Wt_NearDIS","Traffic","MWDir8Scor","MWDir4Scor",
-  "EnvirSco_1","Traffic100","Ancil100","TotalSco_1"].join(",");
+// Tile rows arrive as arrays; COLUMNS in build_tiles.py is the contract.
+let COLS = null;
+function rowToObj(row){
+  const o = {};
+  for(let i=0;i<COLS.length;i++) o[COLS[i]] = row[i];
+  return o;
+}
+// Footprints are stored as a first vertex plus integer deltas of 1e-5 degrees.
+function decodeRing(enc){
+  if(!enc || enc.length < 6) return null;
+  let lon = enc[0], lat = enc[1];
+  const pts = [[lat, lon]];
+  let x = Math.round(lon*1e5), y = Math.round(lat*1e5);
+  for(let i=2;i<enc.length;i+=2){
+    x += enc[i]; y += enc[i+1];
+    pts.push([y/1e5, x/1e5]);
+  }
+  return pts;
+}
 
 const BREAKS = [35,42,48,54,60];
 const RAMP   = ["#9ec5f4","#6da7ec","#3987e5","#256abf","#184f95","#0d366b"];
@@ -322,7 +357,7 @@ map.createPane("labels");
 map.getPane("labels").style.zIndex = "640";
 map.getPane("labels").style.pointerEvents = "none";
 
-const ATTR = 'Map from Lands Department · 評分 HKFengShui_WFL1 (2023)';
+const ATTR = 'Map from Lands Department · 樓宇資料 CSDI · 評分自行計算';
 const labelLayer = () => L.tileLayer(TILE+"/label/hk/tc/WGS84/{z}/{x}/{y}.png",
   {minZoom:10, maxZoom:19, pane:"labels", opacity:.92});
 
@@ -362,20 +397,12 @@ function toast(msg,ms=2200){
 
 /* ---------------------------------------------------- building layer --- */
 let minSel=null, reqSeq=0;
-const buildingLayer=L.geoJSON(null,{
-  style:styleFor,
-  onEachFeature:(f,l)=>{
-    l.on("click",()=>{ select(f.properties,l); });
-    l.on("mouseover",()=>{ if(f.properties.FID!==minSel) l.setStyle({weight:1.6,opacity:1}); });
-    l.on("mouseout", ()=>{ if(f.properties.FID!==minSel) l.setStyle(styleFor(f)); });
-  },
-}).addTo(map);
+const tileCache = new Map();
 
-// Unselected buildings carry no white hairline any more: at city density those
-// outlines merged into a grey haze. A darker shade of each building's own fill
-// separates neighbours without adding a second colour to the map.
-function styleFor(f){
-  const c = colorFor(f.properties.TotalSco_1);
+const buildingLayer=L.layerGroup().addTo(map);
+
+function styleFor(score){
+  const c = colorFor(score);
   return {fillColor:c, fillOpacity:.88, color:c, weight:.6, opacity:.55};
 }
 
@@ -386,69 +413,84 @@ map.getPane("highlight").style.zIndex = "645";
 map.getPane("highlight").style.pointerEvents = "none";
 const highlight = L.layerGroup([], {pane:"highlight"}).addTo(map);
 
-function showHighlight(latlngs){
+function showHighlight(latlngs, centre){
   highlight.clearLayers();
-  if(!latlngs) return;
-  const ring = L.polygon(latlngs,{pane:"highlight",fill:false,color:"#12161c",weight:6,
-                                  opacity:.5,lineJoin:"round"}).addTo(highlight);
-  L.polygon(latlngs,{pane:"highlight",fill:false,color:"#ffffff",weight:2.5,opacity:1,
-                     lineJoin:"round"}).addTo(highlight);
+  if(!latlngs && !centre) return;
+  if(latlngs){
+    L.polygon(latlngs,{pane:"highlight",fill:false,color:"#12161c",weight:6,
+                       opacity:.5,lineJoin:"round"}).addTo(highlight);
+    L.polygon(latlngs,{pane:"highlight",fill:false,color:"#ffffff",weight:2.5,
+                       opacity:1,lineJoin:"round"}).addTo(highlight);
+  }
   // A small building is only a few pixels across, so the outline alone is easy
-  // to lose. An accent dot on its centre makes the selection unmistakable at
-  // any zoom, the way a dropped pin does.
-  L.circleMarker(ring.getBounds().getCenter(),{
-    pane:"highlight", radius:7, color:"#ffffff", weight:2.5,
-    fillColor:"#e0562a", fillOpacity:1,
-  }).addTo(highlight);
+  // to lose. An accent dot makes the selection unmistakable at any zoom.
+  L.circleMarker(centre,{pane:"highlight", radius:7, color:"#ffffff", weight:2.5,
+                         fillColor:"#e0562a", fillOpacity:1}).addTo(highlight);
+}
+
+function lonLat2tile(lon,lat,z){
+  const n=2**z, rad=lat*Math.PI/180;
+  return [Math.floor((lon+180)/360*n),
+          Math.floor((1-Math.log(Math.tan(rad)+1/Math.cos(rad))/Math.PI)/2*n)];
+}
+
+async function getTile(x,y){
+  const key=`${x}/${y}`;
+  if(tileCache.has(key)) return tileCache.get(key);
+  const pr = fetch(`${DATA}/${TILE_Z}/${x}/${y}.json`)
+    .then(r => r.ok ? r.json() : null)
+    .catch(() => null);
+  tileCache.set(key, pr);
+  return pr;
 }
 
 async function loadBuildings(){
   const z=map.getZoom();
-  if (z<BUILDING_ZOOM){ buildingLayer.clearLayers(); return; }
+  if(z<BUILDING_ZOOM){ buildingLayer.clearLayers(); return; }
   districtLayer.clearLayers();
+
   const b=map.getBounds(), my=++reqSeq;
-  const p=new URLSearchParams({
-    geometry:JSON.stringify({xmin:b.getWest(),ymin:b.getSouth(),xmax:b.getEast(),ymax:b.getNorth(),spatialReference:{wkid:4326}}),
-    geometryType:"esriGeometryEnvelope", inSR:"4326", outSR:"4326",
-    spatialRel:"esriSpatialRelIntersects", where:"1=1", outFields:FIELDS,
-    returnGeometry:"true", geometryPrecision:"6", resultRecordCount:"2000", f:"geojson",
-  });
-  try{
-    const gj=await (await fetch(`${FS}/query?${p}`)).json();
-    if(my!==reqSeq) return;
-    buildingLayer.clearLayers();
-    if((gj.features||[]).length) buildingLayer.addData(gj);
-    if(minSel!=null){
-      let found=null;
-      buildingLayer.eachLayer(l=>{ if(l.feature.properties.FID===minSel) found=l; });
-      showHighlight(found && found.getLatLngs ? found.getLatLngs() : null);
+  const [x0,y1]=lonLat2tile(b.getWest(), b.getNorth(), TILE_Z);
+  const [x1,y0]=lonLat2tile(b.getEast(), b.getSouth(), TILE_Z);
+
+  const wanted=[];
+  for(let x=x0;x<=x1;x++) for(let y=y1;y<=y0;y++) wanted.push([x,y]);
+  if(wanted.length>12){ toast("範圍太大，請放大啲"); return; }
+
+  const tiles=await Promise.all(wanted.map(([x,y])=>getTile(x,y)));
+  if(my!==reqSeq) return;
+
+  buildingLayer.clearLayers();
+  let n=0, selLayer=null;
+  for(const t of tiles){
+    if(!t) continue;
+    COLS = t.c;
+    for(const row of t.b){
+      const o=rowToObj(row);
+      if(!b.contains([o.lat,o.lon])) continue;
+      const ring=decodeRing(o.ring);
+      const lyr = ring
+        ? L.polygon(ring, styleFor(o.total))
+        : L.circleMarker([o.lat,o.lon], {...styleFor(o.total), radius:5});
+      lyr.on("click",()=>select(o,lyr));
+      lyr.on("mouseover",()=>{ if(o.id!==minSel) lyr.setStyle({weight:1.6,opacity:1}); });
+      lyr.on("mouseout", ()=>{ if(o.id!==minSel) lyr.setStyle(styleFor(o.total)); });
+      lyr.addTo(buildingLayer);
+      if(o.id===minSel) selLayer={o,lyr};
+      n++;
     }
-    if(gj.properties&&gj.properties.exceededTransferLimit) toast("樓宇太多，請再放大啲");
-  }catch(e){ if(my===reqSeq) toast("載入失敗，請檢查網絡"); }
+  }
+  if(selLayer) showHighlight(selLayer.lyr.getLatLngs ? selLayer.lyr.getLatLngs() : null,
+                             [selLayer.o.lat, selLayer.o.lon]);
+  if(n===0) toast("此範圍未有收錄樓宇");
 }
 
 /* -------------------------------------------------- district overview --- */
 const districtLayer=L.layerGroup().addTo(map);
 let districtData=[];
-const DISTRICT_CENTRE={
-  "中西區":[22.2830,114.1450],"灣仔區":[22.2780,114.1750],"東區":[22.2830,114.2250],
-  "南區":[22.2450,114.1600],"油尖旺區":[22.3120,114.1720],"深水埗區":[22.3300,114.1600],
-  "九龍城區":[22.3300,114.1900],"黃大仙區":[22.3420,114.1980],"觀塘區":[22.3150,114.2250],
-  "葵青區":[22.3620,114.1300],"荃灣區":[22.3750,114.1150],"屯門區":[22.3900,113.9750],
-  "元朗區":[22.4420,114.0250],"北區":[22.4950,114.1380],"大埔區":[22.4500,114.1700],
-  "沙田區":[22.3820,114.1900],"西貢區":[22.3350,114.2800],"離島區":[22.2600,113.9450],
-};
 async function loadDistricts(){
-  const p=new URLSearchParams({
-    where:"1=1",
-    outStatistics:JSON.stringify([
-      {statisticType:"avg",onStatisticField:"TotalSco_1",outStatisticFieldName:"av"},
-      {statisticType:"count",onStatisticField:"FID",outStatisticFieldName:"n"}]),
-    groupByFieldsForStatistics:"NAME_TC", orderByFields:"av DESC", f:"json",
-  });
   try{
-    const d=await (await fetch(`${FS}/query?${p}`)).json();
-    districtData=(d.features||[]).map(f=>f.attributes).filter(a=>a.NAME_TC&&DISTRICT_CENTRE[a.NAME_TC]);
+    districtData = await (await fetch(`${DATA}/../district_stats.json`)).json();
     drawDistricts();
     if(!minSel) showOverview();
   }catch(e){ toast("分區數據載入失敗"); }
@@ -457,14 +499,15 @@ function drawDistricts(){
   districtLayer.clearLayers();
   if(map.getZoom()>=BUILDING_ZOOM) return;
   districtData.forEach(a=>{
-    const c=DISTRICT_CENTRE[a.NAME_TC];
+    const c=[a.lat,a.lon];
     const icon=L.divIcon({
       className:"", iconSize:[40,40], iconAnchor:[20,20],
-      html:`<div class="dmark" style="width:40px;height:40px;background:${colorFor(a.av)}">${a.av.toFixed(0)}
-              <div class="dlabel">${a.NAME_TC.replace("區","")}</div></div>`,
+      html:`<div class="dmark" style="width:40px;height:40px;background:${colorFor(a.avg)}">${a.avg.toFixed(0)}
+              <div class="dlabel">${a.tc.replace("區","")}</div></div>`,
     });
     L.marker(c,{icon}).addTo(districtLayer)
-      .on("click",()=>{ map.flyTo(c,15,{duration:.8}); toast(`${a.NAME_TC} 平均 ${a.av.toFixed(1)} 分`); });
+      .on("click",()=>{ map.flyTo(c,BUILDING_ZOOM,{duration:.8});
+                        toast(`${a.tc} 平均 ${a.avg.toFixed(1)} 分 · ${a.n.toLocaleString()} 棟`); });
   });
 }
 
@@ -476,47 +519,76 @@ document.getElementById("grip").addEventListener("click",()=>sheet.classList.tog
 
 function openSheet(){ sheet.classList.add("open"); }
 
-function select(p,layer){
-  minSel=p.FID;
-  if(layer && layer.getLatLngs) showHighlight(layer.getLatLngs());
-  renderBuilding(p, layer);
+function select(o,layer){
+  minSel=o.id;
+  showHighlight(layer && layer.getLatLngs ? layer.getLatLngs() : null, [o.lat,o.lon]);
+  renderBuilding(o, layer);
   openSheet();
 }
 
-function renderBuilding(p, layer){
-  const nmTC=clean(p.OFFICIAL_1), nmEN=clean(p.OFFICIALBU);
-  const title=nmTC||nmEN||"未命名樓宇";
-  const t=p.TotalSco_1, [vd,vs]=verdict(t);
-  gripText.textContent=`${title} · ${num(t,1)} 分`;
+const PATTERN_NOTE = {
+  "旺山旺向":"丁財兩旺", "上山下水":"損丁破財",
+  "雙星到向":"旺財不旺丁", "雙星到坐":"旺丁不旺財", "其他":"非四大格局",
+};
+const NOW_NOTE = {
+  "當運旺山旺向":"九運丁財兩旺", "當運旺財":"九運利財",
+  "當運旺丁":"九運利人丁", "當運平平":"九運當旺星未到坐向",
+  "入囚":"向星當運入中宮，氣被困",
+};
 
-  let ll=null;
-  try{ const c=layer&&layer.getBounds&&layer.getBounds().getCenter(); if(c) ll=[c.lat,c.lng]; }catch{}
+function renderBuilding(o, layer){
+  const title = clean(o.tc) || clean(o.en) || "未命名樓宇";
+  const t = o.total, [vd,vs] = verdict(t);
+  gripText.textContent = `${title} · ${num(t,1)} 分`;
 
   const bar=(lb,v)=>`<div class="r"><span class="lb">${lb}</span>
     <div class="tk"><div class="fl" style="width:${Math.max(2,Math.min(100,v||0))}%;background:${colorFor(v)}"></div></div>
     <span class="vl">${num(v,0)}</span></div>`;
 
+  // 理氣 is only shown where both inputs are trustworthy. A near-square
+  // footprint gives no reliable long axis, and without an occupation permit
+  // there is no 元運 — inventing either would produce a chart that looks
+  // authoritative and is not.
+  let liqi;
+  if (o.pattern && o.conf >= 0.6) {
+    liqi = `
+      <div class="liqi">
+        <div class="liqi-hd">九運當下</div>
+        <p class="liqi-now">${esc(o.now||"—")}</p>
+        <p class="liqi-sub">${esc(NOW_NOTE[o.now]||"")}</p>
+        <dl class="facts" style="margin-top:12px">
+          <dt>坐向</dt><dd>${esc(o.sit_m||"?")}山${esc(o.face_m||"?")}向　${num(o.facing,0)}°</dd>
+          <dt>建成元運</dt><dd>${o.period?`${o.period}運`:"—"}${o.op_year?`（${o.op_year} 年入伙）`:""}</dd>
+          <dt>本命格局</dt><dd>${esc(o.pattern)}　${esc(PATTERN_NOTE[o.pattern]||"")}</dd>
+        </dl>
+        <p class="liqi-warn">坐向由樓宇外形推算，誤差約 ±10–20°，可能差一個山。唔係羅盤實測。</p>
+      </div>`;
+  } else {
+    const why = !o.op_year ? "查唔到入伙年份，未能定元運"
+              : "樓宇外形接近方形，坐向推算唔可靠";
+    liqi = `<div class="liqi liqi-none"><div class="liqi-hd">九運當下</div>
+            <p class="liqi-sub">未能起盤 — ${why}。</p></div>`;
+  }
+
   sheetBody.innerHTML=`
     <p class="bname">${esc(title)}</p>
-    ${nmTC&&nmEN?`<p class="ben">${esc(nmEN)}</p>`:`<p class="ben">${esc(clean(p.NAME_TC)||"")}</p>`}
+    <p class="ben">${esc([clean(o.en)!==title?clean(o.en):null, clean(o.district)].filter(Boolean).join(" · "))}</p>
     <div class="scorerow">
       <div class="bigscore" style="background:${colorFor(t)}">${num(t,0)}</div>
-      <div><p class="verdict">${vd}</p><p class="vsub">${vs} · 總分 ${num(t,1)} / 100</p></div>
+      <div><p class="verdict">${vd}</p><p class="vsub">${vs} · 地理環境 ${num(t,1)} / 100</p></div>
     </div>
-    <div class="bars">
-      ${bar("環境",p.EnvirSco_1)}${bar("交通",p.Traffic100)}${bar("配套",p.Ancil100)}
-    </div>
+    <div class="bars">${bar("環境",o.env)}${bar("交通",o.traffic)}${bar("配套",o.ancil)}</div>
+    ${liqi}
     <dl class="facts">
-      <dt>山在</dt><dd>${dirTC(clean(p.Mt_Dir_8))}方　${num(p.Mt_NearDIS,0)} 米</dd>
-      <dt>水在</dt><dd>${dirTC(clean(p.Wt_Dir_8))}方　${num(p.Wt_NearDIS,0)} 米</dd>
-      <dt>山水配對</dt><dd>${p.MWDir8Scor>0?`合九運格局（${p.MWDir8Scor}/9）`:"不成對，此項 0 分"}</dd>
-      <dt>所在區</dt><dd>${esc(clean(p.NAME_TC)||"—")}</dd>
-      <dt>樓頂高程</dt><dd>${num(p.TOPHEIGHT,0)} 米(mPD)${p.NUMABOVEGR?`　${num(p.NUMABOVEGR,0)} 層`:""}</dd>
+      <dt>山在</dt><dd>${dirTC(o.mt_dir)}方　${num(o.mt_d,0)} 米</dd>
+      <dt>水在</dt><dd>${dirTC(o.wt_dir)}方　${num(o.wt_d,0)} 米</dd>
+      <dt>山水配對</dt><dd>${o.mwds8>0?`合九運格局（${o.mwds8}/9）`:"不成對，此項 0 分"}</dd>
+      <dt>樓高</dt><dd>${num(o.h,0)} 米${o.storeys?`　${num(o.storeys,0)} 層`:""}</dd>
     </dl>
-    ${ll?`<a class="gmaps" target="_blank" rel="noopener"
-        href="https://www.google.com/maps/search/?api=1&query=${ll[0]},${ll[1]}">喺 Google Maps 開啟 ↗</a>`:""}
+    <a class="gmaps" target="_blank" rel="noopener"
+       href="https://www.google.com/maps/search/?api=1&query=${o.lat},${o.lon}">喺 Google Maps 開啟 ↗</a>
     <div class="note-block">
-      <h4>評分點計出嚟</h4>
+      <h4>地理環境分點計出嚟</h4>
       <div class="note-row"><span class="k">80%</span>
         <span class="v"><b>環境</b> — 山同水相對於樓宇嘅方位（九運洛書飛星，山南水北為上格），加上同山、同水嘅距離</span></div>
       <div class="note-row"><span class="k">15%</span>
@@ -525,12 +597,12 @@ function renderBuilding(p, layer){
         <span class="v"><b>交通</b> — 附近車流量</span></div>
       <p class="note-foot">
         <b>呢個唔包括乜？</b><br>
-        坐向飛星盤 · 建成年份元運 · 單位樓層 · 室內佈局<br>
-        屬「外巒頭」地理分析，唔係完整風水批算。
+        單位樓層 · 室內佈局 · 形煞 · 陰宅距離<br>
+        屬「外巒頭」地理分析，配合上面嘅「九運當下」理氣判斷一齊睇。
       </p>
       <p class="note-foot">
         <b>數據幾新？</b><br>
-        2023 年公開圖層，底層約 2021–2022 年。新樓盤可能未收錄。<br>
+        樓宇資料每日由地政總署 CSDI 更新；入伙年份來自佔用許可證記錄。<br>
         僅供參考，不構成置業建議。
       </p>
     </div>`;
@@ -538,27 +610,29 @@ function renderBuilding(p, layer){
 
 function showOverview(){
   gripText.textContent="十八區風水排名 · 撳我";
-  const lo=Math.min(...districtData.map(a=>a.av)), hi=Math.max(...districtData.map(a=>a.av));
+  const lo=Math.min(...districtData.map(a=>a.avg)), hi=Math.max(...districtData.map(a=>a.avg));
   sheetBody.innerHTML=`
     <p class="bname">香港九運風水地圖</p>
-    <p class="ben">全港 62,751 棟樓宇 · 平均 48.9 分</p>
+    <p class="ben">全港 213,328 棟樓宇 · 平均 48.5 分 · 每日更新</p>
     <div class="legend">
       <div class="lbar">${RAMP.map(c=>`<span style="background:${c}"></span>`).join("")}</div>
-      <div class="lt"><span>24 分</span><span>48</span><span>91 分</span></div>
+      <div class="lt"><span>21 分</span><span>48</span><span>89 分</span></div>
     </div>
     <p class="vsub" style="margin-bottom:10px">撳分區泡泡放大，或者直接放大地圖睇逐棟樓。</p>
-    <ul class="dlist">${districtData.map(a=>{
-      const w=8+92*(a.av-lo)/Math.max(.001,hi-lo);
-      return `<li data-d="${esc(a.NAME_TC)}">
-        <span class="dn">${esc(a.NAME_TC)}</span>
-        <div class="tk"><div class="fl" style="width:${w.toFixed(1)}%;background:${colorFor(a.av)}"></div></div>
-        <span class="dv">${a.av.toFixed(1)}</span></li>`;}).join("")}</ul>
+    <ul class="dlist">${districtData.map((a,i)=>{
+      const w=8+92*(a.avg-lo)/Math.max(.001,hi-lo);
+      return `<li data-i="${i}">
+        <span class="dn">${esc(a.tc)}</span>
+        <div class="tk"><div class="fl" style="width:${w.toFixed(1)}%;background:${colorFor(a.avg)}"></div></div>
+        <span class="dv">${a.avg.toFixed(1)}</span></li>`;}).join("")}</ul>
     <p class="note-foot" style="border-top:1px solid var(--line)">
-      評分屬「外巒頭」地理分析，唔包括坐向飛星盤或室內風水。<br>
-      數據為 2023 年公開圖層。僅供參考，不構成置業建議。
+      地理環境分屬「外巒頭」分析；有入伙年份同可靠坐向嘅樓宇會另外顯示九運飛星判斷。<br>
+      樓宇資料每日由地政總署 CSDI 更新。僅供參考，不構成置業建議。
     </p>`;
   sheetBody.querySelectorAll(".dlist li").forEach(li=>li.addEventListener("click",()=>{
-    const c=DISTRICT_CENTRE[li.dataset.d]; if(c){ map.flyTo(c,15,{duration:.8}); sheet.classList.remove("open"); }
+    const a=districtData[+li.dataset.i];
+    map.flyTo([a.lat,a.lon],BUILDING_ZOOM,{duration:.8});
+    sheet.classList.remove("open");
   }));
 }
 
@@ -575,70 +649,90 @@ qEl.addEventListener("keydown",e=>{ if(e.key==="Enter"){ clearTimeout(searchT); 
 clearBtn.addEventListener("click",()=>{ qEl.value=""; clearBtn.style.display="none"; resEl.classList.remove("show"); qEl.focus(); });
 document.addEventListener("click",e=>{ if(!document.getElementById("searchwrap").contains(e.target)) resEl.classList.remove("show"); });
 
+let searchIndex=null, searchLoading=null;
+async function ensureIndex(){
+  if(searchIndex) return searchIndex;
+  if(!searchLoading){
+    searchLoading = fetch(`${DATA}/search.json`).then(r=>r.json()).then(d=>{
+      searchIndex = d.b.map(row=>{
+        const o={}; d.c.forEach((k,i)=>o[k]=row[i]); return o;
+      });
+      return searchIndex;
+    }).catch(()=>{ searchIndex=[]; return searchIndex; });
+  }
+  return searchLoading;
+}
+
 async function doSearch(){
   const q=qEl.value.trim(); if(q.length<2) return;
   resEl.innerHTML=`<li class="empty">搜尋中…</li>`; resEl.classList.add("show");
-  let hits=await searchLayer(q);
-  if(!hits.length) hits=await searchALS(q);
-  if(!hits.length){ resEl.innerHTML=`<li class="empty">搵唔到「${esc(q)}」，試下屋苑名或街道名。</li>`; return; }
-  resEl.innerHTML=hits.map((h,i)=>`<li data-i="${i}">
-      ${h.score!=null?`<span class="pill" style="background:${colorFor(h.score)}">${h.score.toFixed(0)}</span>`:""}
-      <div class="nm">${esc(h.name||"—")}</div><div class="ad">${esc(h.note||"")}</div></li>`).join("");
+
+  const idx=await ensureIndex();
+  const needle=q.toLowerCase();
+  const hits=[];
+  for(const o of idx){
+    if((o.tc && o.tc.includes(q)) || (o.en && o.en.toLowerCase().includes(needle))){
+      hits.push(o);
+      if(hits.length>=12) break;
+    }
+  }
+  if(hits.length){ renderHits(hits); return; }
+
+  const als=await searchALS(q);
+  if(als.length){ renderHits(als); return; }
+  resEl.innerHTML=`<li class="empty">搵唔到「${esc(q)}」，試下屋苑名或街道名。</li>`;
+}
+
+// Falls back to the Government address service when a name is not in our
+// index - covers street addresses and estates whose block names differ.
+async function searchALS(q){
+  try{
+    const d=await (await fetch(`${ALS}?q=${encodeURIComponent(q)}&n=8`,
+                               {headers:{Accept:"application/json"}})).json();
+    return (d.SuggestedAddress||[]).map(s=>{
+      const pa=s.Address.PremisesAddress, c=pa.ChiPremisesAddress||{}, en=pa.EngPremisesAddress||{};
+      const g=pa.GeospatialInformation||{}, st=c.ChiStreet||{};
+      return { kind:"als", total:null,
+        tc:c.BuildingName||en.BuildingName||((st.StreetName||"")+(st.BuildingNoFrom||"")),
+        note:[(c.ChiEstate||{}).EstateName,
+              (st.StreetName||"")+(st.BuildingNoFrom?` ${st.BuildingNoFrom}號`:""),
+              (c.ChiDistrict||{}).DcDistrict].filter(Boolean).join(" · "),
+        lat:+g.Latitude, lon:+g.Longitude };
+    }).filter(x=>x.lat&&x.lon);
+  }catch{ return []; }
+}
+
+function renderHits(hits){
+  resEl.innerHTML=hits.map((h,i)=>{
+    const name=clean(h.tc)||clean(h.en)||h.name||"—";
+    const note=[clean(h.district), h.note, h.now].filter(Boolean).join(" · ");
+    return `<li data-i="${i}">
+      ${h.total!=null?`<span class="pill" style="background:${colorFor(h.total)}">${h.total.toFixed(0)}</span>`:""}
+      <div class="nm">${esc(name)}</div><div class="ad">${esc(note)}</div></li>`;
+  }).join("");
   [...resEl.querySelectorAll("li[data-i]")].forEach(li=>
     li.addEventListener("click",()=>goto(hits[+li.dataset.i])));
 }
 
-async function searchLayer(q){
-  const e=q.replace(/'/g,"''");
-  const p=new URLSearchParams({
-    where:`OFFICIAL_1 LIKE '%${e}%' OR UPPER(OFFICIALBU) LIKE UPPER('%${e}%')`,
-    outFields:FIELDS, returnGeometry:"true", geometryPrecision:"6", outSR:"4326",
-    orderByFields:"TotalSco_1 DESC", resultRecordCount:"10", f:"geojson",
-  });
-  try{
-    const gj=await (await fetch(`${FS}/query?${p}`)).json();
-    return (gj.features||[]).map(f=>({
-      kind:"layer",
-      name:clean(f.properties.OFFICIAL_1)||clean(f.properties.OFFICIALBU)||"未命名樓宇",
-      note:clean(f.properties.NAME_TC)||"",
-      score:f.properties.TotalSco_1, feature:f,
-    }));
-  }catch{ return []; }
-}
-async function searchALS(q){
-  try{
-    const d=await (await fetch(`${ALS}?q=${encodeURIComponent(q)}&n=8`,{headers:{Accept:"application/json"}})).json();
-    return (d.SuggestedAddress||[]).map(s=>{
-      const pa=s.Address.PremisesAddress, c=pa.ChiPremisesAddress||{}, en=pa.EngPremisesAddress||{};
-      const g=pa.GeospatialInformation||{}, st=c.ChiStreet||{};
-      return{ kind:"als", score:null,
-        name:c.BuildingName||en.BuildingName||((st.StreetName||"")+(st.BuildingNoFrom||"")),
-        note:[(c.ChiEstate||{}).EstateName,(st.StreetName||"")+(st.BuildingNoFrom?` ${st.BuildingNoFrom}號`:""),(c.ChiDistrict||{}).DcDistrict].filter(Boolean).join(" · "),
-        lat:+g.Latitude, lng:+g.Longitude };
-    }).filter(x=>x.lat&&x.lng);
-  }catch{ return []; }
-}
-
-function centroid(geom){
-  const pts=[]; (function w(a){ typeof a[0]==="number"?pts.push(a):a.forEach(w); })(geom.coordinates);
-  if(!pts.length) return null;
-  return [pts.reduce((s,p)=>s+p[1],0)/pts.length, pts.reduce((s,p)=>s+p[0],0)/pts.length];
-}
 function goto(h){
   resEl.classList.remove("show"); qEl.blur();
-  if(h.kind==="layer"){
-    const c=centroid(h.feature.geometry);
-    if(c) map.setView(c,17);
-    minSel=h.feature.properties.FID;
-    renderBuilding(h.feature.properties,null);
-    openSheet();
-    setTimeout(loadBuildings,400);
-  }else{
-    map.setView([h.lat,h.lng],17);
-    L.circleMarker([h.lat,h.lng],{radius:8,color:"#fff",weight:3,fillColor:"#e0562a",fillOpacity:1}).addTo(map);
+  const lat=h.lat, lon=h.lon!==undefined?h.lon:h.lng;
+  map.setView([lat,lon],17);
+  if(h.kind==="als"){
+    L.circleMarker([lat,lon],{radius:8,color:"#fff",weight:3,
+                              fillColor:"#e0562a",fillOpacity:1}).addTo(map);
     toast("撳附近嘅樓宇睇評分");
-    setTimeout(loadBuildings,400);
   }
+  // Let the tiles land, then pick out the building that was searched for.
+  loadBuildings().then(()=>{
+    let best=null, bestD=Infinity;
+    buildingLayer.eachLayer(l=>{
+      const c=l.getBounds?l.getBounds().getCenter():l.getLatLng();
+      const d=(c.lat-lat)**2+(c.lng-lon)**2;
+      if(d<bestD){ bestD=d; best=l; }
+    });
+    if(best && bestD < 1e-7) best.fire("click");
+  });
 }
 
 /* --------------------------------------------------------- UI wiring --- */

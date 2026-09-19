@@ -16,7 +16,9 @@ import math
 import pathlib
 import shutil
 
-Z = 13
+# z13 put ~10k buildings and 2.7 MB into a single dense-Kowloon tile, which is a
+# bad first fetch on mobile. z14 quarters that.
+Z = 14
 DATA = pathlib.Path(__file__).parent.parent / "data"
 OUT = DATA / "tiles"
 
@@ -43,9 +45,10 @@ COLUMNS = [
     "facing",    # 18 derived 向 in degrees, null when not derivable
     "sit_m",     # 19 坐 as one of the 24 mountains
     "face_m",    # 20 向 as one of the 24 mountains
-    "pattern",   # 21 旺山旺向 / 上山下水 / 雙星到向 / 雙星到坐
-    "conf",      # 22 confidence in the derived facing, 0-1
-    "ring",      # 23 flat [lon,lat,...] footprint, null when unavailable
+    "pattern",   # 21 本命格局 at the building's own 元運
+    "now",       # 22 how that chart stands in the CURRENT period (九運)
+    "conf",      # 23 confidence in the derived facing, 0-1
+    "ring",      # 24 footprint: [lon0, lat0, then integer deltas x1e-5 deg]
 ]
 
 
@@ -75,11 +78,26 @@ def deg2tile(lon: float, lat: float, z: int) -> tuple[int, int]:
     return x, y
 
 
+def encode_ring(ring: list) -> list | None:
+    """Footprints dominate tile size. Absolute coordinates cost ~10 characters
+    each ("114.18523"); as integer deltas from the first vertex, in units of
+    1e-5 degrees, a typical building's vertices become 2-3 character numbers.
+    The page adds them back up."""
+    if not ring:
+        return None
+    out = [round(ring[0][0], 5), round(ring[0][1], 5)]
+    px = round(ring[0][0] * 1e5)
+    py = round(ring[0][1] * 1e5)
+    for x, y in ring[1:]:
+        cx, cy = round(x * 1e5), round(y * 1e5)
+        out.append(cx - px)
+        out.append(cy - py)
+        px, py = cx, cy
+    return out
+
+
 def row_for(r: dict) -> list:
-    ring = r.get("ring")
-    flat = None
-    if ring:
-        flat = [round(v, 5) for pt in ring for v in pt]
+    flat = encode_ring(r.get("ring"))
     return [
         r.get("id"), r.get("tc"), r.get("en"),
         r.get("lon"), r.get("lat"),
@@ -88,7 +106,7 @@ def row_for(r: dict) -> list:
         r.get("mwds8"), r.get("h"), r.get("storeys"),
         r.get("op_year"), r.get("period"),
         r.get("facing"), r.get("sit_m"), r.get("face_m"), r.get("pattern"),
-        r.get("conf"),
+        r.get("now"), r.get("conf"),
         flat,
     ]
 
@@ -136,20 +154,27 @@ def main() -> None:
 
 
 def build_search(scores: list[dict]) -> None:
-    """Named buildings only, so typing an estate name can find one without
-    downloading every tile. Unnamed structures are findable on the map."""
+    """One index of every named building, fetched once and searched locally.
+
+    Splitting this by leading character produced ~12,000 tiny files — fine to
+    serve, miserable to keep in a repo. GitHub Pages gzips on the wire, which
+    takes the whole index from 5.3 MB to about 1.4 MB: one cached download, then
+    every keystroke is instant with no further requests.
+    """
     rows = []
     for r in scores:
-        tc, en = r.get("tc"), r.get("en")
-        if not tc and not en:
+        if not (r.get("tc") or r.get("en")):
             continue
-        rows.append([tc, en, r.get("district"), r.get("lon"), r.get("lat"),
-                     r.get("total"), r.get("pattern")])
+        rows.append([r.get("tc"), r.get("en"), r.get("district"),
+                     round(r["lon"], 5), round(r["lat"], 5),
+                     r.get("total"), r.get("now")])
     rows.sort(key=lambda x: -(x[5] or 0))
-    p = DATA / "search.json"
-    p.write_text(json.dumps({"c": ["tc", "en", "district", "lon", "lat", "total", "pattern"],
+    p = OUT / "search.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps({"c": ["tc", "en", "district", "lon", "lat", "total", "now"],
                              "b": rows}, separators=(",", ":"), ensure_ascii=False))
-    print(f"search index: {len(rows):,} named buildings, {p.stat().st_size/1e6:.1f} MB")
+    print(f"search index: {len(rows):,} named buildings, "
+          f"{p.stat().st_size/1e6:.1f} MB raw (~1.4 MB gzipped on the wire)")
 
 
 def build_districts(scores: list[dict]) -> None:

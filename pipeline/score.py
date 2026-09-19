@@ -99,7 +99,7 @@ def main() -> None:
                 pen += ancillary_penalty(d)
 
         # ---- 理氣: 坐向 then the chart -------------------------------------
-        facing = sit_m = face_m = pattern = period = None
+        facing = sit_m = face_m = pattern = period = now_code = None
         conf = 0.0
         axis, elong = b.get("axis"), b.get("elong")
         rec = op.get(b["id"] or "")
@@ -117,6 +117,7 @@ def main() -> None:
                 period = ch["period"]
                 sit_m, face_m = ch["sitting"], ch["facing"]
                 pattern = ch["pattern"]["code"]
+                now_code = ch["now"]["code"]
 
         d = dsets.find(b["lon"], b["lat"]) if dsets else None
 
@@ -128,7 +129,7 @@ def main() -> None:
             "facing": round(facing, 1) if facing is not None else None,
             "conf": round(conf, 2),
             "op_year": op_year, "period": period,
-            "sit_m": sit_m, "face_m": face_m, "pattern": pattern,
+            "sit_m": sit_m, "face_m": face_m, "pattern": pattern, "now": now_code,
             "residential": rec["residential"] if rec else None,
         })
 
@@ -162,7 +163,7 @@ def main() -> None:
             "facing": r["facing"], "conf": r["conf"],
             "op_year": r["op_year"], "period": r["period"],
             "sit_m": r["sit_m"], "face_m": r["face_m"], "pattern": r["pattern"],
-            "residential": r["residential"],
+            "now": r["now"], "residential": r["residential"],
         })
 
     out.sort(key=lambda r: -r["total"])
@@ -179,8 +180,12 @@ def main() -> None:
     print(f"元運 known        : {sum(1 for r in out if r['period']):,}")
     charted = [r for r in out if r["pattern"]]
     print(f"飛星盤 built      : {len(charted):,}")
+    print("  本命格局（建成元運）:")
     for code, n in collections.Counter(r["pattern"] for r in charted).most_common():
-        print(f"    {code:<8} {n:>7,}")
+        print(f"    {code:<10} {n:>7,}")
+    print("  九運當下:")
+    for code, n in collections.Counter(r["now"] for r in charted).most_common():
+        print(f"    {code:<10} {n:>7,}")
     print(f"\n住宅 (by OP type) : {sum(1 for r in out if r['residential']):,}")
     print(f"分區已判定        : {sum(1 for r in out if r['district']):,}")
 

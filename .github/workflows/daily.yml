@@ -44,8 +44,16 @@ jobs:
             echo "terrain.json present, skipping (rebuilds on the 1st)"
           fi
 
+      - name: Fetch district boundaries
+        run: python pipeline/fetch_districts.py
+        continue-on-error: true
+
       - name: Fetch current building stock from CSDI
         run: python pipeline/fetch_buildings.py
+
+      - name: Fetch occupation permits (完成年份 + 用途)
+        run: python pipeline/fetch_op.py
+        continue-on-error: true
 
       - name: Fetch negative ancillary facilities
         run: python pipeline/fetch_facilities.py
@@ -54,6 +62,9 @@ jobs:
       - name: Score
         run: python pipeline/score.py
 
+      - name: Build map tiles, search index and district stats
+        run: python pipeline/build_tiles.py
+
       # buildings.json / scores.json are NOT committed. They are rebuilt on every
       # run and shipped straight to Pages, so history stays small. Only the small,
       # slow-moving reference files (terrain, facilities) are tracked.
@@ -61,7 +72,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/terrain.json data/facilities.json
+          git add data/terrain.json data/facilities.json data/districts.json
           if git diff --staged --quiet; then
             echo "reference data unchanged"
           else
@@ -76,7 +87,7 @@ jobs:
           mkdir -p _site
           cp index.html _site/
           cp -r data _site/data
-          rm -f _site/data/buildings.json _site/data/scores.json
+          rm -f _site/data/buildings.json _site/data/scores.json _site/data/op.json
           du -sh _site
 
       - uses: actions/configure-pages@v5
