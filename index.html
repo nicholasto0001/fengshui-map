@@ -167,6 +167,67 @@
   }
   .note-foot b{color:var(--ink2); font-weight:600}
 
+  /* ---------- method explanation ----------
+     Collapsed by default: it is reference material, not something to read on
+     every building. Opened, it walks the four steps with this building's own
+     numbers filled in, so the figures above stop being arbitrary. */
+  .method{border-top:1px solid var(--line); margin-top:4px}
+  .method>summary{
+    list-style:none; cursor:pointer; padding:14px 2px; display:flex;
+    align-items:center; justify-content:space-between;
+    font-size:13.5px; font-weight:600; color:var(--ink2);
+  }
+  .method>summary::-webkit-details-marker{display:none}
+  .method .chev{color:var(--ink3); font-size:12px; transition:transform .18s}
+  .method[open] .chev{transform:rotate(180deg)}
+  .method-body{padding:0 0 4px}
+
+  .step{display:grid; grid-template-columns:24px 1fr; gap:11px; margin-bottom:20px}
+  .sn{
+    width:24px; height:24px; border-radius:50%; background:var(--brand); color:#fff;
+    display:grid; place-items:center; font-size:12px; font-weight:700;
+  }
+  .sb h5{font-size:14px; margin:2px 0 6px; color:var(--ink)}
+  .sb p{font-size:12.5px; line-height:1.65; color:var(--ink2); margin:0 0 8px}
+  .sb p.mine{
+    background:var(--bg); border-radius:8px; padding:8px 10px; font-size:12.5px;
+    color:var(--ink); margin:8px 0 0;
+  }
+
+  table.mwds{border-collapse:collapse; width:100%; margin:10px 0; font-size:12px}
+  table.mwds th{
+    text-align:left; font-weight:600; color:var(--ink3); font-size:10.5px;
+    letter-spacing:.05em; padding:0 8px 5px 0; border-bottom:1px solid var(--line);
+  }
+  table.mwds td{padding:4px 8px 4px 0; color:var(--ink2); border-bottom:1px solid #f2f1ed}
+  table.mwds td:last-child{text-align:right; font-variant-numeric:tabular-nums; padding-right:0}
+  table.mwds tr.hit td{background:#fff5e6; color:var(--ink); font-weight:700}
+  table.mwds tr.hit td:first-child{border-radius:6px 0 0 6px; padding-left:7px}
+  table.mwds tr.hit td:last-child{border-radius:0 6px 6px 0; padding-right:7px}
+  table.mwds tr.zero td{color:var(--ink3)}
+
+  .wbar{display:flex; gap:3px; margin-top:10px; height:40px}
+  .wbar div{
+    border-radius:6px; background:var(--s3); color:#fff; display:grid; place-content:center;
+    font-size:12px; font-weight:700; text-align:center; min-width:0; overflow:hidden;
+  }
+  .wbar div:nth-child(2){background:var(--s2)}
+  .wbar div:nth-child(3){background:var(--s1); color:var(--ink2)}
+  .wbar span{display:block; font-size:10px; font-weight:500; opacity:.9}
+
+  .limits{background:var(--bg); border-radius:12px; padding:13px 14px; margin-bottom:14px}
+  .limits h5{font-size:13px; margin:0 0 8px; color:var(--ink)}
+  .limits ul{margin:0 0 9px; padding-left:17px}
+  .limits li{font-size:12.5px; line-height:1.6; color:var(--ink2); margin-bottom:3px}
+  .limits p{font-size:12px; line-height:1.6; color:var(--ink3); margin:0}
+  .build{
+    font-size:10.5px; color:var(--ink3); text-align:center; margin:14px 0 0;
+    font-variant-numeric:tabular-nums; letter-spacing:.02em;
+  }
+  .build-inline{color:var(--ink3); font-variant-numeric:tabular-nums}
+  .src{font-size:11px; line-height:1.6; color:var(--ink3); margin:0; padding-top:11px;
+       border-top:1px dashed var(--line)}
+
   /* ---------- 理氣 block ---------- */
   .liqi{
     background:linear-gradient(180deg,#fbf9f4,#f7f4ec); border:1px solid #ece6d8;
@@ -297,6 +358,9 @@
 const ALS  = "https://www.als.gov.hk/lookup";
 const TILE = "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz";
 const DATA = "data/tiles";
+// Bump on every release. Shown in the overview sheet so a stale cached page is
+// identifiable at a glance — otherwise there is no way to tell.
+const APP_VERSION = "v4";
 const TILE_Z = 14;              // must match pipeline/build_tiles.py
 const BUILDING_ZOOM = 15;       // below this, show the district overview
 
@@ -526,6 +590,21 @@ function select(o,layer){
   openSheet();
 }
 
+// The mountain/water pairing table, with this building's own row highlighted.
+// Showing it makes the "8/9" figure above concrete instead of arbitrary.
+const MWDS_ROWS = [
+  [9,"南","北"],[8,"北","南"],[7,"西南","東北"],[6,"東","西"],[5,"東南","西北"],
+  [3,"西北","東南"],[2,"西","東"],[1,"東北","西南"],
+];
+function mwdsTable(o){
+  const mine = o.mwds8 || 0;
+  return `<table class="mwds"><thead><tr><th>山喺</th><th>水喺</th><th>分</th></tr></thead><tbody>` +
+    MWDS_ROWS.map(([sc,m,w])=>
+      `<tr class="${sc===mine?'hit':''}"><td>${m}</td><td>${w}</td><td>${sc}</td></tr>`).join("") +
+    `<tr class="${mine===0?'hit':''} zero"><td colspan="2">以上以外嘅組合</td><td>0</td></tr>` +
+    `</tbody></table>`;
+}
+
 const PATTERN_NOTE = {
   "旺山旺向":"丁財兩旺", "上山下水":"損丁破財",
   "雙星到向":"旺財不旺丁", "雙星到坐":"旺丁不旺財", "其他":"非四大格局",
@@ -587,25 +666,78 @@ function renderBuilding(o, layer){
     </dl>
     <a class="gmaps" target="_blank" rel="noopener"
        href="https://www.google.com/maps/search/?api=1&query=${o.lat},${o.lon}">喺 Google Maps 開啟 ↗</a>
-    <div class="note-block">
-      <h4>地理環境分點計出嚟</h4>
-      <div class="note-row"><span class="k">80%</span>
-        <span class="v"><b>環境</b> — 山同水相對於樓宇嘅方位（九運洛書飛星，山南水北為上格），加上同山、同水嘅距離</span></div>
-      <div class="note-row"><span class="k">15%</span>
-        <span class="v"><b>配套</b> — 距離醫院、警署、油站、橋樑、消防局幾遠</span></div>
-      <div class="note-row"><span class="k">5%</span>
-        <span class="v"><b>交通</b> — 附近車流量</span></div>
-      <p class="note-foot">
-        <b>呢個唔包括乜？</b><br>
-        單位樓層 · 室內佈局 · 形煞 · 陰宅距離<br>
-        屬「外巒頭」地理分析，配合上面嘅「九運當下」理氣判斷一齊睇。
-      </p>
-      <p class="note-foot">
-        <b>數據幾新？</b><br>
-        樓宇資料每日由地政總署 CSDI 更新；入伙年份來自佔用許可證記錄。<br>
-        僅供參考，不構成置業建議。
-      </p>
-    </div>`;
+    <details class="method">
+      <summary><span>呢個分數點計出嚟？</span><span class="chev">▾</span></summary>
+      <div class="method-body">
+
+        <div class="step">
+          <div class="sn">1</div>
+          <div class="sb">
+            <h5>搵出最近嘅山同水</h5>
+            <p>由樓宇位置向外搜尋，搵到最近嘅山體同水體，記低距離同方位。
+               風水講「山管人丁，水管財」，兩者都係越近影響越大。</p>
+            <p class="mine">呢棟樓：山喺${dirTC(o.mt_dir)}方 ${num(o.mt_d,0)} 米 ·
+               水喺${dirTC(o.wt_dir)}方 ${num(o.wt_d,0)} 米</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="sn">2</div>
+          <div class="sb">
+            <h5>對照九運山水配對表</h5>
+            <p>用洛書九宮飛星。九運（2024–2043）當令星係九紫，
+               所以<b>山要喺當令星所在嘅方位，水要喺正對面</b>。
+               越當令嘅星，配對分越高；唔成對就零分。</p>
+            ${mwdsTable(o)}
+            <p class="mine">呢棟樓配對：<b>${o.mwds8>0?`${o.mwds8} / 9 分`:"0 分（山水唔成對）"}</b></p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="sn">3</div>
+          <div class="sb">
+            <h5>扣減周邊不利設施</h5>
+            <p>醫院、警署、油站、橋樑、消防局 —— 風水上主病、主刑、主火、主沖。
+               100 米內扣最多，每遠 100 米扣少一分，1000 米外唔再扣。</p>
+            <p class="mine">呢棟樓配套分：<b>${num(o.ancil,0)} / 100</b>（分數越高代表越少不利設施）</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="sn">4</div>
+          <div class="sb">
+            <h5>同全港樓宇比較</h5>
+            <p>以上各項原始數值，會同全港 213,328 棟樓一齊做標準化，
+               換算成 0–100 嘅百分位。所以 50 分即係「全港中位」，
+               唔係「合格」。</p>
+            <div class="wbar">
+              <div style="flex:80"><span>環境</span>80%</div>
+              <div style="flex:15"><span>配套</span>15%</div>
+              <div style="flex:5"><span>交通</span>5%</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="limits">
+          <h5>呢個分數唔包括</h5>
+          <ul>
+            <li><b>單位樓層</b> — 同一棟樓低層同高層，景觀納氣完全唔同</li>
+            <li><b>室內佈局</b> — 大門對電梯、對垃圾房、廚廁位置</li>
+            <li><b>形煞</b> — 路沖、屋角、天斬、反弓</li>
+            <li><b>陰宅距離</b> — 墳場、骨灰龕、殯儀館</li>
+          </ul>
+          <p>呢啲屬「內巒頭」同「形煞」，要實地或圖則先睇得到。
+             上面嘅「九運當下」係理氣判斷，同呢個地理分數係兩套獨立嘅睇法，要一齊睇。</p>
+        </div>
+
+        <p class="src">
+          樓宇資料每日由地政總署 CSDI 更新 · 入伙年份來自佔用許可證記錄 ·
+          山水地形由地政總署數字地形模型推算<br>
+          僅供參考，不構成置業或投資建議。<br>
+          <span class="build-inline">${APP_VERSION}</span>
+        </p>
+      </div>
+    </details>`;
 }
 
 function showOverview(){
@@ -628,12 +760,28 @@ function showOverview(){
     <p class="note-foot" style="border-top:1px solid var(--line)">
       地理環境分屬「外巒頭」分析；有入伙年份同可靠坐向嘅樓宇會另外顯示九運飛星判斷。<br>
       樓宇資料每日由地政總署 CSDI 更新。僅供參考，不構成置業建議。
-    </p>`;
+    </p>
+    <p class="build" id="buildStamp">${APP_VERSION}</p>`;
+  fillBuildStamp();
   sheetBody.querySelectorAll(".dlist li").forEach(li=>li.addEventListener("click",()=>{
     const a=districtData[+li.dataset.i];
     map.flyTo([a.lat,a.lon],BUILDING_ZOOM,{duration:.8});
     sheet.classList.remove("open");
   }));
+}
+
+// Build stamp: page release + when the underlying data was last rebuilt.
+let buildInfo=null;
+async function fillBuildStamp(){
+  const el=document.getElementById("buildStamp");
+  if(!el) return;
+  if(!buildInfo){
+    try{ buildInfo=await (await fetch(`${DATA}/build.json`)).json(); }
+    catch{ buildInfo={}; }
+  }
+  el.textContent = `${APP_VERSION}` +
+    (buildInfo.built ? ` · 數據建立 ${buildInfo.built}` : "") +
+    (buildInfo.total ? ` · ${buildInfo.total.toLocaleString()} 棟樓宇` : "");
 }
 
 /* ---------------------------------------------------------- searching --- */

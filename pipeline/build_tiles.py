@@ -11,6 +11,7 @@ Output: data/tiles/13/<x>/<y>.json  +  data/tiles/index.json
 """
 from __future__ import annotations
 
+import datetime
 import json
 import math
 import pathlib
@@ -151,6 +152,18 @@ def main() -> None:
 
     build_search(scores)
     build_districts(scores)
+    stamp(len(scores), len(all_scores))
+
+
+def stamp(on_map: int, total: int) -> None:
+    """A build stamp the page can display. Without one there is no way to tell a
+    stale cached page from a current one just by looking at it."""
+    (OUT / "build.json").write_text(json.dumps({
+        "built": datetime.datetime.now(datetime.UTC).strftime("%Y-%m-%d %H:%M UTC"),
+        "on_map": on_map,
+        "total": total,
+    }, separators=(",", ":")))
+    print(f"build stamp written")
 
 
 def build_search(scores: list[dict]) -> None:
