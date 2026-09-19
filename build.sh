@@ -17,8 +17,14 @@ cp -R data public/data
 rm -f public/data/buildings.json public/data/scores.json public/data/op.json
 
 # Stamp the build so a cached page can tell it has fallen behind.
-BUILD="${WORKERS_CI_COMMIT_SHA:-${CF_PAGES_COMMIT_SHA:-${GITHUB_SHA:-dev}}}"
-BUILD="$(printf '%s' "$BUILD" | cut -c1-7)"
+#
+# The commit variable differs per platform and Cloudflare's Workers builds did
+# not set any of them — the chain fell through to the branch name, giving every
+# deploy the id "main" and quietly disabling the whole mechanism. A timestamp is
+# appended unconditionally: whatever else resolves, each build is distinct.
+SHA="${WORKERS_CI_COMMIT_SHA:-${CF_PAGES_COMMIT_SHA:-${GITHUB_SHA:-${CF_PAGES_COMMIT_SHA:-}}}}"
+SHA="$(printf '%s' "$SHA" | cut -c1-7)"
+BUILD="${SHA:+$SHA-}$(date -u +%y%m%d%H%M)"
 sed -i.bak "s/const BUILD_ID = \"dev\"/const BUILD_ID = \"${BUILD}\"/" public/index.html
 rm -f public/index.html.bak
 printf '{"build":"%s","at":"%s"}' "$BUILD" "$(date -u +'%Y-%m-%d %H:%M UTC')" > public/version.json
