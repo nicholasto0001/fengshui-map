@@ -5,7 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <meta name="theme-color" content="#1b4f8f">
 <title>香港風水地圖 · 九運</title>
-<meta name="description" content="香港逐棟樓宇九運風水評分地圖">
+<meta name="description" content="全港 213,328 棟樓宇嘅九運風水評分。睇下你屋企幾多分。">
+
+<!-- A link pasted into a Facebook group or WhatsApp is judged entirely on its
+     preview card. Without these it renders as a bare URL and nobody taps it. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="香港風水地圖">
+<meta property="og:title" content="香港風水地圖 · 九運">
+<meta property="og:description" content="全港 213,328 棟樓宇嘅九運風水評分。睇下你屋企幾多分。">
+<meta property="og:image" content="og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_HK">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="香港風水地圖 · 九運">
+<meta name="twitter:description" content="全港 213,328 棟樓宇嘅九運風水評分。睇下你屋企幾多分。">
+<meta name="twitter:image" content="og.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
   :root{
@@ -118,6 +133,42 @@
   #districtMenu button b{font-weight:inherit}
   #districtMenu button span{font-size:12px; color:var(--ink3); font-variant-numeric:tabular-nums}
   #districtMenu .dsep{height:1px; background:var(--line); margin:5px 8px}
+
+  .favchip .hrt{color:#d64545; font-size:14px; line-height:1}
+  .favchip.on{background:#d64545; color:#fff}
+  .favchip.on .hrt{color:#fff}
+
+  /* ---------- save + share ---------- */
+  .actions{display:grid; grid-template-columns:1fr 1fr; gap:9px; margin:0 0 16px}
+  .act{
+    display:flex; align-items:center; justify-content:center; gap:7px;
+    border:1px solid var(--line); background:var(--card); border-radius:12px;
+    padding:12px; font:inherit; font-size:14px; font-weight:600;
+    color:var(--ink); cursor:pointer;
+  }
+  .act:active{background:var(--bg); transform:scale(.985)}
+  .act.saved{background:#fdecec; border-color:#f2c9c9; color:#a01f1f}
+  .act .ico{font-size:16px; line-height:1}
+  .act.primary{background:var(--brand); border-color:var(--brand); color:#fff}
+
+  .sharebar{
+    display:flex; align-items:center; gap:10px; background:#eef4fb;
+    border:1px solid #d6e4f4; border-radius:12px; padding:12px 13px; margin:0 0 14px;
+  }
+  .sharebar div{flex:1; min-width:0}
+  .sharebar b{display:block; font-size:13.5px; color:#12467e; margin-bottom:2px}
+  .sharebar span{font-size:12px; color:#2a5f9e; line-height:1.45}
+  .sharebar button{
+    flex:0 0 auto; border:0; background:var(--brand); color:#fff; font:inherit;
+    font-size:13px; font-weight:700; padding:9px 15px; border-radius:999px; cursor:pointer;
+  }
+
+  .shared-note{
+    background:#fff8e8; border:1px solid #f0dcae; border-radius:12px;
+    padding:12px 14px; margin:0 0 14px;
+  }
+  .shared-note b{display:block; font-size:14px; color:#6b4c10; margin-bottom:3px}
+  .shared-note span{font-size:12.5px; color:#7a5c22; line-height:1.5}
 
   /* ---------- match list ---------- */
   .mlist{list-style:none; margin:0 0 14px; padding:0}
@@ -428,6 +479,8 @@
 <div id="filters">
   <button class="chip dchip" id="btnDistrict"><b>地區</b>全港 <span class="caret">▾</span></button>
   <span class="chip-sep"></span>
+  <button class="chip favchip" id="btnFav"><span class="hrt">♥</span>收藏</button>
+  <span class="chip-sep"></span>
   <button class="chip on" data-band="all">全部</button>
   <button class="chip" data-band="best"><i style="background:#0f6354"></i>大吉</button>
   <button class="chip" data-band="good+"><i style="background:#4da79a"></i>吉以上</button>
@@ -480,7 +533,51 @@ const TILE = "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz";
 const DATA = "data/tiles";
 // Bump on every release. Shown in the overview sheet so a stale cached page is
 // identifiable at a glance — otherwise there is no way to tell.
-const APP_VERSION = "v10";
+const APP_VERSION = "v12";
+
+// ---------------------------------------------------------------------------
+// Analytics
+//
+// GA_ID stays empty until a real measurement ID is pasted in; track() is then
+// a no-op, so nothing breaks and nothing is sent. Every call goes through this
+// one function so the provider can be swapped without touching call sites.
+// ---------------------------------------------------------------------------
+const GA_ID = "";            // e.g. "G-XXXXXXXXXX"
+
+function track(event, params){
+  try{
+    if (window.gtag) window.gtag("event", event, params || {});
+    if (!GA_ID) console.debug("[track]", event, params || {});
+  }catch{}
+}
+
+(function initAnalytics(){
+  if(!GA_ID) return;
+  const sc = document.createElement("script");
+  sc.async = true;
+  sc.src = "https://www.googletagmanager.com/gtag/js?id=" + GA_ID;
+  document.head.appendChild(sc);
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function(){ window.dataLayer.push(arguments); };
+  gtag("js", new Date());
+  // anonymize_ip keeps this the least intrusive configuration that still
+  // answers "how many, how long, doing what".
+  gtag("config", GA_ID, {anonymize_ip: true, app_version: APP_VERSION});
+})();
+
+// How long people actually stay, reported once on the way out. Without this
+// a session that ends by closing the tab reports no duration at all.
+(function trackEngagement(){
+  const start = Date.now();
+  let sent = false;
+  const flush = () => {
+    if(sent) return;
+    sent = true;
+    track("session_length", {seconds: Math.round((Date.now()-start)/1000)});
+  };
+  addEventListener("visibilitychange", () => { if(document.hidden) flush(); });
+  addEventListener("pagehide", flush);
+})();
 
 // Data files are rebuilt daily at the same URLs, so a browser holding
 // yesterday's copy keeps serving it - silently, and indefinitely. Every data
@@ -809,6 +906,13 @@ function openSheet(){ sheet.classList.add("open"); }
 
 function select(o,layer){
   minSel=o.id;
+  track("view_building", {
+    name: (o.tc || o.en || "unnamed"),
+    district: o.district || "",
+    score: Math.round(o.total || 0),
+    grade: (levelFor(o.total)||{}).label || "",
+    now: o.now || "",
+  });
   showHighlight(layer && layer.getLatLngs ? layer.getLatLngs() : null, [o.lat,o.lon]);
   renderBuilding(o, layer);
   openSheet();
@@ -899,6 +1003,11 @@ function renderBuilding(o, layer){
       <dt>山水配對</dt><dd>${o.mwds8>0?`合九運格局（${o.mwds8}/9）`:"不成對，此項 0 分"}</dd>
       <dt>樓高</dt><dd>${num(o.h,0)} 米${o.storeys?`　${num(o.storeys,0)} 層`:""}</dd>
     </dl>
+    <div class="actions">
+      <button class="act ${isFav(o)?"saved":""}" id="btnSave">
+        <span class="ico">${isFav(o)?"♥":"♡"}</span>${isFav(o)?"已收藏":"收藏"}</button>
+      <button class="act primary" id="btnShare"><span class="ico">↗</span>分享</button>
+    </div>
     <a class="gmaps" target="_blank" rel="noopener"
        href="https://www.google.com/maps/search/?api=1&query=${o.lat},${o.lon}">喺 Google Maps 開啟 ↗</a>
     <details class="method">
@@ -973,9 +1082,75 @@ function renderBuilding(o, layer){
         </p>
       </div>
     </details>`;
+
+  const bs = sheetBody.querySelector("#btnSave");
+  if(bs) bs.addEventListener("click", () => { toggleFav(o); renderBuilding(o, layer); });
+  const sh = sheetBody.querySelector("#btnShare");
+  if(sh) sh.addEventListener("click", () => shareBuilding(o));
 }
 
+let favView = false;
+let sharedList = null;          // a shortlist opened from someone else's link
+
+function showFavs(){
+  const list = sharedList || favs;
+  const mine = !sharedList;
+  gripText.textContent = mine ? `我的收藏 · ${favs.length} 個` : `朋友分享嘅清單 · ${list.length} 個`;
+  if(!list.length){
+    sheetBody.innerHTML = `
+      <p class="bname">我的收藏</p>
+      <p class="mcount">仲未收藏任何樓宇。撳地圖上任何一棟樓，再撳「收藏」就會加入呢度，
+         之後可以一次過分享成張清單俾屋企人或者經紀。</p>
+      <p class="build" id="buildStamp">${APP_VERSION}</p>`;
+    fillBuildStamp();
+    return;
+  }
+  sheetBody.innerHTML = `
+    ${mine ? "" : `<div class="shared-note">
+      <b>呢個係朋友分享嘅樓盤清單</b>
+      <span>你可以逐個撳入去睇評分。想睇自己屋企幾多分？用上面搜尋欄搵你個屋苑。</span></div>`}
+    <p class="bname">${mine ? "我的收藏" : "朋友揀咗嘅樓盤"}</p>
+    <p class="mcount">${list.length} 個樓盤，按分數由高至低排列。</p>
+    ${mine ? `<div class="sharebar">
+      <div><b>分享成一張清單</b><span>一條連結，對方撳開就睇晒你揀嘅樓同評分。</span></div>
+      <button id="btnShareList">分享</button></div>` : ""}
+    <ul class="mlist">${[...list].sort((a,b)=>(b.total||0)-(a.total||0)).map((o,i)=>`
+      <li data-i="${i}">
+        <div class="sc" style="background:${colorFor(o.total)};color:${inkOn(o.total)}">${num(o.total,0)}</div>
+        <div><div class="nm">${esc(clean(o.tc)||clean(o.en)||"未命名樓宇")}</div>
+             <div class="mt">${esc([clean(o.district), o.now].filter(Boolean).join(" · "))}</div></div>
+        <div class="go">›</div>
+      </li>`).join("")}</ul>
+    <p class="build" id="buildStamp">${APP_VERSION}</p>`;
+  fillBuildStamp();
+  const sl = sheetBody.querySelector("#btnShareList");
+  if(sl) sl.addEventListener("click", shareList);
+  const sorted = [...list].sort((a,b)=>(b.total||0)-(a.total||0));
+  sheetBody.querySelectorAll(".mlist li").forEach(li=>li.addEventListener("click",()=>{
+    const o = sorted[+li.dataset.i];
+    map.setView([o.lat,o.lon], 18);
+    setTimeout(()=>{
+      let best=null, bd=Infinity;
+      buildingLayer.eachLayer(l=>{
+        const c=l.getBounds?l.getBounds().getCenter():l.getLatLng();
+        const d=(c.lat-o.lat)**2+(c.lng-o.lon)**2;
+        if(d<bd){ bd=d; best=l; }
+      });
+      if(best && bd < 1e-7) best.fire("click");
+    }, 900);
+  }));
+}
+
+document.getElementById("btnFav").addEventListener("click", ()=>{
+  favView = !favView;
+  sharedList = null;
+  saveFavs();
+  track("open_favourites", {count: favs.length});
+  if(favView){ showFavs(); openSheet(); } else showOverview();
+});
+
 async function showOverview(){
+  if(favView || sharedList){ showFavs(); return; }
   // Either filter turns the panel into a pickable list of buildings rather
   // than a district ranking - that is the whole point of filtering.
   if(band!=="all" || districtFilter){
@@ -1023,6 +1198,7 @@ async function showOverview(){
   sheetBody.querySelectorAll(".dlist li").forEach(li=>li.addEventListener("click",()=>{
     const a=rows[+li.dataset.i];
     districtFilter = a.tc;
+    track("filter_district", {district: a.tc, from: "home_list"});
     const chip = document.getElementById("btnDistrict");
     chip.innerHTML = '<b>地區</b>' + a.tc + ' <span class="caret">▾</span>';
     chip.classList.add("on");
@@ -1076,6 +1252,7 @@ async function doSearch(){
 
   const idx=await ensureIndex();
   const needle=q.toLowerCase();
+  track("search", {term: q});
   const hits=[];
   for(const o of idx){
     if((o.tc && o.tc.includes(q)) || (o.en && o.en.toLowerCase().includes(needle))){
@@ -1143,6 +1320,84 @@ function goto(h){
 }
 
 /* --------------------------------------------------------- UI wiring --- */
+// ---------------------------------------------------------------------------
+// Saved buildings
+//
+// Kept in localStorage, so there is nothing to sign up for. A shortlist is
+// worth more shared than stored, so it also encodes into a link.
+// ---------------------------------------------------------------------------
+const FAV_KEY = "fs_favs_v1";
+let favs = [];
+try{ favs = JSON.parse(localStorage.getItem(FAV_KEY) || "[]"); }catch{ favs = []; }
+
+const favKeyOf = o => `${(+o.lat).toFixed(5)},${(+o.lon).toFixed(5)}`;
+const isFav = o => favs.some(f => favKeyOf(f) === favKeyOf(o));
+
+function saveFavs(){
+  try{ localStorage.setItem(FAV_KEY, JSON.stringify(favs)); }catch{}
+  const chip = document.getElementById("btnFav");
+  chip.innerHTML = `<span class="hrt">♥</span>收藏` +
+    (favs.length ? `<span class="cnt">${favs.length}</span>` : "");
+  chip.classList.toggle("on", favView);
+}
+
+function toggleFav(o){
+  const k = favKeyOf(o);
+  const i = favs.findIndex(f => favKeyOf(f) === k);
+  if(i >= 0){ favs.splice(i,1); track("unsave_building", {name:o.tc||o.en||""}); }
+  else{
+    favs.push({tc:o.tc, en:o.en, district:o.district, lat:o.lat, lon:o.lon,
+               total:o.total, now:o.now});
+    track("save_building", {name:o.tc||o.en||"", score:Math.round(o.total||0),
+                            total_saved: favs.length});
+  }
+  saveFavs();
+}
+
+// ---------------------------------------------------------------------------
+// Sharing
+//
+// Links carry coordinates rather than ids: a shortlist of ten buildings stays
+// short enough to paste into WhatsApp, and nothing has to be looked up on the
+// far side before the map can show it.
+// ---------------------------------------------------------------------------
+const pack = list => list.map(o => `${(+o.lat).toFixed(5)},${(+o.lon).toFixed(5)}`).join(";");
+
+function shareUrl(params){
+  const u = new URL(location.href.split("?")[0].split("#")[0]);
+  Object.entries(params).forEach(([k,v]) => u.searchParams.set(k,v));
+  return u.toString();
+}
+
+async function doShare(title, text, url, what){
+  track("share", {what, url});
+  try{
+    if(navigator.share){ await navigator.share({title, text, url}); return; }
+  }catch{ return; }               // user dismissed the sheet - not a failure
+  try{
+    await navigator.clipboard.writeText(`${text}\n${url}`);
+    toast("已複製連結，可以貼上分享");
+  }catch{ prompt("複製呢條連結分享：", url); }
+}
+
+function shareBuilding(o){
+  const name = clean(o.tc) || clean(o.en) || "呢棟樓";
+  const lvl = (levelFor(o.total)||{}).label || "";
+  // The text is written to make the reader want to check their own home —
+  // that is the whole mechanism by which this spreads.
+  doShare("香港風水地圖",
+    `${name} 風水 ${num(o.total,0)} 分（${lvl}）${o.now ? " · 九運" + o.now : ""}。你屋企幾多分？`,
+    shareUrl({b: pack([o])}), "building");
+}
+
+function shareList(){
+  if(!favs.length) return;
+  const top = favs.slice(0,3).map(f => clean(f.tc)||clean(f.en)).filter(Boolean).join("、");
+  doShare("我揀咗嘅樓盤",
+    `我用香港風水地圖揀咗 ${favs.length} 個樓盤${top ? "：" + top : ""}${favs.length>3 ? " 等" : ""}。撳入去睇晒評分同九運格局。`,
+    shareUrl({list: pack(favs)}), "list");
+}
+
 // --- district picker ---
 function buildDistrictMenu(){
   const m = document.getElementById("districtMenu");
@@ -1155,6 +1410,7 @@ function buildDistrictMenu(){
         <b>${esc(a.tc)}</b><span>${bandCount(a).toLocaleString()}</span></button>`).join("");
   m.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
     districtFilter = b.dataset.d;
+    track("filter_district", {district: districtFilter || "all", from: "picker"});
     m.classList.remove("show");
     const chip = document.getElementById("btnDistrict");
     chip.innerHTML = '<b>地區</b>' + (districtFilter || "全港") + ' <span class="caret">▾</span>';
@@ -1222,6 +1478,7 @@ function renderMatches(list){
     <p class="build" id="buildStamp">${APP_VERSION}</p>`;
   fillBuildStamp();
   const hb = sheetBody.querySelector("#homesOnly");
+  if(hb) hb.addEventListener("change",()=>track("toggle_homes_only",{on:hb.checked}));
   if(hb) hb.addEventListener("change",()=>{ homesOnly = hb.checked; showOverview(); });
   sheetBody.querySelectorAll(".mlist li").forEach(li=>li.addEventListener("click",()=>{
     const o = shown[+li.dataset.i];
@@ -1242,6 +1499,7 @@ function renderMatches(list){
 document.querySelectorAll("#filters .chip[data-band]").forEach(c=>
   c.addEventListener("click",()=>{
     band = c.dataset.band;
+    track("filter_grade", {grade: band});
     document.querySelectorAll("#filters .chip[data-band]").forEach(x=>x.classList.toggle("on", x===c));
     // A filter that hides the selected building would leave a stranded panel.
     if(minSel!=null && band!=="all"){ minSel=null; highlight.clearLayers(); }
@@ -1299,10 +1557,89 @@ document.getElementById("introGo").addEventListener("click",()=>{
 if(localStorage.getItem("seenIntro")) document.getElementById("intro").classList.add("hide");
 
 map.on("moveend zoomend",()=>{ loadBuildings(); drawDistricts(); });
+// A shared link has to land somewhere meaningful, otherwise sharing is
+// pointless: the recipient gets a generic map and never finds what was sent.
+function unpack(str){
+  return (str || "").split(";").map(pair=>{
+    const [lat,lon] = pair.split(",").map(Number);
+    return (isFinite(lat) && isFinite(lon)) ? {lat, lon} : null;
+  }).filter(Boolean);
+}
+
+async function openDeepLink(){
+  const q = new URLSearchParams(location.search);
+
+  const one = unpack(q.get("b"))[0];
+  if(one){
+    track("open_shared", {what: "building"});
+    localStorage.setItem("seenIntro","1");
+    document.getElementById("intro").classList.add("hide");
+    map.setView([one.lat, one.lon], 18);
+    await loadBuildings();
+    let best=null, bd=Infinity;
+    buildingLayer.eachLayer(l=>{
+      const c=l.getBounds?l.getBounds().getCenter():l.getLatLng();
+      const d=(c.lat-one.lat)**2+(c.lng-one.lon)**2;
+      if(d<bd){ bd=d; best=l; }
+    });
+    if(best && bd < 1e-6) best.fire("click");
+    return true;
+  }
+
+  const many = unpack(q.get("list"));
+  if(many.length){
+    track("open_shared", {what: "list", count: many.length});
+    localStorage.setItem("seenIntro","1");
+    document.getElementById("intro").classList.add("hide");
+    // Coordinates alone carry no names; the search index fills them in.
+    await ensureIndex();
+    sharedList = many.map(pt=>{
+      let best=null, bd=Infinity;
+      for(const o of searchIndex){
+        const d=(o.lat-pt.lat)**2+(o.lon-pt.lon)**2;
+        if(d<bd){ bd=d; best=o; }
+      }
+      // A link can be truncated in transit; say so rather than rendering a
+      // scoreless row that looks like a broken building.
+      return (best && bd < 1e-7) ? best
+           : {tc:"搵唔到呢個位置嘅樓宇", en:null, ...pt, total:null, missing:true};
+    });
+    const missing = sharedList.filter(o=>o.missing).length;
+    sharedList = sharedList.filter(o=>!o.missing);
+    if(missing) setTimeout(()=>toast(`${missing} 個樓盤未能識別，連結可能唔完整`), 1200);
+    if(!sharedList.length){ sharedList = null; return false; }
+    const lat = many.reduce((a,p)=>a+p.lat,0)/many.length;
+    const lon = many.reduce((a,p)=>a+p.lon,0)/many.length;
+    map.setView([lat,lon], 14);
+    showFavs(); openSheet();
+    return true;
+  }
+
+  const d = q.get("d"), g = q.get("g");
+  if(d || g){
+    track("open_shared", {what: "filter"});
+    if(g && BANDS[g] !== undefined){
+      band = g;
+      document.querySelectorAll("#filters .chip[data-band]")
+        .forEach(x=>x.classList.toggle("on", x.dataset.band===g));
+    }
+    if(d){
+      districtFilter = d;
+      const chip = document.getElementById("btnDistrict");
+      chip.innerHTML = '<b>地區</b>' + d + ' <span class="caret">▾</span>';
+      chip.classList.add("on");
+    }
+    return false;            // let the normal flow render the filtered view
+  }
+  return false;
+}
+
 map.whenReady(async ()=>{
   await loadBuildStamp();      // must precede any data fetch: it sets the token
+  saveFavs();
+  const handled = await openDeepLink();
   loadDistricts();
-  loadBuildings();
+  if(!handled) loadBuildings();
 });
 setTimeout(()=>{ if(localStorage.getItem("seenIntro")) openSheet(); },600);
 </script>
