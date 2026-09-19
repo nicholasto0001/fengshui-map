@@ -1,0 +1,12 @@
+{
+  // Cloudflare Workers static-assets deployment.
+  //
+  // Only ./public is served, and build.sh assembles it from the site files
+  // alone — the pipeline, docs and raw working data stay out of the published
+  // site even though they live in the repo.
+  "name": "fengshuimap",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./public/"
+  }
+}

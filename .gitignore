@@ -13,3 +13,4 @@ data/op.json
 # it daily and deploys straight to Pages without committing, so history only
 # grows when we refresh it deliberately.
 version.json
+public/
