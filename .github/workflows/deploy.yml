@@ -90,12 +90,15 @@ jobs:
         env:
           GITHUB_SHA: ${{ github.sha }}
 
+      # wrangler-action@v3 bundles Wrangler 3.90, which predates the stable
+      # `assets` config — it still expected `experimental_assets`, so it could
+      # not read wrangler.jsonc at all. Calling wrangler directly pins the
+      # current major instead of whatever the action happens to ship.
       - name: Deploy to Cloudflare
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy
+        run: npx --yes wrangler@4 deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       # Only the small, slow-moving reference layers stay in the repository.
       - name: Commit reference data if it changed
