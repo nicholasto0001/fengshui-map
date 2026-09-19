@@ -1,0 +1,14 @@
+{
+  "name": "香港風水地圖 · 九運",
+  "short_name": "風水地圖",
+  "description": "全港 213,328 棟樓宇嘅九運風水評分",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f3f0",
+  "theme_color": "#0f6354",
+  "lang": "zh-HK",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}
+  ]
+}

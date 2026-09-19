@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<meta name="theme-color" content="#1b4f8f">
+<meta name="theme-color" content="#0f6354">
 <title>香港風水地圖 · 九運</title>
 <meta name="description" content="全港 213,328 棟樓宇嘅九運風水評分。睇下你屋企幾多分。">
 
@@ -21,6 +21,14 @@
 <meta name="twitter:title" content="香港風水地圖 · 九運">
 <meta name="twitter:description" content="全港 213,328 棟樓宇嘅九運風水評分。睇下你屋企幾多分。">
 <meta name="twitter:image" content="og.png">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<!-- Lets a phone keep this on the home screen as an app rather than a bookmark,
+     which matters when the link arrives by WhatsApp. -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-title" content="風水地圖">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
   :root{
@@ -533,7 +541,7 @@ const TILE = "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz";
 const DATA = "data/tiles";
 // Bump on every release. Shown in the overview sheet so a stale cached page is
 // identifiable at a glance — otherwise there is no way to tell.
-const APP_VERSION = "v12";
+const APP_VERSION = "v13";
 
 // ---------------------------------------------------------------------------
 // Analytics
@@ -542,7 +550,7 @@ const APP_VERSION = "v12";
 // a no-op, so nothing breaks and nothing is sent. Every call goes through this
 // one function so the provider can be swapped without touching call sites.
 // ---------------------------------------------------------------------------
-const GA_ID = "";            // e.g. "G-XXXXXXXXXX"
+const GA_ID = "G-P7981MBHEF";   // public by design - a measurement ID identifies the property, it is not a secret
 
 function track(event, params){
   try{
@@ -588,6 +596,20 @@ let DATA_TOKEN = "";
 const dataUrl = path => DATA + "/" + path + (DATA_TOKEN ? "?v=" + DATA_TOKEN : "");
 
 let buildInfo = null;
+// Which tiles actually exist. Hong Kong is mostly country park and water, so
+// a viewport routinely asks for tiles that were never written — each one a
+// wasted request and a 404 in the console. The index is tiny; consulting it
+// first removes both.
+let tileSet = null;
+async function loadTileIndex(){
+  if(tileSet) return tileSet;
+  try{
+    const idx = await (await fetch(dataUrl("index.json"))).json();
+    tileSet = new Set(Object.keys(idx.tiles || {}));
+  }catch{ tileSet = null; }      // unavailable: fall back to asking for each
+  return tileSet;
+}
+
 async function loadBuildStamp(){
   if (buildInfo) return buildInfo;
   try{
@@ -795,6 +817,7 @@ function lonLat2tile(lon,lat,z){
 async function getTile(x,y){
   const key=`${x}/${y}`;
   if(tileCache.has(key)) return tileCache.get(key);
+  if(tileSet && !tileSet.has(key)){ tileCache.set(key, null); return null; }
   const pr = fetch(dataUrl(`${TILE_Z}/${x}/${y}.json`))
     .then(r => r.ok ? r.json() : null)
     .catch(() => null);
@@ -1636,6 +1659,7 @@ async function openDeepLink(){
 
 map.whenReady(async ()=>{
   await loadBuildStamp();      // must precede any data fetch: it sets the token
+  await loadTileIndex();
   saveFavs();
   const handled = await openDeepLink();
   loadDistricts();
