@@ -66,3 +66,9 @@ python3 pipeline/score.py                 # 計分 -> data/scores.json
 ## 免責
 
 外巒頭地理分析，唔包括坐向飛星盤、元運、樓層同室內佈局。僅供參考，不構成置業建議。
+
+## Google 底圖
+
+暫時移除咗。要重新加返：喺 `index.html` 嘅 `bases` 加一個 tile layer 指向 Google，
+再喺 `#layers` 加返個掣。需要 Google Cloud 帳戶同啟用付費（每月有免費額度）。
+政府底圖免 key、無限額、有齊中文樓名同地形等高線，所以預設用佢。

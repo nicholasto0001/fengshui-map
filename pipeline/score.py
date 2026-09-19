@@ -1,13 +1,19 @@
-"""Compute Period 9 Feng Shui scores for the current building stock.
+"""Score the current building stock: 巒頭 (geography) and 理氣 (flying star).
 
-Reimplements the 2023 reference methodology from first principles, against
-live CSDI data, so new developments get scored. Every constant here was
-reverse-engineered from the published layer and verified against it -- see
-docs/fengshui-logic.md for the derivation and the verification table.
+Two separate judgements, deliberately NOT blended into one number:
 
-Inputs :  data/terrain.json     (mountain + water boundary points)
-          data/buildings.json   (live CSDI building stock)
-          data/facilities.json  (optional; negative ancillary features)
+  total    0-100 geographic score, reimplementing the 2023 reference
+           methodology against live data (see docs/fengshui-logic.md)
+  pattern  the classical 玄空飛星 outcome for the building's 元運 and 坐向
+
+Mixing a percentile-normalised proximity index with a classical 理氣 verdict
+would produce a number that means nothing in either system, so the page shows
+them side by side instead.
+
+Inputs :  data/terrain.json     mountain + water boundary points
+          data/buildings.json   live CSDI stock, with footprint long axis
+          data/facilities.json  negative ancillary features
+          data/op.json          occupation permit year + type (optional)
 Output :  data/scores.json
 """
 from __future__ import annotations
@@ -18,8 +24,10 @@ import pathlib
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
-from common import (GridIndex, angle_to_dir16, dir4, dir8, mwds,  # noqa: E402
-                    percentile_scores, to_plane)
+import flyingstar  # noqa: E402
+from common import (GridIndex, PolygonSet, angle_to_dir16, dir4, dir8,  # noqa: E402
+                    mwds, percentile_scores, to_plane)
+from orientation import facing_candidates, openness  # noqa: E402
 
 DATA = pathlib.Path(__file__).parent.parent / "data"
 
@@ -28,16 +36,12 @@ W_MWDS8, W_MWDS4 = 0.75, 0.25
 W_DIR, W_MTDIS, W_WTDIS = 0.6, 0.2, 0.2
 W_ENV, W_TRAFFIC, W_ANCIL = 0.8, 0.05, 0.15
 
-# Ancillary penalty: 10 points within 100 m, decaying by 1 per extra 100 m,
-# zero beyond 1000 m. Summed over every negative feature type, then negated.
 ANCIL_MAX_M = 1000.0
 
 
 def load(name: str):
     p = DATA / name
-    if not p.exists():
-        return None
-    return json.loads(p.read_text())
+    return json.loads(p.read_text()) if p.exists() else None
 
 
 def ancillary_penalty(dist_m: float) -> float:
@@ -55,20 +59,29 @@ def main() -> None:
     snap = terrain["snap_m"]
     mt_pts = [(gx * snap, gy * snap) for gx, gy in terrain["mountain"]]
     wt_pts = [(gx * snap, gy * snap) for gx, gy in terrain["water"]]
-    print(f"terrain: {len(mt_pts):,} mountain pts, {len(wt_pts):,} water pts")
     mt_idx, wt_idx = GridIndex(mt_pts), GridIndex(wt_pts)
+    print(f"terrain: {len(mt_pts):,} mountain pts, {len(wt_pts):,} water pts")
 
     facilities = load("facilities.json") or {}
     fac_idx = {k: GridIndex([tuple(p) for p in v]) for k, v in facilities.items() if v}
-    if fac_idx:
-        print(f"facilities: {', '.join(f'{k}={len(v)}' for k, v in facilities.items())}")
-    else:
-        print("facilities: none available - ancillary component will be neutral")
+    print("facilities: " + (", ".join(f"{k}={len(v)}" for k, v in facilities.items())
+                            if fac_idx else "none - ancillary component neutral"))
+
+    op = load("op.json") or {}
+    print(f"occupation permits: {len(op):,} buildings")
+
+    # CSDI's building layer carries no district, so assign it here.
+    districts = load("districts.json")
+    dsets = PolygonSet(districts) if districts else None
+    print(f"districts: {len(districts) if districts else 0}")
+
+    # Every building centroid, for the 明堂 openness test that picks 向 out of
+    # the two candidates perpendicular to the footprint's long axis.
+    plane = [to_plane(b["lon"], b["lat"]) for b in buildings]
+    neighbours = GridIndex(plane, cell=200.0)
 
     rows = []
-    for b in buildings:
-        x, y = to_plane(b["lon"], b["lat"])
-
+    for b, (x, y) in zip(buildings, plane):
         md, mi = mt_idx.nearest(x, y)
         wd, wi = wt_idx.nearest(x, y)
         if md is None or wd is None:
@@ -76,12 +89,8 @@ def main() -> None:
 
         mx, my = mt_pts[mi]
         wx, wy = wt_pts[wi]
-        m_ang = math.degrees(math.atan2(my - y, mx - x))
-        w_ang = math.degrees(math.atan2(wy - y, wx - x))
-        m16, w16 = angle_to_dir16(m_ang), angle_to_dir16(w_ang)
-
-        s8 = mwds(dir8(m16), dir8(w16))
-        s4 = mwds(dir4(m16), dir4(w16))
+        m16 = angle_to_dir16(math.degrees(math.atan2(my - y, mx - x)))
+        w16 = angle_to_dir16(math.degrees(math.atan2(wy - y, wx - x)))
 
         pen = 0.0
         for idx in fac_idx.values():
@@ -89,16 +98,44 @@ def main() -> None:
             if d is not None:
                 pen += ancillary_penalty(d)
 
+        # ---- 理氣: 坐向 then the chart -------------------------------------
+        facing = sit_m = face_m = pattern = period = None
+        conf = 0.0
+        axis, elong = b.get("axis"), b.get("elong")
+        rec = op.get(b["id"] or "")
+        op_year = rec["year"] if rec else None
+
+        if axis is not None:
+            a, c = facing_candidates(axis)
+            oa = openness(x, y, a, neighbours)
+            oc = openness(x, y, c, neighbours)
+            facing = a if oa >= oc else c
+            conf = max(0.0, min(1.0, ((elong or 1.0) - 1.0) / 1.5))
+
+            if op_year and 1864 <= op_year <= 2043:
+                ch = flyingstar.chart(op_year, facing)
+                period = ch["period"]
+                sit_m, face_m = ch["sitting"], ch["facing"]
+                pattern = ch["pattern"]["code"]
+
+        d = dsets.find(b["lon"], b["lat"]) if dsets else None
+
         rows.append({
-            "b": b, "md": md, "wd": wd,
-            "m16": m16, "w16": w16, "s8": s8, "s4": s4,
+            "district": d["tc"] if d else None,
+            "b": b, "md": md, "wd": wd, "m16": m16, "w16": w16,
+            "s8": mwds(dir8(m16), dir8(w16)), "s4": mwds(dir4(m16), dir4(w16)),
             "ancil_raw": -pen,
+            "facing": round(facing, 1) if facing is not None else None,
+            "conf": round(conf, 2),
+            "op_year": op_year, "period": period,
+            "sit_m": sit_m, "face_m": face_m, "pattern": pattern,
+            "residential": rec["residential"] if rec else None,
         })
 
     print(f"scored {len(rows):,} buildings")
 
-    # Normalise. Distance raw scores are NEGATED: closer to mountain/water is
-    # better, which the reference layer confirms (distance 0 -> 74.7, 1555 m -> 1.0).
+    # Distance raw scores are NEGATED: closer to mountain/water scores higher,
+    # which the reference layer confirms (0 m -> 74.7, 1555 m -> 1.0).
     p_s8 = percentile_scores([r["s8"] for r in rows])
     p_s4 = percentile_scores([r["s4"] for r in rows])
     p_md = percentile_scores([-r["md"] for r in rows])
@@ -107,21 +144,25 @@ def main() -> None:
 
     out = []
     for i, r in enumerate(rows):
-        direction = W_MWDS8 * p_s8[i] + W_MWDS4 * p_s4[i]
-        env = W_DIR * direction + W_MTDIS * p_md[i] + W_WTDIS * p_wd[i]
+        env = (W_DIR * (W_MWDS8 * p_s8[i] + W_MWDS4 * p_s4[i])
+               + W_MTDIS * p_md[i] + W_WTDIS * p_wd[i])
         ancil = p_an[i] if fac_idx else 50.0
         traffic = 50.0            # placeholder until the traffic census layer is wired
-        total = W_ENV * env + W_TRAFFIC * traffic + W_ANCIL * ancil
-
         b = r["b"]
         out.append({
             "id": b["id"], "tc": b["tc"], "en": b["en"],
+            "district": r["district"],
             "lon": b["lon"], "lat": b["lat"], "h": b["h"], "storeys": b["storeys"],
+            "ring": b.get("ring"),
             "mt_d": round(r["md"]), "mt_dir": dir8(r["m16"]),
             "wt_d": round(r["wd"]), "wt_dir": dir8(r["w16"]),
             "mwds8": r["s8"], "mwds4": r["s4"],
-            "env": round(env, 2), "traffic": round(traffic, 2),
-            "ancil": round(ancil, 2), "total": round(total, 2),
+            "env": round(env, 2), "traffic": round(traffic, 2), "ancil": round(ancil, 2),
+            "total": round(W_ENV * env + W_TRAFFIC * traffic + W_ANCIL * ancil, 2),
+            "facing": r["facing"], "conf": r["conf"],
+            "op_year": r["op_year"], "period": r["period"],
+            "sit_m": r["sit_m"], "face_m": r["face_m"], "pattern": r["pattern"],
+            "residential": r["residential"],
         })
 
     out.sort(key=lambda r: -r["total"])
@@ -130,11 +171,18 @@ def main() -> None:
     tot = [r["total"] for r in out]
     mean = sum(tot) / len(tot)
     sd = math.sqrt(sum((t - mean) ** 2 for t in tot) / len(tot))
-    print(f"min {min(tot):.1f}  mean {mean:.1f}  sd {sd:.1f}  max {max(tot):.1f}")
-    print("top 5:")
-    for r in out[:5]:
-        print(f"  {r['total']:5.1f}  {r['tc'] or r['en'] or '(unnamed)'}  "
-              f"[山 {r['mt_dir']} {r['mt_d']}m / 水 {r['wt_dir']} {r['wt_d']}m, MWDS-8 {r['mwds8']}]")
+    print(f"\ngeographic score: min {min(tot):.1f}  mean {mean:.1f}  sd {sd:.1f}  max {max(tot):.1f}")
+
+    import collections
+    print(f"\n坐向 derived      : {sum(1 for r in out if r['facing'] is not None):,}")
+    print(f"  high confidence : {sum(1 for r in out if r['conf'] >= 0.6):,}")
+    print(f"元運 known        : {sum(1 for r in out if r['period']):,}")
+    charted = [r for r in out if r["pattern"]]
+    print(f"飛星盤 built      : {len(charted):,}")
+    for code, n in collections.Counter(r["pattern"] for r in charted).most_common():
+        print(f"    {code:<8} {n:>7,}")
+    print(f"\n住宅 (by OP type) : {sum(1 for r in out if r['residential']):,}")
+    print(f"分區已判定        : {sum(1 for r in out if r['district']):,}")
 
 
 if __name__ == "__main__":

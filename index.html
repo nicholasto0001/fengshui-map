@@ -86,8 +86,16 @@
   #layers button:hover{background:var(--bg)}
   #layers button.sel{background:var(--bg); font-weight:600}
   #layers button.sel::after{content:"✓"; float:right; color:var(--brand)}
-  #layers .sep{height:1px; background:var(--line); margin:5px 8px}
-  #layers .note{font-size:11.5px; color:var(--ink3); padding:2px 12px 8px; line-height:1.45}
+  #layers{width:auto; min-width:150px}
+
+  /* ---------- basemap treatment ----------
+     The Lands Department topographic sheet is drawn for reading terrain, not
+     for sitting under a choropleth: strong greens, contour hatching and road
+     fills all compete with the building colours. Desaturating and lifting it
+     toward white turns it into a quiet ground plane. */
+  .muted-base{filter:saturate(.35) brightness(1.1) contrast(.92)}
+  .muted-sat{filter:saturate(.7) brightness(1.04)}
+  .leaflet-highlight-pane path{filter:drop-shadow(0 1px 3px rgba(0,0,0,.35))}
 
   /* ---------- status toast ---------- */
   #toast{
@@ -139,8 +147,25 @@
     color:var(--brand); border:1px solid var(--line); border-radius:12px; padding:11px; margin-bottom:14px;
   }
   .gmaps:active{background:var(--bg)}
-  .caveat{font-size:11.5px; color:var(--ink3); line-height:1.5; border-top:1px solid var(--line); padding-top:12px}
-  .caveat a{color:var(--ink2)}
+  /* ---------- explanatory block ----------
+     Previously one dense paragraph. Split into labelled rows so each fact can
+     be read on its own instead of being hunted for inside a block of text. */
+  .note-block{border-top:1px solid var(--line); margin-top:4px; padding-top:14px}
+  .note-block h4{
+    font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--ink3); margin:0 0 10px;
+  }
+  .note-row{display:grid; grid-template-columns:52px 1fr; gap:10px; margin-bottom:9px}
+  .note-row .k{
+    font-size:11.5px; font-weight:600; color:var(--ink2); text-align:right;
+    font-variant-numeric:tabular-nums; padding-top:1px;
+  }
+  .note-row .v{font-size:12.5px; color:var(--ink2); line-height:1.55}
+  .note-foot{
+    font-size:11.5px; color:var(--ink3); line-height:1.6; margin:14px 0 0;
+    padding-top:12px; border-top:1px dashed var(--line);
+  }
+  .note-foot b{color:var(--ink2); font-weight:600}
 
   /* legend inside sheet */
   .legend{margin:2px 0 16px}
@@ -220,9 +245,6 @@
 <div id="layers">
   <button data-base="street" class="sel">街道圖</button>
   <button data-base="satellite">衛星圖</button>
-  <div class="sep"></div>
-  <button data-base="google">Google 地圖</button>
-  <p class="note" id="gnote">需要你自己嘅 Google Maps API key。撳一下輸入。</p>
 </div>
 
 <div id="toast"></div>
@@ -292,22 +314,32 @@ const map = L.map("map",{
 });
 L.control.attribution({prefix:false}).addTo(map);
 
+// Proper cartographic stack. The topographic basemap is busy — contours,
+// road fills, its own colour — so it gets muted by CSS and the place labels are
+// lifted ABOVE the building polygons, which keeps street names readable instead
+// of being painted over.
+map.createPane("labels");
+map.getPane("labels").style.zIndex = "640";
+map.getPane("labels").style.pointerEvents = "none";
+
 const ATTR = 'Map from Lands Department · 評分 HKFengShui_WFL1 (2023)';
+const labelLayer = () => L.tileLayer(TILE+"/label/hk/tc/WGS84/{z}/{x}/{y}.png",
+  {minZoom:10, maxZoom:19, pane:"labels", opacity:.92});
+
 const bases = {
   street: L.layerGroup([
-    L.tileLayer(TILE+"/basemap/WGS84/{z}/{x}/{y}.png",{minZoom:10,maxZoom:19,attribution:ATTR}),
-    L.tileLayer(TILE+"/label/hk/tc/WGS84/{z}/{x}/{y}.png",{minZoom:10,maxZoom:19}),
+    L.tileLayer(TILE+"/basemap/WGS84/{z}/{x}/{y}.png",{minZoom:10,maxZoom:19,attribution:ATTR,className:"muted-base"}),
+    labelLayer(),
   ]),
   satellite: L.layerGroup([
-    L.tileLayer(TILE+"/imagery/WGS84/{z}/{x}/{y}.png",{minZoom:10,maxZoom:19,attribution:ATTR}),
-    L.tileLayer(TILE+"/label/hk/tc/WGS84/{z}/{x}/{y}.png",{minZoom:10,maxZoom:19}),
+    L.tileLayer(TILE+"/imagery/WGS84/{z}/{x}/{y}.png",{minZoom:10,maxZoom:19,attribution:ATTR,className:"muted-sat"}),
+    labelLayer(),
   ]),
 };
 let currentBase = "street";
 bases.street.addTo(map);
 
 function setBase(name){
-  if (name==="google"){ enableGoogle(); return; }
   Object.values(bases).forEach(l=>map.removeLayer(l));
   bases[name].addTo(map);
   currentBase = name;
@@ -318,42 +350,6 @@ function markBase(name){
   document.querySelectorAll('#layers button[data-base]').forEach(b=>
     b.classList.toggle('sel', b.dataset.base===name));
 }
-
-/* Google basemap — optional, needs the user's own API key (billing required) */
-function enableGoogle(){
-  let key = localStorage.getItem("gmapsKey") || "";
-  key = prompt(
-    "貼上你嘅 Google Maps API key\n\n"+
-    "Google 地圖需要你自己開一個 Google Cloud 帳戶同啟用付費先用得（每月有免費額度）。\n"+
-    "留空並確定 = 清除已儲存嘅 key。", key) ?? null;
-  if (key===null) return;
-  key = key.trim();
-  if (!key){ localStorage.removeItem("gmapsKey"); toast("已清除 Google key"); setBase(currentBase==="google"?"street":currentBase); return; }
-  localStorage.setItem("gmapsKey", key);
-  loadGoogle(key);
-}
-function loadGoogle(key){
-  if (bases.google){ Object.values(bases).forEach(l=>map.removeLayer(l)); bases.google.addTo(map);
-    currentBase="google"; markBase("google"); buildingLayer.bringToFront(); return; }
-  toast("載入 Google 地圖…");
-  const s=document.createElement("script");
-  s.src=`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&v=weekly&callback=__gmReady`;
-  s.onerror=()=>toast("Google 地圖載入失敗，請檢查 API key");
-  window.__gmReady=()=>{
-    try{
-      // Google tiles through Leaflet's tile interface via the Maps JS tile server
-      bases.google = L.tileLayer(
-        "https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
-        {minZoom:10,maxZoom:19,attribution:"© Google"});
-      Object.values(bases).forEach(l=>map.removeLayer(l));
-      bases.google.addTo(map); currentBase="google"; markBase("google");
-      buildingLayer.bringToFront();
-      toast("已切換到 Google 地圖");
-    }catch(e){ toast("Google 地圖載入失敗"); }
-  };
-  document.head.appendChild(s);
-}
-if (localStorage.getItem("gmapsKey")) document.getElementById("gnote").textContent="已儲存 key。撳一下切換或更改。";
 
 /* -------------------------------------------------------------- toast --- */
 const toastEl=document.getElementById("toast"); let toastT=null;
@@ -367,15 +363,43 @@ function toast(msg,ms=2200){
 /* ---------------------------------------------------- building layer --- */
 let minSel=null, reqSeq=0;
 const buildingLayer=L.geoJSON(null,{
-  style:f=>styleFor(f,f.properties.FID===minSel),
+  style:styleFor,
   onEachFeature:(f,l)=>{
     l.on("click",()=>{ select(f.properties,l); });
+    l.on("mouseover",()=>{ if(f.properties.FID!==minSel) l.setStyle({weight:1.6,opacity:1}); });
+    l.on("mouseout", ()=>{ if(f.properties.FID!==minSel) l.setStyle(styleFor(f)); });
   },
 }).addTo(map);
 
-function styleFor(f,sel){
-  return {fillColor:colorFor(f.properties.TotalSco_1), fillOpacity:.85,
-          color:sel?"#0b0b0b":"#ffffff", weight:sel?2.6:1, opacity:1};
+// Unselected buildings carry no white hairline any more: at city density those
+// outlines merged into a grey haze. A darker shade of each building's own fill
+// separates neighbours without adding a second colour to the map.
+function styleFor(f){
+  const c = colorFor(f.properties.TotalSco_1);
+  return {fillColor:c, fillOpacity:.88, color:c, weight:.6, opacity:.55};
+}
+
+// Selection is drawn as its own two-ring halo in a pane above everything, so it
+// reads against a dark fill, a light fill, or the satellite image alike.
+map.createPane("highlight");
+map.getPane("highlight").style.zIndex = "645";
+map.getPane("highlight").style.pointerEvents = "none";
+const highlight = L.layerGroup([], {pane:"highlight"}).addTo(map);
+
+function showHighlight(latlngs){
+  highlight.clearLayers();
+  if(!latlngs) return;
+  const ring = L.polygon(latlngs,{pane:"highlight",fill:false,color:"#12161c",weight:6,
+                                  opacity:.5,lineJoin:"round"}).addTo(highlight);
+  L.polygon(latlngs,{pane:"highlight",fill:false,color:"#ffffff",weight:2.5,opacity:1,
+                     lineJoin:"round"}).addTo(highlight);
+  // A small building is only a few pixels across, so the outline alone is easy
+  // to lose. An accent dot on its centre makes the selection unmistakable at
+  // any zoom, the way a dropped pin does.
+  L.circleMarker(ring.getBounds().getCenter(),{
+    pane:"highlight", radius:7, color:"#ffffff", weight:2.5,
+    fillColor:"#e0562a", fillOpacity:1,
+  }).addTo(highlight);
 }
 
 async function loadBuildings(){
@@ -394,6 +418,11 @@ async function loadBuildings(){
     if(my!==reqSeq) return;
     buildingLayer.clearLayers();
     if((gj.features||[]).length) buildingLayer.addData(gj);
+    if(minSel!=null){
+      let found=null;
+      buildingLayer.eachLayer(l=>{ if(l.feature.properties.FID===minSel) found=l; });
+      showHighlight(found && found.getLatLngs ? found.getLatLngs() : null);
+    }
     if(gj.properties&&gj.properties.exceededTransferLimit) toast("樓宇太多，請再放大啲");
   }catch(e){ if(my===reqSeq) toast("載入失敗，請檢查網絡"); }
 }
@@ -449,8 +478,7 @@ function openSheet(){ sheet.classList.add("open"); }
 
 function select(p,layer){
   minSel=p.FID;
-  buildingLayer.setStyle(f=>styleFor(f,f.properties.FID===minSel));
-  if(layer) layer.bringToFront();
+  if(layer && layer.getLatLngs) showHighlight(layer.getLatLngs());
   renderBuilding(p, layer);
   openSheet();
 }
@@ -487,12 +515,25 @@ function renderBuilding(p, layer){
     </dl>
     ${ll?`<a class="gmaps" target="_blank" rel="noopener"
         href="https://www.google.com/maps/search/?api=1&query=${ll[0]},${ll[1]}">喺 Google Maps 開啟 ↗</a>`:""}
-    <p class="caveat">
-      <b>評分點嚟？</b>八成睇「環境」：山水相對方位（九運洛書飛星，山南水北為上格）同山水距離；
-      一成半睇配套（醫院、警署、油站、橋樑、消防局距離）；半成睇車流。
-      屬外巒頭地理分析，<b>唔包括坐向飛星盤、建成年份元運、單位樓層同室內佈局</b>。<br>
-      數據為 2023 年公開圖層，底層約 2021–2022 年，新樓盤可能未收錄。僅供參考。
-    </p>`;
+    <div class="note-block">
+      <h4>評分點計出嚟</h4>
+      <div class="note-row"><span class="k">80%</span>
+        <span class="v"><b>環境</b> — 山同水相對於樓宇嘅方位（九運洛書飛星，山南水北為上格），加上同山、同水嘅距離</span></div>
+      <div class="note-row"><span class="k">15%</span>
+        <span class="v"><b>配套</b> — 距離醫院、警署、油站、橋樑、消防局幾遠</span></div>
+      <div class="note-row"><span class="k">5%</span>
+        <span class="v"><b>交通</b> — 附近車流量</span></div>
+      <p class="note-foot">
+        <b>呢個唔包括乜？</b><br>
+        坐向飛星盤 · 建成年份元運 · 單位樓層 · 室內佈局<br>
+        屬「外巒頭」地理分析，唔係完整風水批算。
+      </p>
+      <p class="note-foot">
+        <b>數據幾新？</b><br>
+        2023 年公開圖層，底層約 2021–2022 年。新樓盤可能未收錄。<br>
+        僅供參考，不構成置業建議。
+      </p>
+    </div>`;
 }
 
 function showOverview(){
@@ -512,7 +553,10 @@ function showOverview(){
         <span class="dn">${esc(a.NAME_TC)}</span>
         <div class="tk"><div class="fl" style="width:${w.toFixed(1)}%;background:${colorFor(a.av)}"></div></div>
         <span class="dv">${a.av.toFixed(1)}</span></li>`;}).join("")}</ul>
-    <p class="caveat">評分屬外巒頭地理分析，唔包括坐向飛星盤或室內風水。數據為 2023 年公開圖層。僅供參考，不構成置業建議。</p>`;
+    <p class="note-foot" style="border-top:1px solid var(--line)">
+      評分屬「外巒頭」地理分析，唔包括坐向飛星盤或室內風水。<br>
+      數據為 2023 年公開圖層。僅供參考，不構成置業建議。
+    </p>`;
   sheetBody.querySelectorAll(".dlist li").forEach(li=>li.addEventListener("click",()=>{
     const c=DISTRICT_CENTRE[li.dataset.d]; if(c){ map.flyTo(c,15,{duration:.8}); sheet.classList.remove("open"); }
   }));

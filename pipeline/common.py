@@ -194,3 +194,44 @@ def percentile_scores(values: list[float]) -> list[float]:
     if sd == 0:
         return [50.0] * n
     return [100.0 * 0.5 * (1.0 + math.erf(((v - mean) / sd) / math.sqrt(2))) for v in values]
+
+
+# --------------------------------------------------------------------------
+# Point in polygon (ray casting), with a bounding-box reject so assigning
+# 200k buildings to 18 districts stays cheap.
+# --------------------------------------------------------------------------
+def ring_bbox(ring: list) -> tuple[float, float, float, float]:
+    xs = [p[0] for p in ring]
+    ys = [p[1] for p in ring]
+    return min(xs), min(ys), max(xs), max(ys)
+
+
+def point_in_ring(x: float, y: float, ring: list) -> bool:
+    inside = False
+    n = len(ring)
+    j = n - 1
+    for i in range(n):
+        xi, yi = ring[i][0], ring[i][1]
+        xj, yj = ring[j][0], ring[j][1]
+        if (yi > y) != (yj > y):
+            if x < (xj - xi) * (y - yi) / (yj - yi) + xi:
+                inside = not inside
+        j = i
+    return inside
+
+
+class PolygonSet:
+    """Named polygons with bbox pre-filtering, for district lookup."""
+
+    def __init__(self, features: list[dict]):
+        self.items = []
+        for f in features:
+            rings = f["rings"]
+            self.items.append((f, rings, [ring_bbox(r) for r in rings]))
+
+    def find(self, x: float, y: float) -> dict | None:
+        for f, rings, boxes in self.items:
+            for ring, (x0, y0, x1, y1) in zip(rings, boxes):
+                if x0 <= x <= x1 and y0 <= y <= y1 and point_in_ring(x, y, ring):
+                    return f
+        return None

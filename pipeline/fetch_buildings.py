@@ -17,7 +17,8 @@ import pathlib
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
-from common import centroid_of, get_json  # noqa: E402
+from common import centroid_of, get_json, to_plane  # noqa: E402
+from orientation import min_area_rect  # noqa: E402
 
 REST = ("https://portal.csdi.gov.hk/server/rest/services/common/"
         "landsd_rcd_1637211194312_35158/MapServer/0")
@@ -34,6 +35,18 @@ FIELDS = ("BuildingCSUID,BuildingNameTC,BuildingNameEN,TopHeight,BaseHeight,"
           "Storeys,StoreysInBasement,DateCreate,DateStamp")
 
 
+def outer_ring(geometry: dict) -> list[tuple[float, float]] | None:
+    """Largest outer ring of a (Multi)Polygon, as (lon, lat) pairs."""
+    t, coords = geometry.get("type"), geometry.get("coordinates")
+    if not coords:
+        return None
+    rings = [coords[0]] if t == "Polygon" else [poly[0] for poly in coords if poly]
+    if not rings:
+        return None
+    best = max(rings, key=len)
+    return [(pt[0], pt[1]) for pt in best]
+
+
 def main() -> None:
     out: list[dict] = []
     offset = 0
@@ -44,6 +57,9 @@ def main() -> None:
             "returnGeometry": "true",
             "geometryPrecision": "6",
             "outSR": "4326",
+            # Simplify server-side: ~2 m of detail is plenty for both the map
+            # and the long-axis fit, and it roughly halves the payload.
+            "maxAllowableOffset": "0.00002",
             "orderByFields": "BuildingCSUID",
             "resultOffset": offset,
             "resultRecordCount": PAGE,
@@ -51,11 +67,22 @@ def main() -> None:
         })
         batch = gj.get("features") or []
         for f in batch:
-            c = centroid_of(f.get("geometry") or {})
+            geom = f.get("geometry") or {}
+            c = centroid_of(geom)
             if not c:
                 continue
             p = f["properties"]
             top, base = p.get("TopHeight"), p.get("BaseHeight")
+
+            ring = outer_ring(geom)
+            axis = elong = None
+            if ring and len(ring) >= 3:
+                plane = [to_plane(x, y) for x, y in ring]
+                bearing, long_side, short_side = min_area_rect(plane)
+                if long_side:
+                    axis = round(bearing, 1)
+                    elong = round(long_side / short_side, 2) if short_side else None
+
             out.append({
                 "id": p.get("BuildingCSUID"),
                 "tc": p.get("BuildingNameTC"),
@@ -66,6 +93,11 @@ def main() -> None:
                 "h": round(top - base, 1) if (top is not None and base is not None) else None,
                 "storeys": p.get("Storeys"),
                 "created": p.get("DateCreate"),
+                # footprint long axis + how slab-like it is; 坐向 is derived from
+                # these in score.py, where neighbouring buildings are indexed
+                "axis": axis,
+                "elong": elong,
+                "ring": [[round(x, 5), round(y, 5)] for x, y in ring] if ring else None,
             })
         print(f"  {len(out):,}", flush=True)
         if len(batch) < PAGE:
