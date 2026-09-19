@@ -53,6 +53,39 @@ COLUMNS = [
 ]
 
 
+# Names that give a building away as somewhere nobody lives. The occupation
+# permit already settles ~13k buildings, but 39k carry no use text at all, so
+# the name is the only signal left for those.
+NOT_A_HOME = (
+    "貨倉", "倉庫", "變壓", "變電", "電站", "配電", "電力", "電錶",
+    "停車場", "車場", "車房", "公廁", "廁所", "洗手間",
+    "垃圾", "廢物", "污水", "泵房", "水務", "抽水", "濾水", "配水",
+    "機房", "機樓", "水缸", "水箱", "煤氣", "油庫", "油站",
+    "工場", "工廠", "廠房", "貨櫃", "碼頭", "船塢",
+    "墳場", "骨灰", "靈灰", "殯儀", "火葬", "義莊",
+    "基站", "天線", "發射", "雷達", "隧道", "天橋", "行人橋",
+    "會所", "更亭", "崗亭", "警崗", "廟", "祠", "寺", "教堂",
+)
+
+
+def is_dwelling(r: dict) -> bool:
+    """Would someone live here? Permit first, name second.
+
+    A property search that opens with a warehouse and a substation as its top
+    two results is not answering the question that was asked.
+    """
+    if r.get("residential") is False:
+        return False
+    name = (r.get("tc") or "") + " " + (r.get("en") or "")
+    if any(k in name for k in NOT_A_HOME):
+        return False
+    if r.get("residential") is True:
+        return True
+    # Unknown use: a tower with storeys is a reasonable default for housing.
+    st = r.get("storeys")
+    return bool(st and st >= 3)
+
+
 def keep(r: dict) -> bool:
     """Which buildings belong on the map.
 
@@ -180,12 +213,14 @@ def build_search(scores: list[dict]) -> None:
             continue
         rows.append([r.get("tc"), r.get("en"), r.get("district"),
                      round(r["lon"], 5), round(r["lat"], 5),
-                     r.get("total"), r.get("now")])
+                     r.get("total"), r.get("now"),
+                     1 if is_dwelling(r) else 0])
     rows.sort(key=lambda x: -(x[5] or 0))
     p = OUT / "search.json"
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps({"c": ["tc", "en", "district", "lon", "lat", "total", "now"],
+    p.write_text(json.dumps({"c": ["tc", "en", "district", "lon", "lat", "total", "now", "res"],
                              "b": rows}, separators=(",", ":"), ensure_ascii=False))
+    print(f"  of which look residential: {sum(r[7] for r in rows):,}")
     print(f"search index: {len(rows):,} named buildings, "
           f"{p.stat().st_size/1e6:.1f} MB raw (~1.4 MB gzipped on the wire)")
 
