@@ -1,41 +1,112 @@
-name: Deploy site
+name: Build and deploy
 
-# Publishes the site on every push. Deliberately does NOT run the data
-# pipeline: the map reads scores from a public feature service at runtime, so
-# a push should put the new UI online in under a minute rather than waiting
-# ~25 minutes for a full CSDI crawl. The crawl belongs to daily.yml.
+# One path to production. Every deploy rebuilds the data and hands the result
+# straight to Cloudflare, so nothing generated is ever committed — a fresh 33 MB
+# of tiles per day would bury the repository within a month.
+#
+# The slow part is crawling CSDI for 213k buildings (~25 min). That result is
+# cached per day, so the first run each day pays for it and every push
+# afterwards deploys in a couple of minutes.
 
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: "0 21 * * *"      # 05:00 Hong Kong time
   workflow_dispatch:
+    inputs:
+      refresh:
+        description: "Re-crawl CSDI even if today's cache is usable"
+        type: boolean
+        default: false
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: pages
+  group: deploy
   cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
-      # Bake the commit into the page and publish it alongside, so a visitor
-      # holding a cached copy can be told a newer one exists.
-      - name: Stamp build
-        run: python3 pipeline/stamp_build.py "$(git rev-parse --short HEAD)"
-
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/setup-python@v5
         with:
-          path: .
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          python-version: "3.12"
+
+      - run: pip install -r pipeline/requirements.txt
+
+      - name: Restore the CSDI crawl
+        uses: actions/cache@v4
+        with:
+          path: |
+            data/buildings.json
+            data/op.json
+          key: csdi-${{ github.run_id }}
+          restore-keys: csdi-
+
+      - name: Decide whether to crawl
+        id: fresh
+        run: |
+          # Re-crawl when asked, when nothing was restored, or when the cached
+          # crawl is from an earlier day.
+          if [ "${{ github.event.inputs.refresh }}" = "true" ] || [ ! -f data/buildings.json ]; then
+            echo "stale=true" >> "$GITHUB_OUTPUT"
+          elif [ "$(date -u -r data/buildings.json +%F)" != "$(date -u +%F)" ]; then
+            echo "stale=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "stale=false" >> "$GITHUB_OUTPUT"
+            echo "reusing crawl from $(date -u -r data/buildings.json)"
+          fi
+
+      # Terrain and the coastline do not move; monthly is ample.
+      - name: Rebuild terrain reference
+        if: github.event_name == 'schedule'
+        run: |
+          if [ ! -f data/terrain.json ] || [ "$(date -u +%d)" = "01" ]; then
+            python pipeline/reconstruct_terrain.py
+          else
+            echo "terrain.json present, rebuilt on the 1st"
+          fi
+
+      - name: Crawl CSDI
+        if: steps.fresh.outputs.stale == 'true'
+        run: |
+          python pipeline/fetch_buildings.py
+          python pipeline/fetch_op.py
+          python pipeline/fetch_districts.py
+          python pipeline/fetch_facilities.py
+
+      - name: Score and tile
+        run: |
+          python pipeline/score.py
+          python pipeline/build_tiles.py
+
+      - name: Assemble the site
+        run: bash build.sh
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+
+      - name: Deploy to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+      # Only the small, slow-moving reference layers stay in the repository.
+      - name: Commit reference data if it changed
+        if: github.event_name == 'schedule'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/terrain.json data/facilities.json data/districts.json
+          if git diff --staged --quiet; then
+            echo "reference data unchanged"
+          else
+            git commit -m "data: refresh reference layers $(date -u +%Y-%m-%d)"
+            git push
+          fi
