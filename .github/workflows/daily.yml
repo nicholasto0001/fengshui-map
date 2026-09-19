@@ -51,15 +51,18 @@ jobs:
       - name: Score
         run: python pipeline/score.py
 
-      - name: Commit refreshed data
+      # buildings.json / scores.json are NOT committed. They are rebuilt on every
+      # run and shipped straight to Pages, so history stays small. Only the small,
+      # slow-moving reference files (terrain, facilities) are tracked.
+      - name: Commit reference data if it changed
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/
+          git add data/terrain.json data/facilities.json
           if git diff --staged --quiet; then
-            echo "no change today"
+            echo "reference data unchanged"
           else
-            git commit -m "data: daily rebuild $(date -u +%Y-%m-%d)"
+            git commit -m "data: refresh reference layers $(date -u +%Y-%m-%d)"
             git push
           fi
 
