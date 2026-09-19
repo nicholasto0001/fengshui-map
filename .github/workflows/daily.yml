@@ -21,6 +21,9 @@ concurrency:
 jobs:
   rebuild:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -66,9 +69,19 @@ jobs:
             git push
           fi
 
+      # Keep the raw pipeline outputs out of the published site — they are
+      # working files, tens of MB each, and nothing on the page fetches them.
+      - name: Stage the site
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp -r data _site/data
+          rm -f _site/data/buildings.json _site/data/scores.json
+          du -sh _site
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v4
