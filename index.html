@@ -95,7 +95,9 @@
   .chip .cnt{font-weight:500; opacity:.7; font-variant-numeric:tabular-nums}
 
   .chip-sep{flex:0 0 1px; width:1px; background:var(--line); margin:6px 2px; align-self:stretch}
-  .dchip{color:var(--ink)}
+  .dchip{color:var(--ink); gap:5px}
+  .dchip b{font-size:10.5px; font-weight:700; color:var(--ink3); letter-spacing:.04em}
+  .dchip.on b{color:rgba(255,255,255,.7)}
   .dchip .caret{opacity:.5; font-size:10px}
   .dchip.on{background:var(--brand); color:#fff}
   .dchip.on .caret{opacity:.8}
@@ -333,13 +335,33 @@
   .legend .lt{display:flex; justify-content:space-between; margin-top:6px}
   .legend .lt b{font-size:11.5px; font-weight:600; color:var(--ink2)}
   .legend .lt i{font-size:11.5px; font-style:normal; color:var(--ink3)}
-  .dlist{list-style:none; margin:0 0 16px; padding:0}
-  .dlist li{display:grid; grid-template-columns:66px 1fr 36px; align-items:center; gap:9px; padding:3px 0; font-size:13px; cursor:pointer; border-radius:6px}
-  .dlist li:active{background:var(--bg)}
-  .dlist .dn{color:var(--ink2)}
-  .dlist .tk{background:#edebe4; border-radius:3px; height:9px}
-  .dlist .fl{height:9px; border-radius:0 3px 3px 0; box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
-  .dlist .dv{text-align:right; font-variant-numeric:tabular-nums}
+  /* District rows read as a report until they look pressable: a score pill,
+     a subline worth reading, a chevron, and a real pressed state. The old
+     progress bar also misfired - a district near the median drew the neutral
+     colour, which looks like an empty bar, i.e. missing data. */
+  .dlist{list-style:none; margin:0 0 14px; padding:0}
+  .dlist li{
+    display:grid; grid-template-columns:44px 1fr 14px; align-items:center; gap:12px;
+    padding:11px 10px; cursor:pointer; border-radius:12px;
+    border-bottom:1px solid #f2f1ed;
+  }
+  .dlist li:hover{background:var(--bg)}
+  .dlist li:active{background:#eceae3; transform:scale(.985)}
+  .dlist .pill2{
+    width:44px; height:44px; border-radius:50%; display:grid; place-items:center;
+    font-size:15px; font-weight:700; font-variant-numeric:tabular-nums;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);
+  }
+  .dlist .dn{font-size:15px; font-weight:600; color:var(--ink); line-height:1.25}
+  .dlist .ds{font-size:12px; color:var(--ink3); margin-top:2px}
+  .dlist .chev2{color:var(--ink3); font-size:17px; text-align:right}
+
+  .prompt{
+    display:flex; align-items:center; gap:9px; background:#eef4fb;
+    border:1px solid #d6e4f4; border-radius:12px; padding:11px 13px; margin:0 0 14px;
+  }
+  .prompt b{font-size:13.5px; color:#12467e; font-weight:700; white-space:nowrap; flex:0 0 auto}
+  .prompt span{font-size:12.5px; color:#2a5f9e; line-height:1.5}
 
   /* ---------- onboarding ---------- */
   #intro{
@@ -404,7 +426,7 @@
 </div>
 
 <div id="filters">
-  <button class="chip dchip" id="btnDistrict">全港 <span class="caret">▾</span></button>
+  <button class="chip dchip" id="btnDistrict"><b>地區</b>全港 <span class="caret">▾</span></button>
   <span class="chip-sep"></span>
   <button class="chip on" data-band="all">全部</button>
   <button class="chip" data-band="best"><i style="background:#0f6354"></i>大吉</button>
@@ -458,7 +480,7 @@ const TILE = "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz";
 const DATA = "data/tiles";
 // Bump on every release. Shown in the overview sheet so a stale cached page is
 // identifiable at a glance — otherwise there is no way to tell.
-const APP_VERSION = "v9";
+const APP_VERSION = "v10";
 
 // Data files are rebuilt daily at the same URLs, so a browser holding
 // yesterday's copy keeps serving it - silently, and indefinitely. Every data
@@ -479,7 +501,11 @@ async function loadBuildStamp(){
   return buildInfo;
 }
 const TILE_Z = 14;              // must match pipeline/build_tiles.py
-const BUILDING_ZOOM = 15;       // below this, show the district overview
+// Buildings render from z14, the zoom a district lands on — picking a district
+// and seeing bubbles instead of buildings is not what "show me the good ones
+// here" means. ~2,000 polygons at that zoom, which is why the layer draws to
+// canvas rather than SVG.
+const BUILDING_ZOOM = 14;
 
 // Tile rows arrive as arrays; COLUMNS in build_tiles.py is the contract.
 let COLS = null;
@@ -630,11 +656,15 @@ function toast(msg,ms=2200){
 let minSel=null, reqSeq=0;
 const tileCache = new Map();
 
+// Canvas keeps ~2,000 footprints smooth on a phone; SVG creates a DOM node per
+// building and stutters well before that.
+const buildingRenderer = L.canvas({padding: 0.3});
 const buildingLayer=L.layerGroup().addTo(map);
 
 function styleFor(score){
   const c = colorFor(score);
-  return {fillColor:c, fillOpacity:.88, color:c, weight:.6, opacity:.55};
+  return {renderer:buildingRenderer, fillColor:c, fillOpacity:.88,
+          color:c, weight:.6, opacity:.55};
 }
 
 // Selection is drawn as its own two-ring halo in a pane above everything, so it
@@ -686,7 +716,7 @@ async function loadBuildings(){
 
   const wanted=[];
   for(let x=x0;x<=x1;x++) for(let y=y1;y<=y0;y++) wanted.push([x,y]);
-  if(wanted.length>12){ toast("範圍太大，請放大啲"); return; }
+  if(wanted.length>20){ toast("範圍太大，請放大啲"); return; }
 
   const tiles=await Promise.all(wanted.map(([x,y])=>getTile(x,y)));
   if(my!==reqSeq) return;
@@ -955,7 +985,7 @@ async function showOverview(){
     if(list){ renderMatches(list.sort((a,b)=>(b.total||0)-(a.total||0))); return; }
   }
   const filtered = false;
-  gripText.textContent = filtered ? `十八區 · ${chipLabel()}樓宇分布` : "十八區風水排名 · 撳我";
+  gripText.textContent = "揀一區開始 · 撳我";
   const rows = filtered
     ? [...districtData].map(a=>({...a, metric:bandCount(a)})).sort((x,y)=>y.metric-x.metric)
     : [...districtData].map(a=>({...a, metric:a.avg}));
@@ -969,17 +999,20 @@ async function showOverview(){
       <div class="lbar">${RAMP.map(c=>`<span style="background:${c}"></span>`).join("")}</div>
       <div class="lt"><b>差</b><i>平穩</i><b>大吉</b></div>
     </div>
-    <p class="vsub" style="margin-bottom:10px">${filtered
-      ? "按符合條件嘅樓宇數量排序。撳一下跳去該區。"
-      : "撳分區泡泡放大，或者直接放大地圖睇逐棟樓。"}</p>
+    <div class="prompt">
+      <b>👆 撳一撳</b>
+      <span>揀任何一區，地圖即刻放大，同時列出嗰區嘅樓宇。</span>
+    </div>
     <ul class="dlist">${rows.map((a,i)=>{
-      const w=8+92*(a.metric-lo)/Math.max(.001,hi-lo);
-      const col = filtered ? RAMP[["bad","poor","mid","good","best"].indexOf(BAND_KEY[band])]
-                           : colorFor(a.avg);
+      const best = (a.bands||{}).best || 0;
+      const good = ((a.bands||{}).good || 0) + best;
       return `<li data-i="${i}">
-        <span class="dn">${esc(a.tc)}</span>
-        <div class="tk"><div class="fl" style="width:${w.toFixed(1)}%;background:${col}"></div></div>
-        <span class="dv">${filtered ? a.metric.toLocaleString() : a.metric.toFixed(1)}</span></li>`;
+        <div class="pill2" style="background:${colorFor(a.avg)};color:${inkOn(a.avg)}">${a.avg.toFixed(0)}</div>
+        <div>
+          <div class="dn">${esc(a.tc)}</div>
+          <div class="ds">${a.n.toLocaleString()} 棟 · 大吉 ${best.toLocaleString()} · 吉以上 ${good.toLocaleString()}</div>
+        </div>
+        <div class="chev2">›</div></li>`;
     }).join("")}</ul>
     <p class="note-foot" style="border-top:1px solid var(--line)">
       地理環境分屬「外巒頭」分析；有入伙年份同可靠坐向嘅樓宇會另外顯示九運飛星判斷。<br>
@@ -989,8 +1022,14 @@ async function showOverview(){
   fillBuildStamp();
   sheetBody.querySelectorAll(".dlist li").forEach(li=>li.addEventListener("click",()=>{
     const a=rows[+li.dataset.i];
-    map.flyTo([a.lat,a.lon],BUILDING_ZOOM,{duration:.8});
-    sheet.classList.remove("open");
+    districtFilter = a.tc;
+    const chip = document.getElementById("btnDistrict");
+    chip.innerHTML = '<b>地區</b>' + a.tc + ' <span class="caret">▾</span>';
+    chip.classList.add("on");
+    map.flyTo([a.lat,a.lon], 14, {duration:.9});
+    minSel = null; highlight.clearLayers();
+    drawDistricts();
+    showOverview();
   }));
 }
 
@@ -1118,7 +1157,7 @@ function buildDistrictMenu(){
     districtFilter = b.dataset.d;
     m.classList.remove("show");
     const chip = document.getElementById("btnDistrict");
-    chip.innerHTML = (districtFilter || "全港") + ' <span class="caret">▾</span>';
+    chip.innerHTML = '<b>地區</b>' + (districtFilter || "全港") + ' <span class="caret">▾</span>';
     chip.classList.toggle("on", !!districtFilter);
     const d = districtData.find(x=>x.tc===districtFilter);
     if(d) map.flyTo([d.lat,d.lon], 14, {duration:.9});
