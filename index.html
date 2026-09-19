@@ -8,19 +8,26 @@
 <meta name="description" content="全港 213,328 棟樓宇嘅九運風水評分。睇下你屋企幾多分。">
 
 <!-- A link pasted into a Facebook group or WhatsApp is judged entirely on its
-     preview card. Without these it renders as a bare URL and nobody taps it. -->
+     preview card. og:image MUST be an absolute URL — crawlers do not resolve
+     relative paths, which is why the first WhatsApp previews showed no image.
+     SITE_URL is the one place to change when the domain moves. -->
+<link rel="canonical" href="https://nicholasto0001.github.io/fengshui-map/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="香港風水地圖">
+<meta property="og:url" content="https://nicholasto0001.github.io/fengshui-map/">
 <meta property="og:title" content="香港風水地圖 · 九運">
 <meta property="og:description" content="全港 213,328 棟樓宇嘅九運風水評分。睇下你屋企幾多分。">
-<meta property="og:image" content="og.png">
+<meta property="og:image" content="https://nicholasto0001.github.io/fengshui-map/og.png">
+<meta property="og:image:secure_url" content="https://nicholasto0001.github.io/fengshui-map/og.png">
+<meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="香港風水地圖 — 九運逐棟樓宇評分">
 <meta property="og:locale" content="zh_HK">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="香港風水地圖 · 九運">
 <meta name="twitter:description" content="全港 213,328 棟樓宇嘅九運風水評分。睇下你屋企幾多分。">
-<meta name="twitter:image" content="og.png">
+<meta name="twitter:image" content="https://nicholasto0001.github.io/fengshui-map/og.png">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <!-- Lets a phone keep this on the home screen as an app rather than a bookmark,
@@ -125,58 +132,17 @@
   .dchip.on{background:var(--brand); color:#fff}
   .dchip.on .caret{opacity:.8}
 
-  #districtMenu{
-    position:fixed; z-index:630; top:112px; left:10px; background:var(--card);
-    border-radius:14px; box-shadow:var(--shadow); padding:6px; display:none;
-    width:216px; max-height:56vh; overflow-y:auto;
+  /* ---------- district picker, rendered inside the sheet ---------- */
+  .dpick{list-style:none; margin:0 0 14px; padding:0}
+  .dpick li{
+    display:grid; grid-template-columns:1fr auto 14px; align-items:center; gap:10px;
+    padding:13px 10px; cursor:pointer; border-radius:12px; border-bottom:1px solid #f2f1ed;
   }
-  #districtMenu.show{display:block}
-  #districtMenu button{
-    display:flex; justify-content:space-between; align-items:center; gap:10px;
-    width:100%; text-align:left; border:0; background:transparent; font:inherit;
-    font-size:14px; padding:9px 11px; border-radius:9px; cursor:pointer; color:var(--ink);
-  }
-  #districtMenu button:hover{background:var(--bg)}
-  #districtMenu button.sel{background:var(--bg); font-weight:700}
-  #districtMenu button b{font-weight:inherit}
-  #districtMenu button span{font-size:12px; color:var(--ink3); font-variant-numeric:tabular-nums}
-  #districtMenu .dsep{height:1px; background:var(--line); margin:5px 8px}
-
-  .favchip .hrt{color:#d64545; font-size:14px; line-height:1}
-  .favchip.on{background:#d64545; color:#fff}
-  .favchip.on .hrt{color:#fff}
-
-  /* ---------- save + share ---------- */
-  .actions{display:grid; grid-template-columns:1fr 1fr; gap:9px; margin:0 0 16px}
-  .act{
-    display:flex; align-items:center; justify-content:center; gap:7px;
-    border:1px solid var(--line); background:var(--card); border-radius:12px;
-    padding:12px; font:inherit; font-size:14px; font-weight:600;
-    color:var(--ink); cursor:pointer;
-  }
-  .act:active{background:var(--bg); transform:scale(.985)}
-  .act.saved{background:#fdecec; border-color:#f2c9c9; color:#a01f1f}
-  .act .ico{font-size:16px; line-height:1}
-  .act.primary{background:var(--brand); border-color:var(--brand); color:#fff}
-
-  .sharebar{
-    display:flex; align-items:center; gap:10px; background:#eef4fb;
-    border:1px solid #d6e4f4; border-radius:12px; padding:12px 13px; margin:0 0 14px;
-  }
-  .sharebar div{flex:1; min-width:0}
-  .sharebar b{display:block; font-size:13.5px; color:#12467e; margin-bottom:2px}
-  .sharebar span{font-size:12px; color:#2a5f9e; line-height:1.45}
-  .sharebar button{
-    flex:0 0 auto; border:0; background:var(--brand); color:#fff; font:inherit;
-    font-size:13px; font-weight:700; padding:9px 15px; border-radius:999px; cursor:pointer;
-  }
-
-  .shared-note{
-    background:#fff8e8; border:1px solid #f0dcae; border-radius:12px;
-    padding:12px 14px; margin:0 0 14px;
-  }
-  .shared-note b{display:block; font-size:14px; color:#6b4c10; margin-bottom:3px}
-  .shared-note span{font-size:12.5px; color:#7a5c22; line-height:1.5}
+  .dpick li:active{background:#eceae3}
+  .dpick li.sel{background:var(--bg)}
+  .dpick .dn{font-size:15px; font-weight:600}
+  .dpick .dc{font-size:13px; color:var(--ink3); font-variant-numeric:tabular-nums}
+  .dpick .chev2{color:var(--ink3); font-size:17px}
 
   /* ---------- match list ---------- */
   .mlist{list-style:none; margin:0 0 14px; padding:0}
@@ -235,21 +201,35 @@
   #toast.show{opacity:1}
 
   /* ---------- bottom sheet ---------- */
+  /* Three snap points, the way every native map app behaves. Opening a
+     building used to fill the screen, leaving no map to steer by — half is
+     the default so the building and its surroundings stay visible together. */
   #sheet{
     position:fixed; z-index:640; left:0; right:0; bottom:0;
     background:var(--card); border-radius:18px 18px 0 0; box-shadow:0 -3px 18px rgba(0,0,0,.14);
-    transform:translateY(calc(100% - 62px)); transition:transform .26s cubic-bezier(.32,.72,0,1);
-    max-height:min(72vh, 620px); display:flex; flex-direction:column;
+    /* Never taller than the space under the filter row: at full height the
+       sheet used to bury the grade chips, so you could see results but not
+       change what you were filtering by. dvh, not vh, so a phone's collapsing
+       address bar does not push the bottom off screen. */
+    height:calc(100dvh - 124px); display:flex; flex-direction:column;
+    transform:translateY(calc(100% - 58px));
+    transition:transform .3s cubic-bezier(.32,.72,0,1);
+    touch-action:none;
   }
-  #sheet.open{transform:translateY(0)}
+  #sheet[data-state="half"]{transform:translateY(45%)}
+  #sheet[data-state="full"]{transform:translateY(0)}
+  #sheet.dragging{transition:none}
   #grip{
-    flex:0 0 auto; padding:9px 16px calc(12px + var(--safe-b)); cursor:pointer; user-select:none;
+    flex:0 0 auto; padding:8px 16px 10px; cursor:grab; user-select:none;
+    touch-action:none;
   }
-  #grip .bar{width:38px; height:4px; border-radius:2px; background:var(--line); margin:0 auto 9px}
+  #grip:active{cursor:grabbing}
+  #grip .bar{width:40px; height:5px; border-radius:3px; background:#d5d3cb; margin:0 auto 8px}
   #griptext{font-size:13.5px; color:var(--ink2); text-align:center}
   #sheetbody{
-    flex:1 1 auto; overflow-y:auto; padding:0 16px calc(22px + var(--safe-b));
-    -webkit-overflow-scrolling:touch;
+    flex:1 1 auto; overflow-y:auto; overscroll-behavior:contain;
+    padding:0 16px calc(22px + var(--safe-b));
+    -webkit-overflow-scrolling:touch; touch-action:pan-y;
   }
   .bname{font-size:19px; font-weight:700; margin:0 0 2px; line-height:1.25}
   .ben{font-size:12.5px; color:var(--ink3); margin:0 0 14px}
@@ -458,9 +438,11 @@
   }
   @media (min-width:760px){
     #sheet{left:auto; right:14px; bottom:14px; width:390px; border-radius:18px;
-           transform:translateY(calc(100% - 62px)); max-height:min(80vh,700px)}
-    #sheet.open{transform:translateY(0)}
-    #grip{padding-bottom:12px}
+           height:auto; max-height:min(78vh,720px);
+           transform:translateY(calc(100% - 58px))}
+    #sheet[data-state="half"],
+    #sheet[data-state="full"]{transform:translateY(0)}
+    #grip{padding-bottom:12px; cursor:pointer}
     #sheetbody{padding-bottom:20px}
   }
 </style>
@@ -497,9 +479,7 @@
   <button class="chip" data-band="bad"><i style="background:#a01f1f"></i>差</button>
 </div>
 
-<div id="districtMenu">
-  <button data-d="">全港</button>
-  <div class="dsep"></div>
+
 </div>
 
 <div id="layers">
@@ -541,7 +521,7 @@ const TILE = "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz";
 const DATA = "data/tiles";
 // Bump on every release. Shown in the overview sheet so a stale cached page is
 // identifiable at a glance — otherwise there is no way to tell.
-const APP_VERSION = "v13";
+const APP_VERSION = "v14";
 
 // ---------------------------------------------------------------------------
 // Analytics
@@ -923,9 +903,65 @@ function drawDistricts(){
 const sheet=document.getElementById("sheet");
 const sheetBody=document.getElementById("sheetbody");
 const gripText=document.getElementById("griptext");
-document.getElementById("grip").addEventListener("click",()=>sheet.classList.toggle("open"));
+document.getElementById("grip").addEventListener("click", e=>{
+  if(e.detail === 0) return;                 // ignore clicks synthesised by drag
+  setSheet(sheetState() === "full" ? "peek" : sheetState() === "half" ? "full" : "half");
+});
 
-function openSheet(){ sheet.classList.add("open"); }
+// peek: grip only · half: enough to read without losing the map · full: the lot
+function setSheet(state){
+  sheet.dataset.state = state;
+  sheet.classList.toggle("open", state !== "peek");
+  if(state === "peek") sheetBody.scrollTop = 0;
+}
+const sheetState = () => sheet.dataset.state || "peek";
+function openSheet(){ if(sheetState() === "peek") setSheet("half"); }
+
+// Drag the grip to any snap point; a flick carries momentum, as it should.
+(function dragSheet(){
+  let startY = 0, startT = 0, dragging = false, moved = 0, t0 = 0;
+  const H = () => sheet.getBoundingClientRect().height;   // matches the CSS box
+  const offsetFor = st => st === "full" ? 0 : st === "half" ? H()*0.45 : H() - 58;
+  const grip = document.getElementById("grip");
+
+  const down = e => {
+    dragging = true; moved = 0; t0 = Date.now();
+    startY = (e.touches ? e.touches[0] : e).clientY;
+    startT = offsetFor(sheetState());
+    sheet.classList.add("dragging");
+  };
+  const move = e => {
+    if(!dragging) return;
+    const y = (e.touches ? e.touches[0] : e).clientY;
+    moved = y - startY;
+    const next = Math.max(0, Math.min(H() - 58, startT + moved));
+    sheet.style.transform = `translateY(${next}px)`;
+    e.preventDefault();
+  };
+  const up = () => {
+    if(!dragging) return;
+    dragging = false;
+    sheet.classList.remove("dragging");
+    sheet.style.transform = "";
+    const quick = Date.now() - t0 < 250 && Math.abs(moved) > 30;
+    const order = ["full","half","peek"];
+    let i = order.indexOf(sheetState());
+    if(quick) i += moved > 0 ? 1 : -1;                 // flick moves one stop
+    else {
+      const end = startT + moved;                       // settle on the nearest
+      const d = order.map(st => Math.abs(offsetFor(st) - end));
+      i = d.indexOf(Math.min(...d));
+    }
+    setSheet(order[Math.max(0, Math.min(2, i))]);
+  };
+
+  grip.addEventListener("touchstart", down, {passive:true});
+  grip.addEventListener("touchmove", move, {passive:false});
+  grip.addEventListener("touchend", up);
+  grip.addEventListener("mousedown", down);
+  addEventListener("mousemove", move);
+  addEventListener("mouseup", up);
+})();
 
 function select(o,layer){
   minSel=o.id;
@@ -938,7 +974,7 @@ function select(o,layer){
   });
   showHighlight(layer && layer.getLatLngs ? layer.getLatLngs() : null, [o.lat,o.lon]);
   renderBuilding(o, layer);
-  openSheet();
+  setSheet("half");          // keep the map visible beside the card
 }
 
 // The mountain/water pairing table, with this building's own row highlighted.
@@ -1167,12 +1203,14 @@ function showFavs(){
 document.getElementById("btnFav").addEventListener("click", ()=>{
   favView = !favView;
   sharedList = null;
+  pickingDistrict = false;
   saveFavs();
   track("open_favourites", {count: favs.length});
   if(favView){ showFavs(); openSheet(); } else showOverview();
 });
 
 async function showOverview(){
+  if(pickingDistrict){ showDistrictPicker(); return; }
   if(favView || sharedList){ showFavs(); return; }
   // Either filter turns the panel into a pickable list of buildings rather
   // than a district ranking - that is the whole point of filtering.
@@ -1422,37 +1460,49 @@ function shareList(){
 }
 
 // --- district picker ---
-function buildDistrictMenu(){
-  const m = document.getElementById("districtMenu");
-  const rows = [...districtData].sort((a,b)=>bandCount(b)-bandCount(a));
-  m.innerHTML =
-    `<button data-d="" class="${districtFilter===""?"sel":""}"><b>全港</b>` +
-    `<span>${rows.reduce((s,a)=>s+bandCount(a),0).toLocaleString()}</span></button>` +
-    `<div class="dsep"></div>` +
-    rows.map(a=>`<button data-d="${esc(a.tc)}" class="${districtFilter===a.tc?"sel":""}">
-        <b>${esc(a.tc)}</b><span>${bandCount(a).toLocaleString()}</span></button>`).join("");
-  m.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
-    districtFilter = b.dataset.d;
-    track("filter_district", {district: districtFilter || "all", from: "picker"});
-    m.classList.remove("show");
-    const chip = document.getElementById("btnDistrict");
-    chip.innerHTML = '<b>地區</b>' + (districtFilter || "全港") + ' <span class="caret">▾</span>';
-    chip.classList.toggle("on", !!districtFilter);
-    const d = districtData.find(x=>x.tc===districtFilter);
-    if(d) map.flyTo([d.lat,d.lon], 14, {duration:.9});
-    minSel = null; highlight.clearLayers();
-    drawDistricts(); showOverview(); openSheet();
-  }));
+let pickingDistrict = false;
+
+function setDistrict(tc){
+  districtFilter = tc || "";
+  track("filter_district", {district: districtFilter || "all", from: "picker"});
+  const chip = document.getElementById("btnDistrict");
+  chip.innerHTML = '<b>地區</b>' + (districtFilter || "全港") + ' <span class="caret">▾</span>';
+  chip.classList.toggle("on", !!districtFilter);
+  const d = districtData.find(x=>x.tc===districtFilter);
+  if(d) map.flyTo([d.lat,d.lon], 14, {duration:.9});
+  minSel = null; highlight.clearLayers();
+  pickingDistrict = false;
+  drawDistricts(); showOverview();
 }
-document.getElementById("btnDistrict").addEventListener("click",e=>{
-  e.stopPropagation();
-  buildDistrictMenu();
-  document.getElementById("districtMenu").classList.toggle("show");
-});
-document.addEventListener("click",e=>{
-  const m=document.getElementById("districtMenu");
-  if(!m.contains(e.target) && !document.getElementById("btnDistrict").contains(e.target))
-    m.classList.remove("show");
+
+function showDistrictPicker(){
+  const rows = [...districtData].sort((a,b)=>bandCount(b)-bandCount(a));
+  const all = rows.reduce((n,a)=>n+bandCount(a),0);
+  gripText.textContent = "揀地區";
+  sheetBody.innerHTML = `
+    <p class="bname">揀地區</p>
+    <p class="mcount">${band==="all" ? "括號內係該區樓宇數量" : `括號內係該區「${chipLabel()}」樓宇數量`}，按數量排序。</p>
+    <ul class="dpick">
+      <li data-d="" class="${!districtFilter?"sel":""}">
+        <span class="dn">全港</span><span class="dc">${all.toLocaleString()}</span><span class="chev2">›</span></li>
+      ${rows.map(a=>`<li data-d="${esc(a.tc)}" class="${districtFilter===a.tc?"sel":""}">
+        <span class="dn">${esc(a.tc)}</span>
+        <span class="dc">${bandCount(a).toLocaleString()}</span>
+        <span class="chev2">›</span></li>`).join("")}
+    </ul>
+    <p class="build" id="buildStamp">${APP_VERSION}</p>`;
+  fillBuildStamp();
+  sheetBody.querySelectorAll(".dpick li").forEach(li=>
+    li.addEventListener("click",()=>setDistrict(li.dataset.d)));
+}
+
+document.getElementById("btnDistrict").addEventListener("click",()=>{
+  pickingDistrict = !pickingDistrict;
+  if(pickingDistrict){
+    favView = false; sharedList = null;
+    showDistrictPicker();
+    setSheet("full");
+  } else showOverview();
 });
 
 // Matching buildings, straight from the search index — it already carries name,
