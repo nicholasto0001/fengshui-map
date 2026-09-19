@@ -64,7 +64,7 @@
   #results .empty{color:var(--ink3); font-size:13.5px; padding:10px 12px; cursor:default}
 
   /* ---------- right buttons ---------- */
-  #tools{display:flex; flex-direction:column; gap:8px; pointer-events:auto}
+  #tools{display:flex; gap:8px; pointer-events:auto}
   .tbtn{
     width:48px; height:48px; border-radius:50%; border:0; background:var(--card);
     box-shadow:var(--shadow); cursor:pointer; display:grid; place-items:center;
@@ -73,9 +73,30 @@
   .tbtn:active{background:var(--bg)}
   .tbtn.on{background:var(--brand); color:#fff}
 
+  /* ---------- filter chips ----------
+     Directly under the search bar, where filters live in every map app people
+     already use. Scrolls sideways on a phone rather than wrapping to a second
+     row and eating the map. */
+  #filters{
+    position:fixed; z-index:590; top:64px; left:0; right:0;
+    display:flex; gap:7px; padding:6px 10px 2px;
+    overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch;
+  }
+  #filters::-webkit-scrollbar{display:none}
+  .chip{
+    flex:0 0 auto; display:flex; align-items:center; gap:6px;
+    border:0; border-radius:999px; padding:8px 13px; cursor:pointer;
+    font:inherit; font-size:13px; font-weight:600; color:var(--ink2);
+    background:var(--card); box-shadow:var(--shadow); white-space:nowrap;
+  }
+  .chip i{width:9px; height:9px; border-radius:50%; display:block; flex:0 0 9px}
+  .chip.on{color:#fff; background:var(--ink)}
+  .chip.on i{box-shadow:0 0 0 2px rgba(255,255,255,.55)}
+  .chip .cnt{font-weight:500; opacity:.7; font-variant-numeric:tabular-nums}
+
   /* ---------- layer menu ---------- */
   #layers{
-    position:fixed; z-index:620; top:66px; right:10px; background:var(--card);
+    position:fixed; z-index:620; top:112px; right:10px; background:var(--card);
     border-radius:14px; box-shadow:var(--shadow); padding:6px; display:none; width:186px;
   }
   #layers.show{display:block}
@@ -99,7 +120,7 @@
 
   /* ---------- status toast ---------- */
   #toast{
-    position:fixed; z-index:610; top:70px; left:50%; transform:translateX(-50%);
+    position:fixed; z-index:610; top:116px; left:50%; transform:translateX(-50%);
     background:rgba(20,20,20,.86); color:#fff; border-radius:999px;
     padding:7px 16px; font-size:13px; box-shadow:var(--shadow);
     pointer-events:none; opacity:0; transition:opacity .18s; max-width:88vw;
@@ -337,6 +358,15 @@
   </div>
 </div>
 
+<div id="filters">
+  <button class="chip on" data-band="all">全部</button>
+  <button class="chip" data-band="best"><i style="background:#0f6354"></i>大吉</button>
+  <button class="chip" data-band="good+"><i style="background:#4da79a"></i>吉以上</button>
+  <button class="chip" data-band="mid"><i style="background:#e6e4de"></i>平穩</button>
+  <button class="chip" data-band="poor"><i style="background:#d76f6f"></i>欠佳</button>
+  <button class="chip" data-band="bad"><i style="background:#a01f1f"></i>差</button>
+</div>
+
 <div id="layers">
   <button data-base="street" class="sel">街道圖</button>
   <button data-base="satellite">衛星圖</button>
@@ -376,7 +406,7 @@ const TILE = "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz";
 const DATA = "data/tiles";
 // Bump on every release. Shown in the overview sheet so a stale cached page is
 // identifiable at a glance — otherwise there is no way to tell.
-const APP_VERSION = "v5";
+const APP_VERSION = "v6";
 const TILE_Z = 14;              // must match pipeline/build_tiles.py
 const BUILDING_ZOOM = 15;       // below this, show the district overview
 
@@ -440,6 +470,19 @@ const colorFor = v => {
   return RAMP[i === -1 ? RAMP.length - 1 : i];
 };
 const inkOn = v => (levelFor(v) || {}).ink || "#3a3833";
+
+// Which score band the filter chips are showing. Bounds mirror BREAKS.
+const BANDS = {
+  all:    null,
+  best:   v => v >= 58,
+  "good+":v => v >= 52,
+  mid:    v => v >= 46 && v < 52,
+  poor:   v => v >= 41 && v < 46,
+  bad:    v => v < 41,
+};
+const BAND_KEY = {best:"best", "good+":"good", mid:"mid", poor:"poor", bad:"bad"};
+let band = "all";
+const passesFilter = v => band === "all" || (v != null && BANDS[band](v));
 
 function verdict(v){
   const l = levelFor(v);
@@ -579,6 +622,7 @@ async function loadBuildings(){
     for(const row of t.b){
       const o=rowToObj(row);
       if(!b.contains([o.lat,o.lon])) continue;
+      if(!passesFilter(o.total)) continue;
       const ring=decodeRing(o.ring);
       const lyr = ring
         ? L.polygon(ring, styleFor(o.total))
@@ -593,15 +637,31 @@ async function loadBuildings(){
   }
   if(selLayer) showHighlight(selLayer.lyr.getLatLngs ? selLayer.lyr.getLatLngs() : null,
                              [selLayer.o.lat, selLayer.o.lon]);
-  if(n===0) toast("此範圍未有收錄樓宇");
+  if(n===0) toast(band==="all" ? "此範圍未有收錄樓宇" : "此範圍冇符合條件嘅樓宇");
+  else if(band!=="all") toast(`${n.toLocaleString()} 棟符合`);
 }
 
 /* -------------------------------------------------- district overview --- */
 const districtLayer=L.layerGroup().addTo(map);
 let districtData=[];
+function bandCount(a){
+  if(band==="all") return a.n;
+  const b=a.bands||{};
+  return band==="good+" ? (b.good||0)+(b.best||0) : (b[BAND_KEY[band]]||0);
+}
+// The chip carries a count badge; the label is the text node before it.
+const chipLabel = () => {
+  const c = document.querySelector(`#filters .chip[data-band="${band}"]`);
+  if(!c) return "";
+  return [...c.childNodes]
+    .filter(n => n.nodeType === Node.TEXT_NODE)
+    .map(n => n.textContent.trim()).join("") || "";
+};
+
 async function loadDistricts(){
   try{
     districtData = await (await fetch(`${DATA}/../district_stats.json`)).json();
+    updateChipCounts();
     drawDistricts();
     if(!minSel) showOverview();
   }catch(e){ toast("分區數據載入失敗"); }
@@ -611,14 +671,24 @@ function drawDistricts(){
   if(map.getZoom()>=BUILDING_ZOOM) return;
   districtData.forEach(a=>{
     const c=[a.lat,a.lon];
+    // With a filter on, the useful number is how many buildings there MATCH,
+    // not the district average - that is what "where is the good stock" means.
+    const cnt = bandCount(a);
+    const shown = band==="all" ? a.avg.toFixed(0) : cnt.toLocaleString();
+    const tint  = band==="all" ? colorFor(a.avg) : RAMP[["bad","poor","mid","good","best"]
+                    .indexOf(BAND_KEY[band])];
+    const size  = band==="all" ? 40 : Math.max(34, Math.min(54, 30 + Math.sqrt(cnt)));
     const icon=L.divIcon({
-      className:"", iconSize:[40,40], iconAnchor:[20,20],
-      html:`<div class="dmark" style="width:40px;height:40px;background:${colorFor(a.avg)}">${a.avg.toFixed(0)}
+      className:"", iconSize:[size,size], iconAnchor:[size/2,size/2],
+      html:`<div class="dmark" style="width:${size}px;height:${size}px;background:${tint};
+                  color:${band!=="all"&&BAND_KEY[band]==="mid"?"#3a3833":"#fff"}">${shown}
               <div class="dlabel">${a.tc.replace("區","")}</div></div>`,
     });
     L.marker(c,{icon}).addTo(districtLayer)
       .on("click",()=>{ map.flyTo(c,BUILDING_ZOOM,{duration:.8});
-                        toast(`${a.tc} 平均 ${a.avg.toFixed(1)} 分 · ${a.n.toLocaleString()} 棟`); });
+                        toast(band==="all"
+                          ? `${a.tc} 平均 ${a.avg.toFixed(1)} 分 · ${a.n.toLocaleString()} 棟`
+                          : `${a.tc} ${chipLabel()} ${cnt.toLocaleString()} 棟`); });
   });
 }
 
@@ -799,22 +869,33 @@ function renderBuilding(o, layer){
 }
 
 function showOverview(){
-  gripText.textContent="十八區風水排名 · 撳我";
-  const lo=Math.min(...districtData.map(a=>a.avg)), hi=Math.max(...districtData.map(a=>a.avg));
+  const filtered = band!=="all";
+  gripText.textContent = filtered ? `十八區 · ${chipLabel()}樓宇分布` : "十八區風水排名 · 撳我";
+  const rows = filtered
+    ? [...districtData].map(a=>({...a, metric:bandCount(a)})).sort((x,y)=>y.metric-x.metric)
+    : [...districtData].map(a=>({...a, metric:a.avg}));
+  const lo=Math.min(...rows.map(a=>a.metric)), hi=Math.max(...rows.map(a=>a.metric));
   sheetBody.innerHTML=`
     <p class="bname">香港九運風水地圖</p>
-    <p class="ben">全港 213,328 棟樓宇 · 平均 48.5 分 · 每日更新</p>
+    <p class="ben">${filtered
+      ? `全港 ${rows.reduce((s,a)=>s+a.metric,0).toLocaleString()} 棟評為「${chipLabel()}」`
+      : "全港 213,328 棟樓宇 · 平均 48.5 分 · 每日更新"}</p>
     <div class="legend">
       <div class="lbar">${RAMP.map(c=>`<span style="background:${c}"></span>`).join("")}</div>
       <div class="lt"><b>差</b><i>平穩</i><b>大吉</b></div>
     </div>
-    <p class="vsub" style="margin-bottom:10px">撳分區泡泡放大，或者直接放大地圖睇逐棟樓。</p>
-    <ul class="dlist">${districtData.map((a,i)=>{
-      const w=8+92*(a.avg-lo)/Math.max(.001,hi-lo);
+    <p class="vsub" style="margin-bottom:10px">${filtered
+      ? "按符合條件嘅樓宇數量排序。撳一下跳去該區。"
+      : "撳分區泡泡放大，或者直接放大地圖睇逐棟樓。"}</p>
+    <ul class="dlist">${rows.map((a,i)=>{
+      const w=8+92*(a.metric-lo)/Math.max(.001,hi-lo);
+      const col = filtered ? RAMP[["bad","poor","mid","good","best"].indexOf(BAND_KEY[band])]
+                           : colorFor(a.avg);
       return `<li data-i="${i}">
         <span class="dn">${esc(a.tc)}</span>
-        <div class="tk"><div class="fl" style="width:${w.toFixed(1)}%;background:${colorFor(a.avg)}"></div></div>
-        <span class="dv">${a.avg.toFixed(1)}</span></li>`;}).join("")}</ul>
+        <div class="tk"><div class="fl" style="width:${w.toFixed(1)}%;background:${col}"></div></div>
+        <span class="dv">${filtered ? a.metric.toLocaleString() : a.metric.toFixed(1)}</span></li>`;
+    }).join("")}</ul>
     <p class="note-foot" style="border-top:1px solid var(--line)">
       地理環境分屬「外巒頭」分析；有入伙年份同可靠坐向嘅樓宇會另外顯示九運飛星判斷。<br>
       樓宇資料每日由地政總署 CSDI 更新。僅供參考，不構成置業建議。
@@ -822,7 +903,7 @@ function showOverview(){
     <p class="build" id="buildStamp">${APP_VERSION}</p>`;
   fillBuildStamp();
   sheetBody.querySelectorAll(".dlist li").forEach(li=>li.addEventListener("click",()=>{
-    const a=districtData[+li.dataset.i];
+    const a=rows[+li.dataset.i];
     map.flyTo([a.lat,a.lon],BUILDING_ZOOM,{duration:.8});
     sheet.classList.remove("open");
   }));
@@ -942,6 +1023,34 @@ function goto(h){
 }
 
 /* --------------------------------------------------------- UI wiring --- */
+// --- filter chips ---
+document.querySelectorAll("#filters .chip").forEach(c=>
+  c.addEventListener("click",()=>{
+    band = c.dataset.band;
+    document.querySelectorAll("#filters .chip").forEach(x=>x.classList.toggle("on", x===c));
+    // A filter that hides the selected building would leave a stranded panel.
+    if(minSel!=null && band!=="all"){ minSel=null; highlight.clearLayers(); }
+    loadBuildings(); drawDistricts();
+    if(!minSel) showOverview();
+  }));
+
+function updateChipCounts(){
+  if(!districtData.length) return;
+  const total = {};
+  for(const a of districtData)
+    for(const [k,v] of Object.entries(a.bands||{})) total[k]=(total[k]||0)+v;
+  const sum = Object.values(total).reduce((x,y)=>x+y,0);
+  document.querySelectorAll("#filters .chip").forEach(c=>{
+    const b=c.dataset.band;
+    const n = b==="all" ? sum
+            : b==="good+" ? (total.good||0)+(total.best||0)
+            : (total[BAND_KEY[b]]||0);
+    let el=c.querySelector(".cnt");
+    if(!el){ el=document.createElement("span"); el.className="cnt"; c.appendChild(el); }
+    el.textContent = n>=1000 ? `${(n/1000).toFixed(1)}k` : n.toLocaleString();
+  });
+}
+
 document.getElementById("btnLayers").addEventListener("click",e=>{
   e.stopPropagation(); document.getElementById("layers").classList.toggle("show");
 });

@@ -151,7 +151,7 @@ def main() -> None:
           f"largest {sizes[-1]/1024:.0f} KB")
 
     build_search(scores)
-    build_districts(scores)
+    build_districts(scores)   # the on-map subset, so counts match the filter
     stamp(len(scores), len(all_scores))
 
 
@@ -190,11 +190,27 @@ def build_search(scores: list[dict]) -> None:
           f"{p.stat().st_size/1e6:.1f} MB raw (~1.4 MB gzipped on the wire)")
 
 
+# Must match LEVELS/BREAKS in index.html.
+BANDS = [("bad", 0, 41), ("poor", 41, 46), ("mid", 46, 52), ("good", 52, 58), ("best", 58, 999)]
+
+
+def band_of(v: float) -> str:
+    for name, lo, hi in BANDS:
+        if lo <= v < hi:
+            return name
+    return "best"
+
+
 def build_districts(scores: list[dict]) -> None:
-    """Per-district aggregates for the overview the page shows before you zoom in."""
+    """Per-district aggregates for the overview the page shows before you zoom in.
+
+    Band counts let the filter answer "which district has the most good stock"
+    without the page having to download every tile to count for itself.
+    """
     import collections
     acc = collections.defaultdict(lambda: {"n": 0, "sum": 0.0, "lon": 0.0, "lat": 0.0,
-                                           "patterns": collections.Counter()})
+                                           "patterns": collections.Counter(),
+                                           "bands": collections.Counter()})
     for r in scores:
         d = r.get("district")
         if not d:
@@ -204,6 +220,7 @@ def build_districts(scores: list[dict]) -> None:
         a["sum"] += r["total"]
         a["lon"] += r["lon"]
         a["lat"] += r["lat"]
+        a["bands"][band_of(r["total"])] += 1
         if r.get("pattern"):
             a["patterns"][r["pattern"]] += 1
 
@@ -212,14 +229,18 @@ def build_districts(scores: list[dict]) -> None:
             "avg": round(a["sum"] / a["n"], 2),
             "lon": round(a["lon"] / a["n"], 5),
             "lat": round(a["lat"] / a["n"], 5),
-            "patterns": dict(a["patterns"])}
+            "patterns": dict(a["patterns"]),
+            "bands": dict(a["bands"])}
            for d, a in acc.items()]
     out.sort(key=lambda r: -r["avg"])
     (DATA / "district_stats.json").write_text(
         json.dumps(out, separators=(",", ":"), ensure_ascii=False))
     print(f"district stats: {len(out)} districts")
     for r in out:
-        print(f"  {r['tc']:<7} {r['avg']:>6.2f}  ({r['n']:,} buildings)")
+        b = r["bands"]
+        print(f"  {r['tc']:<7} {r['avg']:>6.2f}  {r['n']:>6,} 棟 "
+              f"| 大吉 {b.get('best',0):>5,}  吉 {b.get('good',0):>5,}  "
+              f"差 {b.get('bad',0):>5,}")
 
 
 if __name__ == "__main__":
