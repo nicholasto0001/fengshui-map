@@ -39,8 +39,13 @@ jobs:
 
       - run: pip install -r pipeline/requirements.txt
 
+      # Restore and save are split deliberately. actions/cache only writes its
+      # cache in a post step that is skipped when the job fails, so one broken
+      # deploy forced the next run to re-crawl CSDI from scratch — 23 minutes
+      # thrown away for a fault that had nothing to do with the data.
       - name: Restore the CSDI crawl
-        uses: actions/cache@v4
+        id: crawlcache
+        uses: actions/cache/restore@v4
         with:
           path: |
             data/buildings.json
@@ -79,6 +84,16 @@ jobs:
           python pipeline/fetch_op.py
           python pipeline/fetch_districts.py
           python pipeline/fetch_facilities.py
+
+      # Saved as soon as the crawl lands, before anything downstream can fail.
+      - name: Save the CSDI crawl
+        if: steps.fresh.outputs.stale == 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            data/buildings.json
+            data/op.json
+          key: csdi-${{ github.run_id }}
 
       - name: Score and tile
         run: |
