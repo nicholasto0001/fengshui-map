@@ -2928,15 +2928,57 @@ const beats = score => {
   return p == null ? "" : `贏全港 ${p}% 住宅`;
 };
 
-function shareBuilding(o){
+/* 畫張卡出嚟，分享張圖本身。
+
+   收到嘅人第一眼望個圖，唔係望字。而家嗰個 OG 卡係逐個分數預先整定,
+   全港所有 80 分嘅樓共用一張，所以入面冇可能有樓名 —— 收到嘅人見到
+   「80 大吉」但唔知講緊邊幢樓。
+
+   逐幢樓喺伺服器即場畫要成套中文字體，Worker 放唔落。但瀏覽器本身
+   就有中文字體，所以喺部機度畫。唔支援分享檔案就跌返落連結分享,
+   OG 卡照樣做後備。 */
+let brandMark = null, cardMod = null;
+async function cardBits(){
+  if(!cardMod) cardMod = import("./card.js?v=" + BUILD_ID);
+  if(!brandMark){
+    brandMark = await new Promise(res => {
+      const im = new Image();
+      im.onload = () => res(im);
+      im.onerror = () => res(null);       // 冇 logo 一樣畫得出
+      im.src = "/icon-192.png";
+    });
+  }
+  return cardMod;
+}
+
+async function shareBuilding(o){
   const name = clean(o.tc) || clean(o.en) || "呢棟樓";
   const lvl  = (levelFor(o.total)||{}).label || "";
   const rank = beats(o.total);
-  doShare("香港風水地圖",
-    [`${name} 風水 ${num(o.total,0)} 分（${lvl}）${rank ? " · " + rank : ""}`,
-     `撳入嚟睇點解係呢個分數 —— 山水方位、坐向、玄空飛星盤全部有拆解。`,
-     ONELINE].join("\n"),
-    shareUrl({b: pack([o])}), "building");
+  const text = [`${name} 風水 ${num(o.total,0)} 分（${lvl}）${rank ? " · " + rank : ""}`,
+                `撳入嚟睇點解係呢個分數 —— 山水方位、坐向、玄空飛星盤全部有拆解。`,
+                ONELINE].join("\n");
+  const url = shareUrl({b: pack([o])});
+
+  if(o.res !== 0 && navigator.canShare){
+    try{
+      const m = await cardBits();
+      const blob = await (await m).buildingCard(o, {
+        name, en: clean(o.en), district: clean(o.district),
+        level: lvl, rank, mark: brandMark});
+      const file = new File([blob], `${name}.png`, {type: "image/png"});
+      if(navigator.canShare({files: [file]})){
+        trip.shared = true;
+        track("share", {what: "building_card", url});
+        nudgeSave({...nudgeState(), done: true});
+        hideNudge();
+        try{ await navigator.share({files: [file], text: `${text}\n${url}`}); }
+        catch{}
+        return;
+      }
+    }catch(e){ /* 畫唔到就當冇呢回事，跌返落連結分享 */ }
+  }
+  doShare("香港風水地圖", text, url, "building");
 }
 
 function shareList(){

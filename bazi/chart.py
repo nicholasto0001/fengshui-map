@@ -63,6 +63,7 @@ class Chart:
     hour: str
     solar: str          # 用嚟排盤嗰個時刻（可能已經校正過真太陽時）
     notes: list
+    bazi_year: int      # 立春為界嘅年份 —— 命卦要用呢個，唔係公曆年
 
     @property
     def pillars(self):
@@ -202,7 +203,7 @@ def build(y: int, m: int, d: int, hh: int, mm: int = 0, *,
             break
 
     return Chart(gz(ypil), gz(mpil), gz(day_i), gz(hpil),
-                 f"{sy}-{smo:02d}-{sd:02d} {sh:02d}:{smi:02d}", notes)
+                 f"{sy}-{smo:02d}-{sd:02d} {sh:02d}:{smi:02d}", notes, bazi_year)
 
 
 def alt_hour(y: int, m: int, d: int, hh: int, mm: int = 0, *,
