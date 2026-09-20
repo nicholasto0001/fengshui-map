@@ -26,6 +26,7 @@ import io
 import json
 import pathlib
 import sys
+import time
 import urllib.request
 import zipfile
 
@@ -37,9 +38,22 @@ OUT = pathlib.Path(__file__).parent.parent / "data" / "bd_age.json"
 
 # The file is named .csv but is served as a zip archive.
 def load_rows() -> list[dict]:
-    req = urllib.request.Request(URL, headers={"User-Agent": UA})
-    with urllib.request.urlopen(req, timeout=180, context=SSL_CTX) as r:
-        blob = r.read()
+    # A government server having a slow minute should not be the reason a
+    # deploy fails, so this waits and tries again rather than giving up on
+    # the first refused connection.
+    blob = None
+    for attempt in range(4):
+        try:
+            req = urllib.request.Request(URL, headers={"User-Agent": UA})
+            with urllib.request.urlopen(req, timeout=180, context=SSL_CTX) as r:
+                blob = r.read()
+            break
+        except Exception as e:
+            if attempt == 3:
+                raise
+            wait = 5 * (attempt + 1)
+            print(f"  attempt {attempt+1} failed ({e}); retrying in {wait}s")
+            time.sleep(wait)
     print(f"downloaded {len(blob)/1e6:.1f} MB")
 
     if blob[:2] == b"PK":

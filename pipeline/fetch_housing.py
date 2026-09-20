@@ -24,6 +24,7 @@ import json
 import pathlib
 import re
 import sys
+import time
 import unicodedata
 import urllib.request
 
@@ -101,9 +102,17 @@ POSITIONAL = re.compile(
 
 
 def fetch(url: str) -> list:
-    req = urllib.request.Request(url, headers={"User-Agent": UA})
-    with urllib.request.urlopen(req, timeout=120, context=SSL_CTX) as r:
-        return json.loads(r.read().decode("utf-8"))
+    for attempt in range(4):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": UA})
+            with urllib.request.urlopen(req, timeout=120, context=SSL_CTX) as r:
+                return json.loads(r.read().decode("utf-8"))
+        except Exception as e:
+            if attempt == 3:
+                raise
+            wait = 5 * (attempt + 1)
+            print(f"  attempt {attempt+1} failed ({e}); retrying in {wait}s")
+            time.sleep(wait)
 
 
 def main() -> None:

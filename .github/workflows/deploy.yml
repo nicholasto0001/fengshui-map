@@ -134,16 +134,50 @@ jobs:
             data/op.json
           key: csdi-${{ github.run_id }}
 
-      # Outside the cache gate on purpose. These are two plain file downloads,
-      # not a 213k-record crawl, and the cache only carries buildings.json and
-      # op.json — so riding on it meant every push on a day the crawl was
-      # already cached deployed with no 樓齡 records and no 房委會 register at
-      # all: 元運 silently back from 30.3% to 23.5%, and the official use class
-      # gone, which is what keeps a substation from being graded as a home.
+      # Outside the CSDI cache gate on purpose. These are two plain file
+      # downloads, not a 213k-record crawl, and that cache only carries
+      # buildings.json and op.json — so riding on it meant every push on a day
+      # the crawl was already cached deployed with no 樓齡 records and no
+      # 房委會 register at all: 元運 silently back from 30.3% to 23.5%, and the
+      # official use class gone, which is what keeps a substation from being
+      # graded as a home.
+      #
+      # They get their own cache, restored before and saved after, purely as a
+      # fallback: a government server having a slow minute took down a whole
+      # deploy once, and shipping without the data is worse than shipping
+      # yesterday's copy of it.
+      - name: Restore the registers
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            data/bd_age.json
+            data/housing.json
+          key: registers-${{ github.run_id }}
+          restore-keys: registers-
+
       - name: Fetch the age and housing registers
         run: |
-          python pipeline/fetch_bd_age.py
-          python pipeline/fetch_housing.py
+          for name in fetch_bd_age fetch_housing; do
+            case "$name" in
+              fetch_bd_age)  f=data/bd_age.json ;;
+              fetch_housing) f=data/housing.json ;;
+            esac
+            if python "pipeline/$name.py"; then continue; fi
+            if [ -s "$f" ]; then
+              echo "::warning::$name failed; using the cached $f from $(date -u -r "$f")"
+            else
+              echo "::error::$name failed and there is no cached $f to fall back to"
+              exit 1
+            fi
+          done
+
+      - name: Save the registers
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            data/bd_age.json
+            data/housing.json
+          key: registers-${{ github.run_id }}
 
       - name: Score and tile
         run: |
