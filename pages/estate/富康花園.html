@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>富康花園風水評分</h1>
 <p class="sub">西貢區 · 1998 年入伙 · 10 座 · 3,903 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/富康花園.jpg" alt="富康花園航空影像，12 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:34.85%;top:26.0%">富康花園第十座<b>73</b></span><span class="pl" style="left:18.93%;top:34.31%">富康花園第一座<b>72</b></span><span class="pl" style="left:24.06%;top:48.85%">富康花園第二座<b>72</b></span><span class="pl" style="left:29.25%;top:63.3%">富康花園第三座<b>72</b></span><span class="pl" style="left:34.87%;top:77.82%">富康花園第四座<b>72</b></span><span class="pl" style="left:67.33%;top:47.78%"><b>53</b></span><span class="pl" style="left:60.33%;top:63.63%">富康花園第七座<b>52</b></span><span class="pl" style="left:52.76%;top:50.86%">富康花園第八座<b>52</b></span><span class="pl" style="left:48.42%;top:21.39%"><b>52</b></span><span class="pl" style="left:45.34%;top:37.79%">富康花園第九座<b>52</b></span><span class="pl" style="left:51.56%;top:76.23%">富康花園第五座<b>52</b></span><span class="pl" style="left:68.0%;top:76.81%">富康花園第六座<b>51</b></span>
+  <div class="pw" style="aspect-ratio:504/487">
+    <img src="/plan/富康花園.jpg" alt="富康花園航空影像，12 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="504" height="487"
+       loading="lazy" decoding="async"><span class="pl" style="left:34.85%;top:26.0%">富康花園第十座<b>73</b></span><span class="pl" style="left:18.93%;top:34.31%">富康花園第一座<b>72</b></span><span class="pl" style="left:24.06%;top:48.85%">富康花園第二座<b>72</b></span><span class="pl" style="left:29.25%;top:63.3%">富康花園第三座<b>72</b></span><span class="pl" style="left:34.87%;top:77.82%">富康花園第四座<b>72</b></span><span class="pl" style="left:67.33%;top:47.78%"><b>53</b></span><span class="pl" style="left:60.33%;top:63.63%">富康花園第七座<b>52</b></span><span class="pl" style="left:52.76%;top:50.86%">富康花園第八座<b>52</b></span><span class="pl" style="left:48.42%;top:21.39%"><b>52</b></span><span class="pl" style="left:45.34%;top:37.79%">富康花園第九座<b>52</b></span><span class="pl" style="left:51.56%;top:76.23%">富康花園第五座<b>52</b></span><span class="pl" style="left:68.0%;top:76.81%">富康花園第六座<b>51</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>富康花園 12 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>富寶花園風水評分</h1>
 <p class="sub">沙田區 · 1993 年入伙 · 12 座 · 4,068 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/富寶花園.jpg" alt="富寶花園航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:53.26%;top:31.21%">富寶花園第５座<b>76</b></span><span class="pl" style="left:35.06%;top:38.74%">富寶花園第３座<b>68</b></span><span class="pl" style="left:83.2%;top:42.96%">富寶花園第７座<b>66</b></span><span class="pl" style="left:62.28%;top:27.26%">富寶花園第６座<b>46</b></span><span class="pl" style="left:44.09%;top:35.1%">富寶花園第４座<b>45</b></span><span class="pl" style="left:25.96%;top:42.75%">富寶花園第２座<b>45</b></span><span class="pl" style="left:67.97%;top:30.28%"><b>45</b></span><span class="pl" style="left:16.97%;top:46.62%">富寶花園第１座<b>45</b></span><span class="pl" style="left:72.57%;top:60.49%">富寶花園第９座<b>45</b></span><span class="pl" style="left:63.55%;top:57.01%">富寶花園第１０座<b>45</b></span><span class="pl" style="left:26.36%;top:63.64%">富寶花園第１１座<b>44</b></span><span class="pl" style="left:81.67%;top:64.0%">富寶花園第８座<b>44</b></span><span class="pl" style="left:18.94%;top:73.22%">富寶花園第１２座<b>44</b></span>
+  <div class="pw" style="aspect-ratio:497/316">
+    <img src="/plan/富寶花園.jpg" alt="富寶花園航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="497" height="316"
+       loading="lazy" decoding="async"><span class="pl" style="left:53.26%;top:31.21%">富寶花園第５座<b>76</b></span><span class="pl" style="left:35.06%;top:38.74%">富寶花園第３座<b>68</b></span><span class="pl" style="left:83.2%;top:42.96%">富寶花園第７座<b>66</b></span><span class="pl" style="left:62.28%;top:27.26%">富寶花園第６座<b>46</b></span><span class="pl" style="left:44.09%;top:35.1%">富寶花園第４座<b>45</b></span><span class="pl" style="left:25.96%;top:42.75%">富寶花園第２座<b>45</b></span><span class="pl" style="left:67.97%;top:30.28%"><b>45</b></span><span class="pl" style="left:16.97%;top:46.62%">富寶花園第１座<b>45</b></span><span class="pl" style="left:72.57%;top:60.49%">富寶花園第９座<b>45</b></span><span class="pl" style="left:63.55%;top:57.01%">富寶花園第１０座<b>45</b></span><span class="pl" style="left:26.36%;top:63.64%">富寶花園第１１座<b>44</b></span><span class="pl" style="left:81.67%;top:64.0%">富寶花園第８座<b>44</b></span><span class="pl" style="left:18.94%;top:73.22%">富寶花園第１２座<b>44</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>富寶花園 13 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>漾日居風水評分</h1>
 <p class="sub">油尖旺區 · 2000 年入伙 · 6 座 · 1,160 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/漾日居.jpg" alt="漾日居航空影像，7 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:28.8%;top:65.69%">漾日居第一座<b>46</b></span><span class="pl" style="left:68.14%;top:76.55%">漾日居第三座<b>46</b></span><span class="pl" style="left:46.5%;top:68.61%">漾日居第二座<b>46</b></span><span class="pl" style="left:79.78%;top:80.0%"><b>45</b></span><span class="pl" style="left:66.62%;top:48.35%">漾日居第五座<b>45</b></span><span class="pl" style="left:54.19%;top:22.62%">漾日居第七座<b>45</b></span><span class="pl" style="left:70.76%;top:27.43%">漾日居第六座<b>44</b></span>
+  <div class="pw" style="aspect-ratio:295/435">
+    <img src="/plan/漾日居.jpg" alt="漾日居航空影像，7 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="295" height="435"
+       loading="lazy" decoding="async"><span class="pl" style="left:28.8%;top:65.69%">漾日居第一座<b>46</b></span><span class="pl" style="left:68.14%;top:76.55%">漾日居第三座<b>46</b></span><span class="pl" style="left:46.5%;top:68.61%">漾日居第二座<b>46</b></span><span class="pl" style="left:79.78%;top:80.0%"><b>45</b></span><span class="pl" style="left:66.62%;top:48.35%">漾日居第五座<b>45</b></span><span class="pl" style="left:54.19%;top:22.62%">漾日居第七座<b>45</b></span><span class="pl" style="left:70.76%;top:27.43%">漾日居第六座<b>44</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>漾日居 7 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

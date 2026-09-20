@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>灝景灣風水評分</h1>
 <p class="sub">葵青區 · 1999 年入伙 · 10 座 · 2,612 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/灝景灣.jpg" alt="灝景灣航空影像，10 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:53.17%;top:19.23%">灝景灣第六座<b>82</b></span><span class="pl" style="left:77.03%;top:54.78%">灝景灣第九座<b>74</b></span><span class="pl" style="left:20.75%;top:52.27%">灝景灣第一座<b>73</b></span><span class="pl" style="left:81.77%;top:81.76%">灝景灣第十一座<b>73</b></span><span class="pl" style="left:21.36%;top:39.16%">灝景灣第二座<b>60</b></span><span class="pl" style="left:37.48%;top:18.92%">灝景灣第五座<b>60</b></span><span class="pl" style="left:21.66%;top:19.29%">灝景灣第三座<b>60</b></span><span class="pl" style="left:79.32%;top:69.22%">灝景灣第十座<b>59</b></span><span class="pl" style="left:68.58%;top:19.97%">灝景灣第七座<b>52</b></span><span class="pl" style="left:74.77%;top:40.23%">灝景灣第八座<b>51</b></span>
+  <div class="pw" style="aspect-ratio:463/515">
+    <img src="/plan/灝景灣.jpg" alt="灝景灣航空影像，10 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="463" height="515"
+       loading="lazy" decoding="async"><span class="pl" style="left:53.17%;top:19.23%">灝景灣第六座<b>82</b></span><span class="pl" style="left:77.03%;top:54.78%">灝景灣第九座<b>74</b></span><span class="pl" style="left:20.75%;top:52.27%">灝景灣第一座<b>73</b></span><span class="pl" style="left:81.77%;top:81.76%">灝景灣第十一座<b>73</b></span><span class="pl" style="left:21.36%;top:39.16%">灝景灣第二座<b>60</b></span><span class="pl" style="left:37.48%;top:18.92%">灝景灣第五座<b>60</b></span><span class="pl" style="left:21.66%;top:19.29%">灝景灣第三座<b>60</b></span><span class="pl" style="left:79.32%;top:69.22%">灝景灣第十座<b>59</b></span><span class="pl" style="left:68.58%;top:19.97%">灝景灣第七座<b>52</b></span><span class="pl" style="left:74.77%;top:40.23%">灝景灣第八座<b>51</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>灝景灣 10 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

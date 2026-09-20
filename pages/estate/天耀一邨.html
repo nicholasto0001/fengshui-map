@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>天耀一邨風水評分</h1>
 <p class="sub">元朗區 · 1992 年入伙 · 6 座 · 4,556 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/天耀一邨.jpg" alt="天耀一邨航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:77.83%;top:64.27%">耀逸樓<b>66</b></span><span class="pl" style="left:73.33%;top:51.7%">耀興樓<b>44</b></span><span class="pl" style="left:68.06%;top:79.09%">耀富樓<b>44</b></span><span class="pl" style="left:49.13%;top:81.62%">耀康樓<b>43</b></span><span class="pl" style="left:43.76%;top:67.35%">耀民樓<b>43</b></span><span class="pl" style="left:20.35%;top:19.75%">耀盛樓<b>42</b></span>
+  <div class="pw" style="aspect-ratio:410/457">
+    <img src="/plan/天耀一邨.jpg" alt="天耀一邨航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="410" height="457"
+       loading="lazy" decoding="async"><span class="pl" style="left:77.83%;top:64.27%">耀逸樓<b>66</b></span><span class="pl" style="left:73.33%;top:51.7%">耀興樓<b>44</b></span><span class="pl" style="left:68.06%;top:79.09%">耀富樓<b>44</b></span><span class="pl" style="left:49.13%;top:81.62%">耀康樓<b>43</b></span><span class="pl" style="left:43.76%;top:67.35%">耀民樓<b>43</b></span><span class="pl" style="left:20.35%;top:19.75%">耀盛樓<b>42</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>天耀一邨 6 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

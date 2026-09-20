@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>禾輋邨風水評分</h1>
 <p class="sub">沙田區 · 1977 年入伙 · 13 座 · 6,124 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/禾輋邨.jpg" alt="禾輋邨航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:19.9%;top:80.82%">豐和樓<b>71</b></span><span class="pl" style="left:39.66%;top:62.34%">德和樓<b>64</b></span><span class="pl" style="left:39.46%;top:48.34%">厚和樓<b>64</b></span><span class="pl" style="left:53.66%;top:49.88%">智和樓<b>64</b></span><span class="pl" style="left:26.68%;top:66.83%">順和樓<b>64</b></span><span class="pl" style="left:33.23%;top:80.08%">康和樓<b>64</b></span><span class="pl" style="left:76.21%;top:28.16%">欣和樓<b>44</b></span><span class="pl" style="left:76.36%;top:17.02%">美和樓<b>44</b></span><span class="pl" style="left:76.64%;top:41.82%">協和樓<b>44</b></span><span class="pl" style="left:63.74%;top:33.86%">富和樓<b>44</b></span><span class="pl" style="left:16.27%;top:47.11%">景和樓<b>44</b></span><span class="pl" style="left:57.23%;top:20.5%">民和樓<b>44</b></span><span class="pl" style="left:50.3%;top:34.74%">泰和樓<b>43</b></span>
+  <div class="pw" style="aspect-ratio:545/599">
+    <img src="/plan/禾輋邨.jpg" alt="禾輋邨航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="545" height="599"
+       loading="lazy" decoding="async"><span class="pl" style="left:19.9%;top:80.82%">豐和樓<b>71</b></span><span class="pl" style="left:39.66%;top:62.34%">德和樓<b>64</b></span><span class="pl" style="left:39.46%;top:48.34%">厚和樓<b>64</b></span><span class="pl" style="left:53.66%;top:49.88%">智和樓<b>64</b></span><span class="pl" style="left:26.68%;top:66.83%">順和樓<b>64</b></span><span class="pl" style="left:33.23%;top:80.08%">康和樓<b>64</b></span><span class="pl" style="left:76.21%;top:28.16%">欣和樓<b>44</b></span><span class="pl" style="left:76.36%;top:17.02%">美和樓<b>44</b></span><span class="pl" style="left:76.64%;top:41.82%">協和樓<b>44</b></span><span class="pl" style="left:63.74%;top:33.86%">富和樓<b>44</b></span><span class="pl" style="left:16.27%;top:47.11%">景和樓<b>44</b></span><span class="pl" style="left:57.23%;top:20.5%">民和樓<b>44</b></span><span class="pl" style="left:50.3%;top:34.74%">泰和樓<b>43</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>禾輋邨 13 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

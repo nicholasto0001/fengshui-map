@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>聽濤雅苑風水評分</h1>
 <p class="sub">沙田區 · 1998 年入伙 · 11 座 · 1,937 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/聽濤雅苑.jpg" alt="聽濤雅苑航空影像，11 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:30.14%;top:73.73%">聽濤雅苑第九座<b>79</b></span><span class="pl" style="left:38.3%;top:29.26%">聽濤雅苑第二座<b>71</b></span><span class="pl" style="left:48.55%;top:67.84%">聽濤雅苑第八座<b>71</b></span><span class="pl" style="left:19.52%;top:67.62%">聽濤雅苑第十座<b>59</b></span><span class="pl" style="left:21.6%;top:53.47%">聽濤雅苑第十一座<b>58</b></span><span class="pl" style="left:27.37%;top:22.9%">聽濤雅苑第一座<b>50</b></span><span class="pl" style="left:60.1%;top:42.28%">聽濤雅苑第四座<b>47</b></span><span class="pl" style="left:49.56%;top:35.78%">聽濤雅苑第三座<b>47</b></span><span class="pl" style="left:74.54%;top:77.46%">聽濤雅苑第七座<b>47</b></span><span class="pl" style="left:70.6%;top:48.87%">聽濤雅苑第五座<b>47</b></span><span class="pl" style="left:80.78%;top:55.52%">聽濤雅苑第六座<b>46</b></span>
+  <div class="pw" style="aspect-ratio:555/504">
+    <img src="/plan/聽濤雅苑.jpg" alt="聽濤雅苑航空影像，11 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="555" height="504"
+       loading="lazy" decoding="async"><span class="pl" style="left:30.14%;top:73.73%">聽濤雅苑第九座<b>79</b></span><span class="pl" style="left:38.3%;top:29.26%">聽濤雅苑第二座<b>71</b></span><span class="pl" style="left:48.55%;top:67.84%">聽濤雅苑第八座<b>71</b></span><span class="pl" style="left:19.52%;top:67.62%">聽濤雅苑第十座<b>59</b></span><span class="pl" style="left:21.6%;top:53.47%">聽濤雅苑第十一座<b>58</b></span><span class="pl" style="left:27.37%;top:22.9%">聽濤雅苑第一座<b>50</b></span><span class="pl" style="left:60.1%;top:42.28%">聽濤雅苑第四座<b>47</b></span><span class="pl" style="left:49.56%;top:35.78%">聽濤雅苑第三座<b>47</b></span><span class="pl" style="left:74.54%;top:77.46%">聽濤雅苑第七座<b>47</b></span><span class="pl" style="left:70.6%;top:48.87%">聽濤雅苑第五座<b>47</b></span><span class="pl" style="left:80.78%;top:55.52%">聽濤雅苑第六座<b>46</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>聽濤雅苑 11 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

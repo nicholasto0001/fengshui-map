@@ -132,6 +132,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -226,8 +228,10 @@ def plan_figure(name, rep):
     alt = (f"{name}航空影像，{rep['blocks']} 座樓宇輪廓按風水評分上色，"
            f"綠色分高、紅色分低")
     return f"""<figure class="plan">
-  <div class="pw"><img src="/plan/{e(name)}.jpg" alt="{e(alt)}"
-       width="880" height="600" loading="lazy" decoding="async">{lab}
+  <div class="pw" style="aspect-ratio:{rep.get('w',880)}/{rep.get('h',600)}">
+    <img src="/plan/{e(name)}.jpg" alt="{e(alt)}"
+       width="{rep.get('w',880)}" height="{rep.get('h',600)}"
+       loading="lazy" decoding="async">{lab}
     <span class="sc-m">{rep.get('scale_m', 0)} 米</span><span class="nn">北</span></div>
   <figcaption>{e(name)} {rep['blocks']} 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

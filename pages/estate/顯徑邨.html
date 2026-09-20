@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>顯徑邨風水評分</h1>
 <p class="sub">沙田區 · 1986 年入伙 · 8 座 · 5,634 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/顯徑邨.jpg" alt="顯徑邨航空影像，8 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:57.15%;top:39.98%">顯慶樓<b>65</b></span><span class="pl" style="left:80.65%;top:20.18%">顯沛樓<b>49</b></span><span class="pl" style="left:20.74%;top:76.68%">顯運樓<b>49</b></span><span class="pl" style="left:27.33%;top:82.82%">顯貴樓<b>48</b></span><span class="pl" style="left:19.42%;top:65.98%">顯祐樓<b>48</b></span><span class="pl" style="left:38.07%;top:83.07%">顯富樓<b>47</b></span><span class="pl" style="left:59.4%;top:26.44%">顯揚樓<b>42</b></span><span class="pl" style="left:68.04%;top:17.51%">顯德樓<b>41</b></span>
+  <div class="pw" style="aspect-ratio:289/359">
+    <img src="/plan/顯徑邨.jpg" alt="顯徑邨航空影像，8 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="289" height="359"
+       loading="lazy" decoding="async"><span class="pl" style="left:57.15%;top:39.98%">顯慶樓<b>65</b></span><span class="pl" style="left:80.65%;top:20.18%">顯沛樓<b>49</b></span><span class="pl" style="left:20.74%;top:76.68%">顯運樓<b>49</b></span><span class="pl" style="left:27.33%;top:82.82%">顯貴樓<b>48</b></span><span class="pl" style="left:19.42%;top:65.98%">顯祐樓<b>48</b></span><span class="pl" style="left:38.07%;top:83.07%">顯富樓<b>47</b></span><span class="pl" style="left:59.4%;top:26.44%">顯揚樓<b>42</b></span><span class="pl" style="left:68.04%;top:17.51%">顯德樓<b>41</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>顯徑邨 8 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

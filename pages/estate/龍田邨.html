@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>龍田邨風水評分</h1>
 <p class="sub">離島區 · 1980 年入伙 · 8 座</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/龍田邨.jpg" alt="龍田邨航空影像，8 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:49.67%;top:27.35%">天成樓<b>67</b></span><span class="pl" style="left:20.66%;top:63.11%">天福樓<b>46</b></span><span class="pl" style="left:25.63%;top:56.74%">天德樓<b>46</b></span><span class="pl" style="left:46.54%;top:64.84%">天喜樓<b>45</b></span><span class="pl" style="left:42.06%;top:56.06%">天貴樓<b>45</b></span><span class="pl" style="left:35.17%;top:41.39%">天富樓<b>45</b></span><span class="pl" style="left:45.41%;top:36.46%">天財樓<b>45</b></span><span class="pl" style="left:73.25%;top:58.23%">天寧樓<b>45</b></span>
+  <div class="pw" style="aspect-ratio:568/366">
+    <img src="/plan/龍田邨.jpg" alt="龍田邨航空影像，8 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="568" height="366"
+       loading="lazy" decoding="async"><span class="pl" style="left:49.67%;top:27.35%">天成樓<b>67</b></span><span class="pl" style="left:20.66%;top:63.11%">天福樓<b>46</b></span><span class="pl" style="left:25.63%;top:56.74%">天德樓<b>46</b></span><span class="pl" style="left:46.54%;top:64.84%">天喜樓<b>45</b></span><span class="pl" style="left:42.06%;top:56.06%">天貴樓<b>45</b></span><span class="pl" style="left:35.17%;top:41.39%">天富樓<b>45</b></span><span class="pl" style="left:45.41%;top:36.46%">天財樓<b>45</b></span><span class="pl" style="left:73.25%;top:58.23%">天寧樓<b>45</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>龍田邨 8 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

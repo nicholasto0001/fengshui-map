@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>海韻花園風水評分</h1>
 <p class="sub">荃灣區 · 1992 年入伙 · 11 座 · 996 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/海韻花園.jpg" alt="海韻花園航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:17.9%;top:62.98%">海韻花園俱樂部<b>75</b></span><span class="pl" style="left:22.33%;top:44.22%">海韻花園第１座<b>61</b></span><span class="pl" style="left:21.81%;top:42.44%">海韻花園第１座<b>61</b></span><span class="pl" style="left:37.39%;top:41.7%">海韻花園第２座<b>52</b></span><span class="pl" style="left:79.64%;top:53.14%">海韻花園第５座<b>52</b></span><span class="pl" style="left:37.57%;top:39.55%">海韻花園第２座<b>45</b></span><span class="pl" style="left:50.99%;top:44.22%">海韻花園第３座<b>45</b></span><span class="pl" style="left:43.88%;top:47.13%"><b>45</b></span><span class="pl" style="left:51.05%;top:41.47%">海韻花園第３座<b>45</b></span><span class="pl" style="left:57.88%;top:49.46%"><b>44</b></span><span class="pl" style="left:64.22%;top:45.97%">海韻花園第４座<b>44</b></span><span class="pl" style="left:64.59%;top:43.52%">海韻花園第４座<b>44</b></span><span class="pl" style="left:79.91%;top:51.04%">海韻花園第５座<b>44</b></span>
+  <div class="pw" style="aspect-ratio:514/260">
+    <img src="/plan/海韻花園.jpg" alt="海韻花園航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="514" height="260"
+       loading="lazy" decoding="async"><span class="pl" style="left:17.9%;top:62.98%">海韻花園俱樂部<b>75</b></span><span class="pl" style="left:22.33%;top:44.22%">海韻花園第１座<b>61</b></span><span class="pl" style="left:21.81%;top:42.44%">海韻花園第１座<b>61</b></span><span class="pl" style="left:37.39%;top:41.7%">海韻花園第２座<b>52</b></span><span class="pl" style="left:79.64%;top:53.14%">海韻花園第５座<b>52</b></span><span class="pl" style="left:37.57%;top:39.55%">海韻花園第２座<b>45</b></span><span class="pl" style="left:50.99%;top:44.22%">海韻花園第３座<b>45</b></span><span class="pl" style="left:43.88%;top:47.13%"><b>45</b></span><span class="pl" style="left:51.05%;top:41.47%">海韻花園第３座<b>45</b></span><span class="pl" style="left:57.88%;top:49.46%"><b>44</b></span><span class="pl" style="left:64.22%;top:45.97%">海韻花園第４座<b>44</b></span><span class="pl" style="left:64.59%;top:43.52%">海韻花園第４座<b>44</b></span><span class="pl" style="left:79.91%;top:51.04%">海韻花園第５座<b>44</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>海韻花園 13 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

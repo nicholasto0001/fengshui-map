@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>泓景臺風水評分</h1>
 <p class="sub">深水埗區 · 2003 年入伙 · 7 座 · 2,301 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/泓景臺.jpg" alt="泓景臺航空影像，7 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:21.83%;top:59.45%">泓景臺第二座<b>47</b></span><span class="pl" style="left:29.23%;top:77.64%">泓景臺第三座<b>47</b></span><span class="pl" style="left:27.39%;top:40.55%">泓景臺第一座<b>47</b></span><span class="pl" style="left:71.12%;top:75.18%">泓景臺第五座<b>47</b></span><span class="pl" style="left:74.17%;top:40.94%">泓景臺第七座<b>47</b></span><span class="pl" style="left:74.63%;top:24.97%">泓景臺第八座<b>47</b></span><span class="pl" style="left:76.0%;top:57.45%">泓景臺第六座<b>47</b></span>
+  <div class="pw" style="aspect-ratio:324/373">
+    <img src="/plan/泓景臺.jpg" alt="泓景臺航空影像，7 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="324" height="373"
+       loading="lazy" decoding="async"><span class="pl" style="left:21.83%;top:59.45%">泓景臺第二座<b>47</b></span><span class="pl" style="left:29.23%;top:77.64%">泓景臺第三座<b>47</b></span><span class="pl" style="left:27.39%;top:40.55%">泓景臺第一座<b>47</b></span><span class="pl" style="left:71.12%;top:75.18%">泓景臺第五座<b>47</b></span><span class="pl" style="left:74.17%;top:40.94%">泓景臺第七座<b>47</b></span><span class="pl" style="left:74.63%;top:24.97%">泓景臺第八座<b>47</b></span><span class="pl" style="left:76.0%;top:57.45%">泓景臺第六座<b>47</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>泓景臺 7 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

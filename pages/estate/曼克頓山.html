@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>曼克頓山風水評分</h1>
 <p class="sub">深水埗區 · 2006 年入伙 · 6 座 · 1,027 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/曼克頓山.jpg" alt="曼克頓山航空影像，11 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:62.31%;top:26.79%"><b>48</b></span><span class="pl" style="left:46.81%;top:23.66%"><b>48</b></span><span class="pl" style="left:57.71%;top:20.88%">Manhatta<b>48</b></span><span class="pl" style="left:32.25%;top:80.33%">Manhatta<b>42</b></span><span class="pl" style="left:35.86%;top:77.65%"><b>42</b></span><span class="pl" style="left:39.04%;top:76.0%"><b>42</b></span><span class="pl" style="left:44.34%;top:75.04%">Manhatta<b>42</b></span><span class="pl" style="left:33.08%;top:61.84%"><b>42</b></span><span class="pl" style="left:43.01%;top:59.48%">Manhatta<b>42</b></span><span class="pl" style="left:43.21%;top:46.43%">曼坊<b>41</b></span><span class="pl" style="left:51.13%;top:40.38%">Manhatta<b>41</b></span>
+  <div class="pw" style="aspect-ratio:258/512">
+    <img src="/plan/曼克頓山.jpg" alt="曼克頓山航空影像，11 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="258" height="512"
+       loading="lazy" decoding="async"><span class="pl" style="left:62.31%;top:26.79%"><b>48</b></span><span class="pl" style="left:46.81%;top:23.66%"><b>48</b></span><span class="pl" style="left:57.71%;top:20.88%">Manhatta<b>48</b></span><span class="pl" style="left:32.25%;top:80.33%">Manhatta<b>42</b></span><span class="pl" style="left:35.86%;top:77.65%"><b>42</b></span><span class="pl" style="left:39.04%;top:76.0%"><b>42</b></span><span class="pl" style="left:44.34%;top:75.04%">Manhatta<b>42</b></span><span class="pl" style="left:33.08%;top:61.84%"><b>42</b></span><span class="pl" style="left:43.01%;top:59.48%">Manhatta<b>42</b></span><span class="pl" style="left:43.21%;top:46.43%">曼坊<b>41</b></span><span class="pl" style="left:51.13%;top:40.38%">Manhatta<b>41</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>曼克頓山 11 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>卓爾居風水評分</h1>
 <p class="sub">屯門區 · 1998 年入伙 · 6 座 · 1,479 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/卓爾居.jpg" alt="卓爾居航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:23.2%;top:85.63%"><b>66</b></span><span class="pl" style="left:71.02%;top:31.28%">卓爾居第２座<b>53</b></span><span class="pl" style="left:79.21%;top:20.55%">卓爾居第１座<b>53</b></span><span class="pl" style="left:56.88%;top:79.46%"><b>50</b></span><span class="pl" style="left:84.26%;top:19.86%"><b>49</b></span><span class="pl" style="left:71.25%;top:14.51%"><b>49</b></span><span class="pl" style="left:62.73%;top:41.88%">卓爾居第３座<b>48</b></span><span class="pl" style="left:60.86%;top:69.66%">卓爾居第５座<b>47</b></span><span class="pl" style="left:45.84%;top:74.31%"><b>46</b></span><span class="pl" style="left:41.16%;top:71.53%"><b>46</b></span><span class="pl" style="left:19.76%;top:81.81%"><b>46</b></span><span class="pl" style="left:30.85%;top:80.9%">卓爾居第７座<b>46</b></span><span class="pl" style="left:46.51%;top:78.86%">卓爾居第６座<b>46</b></span>
+  <div class="pw" style="aspect-ratio:466/595">
+    <img src="/plan/卓爾居.jpg" alt="卓爾居航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="466" height="595"
+       loading="lazy" decoding="async"><span class="pl" style="left:23.2%;top:85.63%"><b>66</b></span><span class="pl" style="left:71.02%;top:31.28%">卓爾居第２座<b>53</b></span><span class="pl" style="left:79.21%;top:20.55%">卓爾居第１座<b>53</b></span><span class="pl" style="left:56.88%;top:79.46%"><b>50</b></span><span class="pl" style="left:84.26%;top:19.86%"><b>49</b></span><span class="pl" style="left:71.25%;top:14.51%"><b>49</b></span><span class="pl" style="left:62.73%;top:41.88%">卓爾居第３座<b>48</b></span><span class="pl" style="left:60.86%;top:69.66%">卓爾居第５座<b>47</b></span><span class="pl" style="left:45.84%;top:74.31%"><b>46</b></span><span class="pl" style="left:41.16%;top:71.53%"><b>46</b></span><span class="pl" style="left:19.76%;top:81.81%"><b>46</b></span><span class="pl" style="left:30.85%;top:80.9%">卓爾居第７座<b>46</b></span><span class="pl" style="left:46.51%;top:78.86%">卓爾居第６座<b>46</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>卓爾居 13 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

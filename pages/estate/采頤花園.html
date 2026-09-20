@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>采頤花園風水評分</h1>
 <p class="sub">黃大仙區 · 2000 年入伙 · 12 座 · 2,909 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/采頤花園.jpg" alt="采頤花園航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:20.17%;top:48.68%">采頤花園第十座<b>41</b></span><span class="pl" style="left:30.84%;top:80.36%">采頤花園第八座<b>41</b></span><span class="pl" style="left:26.21%;top:64.94%">采頤花園第九座<b>41</b></span><span class="pl" style="left:33.74%;top:49.78%">采頤花園第十一座<b>41</b></span><span class="pl" style="left:46.93%;top:76.47%">采頤花園第七座<b>41</b></span><span class="pl" style="left:58.2%;top:19.94%">采頤花園第一座<b>40</b></span><span class="pl" style="left:63.1%;top:32.86%">采頤花園第二座<b>40</b></span><span class="pl" style="left:62.09%;top:74.02%">采頤花園第六座<b>40</b></span><span class="pl" style="left:52.18%;top:50.62%">采頤花園第十二座<b>40</b></span><span class="pl" style="left:78.1%;top:74.9%">采頤花園第五座<b>40</b></span><span class="pl" style="left:85.14%;top:82.66%"><b>40</b></span><span class="pl" style="left:72.84%;top:60.25%">采頤花園第四座<b>40</b></span><span class="pl" style="left:67.86%;top:46.5%">采頤花園第三座<b>40</b></span>
+  <div class="pw" style="aspect-ratio:519/542">
+    <img src="/plan/采頤花園.jpg" alt="采頤花園航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="519" height="542"
+       loading="lazy" decoding="async"><span class="pl" style="left:20.17%;top:48.68%">采頤花園第十座<b>41</b></span><span class="pl" style="left:30.84%;top:80.36%">采頤花園第八座<b>41</b></span><span class="pl" style="left:26.21%;top:64.94%">采頤花園第九座<b>41</b></span><span class="pl" style="left:33.74%;top:49.78%">采頤花園第十一座<b>41</b></span><span class="pl" style="left:46.93%;top:76.47%">采頤花園第七座<b>41</b></span><span class="pl" style="left:58.2%;top:19.94%">采頤花園第一座<b>40</b></span><span class="pl" style="left:63.1%;top:32.86%">采頤花園第二座<b>40</b></span><span class="pl" style="left:62.09%;top:74.02%">采頤花園第六座<b>40</b></span><span class="pl" style="left:52.18%;top:50.62%">采頤花園第十二座<b>40</b></span><span class="pl" style="left:78.1%;top:74.9%">采頤花園第五座<b>40</b></span><span class="pl" style="left:85.14%;top:82.66%"><b>40</b></span><span class="pl" style="left:72.84%;top:60.25%">采頤花園第四座<b>40</b></span><span class="pl" style="left:67.86%;top:46.5%">采頤花園第三座<b>40</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>采頤花園 13 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

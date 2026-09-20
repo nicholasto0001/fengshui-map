@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>利安邨風水評分</h1>
 <p class="sub">沙田區 · 1993 年入伙 · 6 座 · 3,557 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/利安邨.jpg" alt="利安邨航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:62.52%;top:56.93%">利興樓<b>57</b></span><span class="pl" style="left:46.84%;top:19.55%">利榮樓<b>52</b></span><span class="pl" style="left:74.6%;top:30.87%">利華樓<b>52</b></span><span class="pl" style="left:58.22%;top:33.92%">利華樓<b>51</b></span><span class="pl" style="left:61.62%;top:71.93%">利盛樓<b>50</b></span><span class="pl" style="left:36.26%;top:79.96%">利豐樓<b>48</b></span>
+  <div class="pw" style="aspect-ratio:222/432">
+    <img src="/plan/利安邨.jpg" alt="利安邨航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="222" height="432"
+       loading="lazy" decoding="async"><span class="pl" style="left:62.52%;top:56.93%">利興樓<b>57</b></span><span class="pl" style="left:46.84%;top:19.55%">利榮樓<b>52</b></span><span class="pl" style="left:74.6%;top:30.87%">利華樓<b>52</b></span><span class="pl" style="left:58.22%;top:33.92%">利華樓<b>51</b></span><span class="pl" style="left:61.62%;top:71.93%">利盛樓<b>50</b></span><span class="pl" style="left:36.26%;top:79.96%">利豐樓<b>48</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>利安邨 6 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

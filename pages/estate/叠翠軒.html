@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>叠翠軒風水評分</h1>
 <p class="sub">西貢區 · 1998 年入伙 · 4 座 · 1,360 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/叠翠軒.jpg" alt="叠翠軒航空影像，7 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:77.29%;top:44.75%">叠翠軒第４座<b>61</b></span><span class="pl" style="left:55.01%;top:24.7%"><b>61</b></span><span class="pl" style="left:54.04%;top:81.4%"><b>39</b></span><span class="pl" style="left:58.71%;top:65.32%">叠翠軒第３座<b>39</b></span><span class="pl" style="left:19.05%;top:69.24%"><b>38</b></span><span class="pl" style="left:42.45%;top:40.41%">叠翠軒第２座<b>38</b></span><span class="pl" style="left:22.61%;top:58.56%">叠翠軒第１座<b>38</b></span>
+  <div class="pw" style="aspect-ratio:665/557">
+    <img src="/plan/叠翠軒.jpg" alt="叠翠軒航空影像，7 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="665" height="557"
+       loading="lazy" decoding="async"><span class="pl" style="left:77.29%;top:44.75%">叠翠軒第４座<b>61</b></span><span class="pl" style="left:55.01%;top:24.7%"><b>61</b></span><span class="pl" style="left:54.04%;top:81.4%"><b>39</b></span><span class="pl" style="left:58.71%;top:65.32%">叠翠軒第３座<b>39</b></span><span class="pl" style="left:19.05%;top:69.24%"><b>38</b></span><span class="pl" style="left:42.45%;top:40.41%">叠翠軒第２座<b>38</b></span><span class="pl" style="left:22.61%;top:58.56%">叠翠軒第１座<b>38</b></span>
     <span class="sc-m">50 米</span><span class="nn">北</span></div>
   <figcaption>叠翠軒 7 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

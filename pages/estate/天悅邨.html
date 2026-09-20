@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>天悅邨風水評分</h1>
 <p class="sub">元朗區 · 2000 年入伙 · 6 座 · 4,024 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/天悅邨.jpg" alt="天悅邨航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:21.84%;top:50.89%">悅泰樓<b>51</b></span><span class="pl" style="left:40.78%;top:50.93%">悅華樓<b>51</b></span><span class="pl" style="left:69.66%;top:70.65%">天悅邨服務設施大<b>51</b></span><span class="pl" style="left:78.32%;top:50.96%">悅貴樓<b>50</b></span><span class="pl" style="left:59.62%;top:50.82%">悅榮樓<b>49</b></span><span class="pl" style="left:78.33%;top:28.53%">悅富樓<b>49</b></span>
+  <div class="pw" style="aspect-ratio:578/450">
+    <img src="/plan/天悅邨.jpg" alt="天悅邨航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="578" height="450"
+       loading="lazy" decoding="async"><span class="pl" style="left:21.84%;top:50.89%">悅泰樓<b>51</b></span><span class="pl" style="left:40.78%;top:50.93%">悅華樓<b>51</b></span><span class="pl" style="left:69.66%;top:70.65%">天悅邨服務設施大<b>51</b></span><span class="pl" style="left:78.32%;top:50.96%">悅貴樓<b>50</b></span><span class="pl" style="left:59.62%;top:50.82%">悅榮樓<b>49</b></span><span class="pl" style="left:78.33%;top:28.53%">悅富樓<b>49</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>天悅邨 6 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

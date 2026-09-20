@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>湖景邨風水評分</h1>
 <p class="sub">屯門區 · 1982 年入伙 · 6 座 · 4,315 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/湖景邨.jpg" alt="湖景邨航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:28.46%;top:80.86%">湖碧樓<b>48</b></span><span class="pl" style="left:66.3%;top:17.97%">湖暉樓<b>47</b></span><span class="pl" style="left:50.43%;top:77.84%">湖畔樓<b>46</b></span><span class="pl" style="left:44.67%;top:63.57%">湖光樓<b>45</b></span><span class="pl" style="left:50.15%;top:34.91%">湖月樓<b>43</b></span><span class="pl" style="left:72.32%;top:32.1%">湖翠樓<b>43</b></span>
+  <div class="pw" style="aspect-ratio:332/568">
+    <img src="/plan/湖景邨.jpg" alt="湖景邨航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="332" height="568"
+       loading="lazy" decoding="async"><span class="pl" style="left:28.46%;top:80.86%">湖碧樓<b>48</b></span><span class="pl" style="left:66.3%;top:17.97%">湖暉樓<b>47</b></span><span class="pl" style="left:50.43%;top:77.84%">湖畔樓<b>46</b></span><span class="pl" style="left:44.67%;top:63.57%">湖光樓<b>45</b></span><span class="pl" style="left:50.15%;top:34.91%">湖月樓<b>43</b></span><span class="pl" style="left:72.32%;top:32.1%">湖翠樓<b>43</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>湖景邨 6 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

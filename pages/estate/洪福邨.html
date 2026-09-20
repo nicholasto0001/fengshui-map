@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>洪福邨風水評分</h1>
 <p class="sub">元朗區 · 2015 年入伙 · 9 座 · 4,773 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/洪福邨.jpg" alt="洪福邨航空影像，9 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:32.82%;top:42.06%">洪盛樓<b>80</b></span><span class="pl" style="left:41.82%;top:62.09%">洪歡樓<b>80</b></span><span class="pl" style="left:49.72%;top:81.28%">洪欣樓<b>72</b></span><span class="pl" style="left:72.5%;top:59.58%">洪樂樓<b>57</b></span><span class="pl" style="left:29.99%;top:25.26%">洪昌樓<b>57</b></span><span class="pl" style="left:59.68%;top:18.76%">洪悅樓<b>57</b></span><span class="pl" style="left:64.12%;top:72.5%">洪喜樓<b>50</b></span><span class="pl" style="left:64.58%;top:30.07%">洪溢樓<b>49</b></span><span class="pl" style="left:67.32%;top:43.05%">洪塱樓<b>49</b></span>
+  <div class="pw" style="aspect-ratio:261/363">
+    <img src="/plan/洪福邨.jpg" alt="洪福邨航空影像，9 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="261" height="363"
+       loading="lazy" decoding="async"><span class="pl" style="left:32.82%;top:42.06%">洪盛樓<b>80</b></span><span class="pl" style="left:41.82%;top:62.09%">洪歡樓<b>80</b></span><span class="pl" style="left:49.72%;top:81.28%">洪欣樓<b>72</b></span><span class="pl" style="left:72.5%;top:59.58%">洪樂樓<b>57</b></span><span class="pl" style="left:29.99%;top:25.26%">洪昌樓<b>57</b></span><span class="pl" style="left:59.68%;top:18.76%">洪悅樓<b>57</b></span><span class="pl" style="left:64.12%;top:72.5%">洪喜樓<b>50</b></span><span class="pl" style="left:64.58%;top:30.07%">洪溢樓<b>49</b></span><span class="pl" style="left:67.32%;top:43.05%">洪塱樓<b>49</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>洪福邨 9 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

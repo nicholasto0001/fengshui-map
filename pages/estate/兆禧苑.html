@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>兆禧苑風水評分</h1>
 <p class="sub">屯門區 · 1985 年入伙 · 5 座 · 2,627 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/兆禧苑.jpg" alt="兆禧苑航空影像，5 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:52.77%;top:76.6%">宏禧閣<b>45</b></span><span class="pl" style="left:76.75%;top:78.29%">安禧閣<b>45</b></span><span class="pl" style="left:55.73%;top:45.26%">順禧閣<b>44</b></span><span class="pl" style="left:23.17%;top:34.26%">雅禧閣<b>44</b></span><span class="pl" style="left:42.57%;top:21.03%">樂禧閣<b>43</b></span>
+  <div class="pw" style="aspect-ratio:389/441">
+    <img src="/plan/兆禧苑.jpg" alt="兆禧苑航空影像，5 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="389" height="441"
+       loading="lazy" decoding="async"><span class="pl" style="left:52.77%;top:76.6%">宏禧閣<b>45</b></span><span class="pl" style="left:76.75%;top:78.29%">安禧閣<b>45</b></span><span class="pl" style="left:55.73%;top:45.26%">順禧閣<b>44</b></span><span class="pl" style="left:23.17%;top:34.26%">雅禧閣<b>44</b></span><span class="pl" style="left:42.57%;top:21.03%">樂禧閣<b>43</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>兆禧苑 5 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

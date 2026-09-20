@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>葵盛東邨風水評分</h1>
 <p class="sub">葵青區 · 1989 年入伙 · 12 座 · 6,074 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/葵盛東邨.jpg" alt="葵盛東邨航空影像，12 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:37.86%;top:23.86%">盛和樓<b>71</b></span><span class="pl" style="left:60.02%;top:75.12%">盛樂樓<b>46</b></span><span class="pl" style="left:56.33%;top:65.87%">盛富樓<b>46</b></span><span class="pl" style="left:24.44%;top:44.83%">盛國樓<b>41</b></span><span class="pl" style="left:30.51%;top:33.65%">盛安樓<b>41</b></span><span class="pl" style="left:42.72%;top:36.24%">盛逸樓<b>41</b></span><span class="pl" style="left:30.62%;top:62.17%">盛興樓<b>40</b></span><span class="pl" style="left:18.33%;top:71.29%">盛家樓<b>40</b></span><span class="pl" style="left:42.72%;top:46.07%">盛強樓<b>40</b></span><span class="pl" style="left:26.73%;top:48.87%">盛國樓<b>40</b></span><span class="pl" style="left:73.88%;top:66.48%">盛豐樓<b>38</b></span><span class="pl" style="left:83.3%;top:56.25%">盛喜樓<b>38</b></span>
+  <div class="pw" style="aspect-ratio:635/472">
+    <img src="/plan/葵盛東邨.jpg" alt="葵盛東邨航空影像，12 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="635" height="472"
+       loading="lazy" decoding="async"><span class="pl" style="left:37.86%;top:23.86%">盛和樓<b>71</b></span><span class="pl" style="left:60.02%;top:75.12%">盛樂樓<b>46</b></span><span class="pl" style="left:56.33%;top:65.87%">盛富樓<b>46</b></span><span class="pl" style="left:24.44%;top:44.83%">盛國樓<b>41</b></span><span class="pl" style="left:30.51%;top:33.65%">盛安樓<b>41</b></span><span class="pl" style="left:42.72%;top:36.24%">盛逸樓<b>41</b></span><span class="pl" style="left:30.62%;top:62.17%">盛興樓<b>40</b></span><span class="pl" style="left:18.33%;top:71.29%">盛家樓<b>40</b></span><span class="pl" style="left:42.72%;top:46.07%">盛強樓<b>40</b></span><span class="pl" style="left:26.73%;top:48.87%">盛國樓<b>40</b></span><span class="pl" style="left:73.88%;top:66.48%">盛豐樓<b>38</b></span><span class="pl" style="left:83.3%;top:56.25%">盛喜樓<b>38</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>葵盛東邨 12 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

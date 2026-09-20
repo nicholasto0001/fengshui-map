@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>大元邨風水評分</h1>
 <p class="sub">大埔區 · 1980 年入伙 · 9 座 · 4,753 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/大元邨.jpg" alt="大元邨航空影像，9 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:59.0%;top:42.06%">泰樂樓<b>54</b></span><span class="pl" style="left:35.21%;top:31.05%">泰怡樓<b>53</b></span><span class="pl" style="left:40.61%;top:21.07%">泰怡樓<b>46</b></span><span class="pl" style="left:20.35%;top:55.65%">泰寧樓<b>45</b></span><span class="pl" style="left:79.96%;top:51.97%">泰欣樓<b>44</b></span><span class="pl" style="left:33.57%;top:57.48%">大元商場<b>44</b></span><span class="pl" style="left:24.76%;top:73.26%">泰德樓<b>44</b></span><span class="pl" style="left:68.75%;top:78.91%">泰榮樓<b>43</b></span><span class="pl" style="left:47.24%;top:72.51%">泰民樓<b>43</b></span>
+  <div class="pw" style="aspect-ratio:457/336">
+    <img src="/plan/大元邨.jpg" alt="大元邨航空影像，9 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="457" height="336"
+       loading="lazy" decoding="async"><span class="pl" style="left:59.0%;top:42.06%">泰樂樓<b>54</b></span><span class="pl" style="left:35.21%;top:31.05%">泰怡樓<b>53</b></span><span class="pl" style="left:40.61%;top:21.07%">泰怡樓<b>46</b></span><span class="pl" style="left:20.35%;top:55.65%">泰寧樓<b>45</b></span><span class="pl" style="left:79.96%;top:51.97%">泰欣樓<b>44</b></span><span class="pl" style="left:33.57%;top:57.48%">大元商場<b>44</b></span><span class="pl" style="left:24.76%;top:73.26%">泰德樓<b>44</b></span><span class="pl" style="left:68.75%;top:78.91%">泰榮樓<b>43</b></span><span class="pl" style="left:47.24%;top:72.51%">泰民樓<b>43</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>大元邨 9 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

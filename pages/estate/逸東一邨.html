@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>逸東一邨風水評分</h1>
 <p class="sub">離島區 · 2001 年入伙 · 13 座 · 5,535 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/逸東一邨.jpg" alt="逸東一邨航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:48.03%;top:37.07%">至逸樓<b>76</b></span><span class="pl" style="left:17.06%;top:72.6%">福逸樓<b>67</b></span><span class="pl" style="left:81.94%;top:41.38%">康逸樓<b>58</b></span><span class="pl" style="left:17.74%;top:59.92%">祿逸樓<b>58</b></span><span class="pl" style="left:18.52%;top:43.17%">迎逸樓<b>57</b></span><span class="pl" style="left:19.17%;top:30.6%">漁逸樓<b>56</b></span><span class="pl" style="left:33.47%;top:69.08%">舟逸樓<b>56</b></span><span class="pl" style="left:41.35%;top:65.89%">太逸樓<b>56</b></span><span class="pl" style="left:37.86%;top:47.36%">享逸樓<b>56</b></span><span class="pl" style="left:49.5%;top:63.01%">平逸樓<b>56</b></span><span class="pl" style="left:60.98%;top:56.3%">雍逸樓<b>53</b></span><span class="pl" style="left:52.86%;top:27.01%">善逸樓<b>53</b></span><span class="pl" style="left:71.49%;top:48.66%">清逸樓<b>51</b></span>
+  <div class="pw" style="aspect-ratio:476/312">
+    <img src="/plan/逸東一邨.jpg" alt="逸東一邨航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="476" height="312"
+       loading="lazy" decoding="async"><span class="pl" style="left:48.03%;top:37.07%">至逸樓<b>76</b></span><span class="pl" style="left:17.06%;top:72.6%">福逸樓<b>67</b></span><span class="pl" style="left:81.94%;top:41.38%">康逸樓<b>58</b></span><span class="pl" style="left:17.74%;top:59.92%">祿逸樓<b>58</b></span><span class="pl" style="left:18.52%;top:43.17%">迎逸樓<b>57</b></span><span class="pl" style="left:19.17%;top:30.6%">漁逸樓<b>56</b></span><span class="pl" style="left:33.47%;top:69.08%">舟逸樓<b>56</b></span><span class="pl" style="left:41.35%;top:65.89%">太逸樓<b>56</b></span><span class="pl" style="left:37.86%;top:47.36%">享逸樓<b>56</b></span><span class="pl" style="left:49.5%;top:63.01%">平逸樓<b>56</b></span><span class="pl" style="left:60.98%;top:56.3%">雍逸樓<b>53</b></span><span class="pl" style="left:52.86%;top:27.01%">善逸樓<b>53</b></span><span class="pl" style="left:71.49%;top:48.66%">清逸樓<b>51</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>逸東一邨 13 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

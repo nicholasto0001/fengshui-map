@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>海濱南岸風水評分</h1>
 <p class="sub">九龍城區 · 2002 年入伙 · 7 座 · 2,309 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/海濱南岸.jpg" alt="海濱南岸航空影像，14 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:71.08%;top:60.17%">海濱南岸第二座<b>76</b></span><span class="pl" style="left:60.78%;top:76.48%">海濱南岸第三座<b>76</b></span><span class="pl" style="left:53.45%;top:28.15%">海濱南岸第四座<b>75</b></span><span class="pl" style="left:80.59%;top:54.92%"><b>68</b></span><span class="pl" style="left:56.06%;top:79.22%"><b>67</b></span><span class="pl" style="left:43.85%;top:41.45%"><b>54</b></span><span class="pl" style="left:38.84%;top:25.61%">海濱南岸第五座<b>54</b></span><span class="pl" style="left:80.17%;top:32.76%"><b>48</b></span><span class="pl" style="left:51.51%;top:80.07%"><b>47</b></span><span class="pl" style="left:80.76%;top:43.97%">海濱南岸第一座<b>47</b></span><span class="pl" style="left:39.69%;top:52.91%">海濱南岸第七座<b>46</b></span><span class="pl" style="left:39.01%;top:66.38%"><b>46</b></span><span class="pl" style="left:24.3%;top:22.84%">海濱南岸第六座<b>46</b></span><span class="pl" style="left:14.28%;top:22.75%"><b>46</b></span>
+  <div class="pw" style="aspect-ratio:532/471">
+    <img src="/plan/海濱南岸.jpg" alt="海濱南岸航空影像，14 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="532" height="471"
+       loading="lazy" decoding="async"><span class="pl" style="left:71.08%;top:60.17%">海濱南岸第二座<b>76</b></span><span class="pl" style="left:60.78%;top:76.48%">海濱南岸第三座<b>76</b></span><span class="pl" style="left:53.45%;top:28.15%">海濱南岸第四座<b>75</b></span><span class="pl" style="left:80.59%;top:54.92%"><b>68</b></span><span class="pl" style="left:56.06%;top:79.22%"><b>67</b></span><span class="pl" style="left:43.85%;top:41.45%"><b>54</b></span><span class="pl" style="left:38.84%;top:25.61%">海濱南岸第五座<b>54</b></span><span class="pl" style="left:80.17%;top:32.76%"><b>48</b></span><span class="pl" style="left:51.51%;top:80.07%"><b>47</b></span><span class="pl" style="left:80.76%;top:43.97%">海濱南岸第一座<b>47</b></span><span class="pl" style="left:39.69%;top:52.91%">海濱南岸第七座<b>46</b></span><span class="pl" style="left:39.01%;top:66.38%"><b>46</b></span><span class="pl" style="left:24.3%;top:22.84%">海濱南岸第六座<b>46</b></span><span class="pl" style="left:14.28%;top:22.75%"><b>46</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>海濱南岸 14 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

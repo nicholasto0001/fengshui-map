@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>葵芳邨風水評分</h1>
 <p class="sub">葵青區 · 1987 年入伙 · 12 座 · 6,077 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/葵芳邨.jpg" alt="葵芳邨航空影像，12 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:29.5%;top:53.52%">葵喜樓<b>46</b></span><span class="pl" style="left:41.85%;top:42.31%">葵健樓<b>46</b></span><span class="pl" style="left:71.2%;top:62.97%">葵愛樓<b>44</b></span><span class="pl" style="left:25.76%;top:71.46%">葵仁樓<b>37</b></span><span class="pl" style="left:48.64%;top:81.83%">葵正樓<b>37</b></span><span class="pl" style="left:29.47%;top:61.41%">葵歡樓<b>37</b></span><span class="pl" style="left:64.3%;top:25.56%">葵信樓<b>37</b></span><span class="pl" style="left:57.32%;top:74.67%">葵明樓<b>37</b></span><span class="pl" style="left:55.81%;top:43.92%">葵智樓<b>37</b></span><span class="pl" style="left:78.92%;top:20.8%">葵安樓<b>36</b></span><span class="pl" style="left:53.54%;top:57.28%">葵泰樓<b>36</b></span><span class="pl" style="left:77.52%;top:36.26%">葵德樓<b>36</b></span>
+  <div class="pw" style="aspect-ratio:393/476">
+    <img src="/plan/葵芳邨.jpg" alt="葵芳邨航空影像，12 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="393" height="476"
+       loading="lazy" decoding="async"><span class="pl" style="left:29.5%;top:53.52%">葵喜樓<b>46</b></span><span class="pl" style="left:41.85%;top:42.31%">葵健樓<b>46</b></span><span class="pl" style="left:71.2%;top:62.97%">葵愛樓<b>44</b></span><span class="pl" style="left:25.76%;top:71.46%">葵仁樓<b>37</b></span><span class="pl" style="left:48.64%;top:81.83%">葵正樓<b>37</b></span><span class="pl" style="left:29.47%;top:61.41%">葵歡樓<b>37</b></span><span class="pl" style="left:64.3%;top:25.56%">葵信樓<b>37</b></span><span class="pl" style="left:57.32%;top:74.67%">葵明樓<b>37</b></span><span class="pl" style="left:55.81%;top:43.92%">葵智樓<b>37</b></span><span class="pl" style="left:78.92%;top:20.8%">葵安樓<b>36</b></span><span class="pl" style="left:53.54%;top:57.28%">葵泰樓<b>36</b></span><span class="pl" style="left:77.52%;top:36.26%">葵德樓<b>36</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>葵芳邨 12 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

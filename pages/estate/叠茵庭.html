@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>叠茵庭風水評分</h1>
 <p class="sub">屯門區 · 2000 年入伙 · 9 座 · 1,538 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/叠茵庭.jpg" alt="叠茵庭航空影像，12 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:41.54%;top:36.08%"><b>54</b></span><span class="pl" style="left:39.92%;top:27.78%">叠茵庭第七座<b>54</b></span><span class="pl" style="left:74.84%;top:39.94%">叠茵庭第四座<b>54</b></span><span class="pl" style="left:53.15%;top:27.19%">叠茵庭第六座<b>53</b></span><span class="pl" style="left:15.21%;top:18.45%"><b>52</b></span><span class="pl" style="left:73.19%;top:78.71%">叠茵庭第一座<b>47</b></span><span class="pl" style="left:77.67%;top:66.03%">叠茵庭第二座<b>47</b></span><span class="pl" style="left:81.84%;top:53.41%">叠茵庭第三座<b>46</b></span><span class="pl" style="left:85.81%;top:41.74%"><b>46</b></span><span class="pl" style="left:64.26%;top:33.19%">叠茵庭第五座<b>46</b></span><span class="pl" style="left:30.54%;top:23.88%">叠茵庭第八座<b>45</b></span><span class="pl" style="left:21.16%;top:19.92%">叠茵庭第九座<b>45</b></span>
+  <div class="pw" style="aspect-ratio:537/509">
+    <img src="/plan/叠茵庭.jpg" alt="叠茵庭航空影像，12 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="537" height="509"
+       loading="lazy" decoding="async"><span class="pl" style="left:41.54%;top:36.08%"><b>54</b></span><span class="pl" style="left:39.92%;top:27.78%">叠茵庭第七座<b>54</b></span><span class="pl" style="left:74.84%;top:39.94%">叠茵庭第四座<b>54</b></span><span class="pl" style="left:53.15%;top:27.19%">叠茵庭第六座<b>53</b></span><span class="pl" style="left:15.21%;top:18.45%"><b>52</b></span><span class="pl" style="left:73.19%;top:78.71%">叠茵庭第一座<b>47</b></span><span class="pl" style="left:77.67%;top:66.03%">叠茵庭第二座<b>47</b></span><span class="pl" style="left:81.84%;top:53.41%">叠茵庭第三座<b>46</b></span><span class="pl" style="left:85.81%;top:41.74%"><b>46</b></span><span class="pl" style="left:64.26%;top:33.19%">叠茵庭第五座<b>46</b></span><span class="pl" style="left:30.54%;top:23.88%">叠茵庭第八座<b>45</b></span><span class="pl" style="left:21.16%;top:19.92%">叠茵庭第九座<b>45</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>叠茵庭 12 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

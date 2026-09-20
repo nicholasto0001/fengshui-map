@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>沙角邨風水評分</h1>
 <p class="sub">沙田區 · 1980 年入伙 · 11 座 · 6,089 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/沙角邨.jpg" alt="沙角邨航空影像，11 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:35.04%;top:46.58%">銀鷗樓<b>73</b></span><span class="pl" style="left:65.41%;top:45.07%">美雁樓<b>73</b></span><span class="pl" style="left:69.75%;top:34.37%">美雁樓<b>57</b></span><span class="pl" style="left:55.66%;top:26.71%">雲雀樓<b>56</b></span><span class="pl" style="left:51.64%;top:29.12%">雲雀樓<b>56</b></span><span class="pl" style="left:19.88%;top:72.44%">綠鷺樓<b>53</b></span><span class="pl" style="left:33.65%;top:80.53%">漁鷹樓<b>53</b></span><span class="pl" style="left:53.48%;top:60.39%">沙燕樓<b>51</b></span><span class="pl" style="left:83.04%;top:48.62%">金鶯樓<b>51</b></span><span class="pl" style="left:19.62%;top:43.59%">香港資優教育學苑<b>50</b></span><span class="pl" style="left:18.45%;top:38.54%">香港教育城<b>49</b></span>
+  <div class="pw" style="aspect-ratio:391/384">
+    <img src="/plan/沙角邨.jpg" alt="沙角邨航空影像，11 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="391" height="384"
+       loading="lazy" decoding="async"><span class="pl" style="left:35.04%;top:46.58%">銀鷗樓<b>73</b></span><span class="pl" style="left:65.41%;top:45.07%">美雁樓<b>73</b></span><span class="pl" style="left:69.75%;top:34.37%">美雁樓<b>57</b></span><span class="pl" style="left:55.66%;top:26.71%">雲雀樓<b>56</b></span><span class="pl" style="left:51.64%;top:29.12%">雲雀樓<b>56</b></span><span class="pl" style="left:19.88%;top:72.44%">綠鷺樓<b>53</b></span><span class="pl" style="left:33.65%;top:80.53%">漁鷹樓<b>53</b></span><span class="pl" style="left:53.48%;top:60.39%">沙燕樓<b>51</b></span><span class="pl" style="left:83.04%;top:48.62%">金鶯樓<b>51</b></span><span class="pl" style="left:19.62%;top:43.59%">香港資優教育學苑<b>50</b></span><span class="pl" style="left:18.45%;top:38.54%">香港教育城<b>49</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>沙角邨 11 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

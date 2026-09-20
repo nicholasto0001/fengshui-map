@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>曉麗苑風水評分</h1>
 <p class="sub">觀塘區 · 1997 年入伙 · 8 座 · 4,604 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/曉麗苑.jpg" alt="曉麗苑航空影像，8 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:71.52%;top:69.58%">曉逸閣<b>56</b></span><span class="pl" style="left:40.8%;top:49.14%">曉暉閣<b>55</b></span><span class="pl" style="left:56.23%;top:71.41%">曉和閣<b>48</b></span><span class="pl" style="left:76.31%;top:81.26%">曉順閣<b>47</b></span><span class="pl" style="left:27.9%;top:40.1%">曉晴閣<b>47</b></span><span class="pl" style="left:38.23%;top:18.78%">曉天閣<b>40</b></span><span class="pl" style="left:24.18%;top:28.65%">曉星閣<b>39</b></span><span class="pl" style="left:66.72%;top:56.01%">曉安閣<b>39</b></span>
+  <div class="pw" style="aspect-ratio:315/444">
+    <img src="/plan/曉麗苑.jpg" alt="曉麗苑航空影像，8 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="315" height="444"
+       loading="lazy" decoding="async"><span class="pl" style="left:71.52%;top:69.58%">曉逸閣<b>56</b></span><span class="pl" style="left:40.8%;top:49.14%">曉暉閣<b>55</b></span><span class="pl" style="left:56.23%;top:71.41%">曉和閣<b>48</b></span><span class="pl" style="left:76.31%;top:81.26%">曉順閣<b>47</b></span><span class="pl" style="left:27.9%;top:40.1%">曉晴閣<b>47</b></span><span class="pl" style="left:38.23%;top:18.78%">曉天閣<b>40</b></span><span class="pl" style="left:24.18%;top:28.65%">曉星閣<b>39</b></span><span class="pl" style="left:66.72%;top:56.01%">曉安閣<b>39</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>曉麗苑 8 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

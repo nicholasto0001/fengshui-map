@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>健明邨風水評分</h1>
 <p class="sub">西貢區 · 2003 年入伙 · 10 座 · 6,879 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/健明邨.jpg" alt="健明邨航空影像，10 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:79.36%;top:53.11%">健暉樓<b>59</b></span><span class="pl" style="left:31.23%;top:61.93%">明宙樓<b>52</b></span><span class="pl" style="left:39.19%;top:47.22%">明星樓<b>52</b></span><span class="pl" style="left:45.61%;top:35.97%">明域樓<b>52</b></span><span class="pl" style="left:52.47%;top:76.38%">健晴樓<b>52</b></span><span class="pl" style="left:67.45%;top:49.36%">健華樓<b>52</b></span><span class="pl" style="left:25.07%;top:73.36%">明宇樓<b>52</b></span><span class="pl" style="left:40.94%;top:17.28%">明月樓<b>52</b></span><span class="pl" style="left:66.99%;top:81.13%">健曦樓<b>51</b></span><span class="pl" style="left:53.1%;top:20.83%">明日樓<b>51</b></span>
+  <div class="pw" style="aspect-ratio:284/382">
+    <img src="/plan/健明邨.jpg" alt="健明邨航空影像，10 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="284" height="382"
+       loading="lazy" decoding="async"><span class="pl" style="left:79.36%;top:53.11%">健暉樓<b>59</b></span><span class="pl" style="left:31.23%;top:61.93%">明宙樓<b>52</b></span><span class="pl" style="left:39.19%;top:47.22%">明星樓<b>52</b></span><span class="pl" style="left:45.61%;top:35.97%">明域樓<b>52</b></span><span class="pl" style="left:52.47%;top:76.38%">健晴樓<b>52</b></span><span class="pl" style="left:67.45%;top:49.36%">健華樓<b>52</b></span><span class="pl" style="left:25.07%;top:73.36%">明宇樓<b>52</b></span><span class="pl" style="left:40.94%;top:17.28%">明月樓<b>52</b></span><span class="pl" style="left:66.99%;top:81.13%">健曦樓<b>51</b></span><span class="pl" style="left:53.1%;top:20.83%">明日樓<b>51</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>健明邨 10 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

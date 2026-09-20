@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>瓏門風水評分</h1>
 <p class="sub">屯門區 · 2012 年入伙 · 7 座 · 1,831 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/瓏門.jpg" alt="瓏門航空影像，8 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:30.36%;top:82.69%">瓏門第一座<b>74</b></span><span class="pl" style="left:43.28%;top:58.74%">瓏門第五座<b>66</b></span><span class="pl" style="left:60.95%;top:38.98%"><b>66</b></span><span class="pl" style="left:53.58%;top:32.93%">瓏門第七座<b>66</b></span><span class="pl" style="left:47.85%;top:45.73%">瓏門第六座<b>51</b></span><span class="pl" style="left:58.59%;top:20.12%">瓏門第八座<b>51</b></span><span class="pl" style="left:47.59%;top:82.24%">瓏門第二座<b>44</b></span><span class="pl" style="left:64.75%;top:79.41%">瓏門第三座<b>44</b></span>
+  <div class="pw" style="aspect-ratio:215/379">
+    <img src="/plan/瓏門.jpg" alt="瓏門航空影像，8 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="215" height="379"
+       loading="lazy" decoding="async"><span class="pl" style="left:30.36%;top:82.69%">瓏門第一座<b>74</b></span><span class="pl" style="left:43.28%;top:58.74%">瓏門第五座<b>66</b></span><span class="pl" style="left:60.95%;top:38.98%"><b>66</b></span><span class="pl" style="left:53.58%;top:32.93%">瓏門第七座<b>66</b></span><span class="pl" style="left:47.85%;top:45.73%">瓏門第六座<b>51</b></span><span class="pl" style="left:58.59%;top:20.12%">瓏門第八座<b>51</b></span><span class="pl" style="left:47.59%;top:82.24%">瓏門第二座<b>44</b></span><span class="pl" style="left:64.75%;top:79.41%">瓏門第三座<b>44</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>瓏門 8 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

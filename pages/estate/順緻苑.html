@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>順緻苑風水評分</h1>
 <p class="sub">觀塘區 · 1980 年入伙 · 11 座 · 1,500 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/順緻苑.jpg" alt="順緻苑航空影像，11 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:18.17%;top:47.3%">順泰閣<b>44</b></span><span class="pl" style="left:24.96%;top:53.83%">順成閣<b>44</b></span><span class="pl" style="left:50.18%;top:77.13%">順輝閣<b>36</b></span><span class="pl" style="left:55.66%;top:68.97%">順應閣<b>36</b></span><span class="pl" style="left:43.82%;top:43.53%">順華閣<b>36</b></span><span class="pl" style="left:69.02%;top:66.5%">順榮閣<b>35</b></span><span class="pl" style="left:74.45%;top:58.38%">順祥閣<b>35</b></span><span class="pl" style="left:38.37%;top:51.62%">順美閣<b>35</b></span><span class="pl" style="left:29.23%;top:29.32%">順寧閣<b>35</b></span><span class="pl" style="left:22.46%;top:22.89%">順康閣<b>35</b></span><span class="pl" style="left:81.94%;top:29.58%">順豐閣<b>35</b></span>
+  <div class="pw" style="aspect-ratio:568/477">
+    <img src="/plan/順緻苑.jpg" alt="順緻苑航空影像，11 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="568" height="477"
+       loading="lazy" decoding="async"><span class="pl" style="left:18.17%;top:47.3%">順泰閣<b>44</b></span><span class="pl" style="left:24.96%;top:53.83%">順成閣<b>44</b></span><span class="pl" style="left:50.18%;top:77.13%">順輝閣<b>36</b></span><span class="pl" style="left:55.66%;top:68.97%">順應閣<b>36</b></span><span class="pl" style="left:43.82%;top:43.53%">順華閣<b>36</b></span><span class="pl" style="left:69.02%;top:66.5%">順榮閣<b>35</b></span><span class="pl" style="left:74.45%;top:58.38%">順祥閣<b>35</b></span><span class="pl" style="left:38.37%;top:51.62%">順美閣<b>35</b></span><span class="pl" style="left:29.23%;top:29.32%">順寧閣<b>35</b></span><span class="pl" style="left:22.46%;top:22.89%">順康閣<b>35</b></span><span class="pl" style="left:81.94%;top:29.58%">順豐閣<b>35</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>順緻苑 11 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

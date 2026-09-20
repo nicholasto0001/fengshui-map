@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>天華邨風水評分</h1>
 <p class="sub">元朗區 · 1999 年入伙 · 8 座 · 3,579 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/天華邨.jpg" alt="天華邨航空影像，8 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:81.09%;top:31.9%">天華邨服務設施大<b>50</b></span><span class="pl" style="left:28.48%;top:17.52%">華朗樓<b>50</b></span><span class="pl" style="left:50.69%;top:17.53%">華彩樓<b>50</b></span><span class="pl" style="left:48.56%;top:75.29%">華萃樓<b>50</b></span><span class="pl" style="left:67.99%;top:65.39%">華祐樓<b>50</b></span><span class="pl" style="left:23.98%;top:38.43%">華逸樓<b>50</b></span><span class="pl" style="left:40.48%;top:39.02%">華逸樓<b>49</b></span><span class="pl" style="left:24.48%;top:59.89%">華悅樓<b>49</b></span>
+  <div class="pw" style="aspect-ratio:441/453">
+    <img src="/plan/天華邨.jpg" alt="天華邨航空影像，8 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="441" height="453"
+       loading="lazy" decoding="async"><span class="pl" style="left:81.09%;top:31.9%">天華邨服務設施大<b>50</b></span><span class="pl" style="left:28.48%;top:17.52%">華朗樓<b>50</b></span><span class="pl" style="left:50.69%;top:17.53%">華彩樓<b>50</b></span><span class="pl" style="left:48.56%;top:75.29%">華萃樓<b>50</b></span><span class="pl" style="left:67.99%;top:65.39%">華祐樓<b>50</b></span><span class="pl" style="left:23.98%;top:38.43%">華逸樓<b>50</b></span><span class="pl" style="left:40.48%;top:39.02%">華逸樓<b>49</b></span><span class="pl" style="left:24.48%;top:59.89%">華悅樓<b>49</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>天華邨 8 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

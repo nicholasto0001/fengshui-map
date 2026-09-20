@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>彩園邨風水評分</h1>
 <p class="sub">北區 · 1982 年入伙 · 6 座 · 4,868 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/彩園邨.jpg" alt="彩園邨航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:51.79%;top:26.17%">彩玉樓<b>75</b></span><span class="pl" style="left:75.69%;top:27.63%">彩屏樓<b>53</b></span><span class="pl" style="left:44.61%;top:71.45%">彩麗樓<b>48</b></span><span class="pl" style="left:73.82%;top:77.78%">彩華樓<b>47</b></span><span class="pl" style="left:54.49%;top:50.77%">彩珠樓<b>47</b></span><span class="pl" style="left:28.66%;top:54.5%">彩湖樓<b>46</b></span>
+  <div class="pw" style="aspect-ratio:302/320">
+    <img src="/plan/彩園邨.jpg" alt="彩園邨航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="302" height="320"
+       loading="lazy" decoding="async"><span class="pl" style="left:51.79%;top:26.17%">彩玉樓<b>75</b></span><span class="pl" style="left:75.69%;top:27.63%">彩屏樓<b>53</b></span><span class="pl" style="left:44.61%;top:71.45%">彩麗樓<b>48</b></span><span class="pl" style="left:73.82%;top:77.78%">彩華樓<b>47</b></span><span class="pl" style="left:54.49%;top:50.77%">彩珠樓<b>47</b></span><span class="pl" style="left:28.66%;top:54.5%">彩湖樓<b>46</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>彩園邨 6 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

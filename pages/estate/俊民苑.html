@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>俊民苑風水評分</h1>
 <p class="sub">九龍城區 · 1981 年入伙 · 12 座 · 1,684 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/俊民苑.jpg" alt="俊民苑航空影像，12 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:51.06%;top:64.33%">文瑞閣<b>43</b></span><span class="pl" style="left:81.08%;top:41.14%">文福閣<b>39</b></span><span class="pl" style="left:73.31%;top:29.05%">文斌閣<b>38</b></span><span class="pl" style="left:46.47%;top:79.62%">文愛閣<b>38</b></span><span class="pl" style="left:62.27%;top:19.59%">文蘭閣<b>38</b></span><span class="pl" style="left:37.92%;top:58.28%">文彥閣<b>38</b></span><span class="pl" style="left:48.45%;top:24.58%">文賀閣<b>38</b></span><span class="pl" style="left:33.37%;top:76.17%">文明閣<b>38</b></span><span class="pl" style="left:35.57%;top:34.11%">文宗閣<b>38</b></span><span class="pl" style="left:26.53%;top:43.4%">文凱閣<b>37</b></span><span class="pl" style="left:18.82%;top:72.32%">文禧閣<b>37</b></span><span class="pl" style="left:21.2%;top:58.28%">文雄閣<b>37</b></span>
+  <div class="pw" style="aspect-ratio:499/529">
+    <img src="/plan/俊民苑.jpg" alt="俊民苑航空影像，12 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="499" height="529"
+       loading="lazy" decoding="async"><span class="pl" style="left:51.06%;top:64.33%">文瑞閣<b>43</b></span><span class="pl" style="left:81.08%;top:41.14%">文福閣<b>39</b></span><span class="pl" style="left:73.31%;top:29.05%">文斌閣<b>38</b></span><span class="pl" style="left:46.47%;top:79.62%">文愛閣<b>38</b></span><span class="pl" style="left:62.27%;top:19.59%">文蘭閣<b>38</b></span><span class="pl" style="left:37.92%;top:58.28%">文彥閣<b>38</b></span><span class="pl" style="left:48.45%;top:24.58%">文賀閣<b>38</b></span><span class="pl" style="left:33.37%;top:76.17%">文明閣<b>38</b></span><span class="pl" style="left:35.57%;top:34.11%">文宗閣<b>38</b></span><span class="pl" style="left:26.53%;top:43.4%">文凱閣<b>37</b></span><span class="pl" style="left:18.82%;top:72.32%">文禧閣<b>37</b></span><span class="pl" style="left:21.2%;top:58.28%">文雄閣<b>37</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>俊民苑 12 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

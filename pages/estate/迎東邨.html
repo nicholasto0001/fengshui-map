@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>迎東邨風水評分</h1>
 <p class="sub">離島區 · 2018 年入伙 · 4 座 · 3,513 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/迎東邨.jpg" alt="迎東邨航空影像，4 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:70.91%;top:59.42%">迎悅樓<b>57</b></span><span class="pl" style="left:67.25%;top:24.32%">迎趣樓<b>57</b></span><span class="pl" style="left:32.3%;top:77.8%">迎喜樓<b>57</b></span><span class="pl" style="left:30.13%;top:43.92%">迎福樓<b>56</b></span>
+  <div class="pw" style="aspect-ratio:337/386">
+    <img src="/plan/迎東邨.jpg" alt="迎東邨航空影像，4 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="337" height="386"
+       loading="lazy" decoding="async"><span class="pl" style="left:70.91%;top:59.42%">迎悅樓<b>57</b></span><span class="pl" style="left:67.25%;top:24.32%">迎趣樓<b>57</b></span><span class="pl" style="left:32.3%;top:77.8%">迎喜樓<b>57</b></span><span class="pl" style="left:30.13%;top:43.92%">迎福樓<b>56</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>迎東邨 4 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>錦豐苑風水評分</h1>
 <p class="sub">沙田區 · 1996 年入伙 · 9 座 · 5,234 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/錦豐苑.jpg" alt="錦豐苑航空影像，9 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:35.0%;top:64.03%">錦萱閣<b>65</b></span><span class="pl" style="left:49.67%;top:42.64%">錦莉閣<b>56</b></span><span class="pl" style="left:73.15%;top:16.9%">錦蓉閣<b>56</b></span><span class="pl" style="left:40.09%;top:56.04%">錦葵閣<b>49</b></span><span class="pl" style="left:65.12%;top:24.55%">錦菱閣<b>48</b></span><span class="pl" style="left:59.35%;top:31.85%">錦蕙閣<b>48</b></span><span class="pl" style="left:27.61%;top:77.58%">錦薇閣<b>48</b></span><span class="pl" style="left:45.5%;top:81.9%">錦荷閣<b>47</b></span><span class="pl" style="left:63.12%;top:77.09%">錦蘭閣<b>45</b></span>
+  <div class="pw" style="aspect-ratio:347/575">
+    <img src="/plan/錦豐苑.jpg" alt="錦豐苑航空影像，9 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="347" height="575"
+       loading="lazy" decoding="async"><span class="pl" style="left:35.0%;top:64.03%">錦萱閣<b>65</b></span><span class="pl" style="left:49.67%;top:42.64%">錦莉閣<b>56</b></span><span class="pl" style="left:73.15%;top:16.9%">錦蓉閣<b>56</b></span><span class="pl" style="left:40.09%;top:56.04%">錦葵閣<b>49</b></span><span class="pl" style="left:65.12%;top:24.55%">錦菱閣<b>48</b></span><span class="pl" style="left:59.35%;top:31.85%">錦蕙閣<b>48</b></span><span class="pl" style="left:27.61%;top:77.58%">錦薇閣<b>48</b></span><span class="pl" style="left:45.5%;top:81.9%">錦荷閣<b>47</b></span><span class="pl" style="left:63.12%;top:77.09%">錦蘭閣<b>45</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>錦豐苑 9 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

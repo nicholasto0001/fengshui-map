@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>粉嶺中心風水評分</h1>
 <p class="sub">北區 · 1990 年入伙 · 11 座 · 1,962 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/粉嶺中心.jpg" alt="粉嶺中心航空影像，11 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:49.29%;top:49.94%">粉嶺中心Ｄ座<b>59</b></span><span class="pl" style="left:19.4%;top:20.45%">粉嶺中心Ｌ座<b>37</b></span><span class="pl" style="left:72.28%;top:70.71%">粉嶺中心Ｂ座<b>37</b></span><span class="pl" style="left:44.21%;top:70.17%">粉嶺中心Ｆ座<b>37</b></span><span class="pl" style="left:31.96%;top:59.56%">粉嶺中心Ｇ座<b>37</b></span><span class="pl" style="left:81.25%;top:79.2%">粉嶺中心Ａ座<b>37</b></span><span class="pl" style="left:28.18%;top:28.68%">粉嶺中心Ｋ座<b>37</b></span><span class="pl" style="left:58.53%;top:58.09%">粉嶺中心Ｃ座<b>37</b></span><span class="pl" style="left:20.84%;top:53.79%">粉嶺中心Ｈ座<b>36</b></span><span class="pl" style="left:55.49%;top:76.09%">粉嶺中心Ｅ座<b>36</b></span><span class="pl" style="left:37.08%;top:37.29%">粉嶺中心Ｊ座<b>36</b></span>
+  <div class="pw" style="aspect-ratio:452/442">
+    <img src="/plan/粉嶺中心.jpg" alt="粉嶺中心航空影像，11 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="452" height="442"
+       loading="lazy" decoding="async"><span class="pl" style="left:49.29%;top:49.94%">粉嶺中心Ｄ座<b>59</b></span><span class="pl" style="left:19.4%;top:20.45%">粉嶺中心Ｌ座<b>37</b></span><span class="pl" style="left:72.28%;top:70.71%">粉嶺中心Ｂ座<b>37</b></span><span class="pl" style="left:44.21%;top:70.17%">粉嶺中心Ｆ座<b>37</b></span><span class="pl" style="left:31.96%;top:59.56%">粉嶺中心Ｇ座<b>37</b></span><span class="pl" style="left:81.25%;top:79.2%">粉嶺中心Ａ座<b>37</b></span><span class="pl" style="left:28.18%;top:28.68%">粉嶺中心Ｋ座<b>37</b></span><span class="pl" style="left:58.53%;top:58.09%">粉嶺中心Ｃ座<b>37</b></span><span class="pl" style="left:20.84%;top:53.79%">粉嶺中心Ｈ座<b>36</b></span><span class="pl" style="left:55.49%;top:76.09%">粉嶺中心Ｅ座<b>36</b></span><span class="pl" style="left:37.08%;top:37.29%">粉嶺中心Ｊ座<b>36</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>粉嶺中心 11 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

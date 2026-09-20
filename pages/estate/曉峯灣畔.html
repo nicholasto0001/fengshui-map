@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>曉峯灣畔風水評分</h1>
 <p class="sub">沙田區 · 2000 年入伙 · 5 座 · 1,111 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/曉峯灣畔.jpg" alt="曉峯灣畔航空影像，7 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:63.04%;top:32.47%"><b>81</b></span><span class="pl" style="left:73.91%;top:36.05%">曉峯灣畔第三座<b>81</b></span><span class="pl" style="left:49.73%;top:28.29%">曉峯灣畔第四座<b>81</b></span><span class="pl" style="left:51.64%;top:79.43%">曉峯灣畔第一座<b>74</b></span><span class="pl" style="left:44.38%;top:44.85%"><b>52</b></span><span class="pl" style="left:26.96%;top:21.98%">曉峯灣畔第五座<b>51</b></span><span class="pl" style="left:62.79%;top:57.92%">曉峯灣畔第二座<b>51</b></span>
+  <div class="pw" style="aspect-ratio:287/378">
+    <img src="/plan/曉峯灣畔.jpg" alt="曉峯灣畔航空影像，7 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="287" height="378"
+       loading="lazy" decoding="async"><span class="pl" style="left:63.04%;top:32.47%"><b>81</b></span><span class="pl" style="left:73.91%;top:36.05%">曉峯灣畔第三座<b>81</b></span><span class="pl" style="left:49.73%;top:28.29%">曉峯灣畔第四座<b>81</b></span><span class="pl" style="left:51.64%;top:79.43%">曉峯灣畔第一座<b>74</b></span><span class="pl" style="left:44.38%;top:44.85%"><b>52</b></span><span class="pl" style="left:26.96%;top:21.98%">曉峯灣畔第五座<b>51</b></span><span class="pl" style="left:62.79%;top:57.92%">曉峯灣畔第二座<b>51</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>曉峯灣畔 7 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

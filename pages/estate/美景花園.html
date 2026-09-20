@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>美景花園風水評分</h1>
 <p class="sub">葵青區 · 1982 年入伙 · 8 座 · 1,828 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/美景花園.jpg" alt="美景花園航空影像，11 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:33.83%;top:69.35%">美景花園第八座<b>68</b></span><span class="pl" style="left:44.08%;top:79.15%">美景花園第六座<b>50</b></span><span class="pl" style="left:30.39%;top:36.74%">美景花園第十二座<b>49</b></span><span class="pl" style="left:38.95%;top:46.44%"><b>49</b></span><span class="pl" style="left:70.73%;top:30.56%">美景花園第七座<b>46</b></span><span class="pl" style="left:13.49%;top:58.92%"><b>46</b></span><span class="pl" style="left:60.48%;top:20.8%">美景花園第九座<b>46</b></span><span class="pl" style="left:39.49%;top:27.19%">美景花園第十一座<b>45</b></span><span class="pl" style="left:59.66%;top:55.4%"><b>45</b></span><span class="pl" style="left:24.12%;top:60.04%">美景花園第十座<b>45</b></span><span class="pl" style="left:80.76%;top:40.14%">美景花園第五座<b>45</b></span>
+  <div class="pw" style="aspect-ratio:380/377">
+    <img src="/plan/美景花園.jpg" alt="美景花園航空影像，11 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="380" height="377"
+       loading="lazy" decoding="async"><span class="pl" style="left:33.83%;top:69.35%">美景花園第八座<b>68</b></span><span class="pl" style="left:44.08%;top:79.15%">美景花園第六座<b>50</b></span><span class="pl" style="left:30.39%;top:36.74%">美景花園第十二座<b>49</b></span><span class="pl" style="left:38.95%;top:46.44%"><b>49</b></span><span class="pl" style="left:70.73%;top:30.56%">美景花園第七座<b>46</b></span><span class="pl" style="left:13.49%;top:58.92%"><b>46</b></span><span class="pl" style="left:60.48%;top:20.8%">美景花園第九座<b>46</b></span><span class="pl" style="left:39.49%;top:27.19%">美景花園第十一座<b>45</b></span><span class="pl" style="left:59.66%;top:55.4%"><b>45</b></span><span class="pl" style="left:24.12%;top:60.04%">美景花園第十座<b>45</b></span><span class="pl" style="left:80.76%;top:40.14%">美景花園第五座<b>45</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>美景花園 11 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

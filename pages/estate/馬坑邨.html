@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>馬坑邨風水評分</h1>
 <p class="sub">南區 · 1993 年入伙 · 8 座</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/馬坑邨.jpg" alt="馬坑邨航空影像，8 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:52.86%;top:82.1%">觀馬樓<b>44</b></span><span class="pl" style="left:73.71%;top:37.56%">迎馬樓<b>44</b></span><span class="pl" style="left:49.68%;top:62.4%">觀馬樓<b>44</b></span><span class="pl" style="left:57.32%;top:77.11%">觀馬樓<b>44</b></span><span class="pl" style="left:57.59%;top:25.35%">迎馬樓<b>43</b></span><span class="pl" style="left:52.79%;top:41.0%">健馬樓<b>43</b></span><span class="pl" style="left:24.77%;top:49.57%">良馬樓<b>43</b></span><span class="pl" style="left:30.8%;top:29.23%">駿馬樓<b>43</b></span>
+  <div class="pw" style="aspect-ratio:560/484">
+    <img src="/plan/馬坑邨.jpg" alt="馬坑邨航空影像，8 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="560" height="484"
+       loading="lazy" decoding="async"><span class="pl" style="left:52.86%;top:82.1%">觀馬樓<b>44</b></span><span class="pl" style="left:73.71%;top:37.56%">迎馬樓<b>44</b></span><span class="pl" style="left:49.68%;top:62.4%">觀馬樓<b>44</b></span><span class="pl" style="left:57.32%;top:77.11%">觀馬樓<b>44</b></span><span class="pl" style="left:57.59%;top:25.35%">迎馬樓<b>43</b></span><span class="pl" style="left:52.79%;top:41.0%">健馬樓<b>43</b></span><span class="pl" style="left:24.77%;top:49.57%">良馬樓<b>43</b></span><span class="pl" style="left:30.8%;top:29.23%">駿馬樓<b>43</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>馬坑邨 8 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>富豪花園風水評分</h1>
 <p class="sub">沙田區 · 1982 年入伙 · 14 座 · 1,877 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/富豪花園.jpg" alt="富豪花園航空影像，14 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:49.4%;top:54.77%">豪華閣<b>69</b></span><span class="pl" style="left:56.43%;top:42.43%">帝皇閣<b>68</b></span><span class="pl" style="left:37.08%;top:79.04%">明麗閣<b>54</b></span><span class="pl" style="left:47.86%;top:62.19%">嘉蘭閣<b>54</b></span><span class="pl" style="left:16.07%;top:80.86%">愛都閣<b>48</b></span><span class="pl" style="left:23.17%;top:80.46%">碧華閣<b>48</b></span><span class="pl" style="left:43.43%;top:76.14%">雅仕閣<b>47</b></span><span class="pl" style="left:29.95%;top:79.74%">嘉美閣<b>47</b></span><span class="pl" style="left:46.52%;top:69.67%">富儷閣<b>47</b></span><span class="pl" style="left:75.91%;top:37.6%">景峰閣<b>46</b></span><span class="pl" style="left:84.07%;top:39.04%">林景閣<b>46</b></span><span class="pl" style="left:72.4%;top:20.02%">麗人閣<b>46</b></span><span class="pl" style="left:61.56%;top:36.36%">翡翠閣<b>46</b></span><span class="pl" style="left:64.96%;top:21.68%">文禧閣<b>45</b></span>
+  <div class="pw" style="aspect-ratio:396/345">
+    <img src="/plan/富豪花園.jpg" alt="富豪花園航空影像，14 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="396" height="345"
+       loading="lazy" decoding="async"><span class="pl" style="left:49.4%;top:54.77%">豪華閣<b>69</b></span><span class="pl" style="left:56.43%;top:42.43%">帝皇閣<b>68</b></span><span class="pl" style="left:37.08%;top:79.04%">明麗閣<b>54</b></span><span class="pl" style="left:47.86%;top:62.19%">嘉蘭閣<b>54</b></span><span class="pl" style="left:16.07%;top:80.86%">愛都閣<b>48</b></span><span class="pl" style="left:23.17%;top:80.46%">碧華閣<b>48</b></span><span class="pl" style="left:43.43%;top:76.14%">雅仕閣<b>47</b></span><span class="pl" style="left:29.95%;top:79.74%">嘉美閣<b>47</b></span><span class="pl" style="left:46.52%;top:69.67%">富儷閣<b>47</b></span><span class="pl" style="left:75.91%;top:37.6%">景峰閣<b>46</b></span><span class="pl" style="left:84.07%;top:39.04%">林景閣<b>46</b></span><span class="pl" style="left:72.4%;top:20.02%">麗人閣<b>46</b></span><span class="pl" style="left:61.56%;top:36.36%">翡翠閣<b>46</b></span><span class="pl" style="left:64.96%;top:21.68%">文禧閣<b>45</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>富豪花園 14 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

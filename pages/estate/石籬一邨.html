@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>石籬一邨風水評分</h1>
 <p class="sub">葵青區 · 1985 年入伙 · 9 座 · 4,795 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/石籬一邨.jpg" alt="石籬一邨航空影像，9 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:30.32%;top:67.45%">石寧樓<b>66</b></span><span class="pl" style="left:76.63%;top:45.42%">石興樓<b>48</b></span><span class="pl" style="left:51.18%;top:17.66%">石安樓<b>48</b></span><span class="pl" style="left:41.43%;top:23.0%">石泰樓<b>47</b></span><span class="pl" style="left:26.6%;top:49.39%">石俊樓高座<b>45</b></span><span class="pl" style="left:32.13%;top:45.47%">石俊樓低座<b>45</b></span><span class="pl" style="left:25.0%;top:77.87%">石逸樓高座<b>43</b></span><span class="pl" style="left:23.01%;top:83.58%">石逸樓低座<b>43</b></span><span class="pl" style="left:19.69%;top:59.66%">石秀樓<b>43</b></span>
+  <div class="pw" style="aspect-ratio:437/552">
+    <img src="/plan/石籬一邨.jpg" alt="石籬一邨航空影像，9 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="437" height="552"
+       loading="lazy" decoding="async"><span class="pl" style="left:30.32%;top:67.45%">石寧樓<b>66</b></span><span class="pl" style="left:76.63%;top:45.42%">石興樓<b>48</b></span><span class="pl" style="left:51.18%;top:17.66%">石安樓<b>48</b></span><span class="pl" style="left:41.43%;top:23.0%">石泰樓<b>47</b></span><span class="pl" style="left:26.6%;top:49.39%">石俊樓高座<b>45</b></span><span class="pl" style="left:32.13%;top:45.47%">石俊樓低座<b>45</b></span><span class="pl" style="left:25.0%;top:77.87%">石逸樓高座<b>43</b></span><span class="pl" style="left:23.01%;top:83.58%">石逸樓低座<b>43</b></span><span class="pl" style="left:19.69%;top:59.66%">石秀樓<b>43</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>石籬一邨 9 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>清麗苑風水評分</h1>
 <p class="sub">深水埗區 · 1981 年入伙 · 6 座</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/清麗苑.jpg" alt="清麗苑航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:21.93%;top:62.29%">麗康閣<b>56</b></span><span class="pl" style="left:35.19%;top:38.3%">麗泰閣<b>56</b></span><span class="pl" style="left:56.87%;top:34.82%">麗建閣<b>48</b></span><span class="pl" style="left:45.58%;top:68.78%">麗寧閣<b>48</b></span><span class="pl" style="left:78.48%;top:30.33%">麗裕閣<b>47</b></span><span class="pl" style="left:70.92%;top:60.72%">麗秀閣<b>46</b></span>
+  <div class="pw" style="aspect-ratio:624/497">
+    <img src="/plan/清麗苑.jpg" alt="清麗苑航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="624" height="497"
+       loading="lazy" decoding="async"><span class="pl" style="left:21.93%;top:62.29%">麗康閣<b>56</b></span><span class="pl" style="left:35.19%;top:38.3%">麗泰閣<b>56</b></span><span class="pl" style="left:56.87%;top:34.82%">麗建閣<b>48</b></span><span class="pl" style="left:45.58%;top:68.78%">麗寧閣<b>48</b></span><span class="pl" style="left:78.48%;top:30.33%">麗裕閣<b>47</b></span><span class="pl" style="left:70.92%;top:60.72%">麗秀閣<b>46</b></span>
     <span class="sc-m">50 米</span><span class="nn">北</span></div>
   <figcaption>清麗苑 6 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

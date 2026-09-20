@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>愉田苑風水評分</h1>
 <p class="sub">沙田區 · 1982 年入伙 · 6 座 · 1,705 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/愉田苑.jpg" alt="愉田苑航空影像，7 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:26.82%;top:57.98%">愉和閣<b>69</b></span><span class="pl" style="left:50.63%;top:50.74%">愉悅閣<b>68</b></span><span class="pl" style="left:65.49%;top:18.76%">愉澤閣<b>50</b></span><span class="pl" style="left:78.87%;top:21.14%"><b>50</b></span><span class="pl" style="left:36.05%;top:82.21%">愉瑞閣<b>46</b></span><span class="pl" style="left:66.94%;top:35.34%">愉逸閣<b>46</b></span><span class="pl" style="left:51.23%;top:68.97%">愉群閣<b>46</b></span>
+  <div class="pw" style="aspect-ratio:356/546">
+    <img src="/plan/愉田苑.jpg" alt="愉田苑航空影像，7 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="356" height="546"
+       loading="lazy" decoding="async"><span class="pl" style="left:26.82%;top:57.98%">愉和閣<b>69</b></span><span class="pl" style="left:50.63%;top:50.74%">愉悅閣<b>68</b></span><span class="pl" style="left:65.49%;top:18.76%">愉澤閣<b>50</b></span><span class="pl" style="left:78.87%;top:21.14%"><b>50</b></span><span class="pl" style="left:36.05%;top:82.21%">愉瑞閣<b>46</b></span><span class="pl" style="left:66.94%;top:35.34%">愉逸閣<b>46</b></span><span class="pl" style="left:51.23%;top:68.97%">愉群閣<b>46</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>愉田苑 7 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

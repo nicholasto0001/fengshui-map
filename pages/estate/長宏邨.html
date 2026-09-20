@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>長宏邨風水評分</h1>
 <p class="sub">葵青區 · 2001 年入伙 · 7 座 · 4,195 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/長宏邨.jpg" alt="長宏邨航空影像，7 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:57.55%;top:27.97%">宏毅樓<b>60</b></span><span class="pl" style="left:64.71%;top:43.36%">宏正樓<b>59</b></span><span class="pl" style="left:20.3%;top:73.43%">宏意樓<b>52</b></span><span class="pl" style="left:26.25%;top:43.26%">宏善樓<b>52</b></span><span class="pl" style="left:78.72%;top:34.51%">宏文樓<b>52</b></span><span class="pl" style="left:49.82%;top:54.73%">宏勇樓<b>52</b></span><span class="pl" style="left:35.27%;top:64.59%">宏心樓<b>51</b></span>
+  <div class="pw" style="aspect-ratio:598/482">
+    <img src="/plan/長宏邨.jpg" alt="長宏邨航空影像，7 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="598" height="482"
+       loading="lazy" decoding="async"><span class="pl" style="left:57.55%;top:27.97%">宏毅樓<b>60</b></span><span class="pl" style="left:64.71%;top:43.36%">宏正樓<b>59</b></span><span class="pl" style="left:20.3%;top:73.43%">宏意樓<b>52</b></span><span class="pl" style="left:26.25%;top:43.26%">宏善樓<b>52</b></span><span class="pl" style="left:78.72%;top:34.51%">宏文樓<b>52</b></span><span class="pl" style="left:49.82%;top:54.73%">宏勇樓<b>52</b></span><span class="pl" style="left:35.27%;top:64.59%">宏心樓<b>51</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>長宏邨 7 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

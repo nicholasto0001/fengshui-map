@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>慈正邨風水評分</h1>
 <p class="sub">黃大仙區 · 1993 年入伙 · 14 座 · 7,901 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/慈正邨.jpg" alt="慈正邨航空影像，14 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:41.8%;top:54.72%">慈正邨服務設施大<b>62</b></span><span class="pl" style="left:58.54%;top:73.91%">正明樓<b>54</b></span><span class="pl" style="left:16.95%;top:26.23%">正德樓<b>52</b></span><span class="pl" style="left:80.84%;top:75.94%">正安樓<b>47</b></span><span class="pl" style="left:59.23%;top:79.18%">正明樓<b>46</b></span><span class="pl" style="left:61.96%;top:77.61%">正明樓<b>46</b></span><span class="pl" style="left:60.5%;top:77.26%">正明樓<b>46</b></span><span class="pl" style="left:69.89%;top:74.7%">正康樓<b>46</b></span><span class="pl" style="left:77.62%;top:60.82%">正遠樓<b>46</b></span><span class="pl" style="left:54.53%;top:58.73%">正旭樓<b>46</b></span><span class="pl" style="left:48.89%;top:41.05%">正怡樓<b>45</b></span><span class="pl" style="left:59.16%;top:45.95%">正泰樓<b>45</b></span><span class="pl" style="left:25.41%;top:42.4%">正暉樓<b>45</b></span><span class="pl" style="left:30.59%;top:31.37%">正和樓<b>44</b></span>
+  <div class="pw" style="aspect-ratio:589/435">
+    <img src="/plan/慈正邨.jpg" alt="慈正邨航空影像，14 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="589" height="435"
+       loading="lazy" decoding="async"><span class="pl" style="left:41.8%;top:54.72%">慈正邨服務設施大<b>62</b></span><span class="pl" style="left:58.54%;top:73.91%">正明樓<b>54</b></span><span class="pl" style="left:16.95%;top:26.23%">正德樓<b>52</b></span><span class="pl" style="left:80.84%;top:75.94%">正安樓<b>47</b></span><span class="pl" style="left:59.23%;top:79.18%">正明樓<b>46</b></span><span class="pl" style="left:61.96%;top:77.61%">正明樓<b>46</b></span><span class="pl" style="left:60.5%;top:77.26%">正明樓<b>46</b></span><span class="pl" style="left:69.89%;top:74.7%">正康樓<b>46</b></span><span class="pl" style="left:77.62%;top:60.82%">正遠樓<b>46</b></span><span class="pl" style="left:54.53%;top:58.73%">正旭樓<b>46</b></span><span class="pl" style="left:48.89%;top:41.05%">正怡樓<b>45</b></span><span class="pl" style="left:59.16%;top:45.95%">正泰樓<b>45</b></span><span class="pl" style="left:25.41%;top:42.4%">正暉樓<b>45</b></span><span class="pl" style="left:30.59%;top:31.37%">正和樓<b>44</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>慈正邨 14 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

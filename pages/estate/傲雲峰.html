@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>傲雲峰風水評分</h1>
 <p class="sub">九龍城區 · 2004 年入伙 · 6 座 · 2,060 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/傲雲峰.jpg" alt="傲雲峰航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:18.67%;top:64.89%">傲雲峰第一座<b>45</b></span><span class="pl" style="left:24.55%;top:44.18%">傲雲峰第二座<b>45</b></span><span class="pl" style="left:79.78%;top:60.82%">傲雲峰第七座<b>41</b></span><span class="pl" style="left:67.45%;top:51.03%">傲雲峰第六座<b>41</b></span><span class="pl" style="left:54.4%;top:41.33%">傲雲峰第五座<b>40</b></span><span class="pl" style="left:41.9%;top:31.77%">傲雲峰第三座<b>40</b></span>
+  <div class="pw" style="aspect-ratio:837/513">
+    <img src="/plan/傲雲峰.jpg" alt="傲雲峰航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="837" height="513"
+       loading="lazy" decoding="async"><span class="pl" style="left:18.67%;top:64.89%">傲雲峰第一座<b>45</b></span><span class="pl" style="left:24.55%;top:44.18%">傲雲峰第二座<b>45</b></span><span class="pl" style="left:79.78%;top:60.82%">傲雲峰第七座<b>41</b></span><span class="pl" style="left:67.45%;top:51.03%">傲雲峰第六座<b>41</b></span><span class="pl" style="left:54.4%;top:41.33%">傲雲峰第五座<b>40</b></span><span class="pl" style="left:41.9%;top:31.77%">傲雲峰第三座<b>40</b></span>
     <span class="sc-m">50 米</span><span class="nn">北</span></div>
   <figcaption>傲雲峰 6 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

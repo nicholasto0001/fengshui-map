@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>怡沁園風水評分</h1>
 <p class="sub">西貢區 · 1999 年入伙 · 5 座 · 1,498 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/怡沁園.jpg" alt="怡沁園航空影像，5 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:77.02%;top:74.86%">怡心園第３座<b>36</b></span><span class="pl" style="left:51.19%;top:64.01%">怡心園第２座<b>36</b></span><span class="pl" style="left:61.09%;top:37.13%">怡心園第５座<b>36</b></span><span class="pl" style="left:25.1%;top:52.9%">怡心園第１座<b>36</b></span><span class="pl" style="left:34.52%;top:26.01%">怡心園第４座<b>35</b></span>
+  <div class="pw" style="aspect-ratio:623/589">
+    <img src="/plan/怡沁園.jpg" alt="怡沁園航空影像，5 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="623" height="589"
+       loading="lazy" decoding="async"><span class="pl" style="left:77.02%;top:74.86%">怡心園第３座<b>36</b></span><span class="pl" style="left:51.19%;top:64.01%">怡心園第２座<b>36</b></span><span class="pl" style="left:61.09%;top:37.13%">怡心園第５座<b>36</b></span><span class="pl" style="left:25.1%;top:52.9%">怡心園第１座<b>36</b></span><span class="pl" style="left:34.52%;top:26.01%">怡心園第４座<b>35</b></span>
     <span class="sc-m">50 米</span><span class="nn">北</span></div>
   <figcaption>怡沁園 5 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

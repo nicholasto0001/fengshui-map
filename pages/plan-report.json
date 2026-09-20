@@ -4,6 +4,8 @@
    "contrast": 49.2,
    "blocks": 7,
    "scale_m": 100,
+   "w": 651,
+   "h": 392,
    "labels": [
     {
      "t": "Ｇｒａｎｄ　Ｙｏ",
@@ -53,6 +55,8 @@
    "contrast": 30.8,
    "blocks": 9,
    "scale_m": 100,
+   "w": 502,
+   "h": 410,
    "labels": [
     {
      "t": "Ｙｏｈｏ　Ｍｉｄ",
@@ -114,6 +118,8 @@
    "contrast": 19.3,
    "blocks": 3,
    "scale_m": 100,
+   "w": 439,
+   "h": 428,
    "labels": [
     {
      "t": "滿漁樓",
@@ -139,6 +145,8 @@
    "contrast": 37.2,
    "blocks": 4,
    "scale_m": 50,
+   "w": 461,
+   "h": 491,
    "labels": [
     {
      "t": "世宙第五座",
@@ -170,6 +178,8 @@
    "contrast": 20.1,
    "blocks": 5,
    "scale_m": 100,
+   "w": 808,
+   "h": 600,
    "labels": [
     {
      "t": "明信樓",
@@ -207,6 +217,8 @@
    "contrast": 44.7,
    "blocks": 10,
    "scale_m": 200,
+   "w": 370,
+   "h": 556,
    "labels": [
     {
      "t": "逸文樓",
@@ -274,6 +286,8 @@
    "contrast": 35.4,
    "blocks": 2,
    "scale_m": 50,
+   "w": 443,
+   "h": 532,
    "labels": [
     {
      "t": "耀翠閣",
@@ -293,6 +307,8 @@
    "contrast": 26.0,
    "blocks": 12,
    "scale_m": 100,
+   "w": 588,
+   "h": 552,
    "labels": [
     {
      "t": "俊宏軒第七座",
@@ -372,6 +388,8 @@
    "contrast": 37.9,
    "blocks": 12,
    "scale_m": 100,
+   "w": 499,
+   "h": 529,
    "labels": [
     {
      "t": "文瑞閣",
@@ -451,12 +469,16 @@
    "contrast": 26.5,
    "blocks": 39,
    "scale_m": 100,
+   "w": 492,
+   "h": 498,
    "labels": []
   },
   "偉景花園": {
    "contrast": 33.3,
    "blocks": 8,
    "scale_m": 100,
+   "w": 303,
+   "h": 345,
    "labels": [
     {
      "t": "偉景花園第一座",
@@ -512,6 +534,8 @@
    "contrast": 33.3,
    "blocks": 6,
    "scale_m": 50,
+   "w": 608,
+   "h": 428,
    "labels": [
     {
      "t": "健威花園Ｆ座",
@@ -555,12 +579,16 @@
    "contrast": 36.7,
    "blocks": 19,
    "scale_m": 200,
+   "w": 188,
+   "h": 313,
    "labels": []
   },
   "健明邨": {
    "contrast": 32.9,
    "blocks": 10,
    "scale_m": 200,
+   "w": 284,
+   "h": 382,
    "labels": [
     {
      "t": "健暉樓",
@@ -628,6 +656,8 @@
    "contrast": 41.3,
    "blocks": 6,
    "scale_m": 50,
+   "w": 837,
+   "h": 513,
    "labels": [
     {
      "t": "傲雲峰第一座",
@@ -671,6 +701,8 @@
    "contrast": 29.2,
    "blocks": 14,
    "scale_m": 200,
+   "w": 499,
+   "h": 441,
    "labels": [
     {
      "t": "元豐樓",
@@ -762,6 +794,8 @@
    "contrast": 25.9,
    "blocks": 9,
    "scale_m": 100,
+   "w": 583,
+   "h": 350,
    "labels": [
     {
      "t": "定邦閣",
@@ -823,6 +857,8 @@
    "contrast": 38.3,
    "blocks": 11,
    "scale_m": 100,
+   "w": 596,
+   "h": 521,
    "labels": [
     {
      "t": "柳景閣",
@@ -896,12 +932,16 @@
    "contrast": 31.4,
    "blocks": 19,
    "scale_m": 200,
+   "w": 321,
+   "h": 588,
    "labels": []
   },
   "兆畦苑": {
    "contrast": 50.6,
    "blocks": 2,
    "scale_m": 50,
+   "w": 649,
+   "h": 545,
    "labels": [
     {
      "t": "兆富閣",
@@ -921,6 +961,8 @@
    "contrast": 25.2,
    "blocks": 5,
    "scale_m": 100,
+   "w": 389,
+   "h": 441,
    "labels": [
     {
      "t": "宏禧閣",
@@ -958,6 +1000,8 @@
    "contrast": 25.3,
    "blocks": 2,
    "scale_m": 50,
+   "w": 270,
+   "h": 600,
    "labels": [
     {
      "t": "兆映閣",
@@ -977,6 +1021,8 @@
    "contrast": 41.9,
    "blocks": 2,
    "scale_m": 50,
+   "w": 715,
+   "h": 596,
    "labels": [
     {
      "t": "逸生閣",
@@ -996,6 +1042,8 @@
    "contrast": 51.5,
    "blocks": 3,
    "scale_m": 50,
+   "w": 267,
+   "h": 296,
    "labels": [
     {
      "t": "兆邦苑",
@@ -1021,6 +1069,8 @@
    "contrast": 49.8,
    "blocks": 1,
    "scale_m": 50,
+   "w": 269,
+   "h": 270,
    "labels": [
     {
      "t": "兆隆苑",
@@ -1034,6 +1084,8 @@
    "contrast": 27.6,
    "blocks": 12,
    "scale_m": 100,
+   "w": 517,
+   "h": 523,
    "labels": [
     {
      "t": "瑞麟閣",
@@ -1113,6 +1165,8 @@
    "contrast": 63.6,
    "blocks": 1,
    "scale_m": 50,
+   "w": 186,
+   "h": 257,
    "labels": [
     {
      "t": "冠山苑",
@@ -1126,6 +1180,8 @@
    "contrast": 38.2,
    "blocks": 3,
    "scale_m": 50,
+   "w": 409,
+   "h": 559,
    "labels": [
     {
      "t": "冠盛閣",
@@ -1151,6 +1207,8 @@
    "contrast": 30.7,
    "blocks": 2,
    "scale_m": 50,
+   "w": 583,
+   "h": 501,
    "labels": [
     {
      "t": "鳴暉閣",
@@ -1170,6 +1228,8 @@
    "contrast": 23.9,
    "blocks": 2,
    "scale_m": 50,
+   "w": 294,
+   "h": 286,
    "labels": [
     {
      "t": "冠熹苑",
@@ -1189,6 +1249,8 @@
    "contrast": 88.0,
    "blocks": 1,
    "scale_m": 50,
+   "w": 280,
+   "h": 383,
    "labels": [
     {
      "t": "凱德苑",
@@ -1202,6 +1264,8 @@
    "contrast": 76.2,
    "blocks": 5,
    "scale_m": 100,
+   "w": 439,
+   "h": 374,
    "labels": [
     {
      "t": "凱曈閣",
@@ -1239,6 +1303,8 @@
    "contrast": 50.7,
    "blocks": 6,
    "scale_m": 200,
+   "w": 222,
+   "h": 432,
    "labels": [
     {
      "t": "利興樓",
@@ -1282,6 +1348,8 @@
    "contrast": 46.0,
    "blocks": 8,
    "scale_m": 200,
+   "w": 555,
+   "h": 324,
    "labels": [
     {
      "t": "東昇樓",
@@ -1337,6 +1405,8 @@
    "contrast": 32.5,
    "blocks": 5,
    "scale_m": 200,
+   "w": 241,
+   "h": 369,
    "labels": [
     {
      "t": "",
@@ -1374,18 +1444,24 @@
    "contrast": 38.4,
    "blocks": 17,
    "scale_m": 200,
+   "w": 402,
+   "h": 401,
    "labels": []
   },
   "半山壹號": {
    "contrast": 16.0,
    "blocks": 37,
    "scale_m": 100,
+   "w": 316,
+   "h": 392,
    "labels": []
   },
   "半島豪庭": {
    "contrast": 20.3,
    "blocks": 7,
    "scale_m": 50,
+   "w": 811,
+   "h": 595,
    "labels": [
     {
      "t": "",
@@ -1435,6 +1511,8 @@
    "contrast": 24.5,
    "blocks": 13,
    "scale_m": 100,
+   "w": 466,
+   "h": 595,
    "labels": [
     {
      "t": "",
@@ -1520,6 +1598,8 @@
    "contrast": 17.8,
    "blocks": 8,
    "scale_m": 200,
+   "w": 326,
+   "h": 411,
    "labels": [
     {
      "t": "南逸樓",
@@ -1575,6 +1655,8 @@
    "contrast": 44.5,
    "blocks": 7,
    "scale_m": 100,
+   "w": 558,
+   "h": 533,
    "labels": [
     {
      "t": "昌哲樓",
@@ -1624,6 +1706,8 @@
    "contrast": 34.9,
    "blocks": 12,
    "scale_m": 100,
+   "w": 302,
+   "h": 455,
    "labels": [
     {
      "t": "南浪海灣六座",
@@ -1703,6 +1787,8 @@
    "contrast": 45.3,
    "blocks": 5,
    "scale_m": 50,
+   "w": 507,
+   "h": 447,
    "labels": [
     {
      "t": "南濤閣第３座",
@@ -1740,6 +1826,8 @@
    "contrast": 19.9,
    "blocks": 5,
    "scale_m": 100,
+   "w": 320,
+   "h": 338,
    "labels": [
     {
      "t": "南豐廣場第２座",
@@ -1777,6 +1865,8 @@
    "contrast": 48.6,
    "blocks": 12,
    "scale_m": 100,
+   "w": 406,
+   "h": 479,
    "labels": [
     {
      "t": "南豐新邨第５座",
@@ -1856,6 +1946,8 @@
    "contrast": 40.8,
    "blocks": 8,
    "scale_m": 200,
+   "w": 562,
+   "h": 446,
    "labels": [
     {
      "t": "博安樓",
@@ -1911,6 +2003,8 @@
    "contrast": 41.1,
    "blocks": 7,
    "scale_m": 200,
+   "w": 559,
+   "h": 290,
    "labels": [
     {
      "t": "德裕樓",
@@ -1960,18 +2054,24 @@
    "contrast": 40.7,
    "blocks": 35,
    "scale_m": 200,
+   "w": 365,
+   "h": 379,
    "labels": []
   },
   "友愛邨": {
    "contrast": 32.9,
    "blocks": 20,
    "scale_m": 200,
+   "w": 452,
+   "h": 478,
    "labels": []
   },
   "叠翠軒": {
    "contrast": 25.2,
    "blocks": 7,
    "scale_m": 50,
+   "w": 665,
+   "h": 557,
    "labels": [
     {
      "t": "叠翠軒第４座",
@@ -2021,6 +2121,8 @@
    "contrast": 26.2,
    "blocks": 12,
    "scale_m": 100,
+   "w": 537,
+   "h": 509,
    "labels": [
     {
      "t": "",
@@ -2100,12 +2202,16 @@
    "contrast": 36.8,
    "blocks": 15,
    "scale_m": 200,
+   "w": 609,
+   "h": 539,
    "labels": []
   },
   "君傲灣": {
    "contrast": 21.2,
    "blocks": 3,
    "scale_m": 50,
+   "w": 400,
+   "h": 570,
    "labels": [
     {
      "t": "君傲灣第三座",
@@ -2131,18 +2237,24 @@
    "contrast": 15.7,
    "blocks": 26,
    "scale_m": 100,
+   "w": 259,
+   "h": 457,
    "labels": []
   },
   "和富中心": {
    "contrast": 35.9,
    "blocks": 20,
    "scale_m": 100,
+   "w": 713,
+   "h": 448,
    "labels": []
   },
   "和明苑": {
    "contrast": 44.6,
    "blocks": 4,
    "scale_m": 100,
+   "w": 486,
+   "h": 327,
    "labels": [
     {
      "t": "和煦閣",
@@ -2174,12 +2286,16 @@
    "contrast": 14.3,
    "blocks": 24,
    "scale_m": 200,
+   "w": 822,
+   "h": 383,
    "labels": []
   },
   "和田邨": {
    "contrast": 55.8,
    "blocks": 4,
    "scale_m": 100,
+   "w": 418,
+   "h": 600,
    "labels": [
     {
      "t": "和喜樓",
@@ -2211,6 +2327,8 @@
    "contrast": 24.2,
    "blocks": 3,
    "scale_m": 100,
+   "w": 262,
+   "h": 403,
    "labels": [
     {
      "t": "唐輝閣",
@@ -2236,6 +2354,8 @@
    "contrast": 27.4,
    "blocks": 7,
    "scale_m": 100,
+   "w": 322,
+   "h": 312,
    "labels": [
     {
      "t": "啟德花園購物商場",
@@ -2285,6 +2405,8 @@
    "contrast": 53.3,
    "blocks": 2,
    "scale_m": 100,
+   "w": 324,
+   "h": 330,
    "labels": [
     {
      "t": "啟楓閣",
@@ -2304,6 +2426,8 @@
    "contrast": 74.2,
    "blocks": 6,
    "scale_m": 100,
+   "w": 428,
+   "h": 567,
    "labels": [
     {
      "t": "康晴樓",
@@ -2347,6 +2471,8 @@
    "contrast": 76.9,
    "blocks": 3,
    "scale_m": 50,
+   "w": 353,
+   "h": 422,
    "labels": [
     {
      "t": "啟遙閣",
@@ -2372,6 +2498,8 @@
    "contrast": 36.3,
    "blocks": 6,
    "scale_m": 200,
+   "w": 306,
+   "h": 322,
    "labels": [
     {
      "t": "啓賢樓",
@@ -2415,6 +2543,8 @@
    "contrast": 60.1,
    "blocks": 2,
    "scale_m": 100,
+   "w": 290,
+   "h": 326,
    "labels": [
     {
      "t": "啟添閣",
@@ -2434,6 +2564,8 @@
    "contrast": 44.1,
    "blocks": 3,
    "scale_m": 50,
+   "w": 766,
+   "h": 566,
    "labels": [
     {
      "t": "啓旺樓",
@@ -2459,6 +2591,8 @@
    "contrast": 44.2,
    "blocks": 2,
    "scale_m": 50,
+   "w": 562,
+   "h": 576,
    "labels": [
     {
      "t": "盈雅閣",
@@ -2478,6 +2612,8 @@
    "contrast": 45.6,
    "blocks": 2,
    "scale_m": 50,
+   "w": 543,
+   "h": 481,
    "labels": [
     {
      "t": "善禮樓",
@@ -2497,6 +2633,8 @@
    "contrast": 20.6,
    "blocks": 8,
    "scale_m": 50,
+   "w": 664,
+   "h": 553,
    "labels": [
     {
      "t": "嘉亨灣第六座",
@@ -2552,6 +2690,8 @@
    "contrast": 39.2,
    "blocks": 5,
    "scale_m": 100,
+   "w": 360,
+   "h": 311,
    "labels": [
     {
      "t": "嘉峰臺第２座",
@@ -2589,6 +2729,8 @@
    "contrast": 21.0,
    "blocks": 2,
    "scale_m": 50,
+   "w": 400,
+   "h": 404,
    "labels": [
     {
      "t": "嘉匯閣",
@@ -2608,6 +2750,8 @@
    "contrast": 34.9,
    "blocks": 2,
    "scale_m": 50,
+   "w": 375,
+   "h": 405,
    "labels": [
     {
      "t": "嘉善閣",
@@ -2627,12 +2771,16 @@
    "contrast": 31.5,
    "blocks": 69,
    "scale_m": 500,
+   "w": 311,
+   "h": 377,
    "labels": []
   },
   "嘉田苑": {
    "contrast": 54.0,
    "blocks": 6,
    "scale_m": 100,
+   "w": 320,
+   "h": 336,
    "labels": [
     {
      "t": "嘉祺閣",
@@ -2676,6 +2824,8 @@
    "contrast": 34.0,
    "blocks": 4,
    "scale_m": 100,
+   "w": 287,
+   "h": 515,
    "labels": [
     {
      "t": "嘉耀閣",
@@ -2707,6 +2857,8 @@
    "contrast": 35.8,
    "blocks": 3,
    "scale_m": 100,
+   "w": 370,
+   "h": 362,
    "labels": [
     {
      "t": "福泰樓",
@@ -2732,6 +2884,8 @@
    "contrast": 38.3,
    "blocks": 4,
    "scale_m": 50,
+   "w": 675,
+   "h": 491,
    "labels": [
     {
      "t": "嘉俊閣",
@@ -2763,6 +2917,8 @@
    "contrast": 41.3,
    "blocks": 1,
    "scale_m": 50,
+   "w": 174,
+   "h": 192,
    "labels": [
     {
      "t": "嘉順苑",
@@ -2776,6 +2932,8 @@
    "contrast": 30.4,
    "blocks": 8,
    "scale_m": 100,
+   "w": 629,
+   "h": 554,
    "labels": [
     {
      "t": "",
@@ -2831,6 +2989,8 @@
    "contrast": 19.3,
    "blocks": 3,
    "scale_m": 100,
+   "w": 259,
+   "h": 479,
    "labels": [
     {
      "t": "坪麗苑",
@@ -2856,12 +3016,16 @@
    "contrast": 60.4,
    "blocks": 17,
    "scale_m": 100,
+   "w": 619,
+   "h": 561,
    "labels": []
   },
   "大元邨": {
    "contrast": 31.9,
    "blocks": 9,
    "scale_m": 200,
+   "w": 457,
+   "h": 336,
    "labels": [
     {
      "t": "泰樂樓",
@@ -2923,12 +3087,16 @@
    "contrast": 26.5,
    "blocks": 16,
    "scale_m": 100,
+   "w": 467,
+   "h": 389,
    "labels": []
   },
   "大坑東邨": {
    "contrast": 41.1,
    "blocks": 11,
    "scale_m": 200,
+   "w": 297,
+   "h": 538,
    "labels": [
     {
      "t": "東龍樓",
@@ -3002,6 +3170,8 @@
    "contrast": 33.7,
    "blocks": 7,
    "scale_m": 100,
+   "w": 388,
+   "h": 402,
    "labels": [
     {
      "t": "民興樓",
@@ -3051,12 +3221,16 @@
    "contrast": 30.4,
    "blocks": 35,
    "scale_m": 200,
+   "w": 432,
+   "h": 514,
    "labels": []
   },
   "大埔廣場": {
    "contrast": 24.1,
    "blocks": 9,
    "scale_m": 100,
+   "w": 260,
+   "h": 482,
    "labels": [
     {
      "t": "宜興閣",
@@ -3118,18 +3292,24 @@
    "contrast": 34.3,
    "blocks": 30,
    "scale_m": 200,
+   "w": 648,
+   "h": 506,
    "labels": []
   },
   "大興花園": {
    "contrast": 45.3,
    "blocks": 21,
    "scale_m": 100,
+   "w": 654,
+   "h": 471,
    "labels": []
   },
   "大興邨": {
    "contrast": 33.5,
    "blocks": 12,
    "scale_m": 200,
+   "w": 478,
+   "h": 470,
    "labels": [
     {
      "t": "興盛樓",
@@ -3209,6 +3389,8 @@
    "contrast": 43.1,
    "blocks": 1,
    "scale_m": 50,
+   "w": 243,
+   "h": 170,
    "labels": [
     {
      "t": "天利苑",
@@ -3222,12 +3404,16 @@
    "contrast": 28.7,
    "blocks": 29,
    "scale_m": 100,
+   "w": 388,
+   "h": 369,
    "labels": []
   },
   "天宏苑": {
    "contrast": 38.9,
    "blocks": 3,
    "scale_m": 50,
+   "w": 507,
+   "h": 508,
    "labels": [
     {
      "t": "宏景閣",
@@ -3253,12 +3439,16 @@
    "contrast": 30.1,
    "blocks": 16,
    "scale_m": 200,
+   "w": 504,
+   "h": 387,
    "labels": []
   },
   "天平邨": {
    "contrast": 41.0,
    "blocks": 7,
    "scale_m": 200,
+   "w": 473,
+   "h": 503,
    "labels": [
     {
      "t": "天美樓",
@@ -3308,6 +3498,8 @@
    "contrast": 42.1,
    "blocks": 14,
    "scale_m": 200,
+   "w": 423,
+   "h": 379,
    "labels": [
     {
      "t": "恒輝樓",
@@ -3399,6 +3591,8 @@
    "contrast": 30.0,
    "blocks": 8,
    "scale_m": 100,
+   "w": 496,
+   "h": 600,
    "labels": [
     {
      "t": "恩盈樓",
@@ -3454,6 +3648,8 @@
    "contrast": 55.5,
    "blocks": 6,
    "scale_m": 100,
+   "w": 578,
+   "h": 450,
    "labels": [
     {
      "t": "悅泰樓",
@@ -3497,6 +3693,8 @@
    "contrast": 20.4,
    "blocks": 2,
    "scale_m": 50,
+   "w": 437,
+   "h": 570,
    "labels": [
     {
      "t": "愛潮閣",
@@ -3516,6 +3714,8 @@
    "contrast": 52.6,
    "blocks": 4,
    "scale_m": 100,
+   "w": 420,
+   "h": 499,
    "labels": [
     {
      "t": "慈輝樓",
@@ -3547,12 +3747,16 @@
    "contrast": 23.6,
    "blocks": 44,
    "scale_m": 200,
+   "w": 203,
+   "h": 384,
    "labels": []
   },
   "天晴邨": {
    "contrast": 29.1,
    "blocks": 8,
    "scale_m": 100,
+   "w": 772,
+   "h": 600,
    "labels": [
     {
      "t": "晴彩樓",
@@ -3608,6 +3812,8 @@
    "contrast": 39.9,
    "blocks": 6,
    "scale_m": 200,
+   "w": 195,
+   "h": 310,
    "labels": [
     {
      "t": "澤辰樓",
@@ -3651,6 +3857,8 @@
    "contrast": 35.5,
    "blocks": 7,
    "scale_m": 200,
+   "w": 314,
+   "h": 351,
    "labels": [
     {
      "t": "瑞龍樓",
@@ -3700,6 +3908,8 @@
    "contrast": 26.3,
    "blocks": 6,
    "scale_m": 200,
+   "w": 433,
+   "h": 315,
    "labels": [
     {
      "t": "瑞輝樓",
@@ -3743,12 +3953,16 @@
    "contrast": 38.5,
    "blocks": 17,
    "scale_m": 200,
+   "w": 413,
+   "h": 346,
    "labels": []
   },
   "天祐苑": {
    "contrast": 34.0,
    "blocks": 3,
    "scale_m": 100,
+   "w": 246,
+   "h": 403,
    "labels": [
     {
      "t": "祐寧閣",
@@ -3774,6 +3988,8 @@
    "contrast": 46.1,
    "blocks": 6,
    "scale_m": 200,
+   "w": 410,
+   "h": 457,
    "labels": [
     {
      "t": "耀逸樓",
@@ -3817,6 +4033,8 @@
    "contrast": 46.6,
    "blocks": 6,
    "scale_m": 200,
+   "w": 360,
+   "h": 310,
    "labels": [
     {
      "t": "耀華樓",
@@ -3860,6 +4078,8 @@
    "contrast": 38.1,
    "blocks": 8,
    "scale_m": 100,
+   "w": 441,
+   "h": 453,
    "labels": [
     {
      "t": "天華邨服務設施大",
@@ -3915,12 +4135,16 @@
    "contrast": 26.0,
    "blocks": 71,
    "scale_m": 200,
+   "w": 393,
+   "h": 484,
    "labels": []
   },
   "天逸邨": {
    "contrast": 30.7,
    "blocks": 9,
    "scale_m": 100,
+   "w": 425,
+   "h": 541,
    "labels": [
     {
      "t": "逸海樓",
@@ -3982,18 +4206,24 @@
    "contrast": 37.8,
    "blocks": 21,
    "scale_m": 200,
+   "w": 185,
+   "h": 311,
    "labels": []
   },
   "天頌苑": {
    "contrast": 47.4,
    "blocks": 15,
    "scale_m": 200,
+   "w": 442,
+   "h": 333,
    "labels": []
   },
   "天馬苑": {
    "contrast": 35.7,
    "blocks": 5,
    "scale_m": 100,
+   "w": 730,
+   "h": 360,
    "labels": [
     {
      "t": "駿飛閣",
@@ -4031,6 +4261,8 @@
    "contrast": 47.4,
    "blocks": 1,
    "scale_m": 50,
+   "w": 264,
+   "h": 253,
    "labels": [
     {
      "t": "天麗苑",
@@ -4044,12 +4276,16 @@
    "contrast": 37.5,
    "blocks": 63,
    "scale_m": 200,
+   "w": 462,
+   "h": 315,
    "labels": []
   },
   "太和邨": {
    "contrast": 37.8,
    "blocks": 10,
    "scale_m": 200,
+   "w": 446,
+   "h": 457,
    "labels": [
     {
      "t": "居和樓",
@@ -4117,6 +4353,8 @@
    "contrast": 59.2,
    "blocks": 1,
    "scale_m": 50,
+   "w": 497,
+   "h": 553,
    "labels": [
     {
      "t": "太安樓",
@@ -4130,6 +4368,8 @@
    "contrast": 40.5,
    "blocks": 11,
    "scale_m": 100,
+   "w": 295,
+   "h": 450,
    "labels": [
     {
      "t": "平治樓",
@@ -4203,12 +4443,16 @@
    "contrast": 37.8,
    "blocks": 25,
    "scale_m": 100,
+   "w": 791,
+   "h": 481,
    "labels": []
   },
   "好運中心": {
    "contrast": 25.7,
    "blocks": 9,
    "scale_m": 100,
+   "w": 362,
+   "h": 353,
    "labels": [
     {
      "t": "竹林閣",
@@ -4270,6 +4514,8 @@
    "contrast": 56.3,
    "blocks": 7,
    "scale_m": 100,
+   "w": 294,
+   "h": 455,
    "labels": [
     {
      "t": "宇晴軒第一座",
@@ -4319,6 +4565,8 @@
    "contrast": 46.7,
    "blocks": 11,
    "scale_m": 100,
+   "w": 340,
+   "h": 333,
    "labels": [
     {
      "t": "安和園第一期安慶",
@@ -4392,6 +4640,8 @@
    "contrast": 40.9,
    "blocks": 4,
    "scale_m": 100,
+   "w": 261,
+   "h": 381,
    "labels": [
     {
      "t": "基信閣",
@@ -4423,6 +4673,8 @@
    "contrast": 29.6,
    "blocks": 10,
    "scale_m": 200,
+   "w": 368,
+   "h": 365,
    "labels": [
     {
      "t": "定康樓",
@@ -4490,6 +4742,8 @@
    "contrast": 30.7,
    "blocks": 13,
    "scale_m": 100,
+   "w": 367,
+   "h": 351,
    "labels": [
     {
      "t": "",
@@ -4575,6 +4829,8 @@
    "contrast": 56.8,
    "blocks": 11,
    "scale_m": 200,
+   "w": 394,
+   "h": 600,
    "labels": [
     {
      "t": "勇泰樓",
@@ -4648,6 +4904,8 @@
    "contrast": 23.3,
    "blocks": 2,
    "scale_m": 50,
+   "w": 298,
+   "h": 592,
    "labels": [
     {
      "t": "安麗樓",
@@ -4667,6 +4925,8 @@
    "contrast": 44.8,
    "blocks": 1,
    "scale_m": 50,
+   "w": 268,
+   "h": 275,
    "labels": [
     {
      "t": "安盛苑",
@@ -4680,6 +4940,8 @@
    "contrast": 45.6,
    "blocks": 2,
    "scale_m": 50,
+   "w": 654,
+   "h": 594,
    "labels": [
     {
      "t": "安俊閣",
@@ -4699,6 +4961,8 @@
    "contrast": 22.9,
    "blocks": 8,
    "scale_m": 200,
+   "w": 275,
+   "h": 584,
    "labels": [
     {
      "t": "德蔭樓",
@@ -4754,6 +5018,8 @@
    "contrast": 30.9,
    "blocks": 11,
    "scale_m": 200,
+   "w": 496,
+   "h": 430,
    "labels": [
     {
      "t": "賢達樓",
@@ -4827,6 +5093,8 @@
    "contrast": 36.8,
    "blocks": 1,
    "scale_m": 50,
+   "w": 309,
+   "h": 314,
    "labels": [
     {
      "t": "宏富苑",
@@ -4840,6 +5108,8 @@
    "contrast": 18.3,
    "blocks": 3,
    "scale_m": 50,
+   "w": 316,
+   "h": 466,
    "labels": [
     {
      "t": "德壽樓",
@@ -4865,6 +5135,8 @@
    "contrast": 24.2,
    "blocks": 12,
    "scale_m": 100,
+   "w": 363,
+   "h": 372,
    "labels": [
     {
      "t": "宏景花園第六座",
@@ -4944,6 +5216,8 @@
    "contrast": 15.7,
    "blocks": 5,
    "scale_m": 50,
+   "w": 523,
+   "h": 582,
    "labels": [
     {
      "t": "",
@@ -4981,6 +5255,8 @@
    "contrast": 42.5,
    "blocks": 7,
    "scale_m": 100,
+   "w": 393,
+   "h": 313,
    "labels": [
     {
      "t": "宏盛閣",
@@ -5030,6 +5306,8 @@
    "contrast": 52.5,
    "blocks": 3,
    "scale_m": 100,
+   "w": 352,
+   "h": 400,
    "labels": [
     {
      "t": "喜緻閣",
@@ -5055,6 +5333,8 @@
    "contrast": 22.2,
    "blocks": 13,
    "scale_m": 100,
+   "w": 403,
+   "h": 399,
    "labels": [
     {
      "t": "家邦樓",
@@ -5140,6 +5420,8 @@
    "contrast": 36.9,
    "blocks": 9,
    "scale_m": 200,
+   "w": 406,
+   "h": 585,
    "labels": [
     {
      "t": "富亨鄰里社區中心",
@@ -5201,12 +5483,16 @@
    "contrast": 21.7,
    "blocks": 26,
    "scale_m": 100,
+   "w": 497,
+   "h": 509,
    "labels": []
   },
   "富善邨": {
    "contrast": 55.7,
    "blocks": 6,
    "scale_m": 200,
+   "w": 364,
+   "h": 344,
    "labels": [
     {
      "t": "善群樓",
@@ -5250,12 +5536,16 @@
    "contrast": 29.3,
    "blocks": 19,
    "scale_m": 200,
+   "w": 502,
+   "h": 394,
    "labels": []
   },
   "富寧花園": {
    "contrast": 20.5,
    "blocks": 13,
    "scale_m": 100,
+   "w": 388,
+   "h": 387,
    "labels": [
     {
      "t": "富寧花園第３座",
@@ -5341,6 +5631,8 @@
    "contrast": 57.4,
    "blocks": 13,
    "scale_m": 200,
+   "w": 497,
+   "h": 316,
    "labels": [
     {
      "t": "富寶花園第５座",
@@ -5426,6 +5718,8 @@
    "contrast": 41.1,
    "blocks": 4,
    "scale_m": 100,
+   "w": 443,
+   "h": 341,
    "labels": [
     {
      "t": "富暉樓",
@@ -5457,6 +5751,8 @@
    "contrast": 37.4,
    "blocks": 12,
    "scale_m": 100,
+   "w": 504,
+   "h": 487,
    "labels": [
     {
      "t": "富康花園第十座",
@@ -5536,6 +5832,8 @@
    "contrast": 43.9,
    "blocks": 6,
    "scale_m": 100,
+   "w": 461,
+   "h": 348,
    "labels": [
     {
      "t": "富雅閣",
@@ -5579,6 +5877,8 @@
    "contrast": 54.6,
    "blocks": 5,
    "scale_m": 50,
+   "w": 614,
+   "h": 513,
    "labels": [
     {
      "t": "富怡花園第１座",
@@ -5616,6 +5916,8 @@
    "contrast": 30.9,
    "blocks": 10,
    "scale_m": 200,
+   "w": 337,
+   "h": 382,
    "labels": [
     {
      "t": "富凱樓",
@@ -5683,6 +5985,8 @@
    "contrast": 28.3,
    "blocks": 12,
    "scale_m": 200,
+   "w": 209,
+   "h": 346,
    "labels": [
     {
      "t": "富景花園第２座",
@@ -5762,6 +6066,8 @@
    "contrast": 39.9,
    "blocks": 3,
    "scale_m": 100,
+   "w": 277,
+   "h": 400,
    "labels": [
     {
      "t": "東盛樓",
@@ -5787,12 +6093,16 @@
    "contrast": 24.1,
    "blocks": 19,
    "scale_m": 100,
+   "w": 774,
+   "h": 594,
    "labels": []
   },
   "富欣花園": {
    "contrast": 22.4,
    "blocks": 10,
    "scale_m": 100,
+   "w": 451,
+   "h": 390,
    "labels": [
     {
      "t": "富欣花園第６座",
@@ -5860,12 +6170,16 @@
    "contrast": 28.7,
    "blocks": 49,
    "scale_m": 100,
+   "w": 877,
+   "h": 596,
    "labels": []
   },
   "富澤花園": {
    "contrast": 16.6,
    "blocks": 5,
    "scale_m": 100,
+   "w": 385,
+   "h": 315,
    "labels": [
     {
      "t": "富威閣",
@@ -5903,6 +6217,8 @@
    "contrast": 64.8,
    "blocks": 8,
    "scale_m": 200,
+   "w": 366,
+   "h": 319,
    "labels": [
     {
      "t": "珍蝶樓",
@@ -5958,6 +6274,8 @@
    "contrast": 41.5,
    "blocks": 14,
    "scale_m": 200,
+   "w": 396,
+   "h": 345,
    "labels": [
     {
      "t": "豪華閣",
@@ -6049,6 +6367,8 @@
    "contrast": 38.1,
    "blocks": 6,
    "scale_m": 50,
+   "w": 766,
+   "h": 600,
    "labels": [
     {
      "t": "",
@@ -6092,6 +6412,8 @@
    "contrast": 25.8,
    "blocks": 1,
    "scale_m": 50,
+   "w": 274,
+   "h": 264,
    "labels": [
     {
      "t": "寶松閣",
@@ -6105,6 +6427,8 @@
    "contrast": 39.3,
    "blocks": 7,
    "scale_m": 200,
+   "w": 548,
+   "h": 422,
    "labels": [
     {
      "t": "寶寧樓",
@@ -6154,6 +6478,8 @@
    "contrast": 31.1,
    "blocks": 2,
    "scale_m": 50,
+   "w": 477,
+   "h": 455,
    "labels": [
     {
      "t": "富熙閣",
@@ -6173,6 +6499,8 @@
    "contrast": 24.9,
    "blocks": 6,
    "scale_m": 100,
+   "w": 502,
+   "h": 394,
    "labels": [
     {
      "t": "寶瑤閣",
@@ -6216,6 +6544,8 @@
    "contrast": 38.5,
    "blocks": 9,
    "scale_m": 200,
+   "w": 272,
+   "h": 354,
    "labels": [
     {
      "t": "寶田邨第三座",
@@ -6277,6 +6607,8 @@
    "contrast": 34.3,
    "blocks": 9,
    "scale_m": 100,
+   "w": 305,
+   "h": 408,
    "labels": [
     {
      "t": "寶盈花園第五座",
@@ -6338,6 +6670,8 @@
    "contrast": 46.7,
    "blocks": 3,
    "scale_m": 50,
+   "w": 725,
+   "h": 575,
    "labels": [
     {
      "t": "紫晶樓",
@@ -6363,6 +6697,8 @@
    "contrast": 32.6,
    "blocks": 8,
    "scale_m": 100,
+   "w": 408,
+   "h": 433,
    "labels": [
     {
      "t": "西寶城",
@@ -6418,6 +6754,8 @@
    "contrast": 38.3,
    "blocks": 14,
    "scale_m": 200,
+   "w": 517,
+   "h": 321,
    "labels": [
     {
      "t": "達翠樓",
@@ -6509,6 +6847,8 @@
    "contrast": 27.7,
    "blocks": 2,
    "scale_m": 50,
+   "w": 318,
+   "h": 461,
    "labels": [
     {
      "t": "寶興樓",
@@ -6528,6 +6868,8 @@
    "contrast": 48.9,
    "blocks": 3,
    "scale_m": 100,
+   "w": 453,
+   "h": 408,
    "labels": [
     {
      "t": "興和閣",
@@ -6553,6 +6895,8 @@
    "contrast": 29.1,
    "blocks": 3,
    "scale_m": 50,
+   "w": 669,
+   "h": 514,
    "labels": [
     {
      "t": "寶福閣",
@@ -6578,6 +6922,8 @@
    "contrast": 39.2,
    "blocks": 12,
    "scale_m": 100,
+   "w": 550,
+   "h": 470,
    "labels": [
     {
      "t": "將軍澳中心第五座",
@@ -6657,6 +7003,8 @@
    "contrast": 61.2,
    "blocks": 9,
    "scale_m": 100,
+   "w": 390,
+   "h": 420,
    "labels": [
     {
      "t": "將軍澳廣場第八座",
@@ -6718,6 +7066,8 @@
    "contrast": 42.7,
    "blocks": 12,
    "scale_m": 200,
+   "w": 415,
+   "h": 469,
    "labels": [
     {
      "t": "瑞發樓",
@@ -6797,6 +7147,8 @@
    "contrast": 21.6,
    "blocks": 13,
    "scale_m": 200,
+   "w": 661,
+   "h": 372,
    "labels": [
     {
      "t": "尚廉樓",
@@ -6882,12 +7234,16 @@
    "contrast": 49.6,
    "blocks": 16,
    "scale_m": 100,
+   "w": 685,
+   "h": 600,
    "labels": []
   },
   "尚文苑": {
    "contrast": 31.7,
    "blocks": 1,
    "scale_m": 50,
+   "w": 229,
+   "h": 203,
    "labels": [
     {
      "t": "尚文苑",
@@ -6901,6 +7257,8 @@
    "contrast": 94.2,
    "blocks": 3,
    "scale_m": 50,
+   "w": 447,
+   "h": 499,
    "labels": [
     {
      "t": "翠河閣",
@@ -6926,6 +7284,8 @@
    "contrast": 67.7,
    "blocks": 3,
    "scale_m": 100,
+   "w": 504,
+   "h": 286,
    "labels": [
     {
      "t": "屏愛閣",
@@ -6951,6 +7311,8 @@
    "contrast": 41.3,
    "blocks": 10,
    "scale_m": 200,
+   "w": 281,
+   "h": 338,
    "labels": [
     {
      "t": "屯門市廣場第六座",
@@ -7018,6 +7380,8 @@
    "contrast": 35.1,
    "blocks": 10,
    "scale_m": 200,
+   "w": 266,
+   "h": 331,
    "labels": [
     {
      "t": "景榮樓",
@@ -7085,6 +7449,8 @@
    "contrast": 35.0,
    "blocks": 2,
    "scale_m": 50,
+   "w": 507,
+   "h": 520,
    "labels": [
     {
      "t": "秀峰樓",
@@ -7104,18 +7470,24 @@
    "contrast": 43.0,
    "blocks": 60,
    "scale_m": 200,
+   "w": 722,
+   "h": 462,
    "labels": []
   },
   "峻瀅": {
    "contrast": 42.8,
    "blocks": 15,
    "scale_m": 100,
+   "w": 389,
+   "h": 433,
    "labels": []
   },
   "嵐山": {
    "contrast": 56.4,
    "blocks": 8,
    "scale_m": 200,
+   "w": 189,
+   "h": 380,
    "labels": [
     {
      "t": "嵐山第１座",
@@ -7171,6 +7543,8 @@
    "contrast": 52.3,
    "blocks": 7,
    "scale_m": 50,
+   "w": 514,
+   "h": 592,
    "labels": [
     {
      "t": "Sausalit",
@@ -7220,6 +7594,8 @@
    "contrast": 29.3,
    "blocks": 3,
    "scale_m": 50,
+   "w": 482,
+   "h": 404,
    "labels": [
     {
      "t": "帝后華庭第二座",
@@ -7245,6 +7621,8 @@
    "contrast": 16.8,
    "blocks": 11,
    "scale_m": 100,
+   "w": 438,
+   "h": 386,
    "labels": [
     {
      "t": "帝堡城第八座",
@@ -7318,6 +7696,8 @@
    "contrast": 21.1,
    "blocks": 4,
    "scale_m": 50,
+   "w": 847,
+   "h": 580,
    "labels": [
     {
      "t": "帝柏海灣第三座",
@@ -7349,12 +7729,16 @@
    "contrast": 35.0,
    "blocks": 31,
    "scale_m": 200,
+   "w": 560,
+   "h": 481,
    "labels": []
   },
   "常樂邨": {
    "contrast": 37.9,
    "blocks": 2,
    "scale_m": 50,
+   "w": 355,
+   "h": 291,
    "labels": [
     {
      "t": "常樂樓",
@@ -7374,6 +7758,8 @@
    "contrast": 46.0,
    "blocks": 8,
    "scale_m": 200,
+   "w": 273,
+   "h": 431,
    "labels": [
     {
      "t": "平仁樓",
@@ -7429,6 +7815,8 @@
    "contrast": 27.6,
    "blocks": 1,
    "scale_m": 50,
+   "w": 76,
+   "h": 74,
    "labels": [
     {
      "t": "俊賢樓",
@@ -7442,6 +7830,8 @@
    "contrast": 42.7,
    "blocks": 3,
    "scale_m": 100,
+   "w": 316,
+   "h": 356,
    "labels": [
     {
      "t": "福明樓",
@@ -7467,6 +7857,8 @@
    "contrast": 32.2,
    "blocks": 14,
    "scale_m": 100,
+   "w": 636,
+   "h": 367,
    "labels": [
     {
      "t": "港鐵太古站",
@@ -7558,6 +7950,8 @@
    "contrast": 18.0,
    "blocks": 1,
    "scale_m": 50,
+   "w": 258,
+   "h": 251,
    "labels": [
     {
      "t": "康強苑",
@@ -7571,12 +7965,16 @@
    "contrast": 27.1,
    "blocks": 36,
    "scale_m": 200,
+   "w": 320,
+   "h": 362,
    "labels": []
   },
   "康東邨": {
    "contrast": 25.8,
    "blocks": 3,
    "scale_m": 50,
+   "w": 355,
+   "h": 348,
    "labels": [
     {
      "t": "康瑞樓",
@@ -7602,6 +8000,8 @@
    "contrast": 65.6,
    "blocks": 3,
    "scale_m": 50,
+   "w": 532,
+   "h": 515,
    "labels": [
     {
      "t": "山林閣",
@@ -7627,6 +8027,8 @@
    "contrast": 15.0,
    "blocks": 7,
    "scale_m": 200,
+   "w": 400,
+   "h": 323,
    "labels": [
     {
      "t": "松栢閣",
@@ -7676,12 +8078,16 @@
    "contrast": 18.0,
    "blocks": 1540,
    "scale_m": 200,
+   "w": 669,
+   "h": 553,
    "labels": []
   },
   "康田苑": {
    "contrast": 38.9,
    "blocks": 3,
    "scale_m": 50,
+   "w": 423,
+   "h": 461,
    "labels": [
     {
      "t": "裕康閣",
@@ -7707,6 +8113,8 @@
    "contrast": 47.9,
    "blocks": 1,
    "scale_m": 50,
+   "w": 320,
+   "h": 341,
    "labels": [
     {
      "t": "康盈苑",
@@ -7720,6 +8128,8 @@
    "contrast": 31.5,
    "blocks": 5,
    "scale_m": 100,
+   "w": 467,
+   "h": 335,
    "labels": [
     {
      "t": "康盛花園第４座",
@@ -7757,6 +8167,8 @@
    "contrast": 35.1,
    "blocks": 9,
    "scale_m": 100,
+   "w": 391,
+   "h": 468,
    "labels": [
     {
      "t": "康翠臺第６座",
@@ -7818,6 +8230,8 @@
    "contrast": 20.2,
    "blocks": 3,
    "scale_m": 50,
+   "w": 537,
+   "h": 529,
    "labels": [
     {
      "t": "宏康閣",
@@ -7843,6 +8257,8 @@
    "contrast": 38.3,
    "blocks": 5,
    "scale_m": 50,
+   "w": 644,
+   "h": 503,
    "labels": [
     {
      "t": "康麗閣",
@@ -7880,6 +8296,8 @@
    "contrast": 25.7,
    "blocks": 3,
    "scale_m": 100,
+   "w": 263,
+   "h": 365,
    "labels": [
     {
      "t": "荔雅閣",
@@ -7905,6 +8323,8 @@
    "contrast": 30.7,
    "blocks": 7,
    "scale_m": 100,
+   "w": 616,
+   "h": 468,
    "labels": [
     {
      "t": "廣盈閣",
@@ -7954,6 +8374,8 @@
    "contrast": 43.4,
    "blocks": 3,
    "scale_m": 50,
+   "w": 806,
+   "h": 598,
    "labels": [
     {
      "t": "馥林閣",
@@ -7979,6 +8401,8 @@
    "contrast": 42.7,
    "blocks": 6,
    "scale_m": 200,
+   "w": 284,
+   "h": 477,
    "labels": [
     {
      "t": "廣柏樓",
@@ -8022,6 +8446,8 @@
    "contrast": 41.4,
    "blocks": 4,
    "scale_m": 200,
+   "w": 322,
+   "h": 312,
    "labels": [
     {
      "t": "廣靖樓",
@@ -8053,6 +8479,8 @@
    "contrast": 27.5,
    "blocks": 8,
    "scale_m": 200,
+   "w": 466,
+   "h": 372,
    "labels": [
     {
      "t": "廣崇樓",
@@ -8108,6 +8536,8 @@
    "contrast": 37.7,
    "blocks": 4,
    "scale_m": 100,
+   "w": 682,
+   "h": 335,
    "labels": [
     {
      "t": "樂生樓",
@@ -8139,6 +8569,8 @@
    "contrast": 46.2,
    "blocks": 6,
    "scale_m": 200,
+   "w": 302,
+   "h": 320,
    "labels": [
     {
      "t": "彩玉樓",
@@ -8182,6 +8614,8 @@
    "contrast": 38.2,
    "blocks": 8,
    "scale_m": 200,
+   "w": 483,
+   "h": 264,
    "labels": [
     {
      "t": "彩賢樓",
@@ -8237,6 +8671,8 @@
    "contrast": 34.5,
    "blocks": 11,
    "scale_m": 200,
+   "w": 330,
+   "h": 326,
    "labels": [
     {
      "t": "彩耀閣",
@@ -8310,6 +8746,8 @@
    "contrast": 44.9,
    "blocks": 5,
    "scale_m": 200,
+   "w": 190,
+   "h": 312,
    "labels": [
     {
      "t": "盈樂樓",
@@ -8347,6 +8785,8 @@
    "contrast": 37.2,
    "blocks": 5,
    "scale_m": 200,
+   "w": 342,
+   "h": 328,
    "labels": [
     {
      "t": "耀石樓",
@@ -8384,6 +8824,8 @@
    "contrast": 32.8,
    "blocks": 6,
    "scale_m": 200,
+   "w": 248,
+   "h": 401,
    "labels": [
     {
      "t": "彩喜樓",
@@ -8427,6 +8869,8 @@
    "contrast": 76.3,
    "blocks": 1,
    "scale_m": 50,
+   "w": 332,
+   "h": 378,
    "labels": [
     {
      "t": "彩禾苑",
@@ -8440,6 +8884,8 @@
    "contrast": 35.4,
    "blocks": 3,
    "scale_m": 50,
+   "w": 776,
+   "h": 451,
    "labels": [
     {
      "t": "彩蕎閣",
@@ -8465,6 +8911,8 @@
    "contrast": 31.6,
    "blocks": 4,
    "scale_m": 100,
+   "w": 409,
+   "h": 483,
    "labels": [
     {
      "t": "彩瑩閣",
@@ -8496,12 +8944,16 @@
    "contrast": 23.1,
    "blocks": 28,
    "scale_m": 200,
+   "w": 447,
+   "h": 515,
    "labels": []
   },
   "彩輝邨": {
    "contrast": 20.6,
    "blocks": 2,
    "scale_m": 50,
+   "w": 396,
+   "h": 504,
    "labels": [
     {
      "t": "彩葉樓",
@@ -8521,12 +8973,16 @@
    "contrast": 27.6,
    "blocks": 17,
    "scale_m": 200,
+   "w": 583,
+   "h": 412,
    "labels": []
   },
   "彩雲二邨": {
    "contrast": 19.9,
    "blocks": 5,
    "scale_m": 100,
+   "w": 626,
+   "h": 527,
    "labels": [
     {
      "t": "瓊宮樓",
@@ -8564,6 +9020,8 @@
    "contrast": 45.6,
    "blocks": 3,
    "scale_m": 100,
+   "w": 492,
+   "h": 337,
    "labels": [
     {
      "t": "彩星樓",
@@ -8589,12 +9047,16 @@
    "contrast": 25.2,
    "blocks": 15,
    "scale_m": 50,
+   "w": 507,
+   "h": 524,
    "labels": []
   },
   "御龍山": {
    "contrast": 32.4,
    "blocks": 11,
    "scale_m": 200,
+   "w": 234,
+   "h": 334,
    "labels": [
     {
      "t": "御龍山第九座",
@@ -8668,6 +9130,8 @@
    "contrast": 46.6,
    "blocks": 2,
    "scale_m": 50,
+   "w": 231,
+   "h": 427,
    "labels": [
     {
      "t": "德華閣",
@@ -8687,6 +9151,8 @@
    "contrast": 42.4,
    "blocks": 9,
    "scale_m": 200,
+   "w": 298,
+   "h": 329,
    "labels": [
     {
      "t": "德珮樓",
@@ -8748,6 +9214,8 @@
    "contrast": 39.7,
    "blocks": 9,
    "scale_m": 200,
+   "w": 170,
+   "h": 314,
    "labels": [
     {
      "t": "德盛樓",
@@ -8809,12 +9277,16 @@
    "contrast": 28.6,
    "blocks": 51,
    "scale_m": 200,
+   "w": 362,
+   "h": 588,
    "labels": []
   },
   "德雅苑": {
    "contrast": 42.3,
    "blocks": 1,
    "scale_m": 50,
+   "w": 334,
+   "h": 346,
    "labels": [
     {
      "t": "德雅苑",
@@ -8828,6 +9300,8 @@
    "contrast": 36.4,
    "blocks": 3,
    "scale_m": 100,
+   "w": 229,
+   "h": 428,
    "labels": [
     {
      "t": "怡情樓",
@@ -8853,6 +9327,8 @@
    "contrast": 30.1,
    "blocks": 5,
    "scale_m": 50,
+   "w": 623,
+   "h": 589,
    "labels": [
     {
      "t": "怡心園第３座",
@@ -8890,6 +9366,8 @@
    "contrast": 46.8,
    "blocks": 3,
    "scale_m": 50,
+   "w": 411,
+   "h": 375,
    "labels": [
     {
      "t": "樂怡閣",
@@ -8915,6 +9393,8 @@
    "contrast": 28.9,
    "blocks": 5,
    "scale_m": 50,
+   "w": 821,
+   "h": 550,
    "labels": [
     {
      "t": "怡亮閣",
@@ -8952,6 +9432,8 @@
    "contrast": 25.9,
    "blocks": 3,
    "scale_m": 50,
+   "w": 604,
+   "h": 483,
    "labels": [
     {
      "t": "逸靜閣",
@@ -8977,6 +9459,8 @@
    "contrast": 33.4,
    "blocks": 7,
    "scale_m": 200,
+   "w": 433,
+   "h": 433,
    "labels": [
     {
      "t": "恆星樓",
@@ -9026,6 +9510,8 @@
    "contrast": 26.0,
    "blocks": 8,
    "scale_m": 100,
+   "w": 538,
+   "h": 401,
    "labels": [
     {
      "t": "恒福花園２座",
@@ -9081,12 +9567,16 @@
    "contrast": 36.8,
    "blocks": 17,
    "scale_m": 200,
+   "w": 300,
+   "h": 319,
    "labels": []
   },
   "悅翠苑": {
    "contrast": 14.8,
    "blocks": 1,
    "scale_m": 50,
+   "w": 173,
+   "h": 187,
    "labels": [
     {
      "t": "悅翠苑",
@@ -9100,6 +9590,8 @@
    "contrast": 22.3,
    "blocks": 4,
    "scale_m": 100,
+   "w": 150,
+   "h": 376,
    "labels": [
     {
      "t": "麗華閣",
@@ -9131,6 +9623,8 @@
    "contrast": 22.2,
    "blocks": 4,
    "scale_m": 50,
+   "w": 427,
+   "h": 466,
    "labels": [
     {
      "t": "城欣閣",
@@ -9162,18 +9656,24 @@
    "contrast": 35.1,
    "blocks": 16,
    "scale_m": 100,
+   "w": 517,
+   "h": 509,
    "labels": []
   },
   "愉景灣": {
    "contrast": 18.2,
    "blocks": 746,
    "scale_m": 25,
+   "w": 367,
+   "h": 375,
    "labels": []
   },
   "愉田苑": {
    "contrast": 20.4,
    "blocks": 7,
    "scale_m": 100,
+   "w": 356,
+   "h": 546,
    "labels": [
     {
      "t": "愉和閣",
@@ -9223,12 +9723,16 @@
    "contrast": 31.9,
    "blocks": 15,
    "scale_m": 200,
+   "w": 364,
+   "h": 364,
    "labels": []
   },
   "愛東邨": {
    "contrast": 22.2,
    "blocks": 9,
    "scale_m": 200,
+   "w": 367,
+   "h": 375,
    "labels": [
     {
      "t": "愛寶樓",
@@ -9290,6 +9794,8 @@
    "contrast": 18.9,
    "blocks": 12,
    "scale_m": 200,
+   "w": 394,
+   "h": 533,
    "labels": [
     {
      "t": "信民樓",
@@ -9369,6 +9875,8 @@
    "contrast": 17.8,
    "blocks": 10,
    "scale_m": 100,
+   "w": 426,
+   "h": 459,
    "labels": [
     {
      "t": "愛琴海岸第八座",
@@ -9436,6 +9944,8 @@
    "contrast": 38.3,
    "blocks": 12,
    "scale_m": 200,
+   "w": 158,
+   "h": 313,
    "labels": [
     {
      "t": "愛蝶灣第六座",
@@ -9515,6 +10025,8 @@
    "contrast": 23.8,
    "blocks": 2,
    "scale_m": 50,
+   "w": 522,
+   "h": 403,
    "labels": [
     {
      "t": "安康閣",
@@ -9534,6 +10046,8 @@
    "contrast": 35.8,
    "blocks": 6,
    "scale_m": 100,
+   "w": 568,
+   "h": 267,
    "labels": [
     {
      "t": "康德樓",
@@ -9577,6 +10091,8 @@
    "contrast": 45.3,
    "blocks": 12,
    "scale_m": 200,
+   "w": 268,
+   "h": 355,
    "labels": [
     {
      "t": "愛勤閣",
@@ -9656,12 +10172,16 @@
    "contrast": 26.1,
    "blocks": 43,
    "scale_m": 200,
+   "w": 432,
+   "h": 459,
    "labels": []
   },
   "慈正邨": {
    "contrast": 52.2,
    "blocks": 14,
    "scale_m": 200,
+   "w": 589,
+   "h": 435,
    "labels": [
     {
      "t": "慈正邨服務設施大",
@@ -9753,6 +10273,8 @@
    "contrast": 43.5,
    "blocks": 5,
    "scale_m": 50,
+   "w": 497,
+   "h": 553,
    "labels": [
     {
      "t": "慧安園第４座",
@@ -9790,6 +10312,8 @@
    "contrast": 35.4,
    "blocks": 3,
    "scale_m": 50,
+   "w": 423,
+   "h": 600,
    "labels": [
     {
      "t": "慧景軒第二座",
@@ -9815,6 +10339,8 @@
    "contrast": 34.9,
    "blocks": 1,
    "scale_m": 50,
+   "w": 182,
+   "h": 269,
    "labels": [
     {
      "t": "振華苑",
@@ -9828,6 +10354,8 @@
    "contrast": 32.5,
    "blocks": 5,
    "scale_m": 100,
+   "w": 563,
+   "h": 376,
    "labels": [
     {
      "t": "擎天半島第二座",
@@ -9865,6 +10393,8 @@
    "contrast": 34.9,
    "blocks": 6,
    "scale_m": 50,
+   "w": 837,
+   "h": 599,
    "labels": [
     {
      "t": "新元朗中心第４座",
@@ -9908,6 +10438,8 @@
    "contrast": 41.6,
    "blocks": 6,
    "scale_m": 100,
+   "w": 495,
+   "h": 467,
    "labels": [
     {
      "t": "新珮閣",
@@ -9951,6 +10483,8 @@
    "contrast": 30.6,
    "blocks": 6,
    "scale_m": 50,
+   "w": 583,
+   "h": 594,
    "labels": [
     {
      "t": "新寶城第４座",
@@ -9994,18 +10528,24 @@
    "contrast": 47.6,
    "blocks": 36,
    "scale_m": 200,
+   "w": 465,
+   "h": 387,
    "labels": []
   },
   "新港城": {
    "contrast": 41.2,
    "blocks": 21,
    "scale_m": 200,
+   "w": 557,
+   "h": 510,
    "labels": []
   },
   "新田圍邨": {
    "contrast": 43.8,
    "blocks": 8,
    "scale_m": 200,
+   "w": 333,
+   "h": 326,
    "labels": [
     {
      "t": "福圍樓",
@@ -10061,6 +10601,8 @@
    "contrast": 17.1,
    "blocks": 13,
    "scale_m": 100,
+   "w": 405,
+   "h": 535,
    "labels": [
     {
      "t": "新翠商場",
@@ -10146,6 +10688,8 @@
    "contrast": 23.7,
    "blocks": 9,
    "scale_m": 200,
+   "w": 493,
+   "h": 472,
    "labels": [
     {
      "t": "新芳樓",
@@ -10207,6 +10751,8 @@
    "contrast": 23.0,
    "blocks": 9,
    "scale_m": 100,
+   "w": 253,
+   "h": 395,
    "labels": [
     {
      "t": "康民閣",
@@ -10268,6 +10814,8 @@
    "contrast": 25.7,
    "blocks": 11,
    "scale_m": 100,
+   "w": 383,
+   "h": 521,
    "labels": [
     {
      "t": "",
@@ -10341,12 +10889,16 @@
    "contrast": 44.1,
    "blocks": 24,
    "scale_m": 200,
+   "w": 418,
+   "h": 528,
    "labels": []
   },
   "新都城大廈": {
    "contrast": 18.9,
    "blocks": 4,
    "scale_m": 50,
+   "w": 406,
+   "h": 406,
    "labels": [
     {
      "t": "新都城大廈Ｃ座",
@@ -10378,6 +10930,8 @@
    "contrast": 27.1,
    "blocks": 8,
    "scale_m": 50,
+   "w": 634,
+   "h": 403,
    "labels": [
     {
      "t": "MALIBU T",
@@ -10433,12 +10987,16 @@
    "contrast": 55.8,
    "blocks": 21,
    "scale_m": 200,
+   "w": 268,
+   "h": 324,
    "labels": []
   },
   "旭埔苑": {
    "contrast": 61.9,
    "blocks": 8,
    "scale_m": 100,
+   "w": 398,
+   "h": 376,
    "labels": [
     {
      "t": "唐湖閣",
@@ -10494,6 +11052,8 @@
    "contrast": 46.3,
    "blocks": 1,
    "scale_m": 50,
+   "w": 217,
+   "h": 291,
    "labels": [
     {
      "t": "旭禾苑",
@@ -10507,6 +11067,8 @@
    "contrast": 41.2,
    "blocks": 7,
    "scale_m": 100,
+   "w": 308,
+   "h": 405,
    "labels": [
     {
      "t": "昇悅居第六座",
@@ -10556,12 +11118,16 @@
    "contrast": 15.0,
    "blocks": 15,
    "scale_m": 100,
+   "w": 543,
+   "h": 415,
    "labels": []
   },
   "昌盛苑": {
    "contrast": 31.4,
    "blocks": 4,
    "scale_m": 50,
+   "w": 725,
+   "h": 510,
    "labels": [
     {
      "t": "昌兆閣",
@@ -10593,6 +11159,8 @@
    "contrast": 35.3,
    "blocks": 2,
    "scale_m": 50,
+   "w": 403,
+   "h": 444,
    "labels": [
     {
      "t": "明覺樓",
@@ -10612,6 +11180,8 @@
    "contrast": 22.9,
    "blocks": 13,
    "scale_m": 200,
+   "w": 218,
+   "h": 524,
    "labels": [
     {
      "t": "",
@@ -10697,6 +11267,8 @@
    "contrast": 26.1,
    "blocks": 3,
    "scale_m": 50,
+   "w": 776,
+   "h": 460,
    "labels": [
     {
      "t": "明欣閣",
@@ -10722,6 +11294,8 @@
    "contrast": 61.1,
    "blocks": 5,
    "scale_m": 100,
+   "w": 393,
+   "h": 314,
    "labels": [
     {
      "t": "星河明居Ｂ座",
@@ -10759,12 +11333,16 @@
    "contrast": 24.4,
    "blocks": 80,
    "scale_m": 200,
+   "w": 564,
+   "h": 470,
    "labels": []
   },
   "時代廣場": {
    "contrast": 30.1,
    "blocks": 5,
    "scale_m": 100,
+   "w": 244,
+   "h": 394,
    "labels": [
     {
      "t": "屯門時代廣場Ｄ座",
@@ -10802,6 +11380,8 @@
    "contrast": 36.4,
    "blocks": 6,
    "scale_m": 100,
+   "w": 266,
+   "h": 409,
    "labels": [
     {
      "t": "景峰花園第一座",
@@ -10845,6 +11425,8 @@
    "contrast": 34.1,
    "blocks": 4,
    "scale_m": 100,
+   "w": 258,
+   "h": 414,
    "labels": [
     {
      "t": "景新臺第３座",
@@ -10876,6 +11458,8 @@
    "contrast": 41.3,
    "blocks": 3,
    "scale_m": 50,
+   "w": 438,
+   "h": 493,
    "labels": [
     {
      "t": "曦景閣",
@@ -10901,6 +11485,8 @@
    "contrast": 44.0,
    "blocks": 8,
    "scale_m": 200,
+   "w": 388,
+   "h": 486,
    "labels": [
     {
      "t": "景榕樓",
@@ -10956,6 +11542,8 @@
    "contrast": 58.1,
    "blocks": 1,
    "scale_m": 50,
+   "w": 319,
+   "h": 334,
    "labels": [
     {
      "t": "景泰苑",
@@ -10969,6 +11557,8 @@
    "contrast": 25.5,
    "blocks": 5,
    "scale_m": 100,
+   "w": 342,
+   "h": 328,
    "labels": [
     {
      "t": "冰心閣",
@@ -11006,6 +11596,8 @@
    "contrast": 32.2,
    "blocks": 4,
    "scale_m": 100,
+   "w": 477,
+   "h": 551,
    "labels": [
     {
      "t": "賢景閣　",
@@ -11037,6 +11629,8 @@
    "contrast": 39.6,
    "blocks": 1,
    "scale_m": 50,
+   "w": 268,
+   "h": 270,
    "labels": [
     {
      "t": "景翠苑",
@@ -11050,6 +11644,8 @@
    "contrast": 32.2,
    "blocks": 2,
    "scale_m": 50,
+   "w": 401,
+   "h": 381,
    "labels": [
     {
      "t": "景欣閣",
@@ -11069,6 +11665,8 @@
    "contrast": 34.9,
    "blocks": 2,
    "scale_m": 50,
+   "w": 328,
+   "h": 395,
    "labels": [
     {
      "t": "昇暉樓",
@@ -11088,6 +11686,8 @@
    "contrast": 37.0,
    "blocks": 7,
    "scale_m": 100,
+   "w": 287,
+   "h": 378,
    "labels": [
     {
      "t": "",
@@ -11137,6 +11737,8 @@
    "contrast": 28.4,
    "blocks": 2,
    "scale_m": 50,
+   "w": 275,
+   "h": 438,
    "labels": [
     {
      "t": "雅翠閣",
@@ -11156,6 +11758,8 @@
    "contrast": 28.4,
    "blocks": 8,
    "scale_m": 200,
+   "w": 315,
+   "h": 444,
    "labels": [
     {
      "t": "曉逸閣",
@@ -11211,6 +11815,8 @@
    "contrast": 22.3,
    "blocks": 11,
    "scale_m": 100,
+   "w": 258,
+   "h": 512,
    "labels": [
     {
      "t": "",
@@ -11284,6 +11890,8 @@
    "contrast": 49.3,
    "blocks": 3,
    "scale_m": 100,
+   "w": 393,
+   "h": 337,
    "labels": [
     {
      "t": "善勇樓",
@@ -11309,6 +11917,8 @@
    "contrast": 25.4,
    "blocks": 3,
    "scale_m": 100,
+   "w": 291,
+   "h": 461,
    "labels": [
     {
      "t": "朗杏閣",
@@ -11334,18 +11944,24 @@
    "contrast": 39.9,
    "blocks": 15,
    "scale_m": 200,
+   "w": 422,
+   "h": 595,
    "labels": []
   },
   "朗晴居": {
    "contrast": 13.8,
    "blocks": 17,
    "scale_m": 100,
+   "w": 443,
+   "h": 499,
    "labels": []
   },
   "朗晴邨": {
    "contrast": 64.3,
    "blocks": 2,
    "scale_m": 50,
+   "w": 222,
+   "h": 433,
    "labels": [
     {
      "t": "日朗樓",
@@ -11365,6 +11981,8 @@
    "contrast": 46.0,
    "blocks": 10,
    "scale_m": 200,
+   "w": 474,
+   "h": 372,
    "labels": [
     {
      "t": "道德樓",
@@ -11432,12 +12050,16 @@
    "contrast": 19.1,
    "blocks": 52,
    "scale_m": 200,
+   "w": 310,
+   "h": 379,
    "labels": []
   },
   "東匯邨": {
    "contrast": 38.5,
    "blocks": 3,
    "scale_m": 100,
+   "w": 657,
+   "h": 343,
    "labels": [
     {
      "t": "匯智樓",
@@ -11463,6 +12085,8 @@
    "contrast": 43.1,
    "blocks": 11,
    "scale_m": 100,
+   "w": 593,
+   "h": 520,
    "labels": [
     {
      "t": "東堤灣畔第二座",
@@ -11536,6 +12160,8 @@
    "contrast": 25.1,
    "blocks": 5,
    "scale_m": 50,
+   "w": 862,
+   "h": 564,
    "labels": [
     {
      "t": "東景閣",
@@ -11573,6 +12199,8 @@
    "contrast": 28.1,
    "blocks": 2,
    "scale_m": 50,
+   "w": 507,
+   "h": 431,
    "labels": [
     {
      "t": "榮欣閣　",
@@ -11592,6 +12220,8 @@
    "contrast": 42.0,
    "blocks": 9,
    "scale_m": 100,
+   "w": 429,
+   "h": 425,
    "labels": [
     {
      "t": "東港城第３座",
@@ -11653,6 +12283,8 @@
    "contrast": 25.3,
    "blocks": 4,
    "scale_m": 100,
+   "w": 367,
+   "h": 395,
    "labels": [
     {
      "t": "華熹閣",
@@ -11684,6 +12316,8 @@
    "contrast": 27.7,
    "blocks": 14,
    "scale_m": 100,
+   "w": 631,
+   "h": 513,
    "labels": [
     {
      "t": "東環第５Ｂ座",
@@ -11775,6 +12409,8 @@
    "contrast": 16.5,
    "blocks": 4,
    "scale_m": 50,
+   "w": 276,
+   "h": 378,
    "labels": [
     {
      "t": "東盛苑",
@@ -11806,6 +12442,8 @@
    "contrast": 28.0,
    "blocks": 1,
    "scale_m": 50,
+   "w": 269,
+   "h": 262,
    "labels": [
     {
      "t": "東霖苑",
@@ -11819,12 +12457,16 @@
    "contrast": 40.0,
    "blocks": 23,
    "scale_m": 200,
+   "w": 409,
+   "h": 575,
    "labels": []
   },
   "東駿苑": {
    "contrast": 34.2,
    "blocks": 2,
    "scale_m": 50,
+   "w": 542,
+   "h": 409,
    "labels": [
     {
      "t": "銀駿閣",
@@ -11844,6 +12486,8 @@
    "contrast": 43.5,
    "blocks": 7,
    "scale_m": 100,
+   "w": 252,
+   "h": 315,
    "labels": [
     {
      "t": "栢慧豪園第五座",
@@ -11893,6 +12537,8 @@
    "contrast": 46.7,
    "blocks": 4,
    "scale_m": 50,
+   "w": 461,
+   "h": 447,
    "labels": [
     {
      "t": "栢慧豪廷第七座",
@@ -11924,6 +12570,8 @@
    "contrast": 14.3,
    "blocks": 5,
    "scale_m": 100,
+   "w": 236,
+   "h": 430,
    "labels": [
     {
      "t": "柏景灣第六座",
@@ -11961,6 +12609,8 @@
    "contrast": 32.0,
    "blocks": 2,
    "scale_m": 50,
+   "w": 654,
+   "h": 578,
    "labels": [
     {
      "t": "灣畔樓",
@@ -11980,6 +12630,8 @@
    "contrast": 25.0,
    "blocks": 3,
    "scale_m": 50,
+   "w": 523,
+   "h": 521,
    "labels": [
     {
      "t": "楊樹樓",
@@ -12005,6 +12657,8 @@
    "contrast": 34.0,
    "blocks": 11,
    "scale_m": 200,
+   "w": 450,
+   "h": 379,
    "labels": [
     {
      "t": "榕樹樓",
@@ -12078,6 +12732,8 @@
    "contrast": 34.3,
    "blocks": 7,
    "scale_m": 100,
+   "w": 437,
+   "h": 540,
    "labels": [
     {
      "t": "康樹樓",
@@ -12127,6 +12783,8 @@
    "contrast": 51.6,
    "blocks": 4,
    "scale_m": 100,
+   "w": 548,
+   "h": 356,
    "labels": [
     {
      "t": "業善樓",
@@ -12158,6 +12816,8 @@
    "contrast": 47.4,
    "blocks": 2,
    "scale_m": 50,
+   "w": 512,
+   "h": 485,
    "labels": [
     {
      "t": "榮傑樓",
@@ -12177,6 +12837,8 @@
    "contrast": 81.8,
    "blocks": 7,
    "scale_m": 100,
+   "w": 414,
+   "h": 346,
    "labels": [
     {
      "t": "榮福中心第４座",
@@ -12226,6 +12888,8 @@
    "contrast": 25.3,
    "blocks": 5,
    "scale_m": 50,
+   "w": 880,
+   "h": 439,
    "labels": [
     {
      "t": "榮輝中心第２座",
@@ -12263,6 +12927,8 @@
    "contrast": 34.1,
    "blocks": 13,
    "scale_m": 200,
+   "w": 469,
+   "h": 569,
    "labels": [
     {
      "t": "宏逸樓",
@@ -12348,6 +13014,8 @@
    "contrast": 45.1,
    "blocks": 13,
    "scale_m": 200,
+   "w": 247,
+   "h": 503,
    "labels": [
     {
      "t": "樂群樓",
@@ -12433,6 +13101,8 @@
    "contrast": 18.4,
    "blocks": 8,
    "scale_m": 100,
+   "w": 466,
+   "h": 510,
    "labels": [
     {
      "t": "寧華樓",
@@ -12488,6 +13158,8 @@
    "contrast": 39.4,
    "blocks": 6,
    "scale_m": 200,
+   "w": 513,
+   "h": 333,
    "labels": [
     {
      "t": "安華樓",
@@ -12531,6 +13203,8 @@
    "contrast": 23.5,
    "blocks": 5,
    "scale_m": 100,
+   "w": 386,
+   "h": 344,
    "labels": [
     {
      "t": "樂軒臺第４座",
@@ -12568,6 +13242,8 @@
    "contrast": 16.6,
    "blocks": 6,
    "scale_m": 50,
+   "w": 527,
+   "h": 469,
    "labels": [
     {
      "t": "雅逸閣",
@@ -12611,6 +13287,8 @@
    "contrast": 24.5,
    "blocks": 5,
    "scale_m": 100,
+   "w": 242,
+   "h": 317,
    "labels": [
     {
      "t": "民樂樓",
@@ -12648,12 +13326,16 @@
    "contrast": 53.4,
    "blocks": 28,
    "scale_m": 200,
+   "w": 421,
+   "h": 441,
    "labels": []
   },
   "欣安邨": {
    "contrast": 32.5,
    "blocks": 3,
    "scale_m": 100,
+   "w": 277,
+   "h": 400,
    "labels": [
     {
      "t": "欣頌樓",
@@ -12679,6 +13361,8 @@
    "contrast": 27.0,
    "blocks": 5,
    "scale_m": 100,
+   "w": 414,
+   "h": 474,
    "labels": [
     {
      "t": "欣松閣",
@@ -12716,6 +13400,8 @@
    "contrast": 57.8,
    "blocks": 5,
    "scale_m": 100,
+   "w": 594,
+   "h": 565,
    "labels": [
     {
      "t": "綠田樓",
@@ -12753,6 +13439,8 @@
    "contrast": 18.8,
    "blocks": 7,
    "scale_m": 100,
+   "w": 392,
+   "h": 437,
    "labels": [
     {
      "t": "欣暉閣",
@@ -12802,12 +13490,16 @@
    "contrast": 53.4,
    "blocks": 18,
    "scale_m": 200,
+   "w": 472,
+   "h": 558,
    "labels": []
   },
   "水邊圍邨": {
    "contrast": 26.1,
    "blocks": 9,
    "scale_m": 100,
+   "w": 651,
+   "h": 487,
    "labels": [
     {
      "t": "山水樓",
@@ -12869,6 +13561,8 @@
    "contrast": 24.3,
    "blocks": 8,
    "scale_m": 100,
+   "w": 375,
+   "h": 355,
    "labels": [
     {
      "t": "新寧大廈",
@@ -12924,6 +13618,8 @@
    "contrast": 44.3,
    "blocks": 2,
    "scale_m": 50,
+   "w": 507,
+   "h": 460,
    "labels": [
     {
      "t": "和田樓",
@@ -12943,12 +13639,16 @@
    "contrast": 43.8,
    "blocks": 55,
    "scale_m": 200,
+   "w": 640,
+   "h": 592,
    "labels": []
   },
   "沙角邨": {
    "contrast": 28.5,
    "blocks": 11,
    "scale_m": 200,
+   "w": 391,
+   "h": 384,
    "labels": [
     {
      "t": "銀鷗樓",
@@ -13022,6 +13722,8 @@
    "contrast": 42.2,
    "blocks": 6,
    "scale_m": 200,
+   "w": 195,
+   "h": 369,
    "labels": [
     {
      "t": "美塘樓",
@@ -13065,6 +13767,8 @@
    "contrast": 33.3,
    "blocks": 4,
    "scale_m": 100,
+   "w": 282,
+   "h": 419,
    "labels": [
     {
      "t": "沃美閣",
@@ -13096,6 +13800,8 @@
    "contrast": 33.2,
    "blocks": 14,
    "scale_m": 200,
+   "w": 401,
+   "h": 567,
    "labels": [
     {
      "t": "康麗樓",
@@ -13187,6 +13893,8 @@
    "contrast": 36.3,
    "blocks": 7,
    "scale_m": 100,
+   "w": 324,
+   "h": 373,
    "labels": [
     {
      "t": "泓景臺第二座",
@@ -13236,6 +13944,8 @@
    "contrast": 30.0,
    "blocks": 3,
    "scale_m": 50,
+   "w": 376,
+   "h": 471,
    "labels": [
     {
      "t": "泓都第二座",
@@ -13261,6 +13971,8 @@
    "contrast": 36.7,
    "blocks": 9,
    "scale_m": 200,
+   "w": 261,
+   "h": 363,
    "labels": [
     {
      "t": "洪盛樓",
@@ -13322,6 +14034,8 @@
    "contrast": 24.0,
    "blocks": 10,
    "scale_m": 100,
+   "w": 319,
+   "h": 436,
    "labels": [
     {
      "t": "浪澄灣第五座",
@@ -13389,12 +14103,16 @@
    "contrast": 25.1,
    "blocks": 27,
    "scale_m": 200,
+   "w": 506,
+   "h": 361,
    "labels": []
   },
   "海之戀": {
    "contrast": 42.1,
    "blocks": 12,
    "scale_m": 100,
+   "w": 576,
+   "h": 596,
    "labels": [
     {
      "t": "海之戀第５座",
@@ -13474,6 +14192,8 @@
    "contrast": 36.2,
    "blocks": 6,
    "scale_m": 100,
+   "w": 509,
+   "h": 388,
    "labels": [
     {
      "t": "",
@@ -13517,6 +14237,8 @@
    "contrast": 34.2,
    "blocks": 6,
    "scale_m": 100,
+   "w": 420,
+   "h": 600,
    "labels": [
     {
      "t": "海嵐閣",
@@ -13560,12 +14282,16 @@
    "contrast": 25.7,
    "blocks": 33,
    "scale_m": 200,
+   "w": 377,
+   "h": 376,
    "labels": []
   },
   "海柏花園": {
    "contrast": 28.0,
    "blocks": 12,
    "scale_m": 100,
+   "w": 476,
+   "h": 334,
    "labels": [
     {
      "t": "海栢花園第４座",
@@ -13645,6 +14371,8 @@
    "contrast": 14.0,
    "blocks": 10,
    "scale_m": 50,
+   "w": 557,
+   "h": 551,
    "labels": [
     {
      "t": "海欣花園第六座",
@@ -13712,6 +14440,8 @@
    "contrast": 26.5,
    "blocks": 14,
    "scale_m": 100,
+   "w": 532,
+   "h": 471,
    "labels": [
     {
      "t": "海濱南岸第二座",
@@ -13803,12 +14533,16 @@
    "contrast": 31.7,
    "blocks": 21,
    "scale_m": 200,
+   "w": 399,
+   "h": 379,
    "labels": []
   },
   "海盈邨": {
    "contrast": 69.7,
    "blocks": 2,
    "scale_m": 50,
+   "w": 466,
+   "h": 424,
    "labels": [
     {
      "t": "盈昌樓",
@@ -13828,6 +14562,8 @@
    "contrast": 25.7,
    "blocks": 3,
    "scale_m": 50,
+   "w": 446,
+   "h": 402,
    "labels": [
     {
      "t": "福祺閣",
@@ -13853,12 +14589,16 @@
    "contrast": 26.1,
    "blocks": 26,
    "scale_m": 200,
+   "w": 324,
+   "h": 401,
    "labels": []
   },
   "海達邨": {
    "contrast": 61.3,
    "blocks": 4,
    "scale_m": 100,
+   "w": 661,
+   "h": 498,
    "labels": [
     {
      "t": "海達邨海盛樓",
@@ -13890,6 +14630,8 @@
    "contrast": 35.6,
    "blocks": 13,
    "scale_m": 100,
+   "w": 514,
+   "h": 260,
    "labels": [
     {
      "t": "海韻花園俱樂部",
@@ -13975,6 +14717,8 @@
    "contrast": 16.9,
    "blocks": 12,
    "scale_m": 200,
+   "w": 310,
+   "h": 312,
    "labels": [
     {
      "t": "海賢樓",
@@ -14054,12 +14798,16 @@
    "contrast": 34.2,
    "blocks": 24,
    "scale_m": 100,
+   "w": 542,
+   "h": 518,
    "labels": []
   },
   "清水灣半島": {
    "contrast": 24.7,
    "blocks": 8,
    "scale_m": 100,
+   "w": 275,
+   "h": 600,
    "labels": [
     {
      "t": "清水灣半島第七座",
@@ -14115,6 +14863,8 @@
    "contrast": 40.5,
    "blocks": 10,
    "scale_m": 100,
+   "w": 791,
+   "h": 489,
    "labels": [
     {
      "t": "清譽樓附翼",
@@ -14182,6 +14932,8 @@
    "contrast": 15.2,
    "blocks": 6,
    "scale_m": 50,
+   "w": 624,
+   "h": 497,
    "labels": [
     {
      "t": "麗康閣",
@@ -14225,6 +14977,8 @@
    "contrast": 54.9,
    "blocks": 11,
    "scale_m": 100,
+   "w": 659,
+   "h": 326,
    "labels": [
     {
      "t": "港灣豪庭廣場",
@@ -14298,6 +15052,8 @@
    "contrast": 24.7,
    "blocks": 6,
    "scale_m": 200,
+   "w": 332,
+   "h": 568,
    "labels": [
     {
      "t": "湖碧樓",
@@ -14341,6 +15097,8 @@
    "contrast": 41.7,
    "blocks": 12,
    "scale_m": 100,
+   "w": 638,
+   "h": 419,
    "labels": [
     {
      "t": "溱柏第八座",
@@ -14420,12 +15178,16 @@
    "contrast": 21.9,
    "blocks": 26,
    "scale_m": 200,
+   "w": 396,
+   "h": 376,
    "labels": []
   },
   "滿東邨": {
    "contrast": 37.6,
    "blocks": 4,
    "scale_m": 100,
+   "w": 450,
+   "h": 589,
    "labels": [
     {
      "t": "滿順樓",
@@ -14457,6 +15219,8 @@
    "contrast": 55.9,
    "blocks": 1,
    "scale_m": 50,
+   "w": 401,
+   "h": 296,
    "labels": [
     {
      "t": "滿田樓",
@@ -14470,6 +15234,8 @@
    "contrast": 69.8,
    "blocks": 5,
    "scale_m": 100,
+   "w": 368,
+   "h": 350,
    "labels": [
     {
      "t": "海港樓",
@@ -14507,6 +15273,8 @@
    "contrast": 31.7,
    "blocks": 7,
    "scale_m": 100,
+   "w": 395,
+   "h": 311,
    "labels": [
     {
      "t": "瑚安閣",
@@ -14556,6 +15324,8 @@
    "contrast": 44.5,
    "blocks": 6,
    "scale_m": 200,
+   "w": 158,
+   "h": 348,
    "labels": [
     {
      "t": "美暉閣",
@@ -14599,6 +15369,8 @@
    "contrast": 20.2,
    "blocks": 8,
    "scale_m": 200,
+   "w": 318,
+   "h": 346,
    "labels": [
     {
      "t": "漁安樓",
@@ -14654,6 +15426,8 @@
    "contrast": 39.5,
    "blocks": 7,
    "scale_m": 100,
+   "w": 295,
+   "h": 435,
    "labels": [
     {
      "t": "漾日居第一座",
@@ -14703,6 +15477,8 @@
    "contrast": 19.6,
    "blocks": 5,
    "scale_m": 100,
+   "w": 352,
+   "h": 499,
    "labels": [
     {
      "t": "榮澤樓",
@@ -14740,6 +15516,8 @@
    "contrast": 60.5,
    "blocks": 7,
    "scale_m": 100,
+   "w": 330,
+   "h": 469,
    "labels": [
     {
      "t": "澤民樓",
@@ -14789,6 +15567,8 @@
    "contrast": 16.5,
    "blocks": 11,
    "scale_m": 100,
+   "w": 316,
+   "h": 353,
    "labels": [
     {
      "t": "濱景花園第３座",
@@ -14862,6 +15642,8 @@
    "contrast": 50.4,
    "blocks": 10,
    "scale_m": 100,
+   "w": 463,
+   "h": 515,
    "labels": [
     {
      "t": "灝景灣第六座",
@@ -14929,6 +15711,8 @@
    "contrast": 20.7,
    "blocks": 10,
    "scale_m": 100,
+   "w": 466,
+   "h": 410,
    "labels": [
     {
      "t": "灣景花園第５座",
@@ -14996,6 +15780,8 @@
    "contrast": 24.4,
    "blocks": 3,
    "scale_m": 50,
+   "w": 705,
+   "h": 532,
    "labels": [
     {
      "t": "煒明閣",
@@ -15021,6 +15807,8 @@
    "contrast": 31.0,
    "blocks": 6,
    "scale_m": 50,
+   "w": 786,
+   "h": 439,
    "labels": [
     {
      "t": "北爵軒",
@@ -15064,6 +15852,8 @@
    "contrast": 40.7,
    "blocks": 9,
    "scale_m": 200,
+   "w": 301,
+   "h": 366,
    "labels": [
     {
      "t": "常康樓",
@@ -15125,6 +15915,8 @@
    "contrast": 30.4,
    "blocks": 10,
    "scale_m": 200,
+   "w": 231,
+   "h": 387,
    "labels": [
     {
      "t": "貴華樓",
@@ -15192,6 +15984,8 @@
    "contrast": 44.9,
    "blocks": 13,
    "scale_m": 100,
+   "w": 523,
+   "h": 420,
    "labels": [
     {
      "t": "",
@@ -15277,12 +16071,16 @@
    "contrast": 39.2,
    "blocks": 40,
    "scale_m": 200,
+   "w": 495,
+   "h": 600,
    "labels": []
   },
   "環宇海灣": {
    "contrast": 69.9,
    "blocks": 8,
    "scale_m": 100,
+   "w": 649,
+   "h": 554,
    "labels": [
     {
      "t": "環宇海灣第３座",
@@ -15338,6 +16136,8 @@
    "contrast": 14.2,
    "blocks": 13,
    "scale_m": 200,
+   "w": 435,
+   "h": 333,
    "labels": [
     {
      "t": "逸翠樓",
@@ -15423,6 +16223,8 @@
    "contrast": 60.8,
    "blocks": 5,
    "scale_m": 100,
+   "w": 247,
+   "h": 332,
    "labels": [
     {
      "t": "瓊碧閣",
@@ -15460,6 +16262,8 @@
    "contrast": 22.4,
    "blocks": 2,
    "scale_m": 50,
+   "w": 259,
+   "h": 215,
    "labels": [
     {
      "t": "瓊軒苑",
@@ -15479,6 +16283,8 @@
    "contrast": 35.3,
    "blocks": 2,
    "scale_m": 50,
+   "w": 340,
+   "h": 323,
    "labels": [
     {
      "t": "瓊昌閣",
@@ -15498,6 +16304,8 @@
    "contrast": 42.9,
    "blocks": 8,
    "scale_m": 200,
+   "w": 215,
+   "h": 379,
    "labels": [
     {
      "t": "瓏門第一座",
@@ -15553,6 +16361,8 @@
    "contrast": 53.7,
    "blocks": 4,
    "scale_m": 100,
+   "w": 627,
+   "h": 569,
    "labels": [
     {
      "t": "田樂樓",
@@ -15584,6 +16394,8 @@
    "contrast": 46.7,
    "blocks": 5,
    "scale_m": 200,
+   "w": 296,
+   "h": 390,
    "labels": [
     {
      "t": "田澤樓",
@@ -15621,18 +16433,24 @@
    "contrast": 43.2,
    "blocks": 21,
    "scale_m": 200,
+   "w": 511,
+   "h": 436,
    "labels": []
   },
   "百福花園": {
    "contrast": 36.8,
    "blocks": 15,
    "scale_m": 100,
+   "w": 292,
+   "h": 505,
    "labels": []
   },
   "皓畋": {
    "contrast": 27.5,
    "blocks": 11,
    "scale_m": 200,
+   "w": 176,
+   "h": 351,
    "labels": [
     {
      "t": "",
@@ -15706,6 +16524,8 @@
    "contrast": 40.0,
    "blocks": 1,
    "scale_m": 50,
+   "w": 174,
+   "h": 209,
    "labels": [
     {
      "t": "盈福苑",
@@ -15719,6 +16539,8 @@
    "contrast": 31.2,
    "blocks": 9,
    "scale_m": 50,
+   "w": 522,
+   "h": 492,
    "labels": [
     {
      "t": "",
@@ -15780,6 +16602,8 @@
    "contrast": 19.6,
    "blocks": 8,
    "scale_m": 200,
+   "w": 537,
+   "h": 495,
    "labels": [
     {
      "t": "石翠樓",
@@ -15835,6 +16659,8 @@
    "contrast": 25.8,
    "blocks": 9,
    "scale_m": 200,
+   "w": 218,
+   "h": 350,
    "labels": [
     {
      "t": "碧輝樓",
@@ -15896,12 +16722,16 @@
    "contrast": 35.9,
    "blocks": 25,
    "scale_m": 200,
+   "w": 636,
+   "h": 572,
    "labels": []
   },
   "石籬一邨": {
    "contrast": 54.3,
    "blocks": 9,
    "scale_m": 200,
+   "w": 437,
+   "h": 552,
    "labels": [
     {
      "t": "石寧樓",
@@ -15963,6 +16793,8 @@
    "contrast": 39.0,
    "blocks": 13,
    "scale_m": 200,
+   "w": 188,
+   "h": 323,
    "labels": [
     {
      "t": "石歡樓",
@@ -16048,6 +16880,8 @@
    "contrast": 49.2,
    "blocks": 3,
    "scale_m": 100,
+   "w": 416,
+   "h": 343,
    "labels": [
     {
      "t": "蔭恒樓",
@@ -16073,6 +16907,8 @@
    "contrast": 23.9,
    "blocks": 7,
    "scale_m": 200,
+   "w": 232,
+   "h": 336,
    "labels": [
     {
      "t": "勇石樓",
@@ -16122,6 +16958,8 @@
    "contrast": 25.1,
    "blocks": 9,
    "scale_m": 100,
+   "w": 485,
+   "h": 471,
    "labels": [
     {
      "t": "碧堤半島第一座",
@@ -16183,6 +17021,8 @@
    "contrast": 40.6,
    "blocks": 5,
    "scale_m": 50,
+   "w": 835,
+   "h": 600,
    "labels": [
     {
      "t": "碧海藍天第三座",
@@ -16220,6 +17060,8 @@
    "contrast": 36.7,
    "blocks": 7,
    "scale_m": 50,
+   "w": 675,
+   "h": 597,
    "labels": [
     {
      "t": "碧湖花園第１座",
@@ -16269,18 +17111,24 @@
    "contrast": 34.5,
    "blocks": 18,
    "scale_m": 200,
+   "w": 318,
+   "h": 335,
    "labels": []
   },
   "碧瑤灣": {
    "contrast": 25.7,
    "blocks": 44,
    "scale_m": 200,
+   "w": 360,
+   "h": 347,
    "labels": []
   },
   "碩門邨": {
    "contrast": 37.4,
    "blocks": 8,
    "scale_m": 200,
+   "w": 267,
+   "h": 320,
    "labels": [
     {
      "t": "瑞碩樓",
@@ -16336,6 +17184,8 @@
    "contrast": 23.7,
    "blocks": 9,
    "scale_m": 100,
+   "w": 395,
+   "h": 439,
    "labels": [
     {
      "t": "祈德尊新邨Ｃ座",
@@ -16397,12 +17247,16 @@
    "contrast": 17.8,
    "blocks": 31,
    "scale_m": 200,
+   "w": 418,
+   "h": 544,
    "labels": []
   },
   "祥華邨": {
    "contrast": 41.8,
    "blocks": 11,
    "scale_m": 200,
+   "w": 362,
+   "h": 389,
    "labels": [
     {
      "t": "祥頌樓",
@@ -16476,6 +17330,8 @@
    "contrast": 28.7,
    "blocks": 2,
    "scale_m": 50,
+   "w": 406,
+   "h": 435,
    "labels": [
     {
      "t": "呈祥樓",
@@ -16495,12 +17351,16 @@
    "contrast": 27.8,
    "blocks": 21,
    "scale_m": 200,
+   "w": 418,
+   "h": 334,
    "labels": []
   },
   "禾輋邨": {
    "contrast": 18.7,
    "blocks": 13,
    "scale_m": 200,
+   "w": 545,
+   "h": 599,
    "labels": [
     {
      "t": "豐和樓",
@@ -16586,6 +17446,8 @@
    "contrast": 31.3,
    "blocks": 5,
    "scale_m": 100,
+   "w": 492,
+   "h": 439,
    "labels": [
     {
      "t": "秀旺樓",
@@ -16623,12 +17485,16 @@
    "contrast": 44.7,
    "blocks": 22,
    "scale_m": 200,
+   "w": 399,
+   "h": 535,
    "labels": []
   },
   "秦石邨": {
    "contrast": 34.8,
    "blocks": 4,
    "scale_m": 100,
+   "w": 436,
+   "h": 380,
    "labels": [
     {
      "t": "石晶樓",
@@ -16660,6 +17526,8 @@
    "contrast": 26.2,
    "blocks": 9,
    "scale_m": 200,
+   "w": 276,
+   "h": 453,
    "labels": [
     {
      "t": "慶宏閣",
@@ -16721,6 +17589,8 @@
    "contrast": 46.9,
    "blocks": 8,
    "scale_m": 200,
+   "w": 536,
+   "h": 352,
    "labels": [
     {
      "t": "桃園樓",
@@ -16776,6 +17646,8 @@
    "contrast": 38.6,
    "blocks": 8,
    "scale_m": 200,
+   "w": 667,
+   "h": 330,
    "labels": [
     {
      "t": "秀園樓",
@@ -16831,6 +17703,8 @@
    "contrast": 30.2,
    "blocks": 11,
    "scale_m": 100,
+   "w": 452,
+   "h": 442,
    "labels": [
     {
      "t": "粉嶺中心Ｄ座",
@@ -16904,6 +17778,8 @@
    "contrast": 24.8,
    "blocks": 8,
    "scale_m": 100,
+   "w": 390,
+   "h": 384,
    "labels": [
     {
      "t": "龍騰閣",
@@ -16959,6 +17835,8 @@
    "contrast": 42.6,
    "blocks": 5,
    "scale_m": 100,
+   "w": 377,
+   "h": 480,
    "labels": [
     {
      "t": "紅曜樓",
@@ -16996,6 +17874,8 @@
    "contrast": 21.0,
    "blocks": 9,
    "scale_m": 100,
+   "w": 420,
+   "h": 379,
    "labels": [
     {
      "t": "綠悠軒第二座",
@@ -17057,18 +17937,24 @@
    "contrast": 33.2,
    "blocks": 22,
    "scale_m": 200,
+   "w": 401,
+   "h": 352,
    "labels": []
   },
   "維景灣畔": {
    "contrast": 32.0,
    "blocks": 20,
    "scale_m": 200,
+   "w": 414,
+   "h": 450,
    "labels": []
   },
   "維港灣": {
    "contrast": 25.6,
    "blocks": 10,
    "scale_m": 200,
+   "w": 211,
+   "h": 315,
    "labels": [
     {
      "t": "奧海城 1",
@@ -17136,12 +18022,16 @@
    "contrast": 25.8,
    "blocks": 27,
    "scale_m": 200,
+   "w": 474,
+   "h": 600,
    "labels": []
   },
   "美城苑": {
    "contrast": 42.8,
    "blocks": 3,
    "scale_m": 100,
+   "w": 443,
+   "h": 466,
    "labels": [
     {
      "t": "逸城閣",
@@ -17167,18 +18057,24 @@
    "contrast": 22.2,
    "blocks": 111,
    "scale_m": 200,
+   "w": 342,
+   "h": 404,
    "labels": []
   },
   "美景樓": {
    "contrast": 22.3,
    "blocks": 67,
    "scale_m": 50,
+   "w": 837,
+   "h": 558,
    "labels": []
   },
   "美景花園": {
    "contrast": 22.8,
    "blocks": 11,
    "scale_m": 100,
+   "w": 380,
+   "h": 377,
    "labels": [
     {
      "t": "美景花園第八座",
@@ -17252,6 +18148,8 @@
    "contrast": 17.7,
    "blocks": 8,
    "scale_m": 500,
+   "w": 335,
+   "h": 367,
    "labels": [
     {
      "t": "美仁樓",
@@ -17307,6 +18205,8 @@
    "contrast": 37.3,
    "blocks": 6,
    "scale_m": 100,
+   "w": 570,
+   "h": 421,
    "labels": [
     {
      "t": "富松閣",
@@ -17350,6 +18250,8 @@
    "contrast": 39.0,
    "blocks": 5,
    "scale_m": 200,
+   "w": 314,
+   "h": 351,
    "labels": [
     {
      "t": "美楓樓",
@@ -17387,6 +18289,8 @@
    "contrast": 54.2,
    "blocks": 1,
    "scale_m": 50,
+   "w": 213,
+   "h": 149,
    "labels": [
     {
      "t": "美柏苑",
@@ -17400,6 +18304,8 @@
    "contrast": 22.6,
    "blocks": 12,
    "scale_m": 200,
+   "w": 305,
+   "h": 329,
    "labels": [
     {
      "t": "美樂花園三座",
@@ -17479,6 +18385,8 @@
    "contrast": 47.1,
    "blocks": 10,
    "scale_m": 200,
+   "w": 419,
+   "h": 337,
    "labels": [
     {
      "t": "美麗樓",
@@ -17546,6 +18454,8 @@
    "contrast": 32.2,
    "blocks": 1,
    "scale_m": 50,
+   "w": 145,
+   "h": 198,
    "labels": [
     {
      "t": "美盈苑",
@@ -17559,6 +18469,8 @@
    "contrast": 34.5,
    "blocks": 5,
    "scale_m": 100,
+   "w": 756,
+   "h": 556,
    "labels": [
     {
      "t": "翔輝樓",
@@ -17596,6 +18508,8 @@
    "contrast": 19.8,
    "blocks": 6,
    "scale_m": 50,
+   "w": 644,
+   "h": 394,
    "labels": [
     {
      "t": "翔龍灣廣場",
@@ -17639,6 +18553,8 @@
    "contrast": 19.7,
    "blocks": 11,
    "scale_m": 100,
+   "w": 334,
+   "h": 344,
    "labels": [
     {
      "t": "",
@@ -17712,18 +18628,24 @@
    "contrast": 34.7,
    "blocks": 29,
    "scale_m": 200,
+   "w": 425,
+   "h": 581,
    "labels": []
   },
   "翠屏(南)邨": {
    "contrast": 19.8,
    "blocks": 55,
    "scale_m": 200,
+   "w": 590,
+   "h": 295,
    "labels": []
   },
   "翠怡花園": {
    "contrast": 26.3,
    "blocks": 13,
    "scale_m": 100,
+   "w": 511,
+   "h": 600,
    "labels": [
     {
      "t": "翠怡商場",
@@ -17809,6 +18731,8 @@
    "contrast": 39.5,
    "blocks": 12,
    "scale_m": 100,
+   "w": 448,
+   "h": 504,
    "labels": [
     {
      "t": "翠擁華庭第１座",
@@ -17888,6 +18812,8 @@
    "contrast": 27.2,
    "blocks": 8,
    "scale_m": 200,
+   "w": 312,
+   "h": 515,
    "labels": [
     {
      "t": "彩林樓",
@@ -17943,6 +18869,8 @@
    "contrast": 26.4,
    "blocks": 1,
    "scale_m": 50,
+   "w": 309,
+   "h": 274,
    "labels": [
     {
      "t": "翠祿樓",
@@ -17956,6 +18884,8 @@
    "contrast": 28.5,
    "blocks": 4,
    "scale_m": 100,
+   "w": 555,
+   "h": 397,
    "labels": [
     {
      "t": "翠寧樓",
@@ -17987,6 +18917,8 @@
    "contrast": 37.7,
    "blocks": 1,
    "scale_m": 50,
+   "w": 203,
+   "h": 208,
    "labels": [
     {
      "t": "翠瑤苑",
@@ -18000,12 +18932,16 @@
    "contrast": 41.6,
    "blocks": 15,
    "scale_m": 100,
+   "w": 837,
+   "h": 552,
    "labels": []
   },
   "翠豐臺": {
    "contrast": 30.1,
    "blocks": 4,
    "scale_m": 100,
+   "w": 388,
+   "h": 321,
    "labels": [
     {
      "t": "翠豐臺第３座",
@@ -18037,6 +18973,8 @@
    "contrast": 39.2,
    "blocks": 7,
    "scale_m": 200,
+   "w": 320,
+   "h": 450,
    "labels": [
     {
      "t": "耀榮樓",
@@ -18086,6 +19024,8 @@
    "contrast": 40.9,
    "blocks": 12,
    "scale_m": 200,
+   "w": 662,
+   "h": 546,
    "labels": [
     {
      "t": "耀豐樓",
@@ -18165,6 +19105,8 @@
    "contrast": 42.7,
    "blocks": 11,
    "scale_m": 100,
+   "w": 555,
+   "h": 504,
    "labels": [
     {
      "t": "聽濤雅苑第九座",
@@ -18238,6 +19180,8 @@
    "contrast": 35.9,
    "blocks": 4,
    "scale_m": 100,
+   "w": 424,
+   "h": 391,
    "labels": [
     {
      "t": "興康樓",
@@ -18269,6 +19213,8 @@
    "contrast": 35.8,
    "blocks": 3,
    "scale_m": 200,
+   "w": 125,
+   "h": 315,
    "labels": [
     {
      "t": "民逸樓",
@@ -18294,6 +19240,8 @@
    "contrast": 51.8,
    "blocks": 3,
    "scale_m": 100,
+   "w": 530,
+   "h": 437,
    "labels": [
     {
      "t": "美田樓",
@@ -18319,6 +19267,8 @@
    "contrast": 22.0,
    "blocks": 8,
    "scale_m": 50,
+   "w": 781,
+   "h": 594,
    "labels": [
     {
      "t": "美華樓",
@@ -18374,6 +19324,8 @@
    "contrast": 33.5,
    "blocks": 9,
    "scale_m": 200,
+   "w": 250,
+   "h": 348,
    "labels": [
     {
      "t": "豐興樓",
@@ -18435,6 +19387,8 @@
    "contrast": 53.6,
    "blocks": 9,
    "scale_m": 200,
+   "w": 479,
+   "h": 573,
    "labels": [
     {
      "t": "良景社區中心",
@@ -18496,6 +19450,8 @@
    "contrast": 36.9,
    "blocks": 8,
    "scale_m": 100,
+   "w": 552,
+   "h": 600,
    "labels": [
     {
      "t": "雅翠苑",
@@ -18551,6 +19507,8 @@
    "contrast": 45.8,
    "blocks": 10,
    "scale_m": 100,
+   "w": 409,
+   "h": 438,
    "labels": [
     {
      "t": "花都廣場第３座",
@@ -18618,6 +19576,8 @@
    "contrast": 27.3,
    "blocks": 5,
    "scale_m": 100,
+   "w": 306,
+   "h": 433,
    "labels": [
     {
      "t": "明志閣",
@@ -18655,6 +19615,8 @@
    "contrast": 46.2,
    "blocks": 8,
    "scale_m": 100,
+   "w": 441,
+   "h": 561,
    "labels": [
     {
      "t": "茵怡花園第二座",
@@ -18710,6 +19672,8 @@
    "contrast": 42.3,
    "blocks": 2,
    "scale_m": 50,
+   "w": 350,
+   "h": 325,
    "labels": [
     {
      "t": "茵華閣",
@@ -18729,12 +19693,16 @@
    "contrast": 42.3,
    "blocks": 19,
    "scale_m": 200,
+   "w": 303,
+   "h": 415,
    "labels": []
   },
   "荃德花園": {
    "contrast": 18.6,
    "blocks": 6,
    "scale_m": 50,
+   "w": 441,
+   "h": 504,
    "labels": [
     {
      "t": "荃德花園Ｅ座",
@@ -18778,18 +19746,24 @@
    "contrast": 22.2,
    "blocks": 19,
    "scale_m": 100,
+   "w": 505,
+   "h": 439,
    "labels": []
   },
   "荃灣中心": {
    "contrast": 43.6,
    "blocks": 28,
    "scale_m": 100,
+   "w": 540,
+   "h": 461,
    "labels": []
   },
   "荔景邨": {
    "contrast": 25.9,
    "blocks": 9,
    "scale_m": 200,
+   "w": 173,
+   "h": 436,
    "labels": [
     {
      "t": "仰景樓",
@@ -18851,6 +19825,8 @@
    "contrast": 34.6,
    "blocks": 3,
    "scale_m": 50,
+   "w": 557,
+   "h": 587,
    "labels": [
     {
      "t": "荔采閣",
@@ -18876,6 +19852,8 @@
    "contrast": 72.4,
    "blocks": 5,
    "scale_m": 100,
+   "w": 570,
+   "h": 524,
    "labels": [
     {
      "t": "菁信樓",
@@ -18913,12 +19891,16 @@
    "contrast": 17.6,
    "blocks": 15,
    "scale_m": 200,
+   "w": 548,
+   "h": 475,
    "labels": []
   },
   "華富二邨": {
    "contrast": 18.7,
    "blocks": 9,
    "scale_m": 200,
+   "w": 268,
+   "h": 402,
    "labels": [
     {
      "t": "華昌樓",
@@ -18980,6 +19962,8 @@
    "contrast": 23.4,
    "blocks": 3,
    "scale_m": 50,
+   "w": 563,
+   "h": 444,
    "labels": [
     {
      "t": "華冠樓",
@@ -19005,6 +19989,8 @@
    "contrast": 30.7,
    "blocks": 7,
    "scale_m": 200,
+   "w": 408,
+   "h": 406,
    "labels": [
     {
      "t": "頌明樓",
@@ -19054,12 +20040,16 @@
    "contrast": 41.4,
    "blocks": 23,
    "scale_m": 200,
+   "w": 426,
+   "h": 583,
    "labels": []
   },
   "華貴邨": {
    "contrast": 45.7,
    "blocks": 7,
    "scale_m": 200,
+   "w": 446,
+   "h": 353,
    "labels": [
     {
      "t": "華樂樓",
@@ -19109,6 +20099,8 @@
    "contrast": 32.4,
    "blocks": 7,
    "scale_m": 100,
+   "w": 357,
+   "h": 356,
    "labels": [
     {
      "t": "荃新天地",
@@ -19158,6 +20150,8 @@
    "contrast": 13.7,
    "blocks": 2,
    "scale_m": 50,
+   "w": 377,
+   "h": 600,
    "labels": [
     {
      "t": "葵逸閣　",
@@ -19177,12 +20171,16 @@
    "contrast": 26.7,
    "blocks": 16,
    "scale_m": 200,
+   "w": 667,
+   "h": 557,
    "labels": []
   },
   "葵盛東邨": {
    "contrast": 45.6,
    "blocks": 12,
    "scale_m": 200,
+   "w": 635,
+   "h": 472,
    "labels": [
     {
      "t": "盛和樓",
@@ -19262,6 +20260,8 @@
    "contrast": 18.8,
    "blocks": 12,
    "scale_m": 200,
+   "w": 453,
+   "h": 477,
    "labels": [
     {
      "t": "葵盛西邨第四座",
@@ -19341,6 +20341,8 @@
    "contrast": 47.0,
    "blocks": 2,
    "scale_m": 50,
+   "w": 502,
+   "h": 357,
    "labels": [
     {
      "t": "碧翠樓",
@@ -19360,6 +20362,8 @@
    "contrast": 34.8,
    "blocks": 5,
    "scale_m": 100,
+   "w": 710,
+   "h": 425,
    "labels": [
     {
      "t": "聯欣樓",
@@ -19397,6 +20401,8 @@
    "contrast": 58.9,
    "blocks": 4,
    "scale_m": 100,
+   "w": 310,
+   "h": 392,
    "labels": [
     {
      "t": "興福樓",
@@ -19428,6 +20434,8 @@
    "contrast": 25.5,
    "blocks": 12,
    "scale_m": 200,
+   "w": 393,
+   "h": 476,
    "labels": [
     {
      "t": "葵喜樓",
@@ -19507,6 +20515,8 @@
    "contrast": 47.0,
    "blocks": 6,
    "scale_m": 100,
+   "w": 365,
+   "h": 403,
    "labels": [
     {
      "t": "蔚藍灣畔第２座",
@@ -19550,12 +20560,16 @@
    "contrast": 26.2,
    "blocks": 61,
    "scale_m": 200,
+   "w": 438,
+   "h": 358,
    "labels": []
   },
   "藍澄灣": {
    "contrast": 30.8,
    "blocks": 6,
    "scale_m": 100,
+   "w": 303,
+   "h": 521,
    "labels": [
     {
      "t": "藍澄灣第一座",
@@ -19599,12 +20613,16 @@
    "contrast": 21.8,
    "blocks": 15,
    "scale_m": 100,
+   "w": 489,
+   "h": 466,
    "labels": []
   },
   "藍田邨": {
    "contrast": 47.7,
    "blocks": 4,
    "scale_m": 100,
+   "w": 310,
+   "h": 518,
    "labels": [
     {
      "t": "藍碧樓",
@@ -19636,12 +20654,16 @@
    "contrast": 38.9,
    "blocks": 15,
    "scale_m": 200,
+   "w": 405,
+   "h": 360,
    "labels": []
   },
   "蝴蝶邨": {
    "contrast": 39.7,
    "blocks": 7,
    "scale_m": 200,
+   "w": 399,
+   "h": 442,
    "labels": [
     {
      "t": "蝶心樓",
@@ -19691,12 +20713,16 @@
    "contrast": 46.7,
    "blocks": 23,
    "scale_m": 100,
+   "w": 550,
+   "h": 589,
    "labels": []
   },
   "蝶翠苑": {
    "contrast": 33.2,
    "blocks": 1,
    "scale_m": 50,
+   "w": 259,
+   "h": 231,
    "labels": [
     {
      "t": "蝶翠苑",
@@ -19710,6 +20736,8 @@
    "contrast": 43.6,
    "blocks": 2,
    "scale_m": 50,
+   "w": 513,
+   "h": 344,
    "labels": [
     {
      "t": "裕昌閣",
@@ -19729,6 +20757,8 @@
    "contrast": 24.0,
    "blocks": 5,
    "scale_m": 200,
+   "w": 173,
+   "h": 352,
    "labels": [
     {
      "t": "新東閣",
@@ -19766,6 +20796,8 @@
    "contrast": 62.1,
    "blocks": 2,
    "scale_m": 50,
+   "w": 289,
+   "h": 559,
    "labels": [
     {
      "t": "裕玥閣",
@@ -19785,6 +20817,8 @@
    "contrast": 58.4,
    "blocks": 6,
    "scale_m": 100,
+   "w": 452,
+   "h": 472,
    "labels": [
     {
      "t": "雅榮閣",
@@ -19828,12 +20862,16 @@
    "contrast": 27.6,
    "blocks": 18,
    "scale_m": 200,
+   "w": 534,
+   "h": 503,
    "labels": []
   },
   "觀龍樓": {
    "contrast": 42.8,
    "blocks": 9,
    "scale_m": 100,
+   "w": 449,
+   "h": 354,
    "labels": [
     {
      "t": "觀龍樓第二座",
@@ -19895,6 +20933,8 @@
    "contrast": 43.1,
    "blocks": 7,
    "scale_m": 50,
+   "w": 806,
+   "h": 585,
    "labels": [
     {
      "t": "譽．港灣第１Ｂ座",
@@ -19944,6 +20984,8 @@
    "contrast": 21.5,
    "blocks": 6,
    "scale_m": 50,
+   "w": 705,
+   "h": 593,
    "labels": [
     {
      "t": "和安樓",
@@ -19987,6 +21029,8 @@
    "contrast": 26.3,
    "blocks": 5,
    "scale_m": 50,
+   "w": 480,
+   "h": 543,
    "labels": [
     {
      "t": "豐景園第一座",
@@ -20024,6 +21068,8 @@
    "contrast": 55.3,
    "blocks": 3,
    "scale_m": 100,
+   "w": 353,
+   "h": 439,
    "labels": [
     {
      "t": "富盛閣",
@@ -20049,12 +21095,16 @@
    "contrast": 36.1,
    "blocks": 34,
    "scale_m": 200,
+   "w": 621,
+   "h": 485,
    "labels": []
   },
   "豫豐花園": {
    "contrast": 27.5,
    "blocks": 12,
    "scale_m": 100,
+   "w": 464,
+   "h": 600,
    "labels": [
     {
      "t": "豫豐花園８座",
@@ -20134,18 +21184,24 @@
    "contrast": 25.3,
    "blocks": 80,
    "scale_m": 200,
+   "w": 214,
+   "h": 410,
    "labels": []
   },
   "賽西湖大廈": {
    "contrast": 32.0,
    "blocks": 16,
    "scale_m": 200,
+   "w": 494,
+   "h": 292,
    "labels": []
   },
   "迎東邨": {
    "contrast": 47.7,
    "blocks": 4,
    "scale_m": 100,
+   "w": 337,
+   "h": 386,
    "labels": [
     {
      "t": "迎悅樓",
@@ -20177,12 +21233,16 @@
    "contrast": 21.5,
    "blocks": 36,
    "scale_m": 200,
+   "w": 703,
+   "h": 495,
    "labels": []
   },
   "連翠邨": {
    "contrast": 47.7,
    "blocks": 1,
    "scale_m": 50,
+   "w": 198,
+   "h": 165,
    "labels": [
     {
      "t": "連翠樓",
@@ -20196,6 +21256,8 @@
    "contrast": 38.8,
    "blocks": 13,
    "scale_m": 200,
+   "w": 476,
+   "h": 312,
    "labels": [
     {
      "t": "至逸樓",
@@ -20281,6 +21343,8 @@
    "contrast": 29.1,
    "blocks": 12,
    "scale_m": 200,
+   "w": 468,
+   "h": 387,
    "labels": [
     {
      "t": "信逸樓",
@@ -20360,6 +21424,8 @@
    "contrast": 45.6,
    "blocks": 2,
    "scale_m": 50,
+   "w": 487,
+   "h": 490,
    "labels": [
     {
      "t": "逸欣閣",
@@ -20379,6 +21445,8 @@
    "contrast": 30.2,
    "blocks": 3,
    "scale_m": 200,
+   "w": 456,
+   "h": 298,
    "labels": [
     {
      "t": "運亨樓",
@@ -20404,6 +21472,8 @@
    "contrast": 46.9,
    "blocks": 10,
    "scale_m": 100,
+   "w": 474,
+   "h": 480,
    "labels": [
     {
      "t": "都會駅第八座",
@@ -20471,6 +21541,8 @@
    "contrast": 53.6,
    "blocks": 14,
    "scale_m": 100,
+   "w": 436,
+   "h": 472,
    "labels": [
     {
      "t": "采葉庭１３座",
@@ -20562,6 +21634,8 @@
    "contrast": 29.3,
    "blocks": 13,
    "scale_m": 100,
+   "w": 519,
+   "h": 542,
    "labels": [
     {
      "t": "采頤花園第十座",
@@ -20647,6 +21721,8 @@
    "contrast": 39.8,
    "blocks": 1,
    "scale_m": 50,
+   "w": 512,
+   "h": 440,
    "labels": [
     {
      "t": "金坪樓",
@@ -20660,6 +21736,8 @@
    "contrast": 27.5,
    "blocks": 6,
    "scale_m": 50,
+   "w": 396,
+   "h": 461,
    "labels": [
     {
      "t": "金豐閣",
@@ -20703,6 +21781,8 @@
    "contrast": 28.7,
    "blocks": 7,
    "scale_m": 50,
+   "w": 427,
+   "h": 600,
    "labels": [
     {
      "t": "金福閣",
@@ -20752,6 +21832,8 @@
    "contrast": 41.4,
    "blocks": 2,
    "scale_m": 50,
+   "w": 436,
+   "h": 415,
    "labels": [
     {
      "t": "銀旭閣",
@@ -20771,6 +21853,8 @@
    "contrast": 31.4,
    "blocks": 8,
    "scale_m": 100,
+   "w": 561,
+   "h": 413,
    "labels": [
     {
      "t": "銀湖．天峰第六座",
@@ -20826,6 +21910,8 @@
    "contrast": 16.8,
    "blocks": 8,
    "scale_m": 50,
+   "w": 811,
+   "h": 590,
    "labels": [
     {
      "t": "銀虹樓",
@@ -20881,6 +21967,8 @@
    "contrast": 20.4,
    "blocks": 11,
    "scale_m": 200,
+   "w": 225,
+   "h": 334,
    "labels": [
     {
      "t": "銀禧花園第３座",
@@ -20954,6 +22042,8 @@
    "contrast": 51.5,
    "blocks": 1,
    "scale_m": 50,
+   "w": 289,
+   "h": 216,
    "labels": [
     {
      "t": "銀蔚苑",
@@ -20967,6 +22057,8 @@
    "contrast": 26.4,
    "blocks": 12,
    "scale_m": 200,
+   "w": 267,
+   "h": 428,
    "labels": [
     {
      "t": "錦盛閣",
@@ -21046,6 +22138,8 @@
    "contrast": 31.8,
    "blocks": 3,
    "scale_m": 100,
+   "w": 229,
+   "h": 318,
    "labels": [
     {
      "t": "錦欣閣",
@@ -21071,12 +22165,16 @@
    "contrast": 15.0,
    "blocks": 2832,
    "scale_m": 500,
+   "w": 377,
+   "h": 472,
    "labels": []
   },
   "錦英苑": {
    "contrast": 44.0,
    "blocks": 10,
    "scale_m": 200,
+   "w": 432,
+   "h": 405,
    "labels": [
     {
      "t": "錦耀閣",
@@ -21144,6 +22242,8 @@
    "contrast": 32.9,
    "blocks": 9,
    "scale_m": 200,
+   "w": 347,
+   "h": 575,
    "labels": [
     {
      "t": "錦萱閣",
@@ -21205,6 +22305,8 @@
    "contrast": 32.8,
    "blocks": 3,
    "scale_m": 100,
+   "w": 249,
+   "h": 329,
    "labels": [
     {
      "t": "銀鞍閣",
@@ -21230,6 +22332,8 @@
    "contrast": 35.9,
    "blocks": 5,
    "scale_m": 200,
+   "w": 259,
+   "h": 481,
    "labels": [
     {
      "t": "駿騰閣",
@@ -21267,6 +22371,8 @@
    "contrast": 32.3,
    "blocks": 5,
    "scale_m": 50,
+   "w": 598,
+   "h": 583,
    "labels": [
     {
      "t": "龍昇閣",
@@ -21304,6 +22410,8 @@
    "contrast": 37.5,
    "blocks": 6,
    "scale_m": 200,
+   "w": 142,
+   "h": 344,
    "labels": [
     {
      "t": "亨緻樓",
@@ -21347,6 +22455,8 @@
    "contrast": 31.8,
    "blocks": 11,
    "scale_m": 200,
+   "w": 687,
+   "h": 450,
    "labels": [
     {
      "t": "安湄樓",
@@ -21420,6 +22530,8 @@
    "contrast": 28.6,
    "blocks": 7,
    "scale_m": 100,
+   "w": 598,
+   "h": 482,
    "labels": [
     {
      "t": "宏毅樓",
@@ -21469,6 +22581,8 @@
    "contrast": 29.4,
    "blocks": 13,
    "scale_m": 200,
+   "w": 451,
+   "h": 227,
    "labels": [
     {
      "t": "康貴樓",
@@ -21554,6 +22668,8 @@
    "contrast": 50.9,
    "blocks": 3,
    "scale_m": 50,
+   "w": 545,
+   "h": 600,
    "labels": [
     {
      "t": "長欣樓",
@@ -21579,6 +22695,8 @@
    "contrast": 31.7,
    "blocks": 5,
    "scale_m": 100,
+   "w": 451,
+   "h": 453,
    "labels": [
     {
      "t": "賢發樓",
@@ -21616,12 +22734,16 @@
    "contrast": 16.5,
    "blocks": 20,
    "scale_m": 200,
+   "w": 351,
+   "h": 422,
    "labels": []
   },
   "長青邨": {
    "contrast": 17.4,
    "blocks": 14,
    "scale_m": 200,
+   "w": 258,
+   "h": 375,
    "labels": [
     {
      "t": "青楊樓",
@@ -21713,6 +22835,8 @@
    "contrast": 17.6,
    "blocks": 7,
    "scale_m": 200,
+   "w": 253,
+   "h": 311,
    "labels": [
     {
      "t": "善心樓",
@@ -21762,6 +22886,8 @@
    "contrast": 36.2,
    "blocks": 3,
    "scale_m": 100,
+   "w": 475,
+   "h": 542,
    "labels": [
     {
      "t": "良澤閣",
@@ -21787,6 +22913,8 @@
    "contrast": 18.1,
    "blocks": 10,
    "scale_m": 100,
+   "w": 449,
+   "h": 362,
    "labels": [
     {
      "t": "雅濤閣第二座",
@@ -21854,6 +22982,8 @@
    "contrast": 48.8,
    "blocks": 2,
    "scale_m": 100,
+   "w": 299,
+   "h": 318,
    "labels": [
     {
      "t": "澤明閣",
@@ -21873,6 +23003,8 @@
    "contrast": 29.2,
    "blocks": 3,
    "scale_m": 100,
+   "w": 443,
+   "h": 524,
    "labels": [
     {
      "t": "雍華閣",
@@ -21898,12 +23030,16 @@
    "contrast": 35.9,
    "blocks": 16,
    "scale_m": 100,
+   "w": 439,
+   "h": 471,
    "labels": []
   },
   "雲漢邨": {
    "contrast": 46.1,
    "blocks": 2,
    "scale_m": 100,
+   "w": 345,
+   "h": 323,
    "labels": [
     {
      "t": "漢松樓",
@@ -21923,6 +23059,8 @@
    "contrast": 56.2,
    "blocks": 6,
    "scale_m": 100,
+   "w": 461,
+   "h": 422,
    "labels": [
     {
      "t": "雲疊花園第４座",
@@ -21966,6 +23104,8 @@
    "contrast": 52.0,
    "blocks": 2,
    "scale_m": 50,
+   "w": 329,
+   "h": 308,
    "labels": [
     {
      "t": "俊豪閣",
@@ -21985,6 +23125,8 @@
    "contrast": 63.4,
    "blocks": 2,
    "scale_m": 100,
+   "w": 304,
+   "h": 354,
    "labels": [
     {
      "t": "青盈閣",
@@ -22004,6 +23146,8 @@
    "contrast": 27.5,
    "blocks": 8,
    "scale_m": 50,
+   "w": 826,
+   "h": 591,
    "labels": [
     {
      "t": "青怡花園第三座",
@@ -22059,6 +23203,8 @@
    "contrast": 28.5,
    "blocks": 7,
    "scale_m": 100,
+   "w": 589,
+   "h": 349,
    "labels": [
     {
      "t": "鴻泰閣",
@@ -22108,6 +23254,8 @@
    "contrast": 36.5,
    "blocks": 1,
    "scale_m": 50,
+   "w": 339,
+   "h": 315,
    "labels": [
     {
      "t": "青盛苑",
@@ -22121,6 +23269,8 @@
    "contrast": 26.9,
    "blocks": 6,
    "scale_m": 200,
+   "w": 492,
+   "h": 221,
    "labels": [
     {
      "t": "華奐閣",
@@ -22164,6 +23314,8 @@
    "contrast": 31.5,
    "blocks": 4,
    "scale_m": 200,
+   "w": 229,
+   "h": 420,
    "labels": [
     {
      "t": "宜逸樓",
@@ -22195,6 +23347,8 @@
    "contrast": 36.1,
    "blocks": 1,
    "scale_m": 50,
+   "w": 315,
+   "h": 345,
    "labels": [
     {
      "t": "青雅苑",
@@ -22208,6 +23362,8 @@
    "contrast": 27.8,
    "blocks": 7,
    "scale_m": 200,
+   "w": 421,
+   "h": 463,
    "labels": [
     {
      "t": "利富樓",
@@ -22257,6 +23413,8 @@
    "contrast": 21.0,
    "blocks": 11,
    "scale_m": 200,
+   "w": 537,
+   "h": 463,
    "labels": [
     {
      "t": "天池樓",
@@ -22330,6 +23488,8 @@
    "contrast": 32.3,
    "blocks": 3,
    "scale_m": 200,
+   "w": 238,
+   "h": 318,
    "labels": [
     {
      "t": "安頌樓",
@@ -22355,6 +23515,8 @@
    "contrast": 54.6,
    "blocks": 11,
    "scale_m": 100,
+   "w": 568,
+   "h": 477,
    "labels": [
     {
      "t": "順泰閣",
@@ -22428,6 +23590,8 @@
    "contrast": 35.7,
    "blocks": 5,
    "scale_m": 200,
+   "w": 317,
+   "h": 336,
    "labels": [
     {
      "t": "頌智樓",
@@ -22465,6 +23629,8 @@
    "contrast": 32.3,
    "blocks": 5,
    "scale_m": 100,
+   "w": 385,
+   "h": 490,
    "labels": [
     {
      "t": "輝明閣",
@@ -22502,6 +23668,8 @@
    "contrast": 61.4,
    "blocks": 3,
    "scale_m": 100,
+   "w": 288,
+   "h": 546,
    "labels": [
     {
      "t": "頌真閣",
@@ -22527,6 +23695,8 @@
    "contrast": 36.4,
    "blocks": 8,
    "scale_m": 200,
+   "w": 289,
+   "h": 359,
    "labels": [
     {
      "t": "顯慶樓",
@@ -22582,6 +23752,8 @@
    "contrast": 48.3,
    "blocks": 1,
    "scale_m": 50,
+   "w": 228,
+   "h": 246,
    "labels": [
     {
      "t": "顯明苑",
@@ -22595,6 +23767,8 @@
    "contrast": 84.1,
    "blocks": 1,
    "scale_m": 50,
+   "w": 248,
+   "h": 340,
    "labels": [
     {
      "t": "顯發樓",
@@ -22608,6 +23782,8 @@
    "contrast": 34.1,
    "blocks": 1,
    "scale_m": 50,
+   "w": 225,
+   "h": 252,
    "labels": [
     {
      "t": "顯耀樓",
@@ -22621,18 +23797,24 @@
    "contrast": 22.4,
    "blocks": 27,
    "scale_m": 100,
+   "w": 448,
+   "h": 526,
    "labels": []
   },
   "香港黃金海岸": {
    "contrast": 27.0,
    "blocks": 40,
    "scale_m": 200,
+   "w": 356,
+   "h": 497,
    "labels": []
   },
   "馬坑邨": {
    "contrast": 36.9,
    "blocks": 8,
    "scale_m": 100,
+   "w": 560,
+   "h": 484,
    "labels": [
     {
      "t": "觀馬樓",
@@ -22688,6 +23870,8 @@
    "contrast": 30.3,
    "blocks": 7,
    "scale_m": 100,
+   "w": 386,
+   "h": 595,
    "labels": [
     {
      "t": "玫瑰樓",
@@ -22737,12 +23921,16 @@
    "contrast": 13.9,
    "blocks": 19,
    "scale_m": 200,
+   "w": 311,
+   "h": 450,
    "labels": []
   },
   "駿洋邨": {
    "contrast": 55.7,
    "blocks": 6,
    "scale_m": 100,
+   "w": 786,
+   "h": 521,
    "labels": [
     {
      "t": "駿時樓",
@@ -22786,6 +23974,8 @@
    "contrast": 59.6,
    "blocks": 5,
    "scale_m": 100,
+   "w": 317,
+   "h": 314,
    "labels": [
     {
      "t": "駿發花園第３座",
@@ -22823,6 +24013,8 @@
    "contrast": 39.9,
    "blocks": 5,
    "scale_m": 100,
+   "w": 429,
+   "h": 504,
    "labels": [
     {
      "t": "俊滿閣",
@@ -22860,6 +24052,8 @@
    "contrast": 76.2,
    "blocks": 2,
    "scale_m": 50,
+   "w": 343,
+   "h": 576,
    "labels": [
     {
      "t": "高禮閣",
@@ -22879,6 +24073,8 @@
    "contrast": 18.4,
    "blocks": 7,
    "scale_m": 100,
+   "w": 421,
+   "h": 412,
    "labels": [
     {
      "t": "高遠樓",
@@ -22928,6 +24124,8 @@
    "contrast": 33.9,
    "blocks": 5,
    "scale_m": 100,
+   "w": 309,
+   "h": 556,
    "labels": [
     {
      "t": "高麟閣",
@@ -22965,6 +24163,8 @@
    "contrast": 20.8,
    "blocks": 6,
    "scale_m": 100,
+   "w": 320,
+   "h": 469,
    "labels": [
     {
      "t": "鯉欣閣",
@@ -23008,12 +24208,16 @@
    "contrast": 33.6,
    "blocks": 17,
    "scale_m": 200,
+   "w": 326,
+   "h": 584,
    "labels": []
   },
   "鯉魚門邨": {
    "contrast": 43.9,
    "blocks": 5,
    "scale_m": 100,
+   "w": 400,
+   "h": 455,
    "labels": [
     {
      "t": "鯉興樓",
@@ -23051,6 +24255,8 @@
    "contrast": 32.3,
    "blocks": 2,
    "scale_m": 50,
+   "w": 176,
+   "h": 401,
    "labels": [
     {
      "t": "茵庭閣",
@@ -23070,6 +24276,8 @@
    "contrast": 41.9,
    "blocks": 10,
    "scale_m": 200,
+   "w": 606,
+   "h": 432,
    "labels": [
     {
      "t": "紫鳳樓",
@@ -23137,6 +24345,8 @@
    "contrast": 28.5,
    "blocks": 2,
    "scale_m": 50,
+   "w": 446,
+   "h": 313,
    "labels": [
     {
      "t": "鳳欣閣",
@@ -23156,6 +24366,8 @@
    "contrast": 29.8,
    "blocks": 1,
    "scale_m": 50,
+   "w": 269,
+   "h": 275,
    "labels": [
     {
      "t": "鳳鑽苑",
@@ -23169,6 +24381,8 @@
    "contrast": 18.2,
    "blocks": 10,
    "scale_m": 200,
+   "w": 506,
+   "h": 285,
    "labels": [
     {
      "t": "利福樓高座",
@@ -23236,6 +24450,8 @@
    "contrast": 20.4,
    "blocks": 2,
    "scale_m": 50,
+   "w": 376,
+   "h": 301,
    "labels": [
     {
      "t": "鴻麗閣",
@@ -23255,12 +24471,16 @@
    "contrast": 37.8,
    "blocks": 23,
    "scale_m": 200,
+   "w": 521,
+   "h": 405,
    "labels": []
   },
   "麗安邨": {
    "contrast": 27.8,
    "blocks": 5,
    "scale_m": 100,
+   "w": 385,
+   "h": 401,
    "labels": [
     {
      "t": "麗正樓",
@@ -23298,18 +24518,24 @@
    "contrast": 29.5,
    "blocks": 66,
    "scale_m": 200,
+   "w": 314,
+   "h": 313,
    "labels": []
   },
   "麗港城": {
    "contrast": 28.7,
    "blocks": 42,
    "scale_m": 200,
+   "w": 570,
+   "h": 542,
    "labels": []
   },
   "麗瑤邨": {
    "contrast": 32.6,
    "blocks": 6,
    "scale_m": 200,
+   "w": 350,
+   "h": 441,
    "labels": [
     {
      "t": "樂瑤樓",
@@ -23353,6 +24579,8 @@
    "contrast": 82.5,
    "blocks": 6,
    "scale_m": 100,
+   "w": 513,
+   "h": 491,
    "labels": [
     {
      "t": "麗榕閣",
@@ -23396,6 +24624,8 @@
    "contrast": 16.5,
    "blocks": 7,
    "scale_m": 50,
+   "w": 832,
+   "h": 532,
    "labels": [
     {
      "t": "",
@@ -23445,18 +24675,24 @@
    "contrast": 32.7,
    "blocks": 26,
    "scale_m": 100,
+   "w": 575,
+   "h": 499,
    "labels": []
   },
   "黃埔花園": {
    "contrast": 49.4,
    "blocks": 97,
    "scale_m": 200,
+   "w": 403,
+   "h": 349,
    "labels": []
   },
   "黃大仙上邨": {
    "contrast": 52.4,
    "blocks": 8,
    "scale_m": 200,
+   "w": 328,
+   "h": 310,
    "labels": [
     {
      "t": "啓善樓",
@@ -23512,12 +24748,16 @@
    "contrast": 44.9,
    "blocks": 17,
    "scale_m": 200,
+   "w": 523,
+   "h": 474,
    "labels": []
   },
   "黃大仙下邨(一區)": {
    "contrast": 14.3,
    "blocks": 1,
    "scale_m": 50,
+   "w": 92,
+   "h": 66,
    "labels": [
     {
      "t": "龍華樓",
@@ -23531,6 +24771,8 @@
    "contrast": 22.1,
    "blocks": 4,
    "scale_m": 200,
+   "w": 237,
+   "h": 354,
    "labels": [
     {
      "t": "怡德閣",
@@ -23562,6 +24804,8 @@
    "contrast": 44.5,
    "blocks": 1,
    "scale_m": 50,
+   "w": 258,
+   "h": 306,
    "labels": [
     {
      "t": "龍騰閣",
@@ -23575,6 +24819,8 @@
    "contrast": 20.5,
    "blocks": 8,
    "scale_m": 100,
+   "w": 568,
+   "h": 366,
    "labels": [
     {
      "t": "天成樓",
@@ -23630,6 +24876,8 @@
    "contrast": 28.1,
    "blocks": 8,
    "scale_m": 100,
+   "w": 510,
+   "h": 497,
    "labels": [
     {
      "t": "龍珠閣",
@@ -23685,6 +24933,8 @@
    "contrast": 33.5,
    "blocks": 4,
    "scale_m": 50,
+   "w": 836,
+   "h": 441,
    "labels": [
     {
      "t": "鱗軒閣",

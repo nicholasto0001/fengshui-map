@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>南浪海灣風水評分</h1>
 <p class="sub">屯門區 · 2000 年入伙 · 5 座 · 1,215 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/南浪海灣.jpg" alt="南浪海灣航空影像，12 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:68.28%;top:21.96%">南浪海灣六座<b>62</b></span><span class="pl" style="left:31.76%;top:62.72%">南浪海灣二座<b>62</b></span><span class="pl" style="left:21.94%;top:39.31%"><b>62</b></span><span class="pl" style="left:34.35%;top:46.42%">南浪海灣三座<b>62</b></span><span class="pl" style="left:28.66%;top:15.35%"><b>62</b></span><span class="pl" style="left:29.44%;top:16.49%"><b>62</b></span><span class="pl" style="left:32.03%;top:15.08%"><b>62</b></span><span class="pl" style="left:44.4%;top:21.18%">南浪海灣五座<b>62</b></span><span class="pl" style="left:19.31%;top:81.85%"><b>61</b></span><span class="pl" style="left:30.52%;top:79.44%">南浪海灣一座<b>61</b></span><span class="pl" style="left:79.8%;top:26.95%"><b>42</b></span><span class="pl" style="left:75.79%;top:23.91%"><b>42</b></span>
+  <div class="pw" style="aspect-ratio:302/455">
+    <img src="/plan/南浪海灣.jpg" alt="南浪海灣航空影像，12 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="302" height="455"
+       loading="lazy" decoding="async"><span class="pl" style="left:68.28%;top:21.96%">南浪海灣六座<b>62</b></span><span class="pl" style="left:31.76%;top:62.72%">南浪海灣二座<b>62</b></span><span class="pl" style="left:21.94%;top:39.31%"><b>62</b></span><span class="pl" style="left:34.35%;top:46.42%">南浪海灣三座<b>62</b></span><span class="pl" style="left:28.66%;top:15.35%"><b>62</b></span><span class="pl" style="left:29.44%;top:16.49%"><b>62</b></span><span class="pl" style="left:32.03%;top:15.08%"><b>62</b></span><span class="pl" style="left:44.4%;top:21.18%">南浪海灣五座<b>62</b></span><span class="pl" style="left:19.31%;top:81.85%"><b>61</b></span><span class="pl" style="left:30.52%;top:79.44%">南浪海灣一座<b>61</b></span><span class="pl" style="left:79.8%;top:26.95%"><b>42</b></span><span class="pl" style="left:75.79%;top:23.91%"><b>42</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>南浪海灣 12 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

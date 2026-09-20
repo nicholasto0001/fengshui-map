@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>雲疊花園風水評分</h1>
 <p class="sub">沙田區 · 1989 年入伙 · 6 座 · 1,893 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/雲疊花園.jpg" alt="雲疊花園航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:57.35%;top:58.36%">雲疊花園第４座<b>65</b></span><span class="pl" style="left:79.5%;top:24.92%">雲疊花園第１座<b>44</b></span><span class="pl" style="left:61.75%;top:33.51%">雲疊花園第２座<b>43</b></span><span class="pl" style="left:44.41%;top:41.94%">雲疊花園第３座<b>42</b></span><span class="pl" style="left:40.64%;top:71.77%">雲疊花園第５座<b>42</b></span><span class="pl" style="left:20.57%;top:75.7%">雲疊花園第６座<b>42</b></span>
+  <div class="pw" style="aspect-ratio:461/422">
+    <img src="/plan/雲疊花園.jpg" alt="雲疊花園航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="461" height="422"
+       loading="lazy" decoding="async"><span class="pl" style="left:57.35%;top:58.36%">雲疊花園第４座<b>65</b></span><span class="pl" style="left:79.5%;top:24.92%">雲疊花園第１座<b>44</b></span><span class="pl" style="left:61.75%;top:33.51%">雲疊花園第２座<b>43</b></span><span class="pl" style="left:44.41%;top:41.94%">雲疊花園第３座<b>42</b></span><span class="pl" style="left:40.64%;top:71.77%">雲疊花園第５座<b>42</b></span><span class="pl" style="left:20.57%;top:75.7%">雲疊花園第６座<b>42</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>雲疊花園 6 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

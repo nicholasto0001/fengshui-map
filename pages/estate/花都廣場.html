@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>花都廣場風水評分</h1>
 <p class="sub">北區 · 1995 年入伙 · 10 座 · 2,539 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/花都廣場.jpg" alt="花都廣場航空影像，10 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:41.71%;top:61.12%">花都廣場第３座<b>67</b></span><span class="pl" style="left:66.05%;top:80.81%">花都廣場第５座<b>47</b></span><span class="pl" style="left:79.82%;top:58.32%">花都廣場第６座<b>47</b></span><span class="pl" style="left:53.27%;top:71.09%">花都廣場第４座<b>47</b></span><span class="pl" style="left:30.41%;top:50.55%">花都廣場第２座<b>47</b></span><span class="pl" style="left:19.69%;top:39.5%">花都廣場第１座<b>47</b></span><span class="pl" style="left:65.91%;top:49.27%">花都廣場第７座<b>46</b></span><span class="pl" style="left:53.31%;top:40.15%">花都廣場第８座<b>46</b></span><span class="pl" style="left:41.42%;top:30.38%">花都廣場第９座<b>46</b></span><span class="pl" style="left:28.77%;top:19.52%">花都廣場第１０座<b>45</b></span>
+  <div class="pw" style="aspect-ratio:409/438">
+    <img src="/plan/花都廣場.jpg" alt="花都廣場航空影像，10 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="409" height="438"
+       loading="lazy" decoding="async"><span class="pl" style="left:41.71%;top:61.12%">花都廣場第３座<b>67</b></span><span class="pl" style="left:66.05%;top:80.81%">花都廣場第５座<b>47</b></span><span class="pl" style="left:79.82%;top:58.32%">花都廣場第６座<b>47</b></span><span class="pl" style="left:53.27%;top:71.09%">花都廣場第４座<b>47</b></span><span class="pl" style="left:30.41%;top:50.55%">花都廣場第２座<b>47</b></span><span class="pl" style="left:19.69%;top:39.5%">花都廣場第１座<b>47</b></span><span class="pl" style="left:65.91%;top:49.27%">花都廣場第７座<b>46</b></span><span class="pl" style="left:53.31%;top:40.15%">花都廣場第８座<b>46</b></span><span class="pl" style="left:41.42%;top:30.38%">花都廣場第９座<b>46</b></span><span class="pl" style="left:28.77%;top:19.52%">花都廣場第１０座<b>45</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>花都廣場 10 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

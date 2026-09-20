@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>石籬二邨風水評分</h1>
 <p class="sub">葵青區 · 1994 年入伙 · 13 座 · 8,338 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/石籬二邨.jpg" alt="石籬二邨航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:74.06%;top:20.05%">石歡樓<b>80</b></span><span class="pl" style="left:62.78%;top:43.17%">石廣樓<b>72</b></span><span class="pl" style="left:51.12%;top:51.18%">石榮樓<b>70</b></span><span class="pl" style="left:61.62%;top:78.88%">石華樓<b>50</b></span><span class="pl" style="left:76.98%;top:14.13%">石歡樓<b>50</b></span><span class="pl" style="left:69.44%;top:32.58%">石欣樓<b>50</b></span><span class="pl" style="left:51.44%;top:83.1%">石佳樓<b>50</b></span><span class="pl" style="left:40.34%;top:69.84%">石怡樓<b>50</b></span><span class="pl" style="left:26.79%;top:75.18%">石偉樓<b>49</b></span><span class="pl" style="left:33.42%;top:42.99%">石福樓<b>48</b></span><span class="pl" style="left:57.85%;top:28.13%">石祥樓<b>48</b></span><span class="pl" style="left:37.52%;top:45.76%">石禧樓<b>48</b></span><span class="pl" style="left:49.37%;top:34.52%">石富樓<b>48</b></span>
+  <div class="pw" style="aspect-ratio:188/323">
+    <img src="/plan/石籬二邨.jpg" alt="石籬二邨航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="188" height="323"
+       loading="lazy" decoding="async"><span class="pl" style="left:74.06%;top:20.05%">石歡樓<b>80</b></span><span class="pl" style="left:62.78%;top:43.17%">石廣樓<b>72</b></span><span class="pl" style="left:51.12%;top:51.18%">石榮樓<b>70</b></span><span class="pl" style="left:61.62%;top:78.88%">石華樓<b>50</b></span><span class="pl" style="left:76.98%;top:14.13%">石歡樓<b>50</b></span><span class="pl" style="left:69.44%;top:32.58%">石欣樓<b>50</b></span><span class="pl" style="left:51.44%;top:83.1%">石佳樓<b>50</b></span><span class="pl" style="left:40.34%;top:69.84%">石怡樓<b>50</b></span><span class="pl" style="left:26.79%;top:75.18%">石偉樓<b>49</b></span><span class="pl" style="left:33.42%;top:42.99%">石福樓<b>48</b></span><span class="pl" style="left:57.85%;top:28.13%">石祥樓<b>48</b></span><span class="pl" style="left:37.52%;top:45.76%">石禧樓<b>48</b></span><span class="pl" style="left:49.37%;top:34.52%">石富樓<b>48</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>石籬二邨 13 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

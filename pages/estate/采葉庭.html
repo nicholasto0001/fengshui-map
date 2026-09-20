@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>采葉庭風水評分</h1>
 <p class="sub">元朗區 · 2002 年入伙 · 14 座 · 1,549 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/采葉庭.jpg" alt="采葉庭航空影像，14 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:51.16%;top:19.16%">采葉庭１３座<b>77</b></span><span class="pl" style="left:76.37%;top:39.32%">采葉庭１座<b>77</b></span><span class="pl" style="left:59.12%;top:40.21%">采葉庭２座<b>76</b></span><span class="pl" style="left:64.61%;top:81.16%">采葉庭６座<b>75</b></span><span class="pl" style="left:80.06%;top:26.12%">采葉庭１６座<b>55</b></span><span class="pl" style="left:65.43%;top:22.58%">采葉庭１５座<b>55</b></span><span class="pl" style="left:54.49%;top:56.8%">采葉庭３座<b>54</b></span><span class="pl" style="left:69.13%;top:65.42%">采葉庭５座<b>54</b></span><span class="pl" style="left:35.42%;top:28.12%">采葉庭１２座<b>53</b></span><span class="pl" style="left:31.83%;top:40.68%">采葉庭１１座<b>53</b></span><span class="pl" style="left:28.21%;top:53.72%">采葉庭１０座<b>53</b></span><span class="pl" style="left:49.81%;top:79.28%">采葉庭７座<b>53</b></span><span class="pl" style="left:34.97%;top:75.79%">采葉庭８座<b>53</b></span><span class="pl" style="left:20.48%;top:70.5%">采葉庭９座<b>53</b></span>
+  <div class="pw" style="aspect-ratio:436/472">
+    <img src="/plan/采葉庭.jpg" alt="采葉庭航空影像，14 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="436" height="472"
+       loading="lazy" decoding="async"><span class="pl" style="left:51.16%;top:19.16%">采葉庭１３座<b>77</b></span><span class="pl" style="left:76.37%;top:39.32%">采葉庭１座<b>77</b></span><span class="pl" style="left:59.12%;top:40.21%">采葉庭２座<b>76</b></span><span class="pl" style="left:64.61%;top:81.16%">采葉庭６座<b>75</b></span><span class="pl" style="left:80.06%;top:26.12%">采葉庭１６座<b>55</b></span><span class="pl" style="left:65.43%;top:22.58%">采葉庭１５座<b>55</b></span><span class="pl" style="left:54.49%;top:56.8%">采葉庭３座<b>54</b></span><span class="pl" style="left:69.13%;top:65.42%">采葉庭５座<b>54</b></span><span class="pl" style="left:35.42%;top:28.12%">采葉庭１２座<b>53</b></span><span class="pl" style="left:31.83%;top:40.68%">采葉庭１１座<b>53</b></span><span class="pl" style="left:28.21%;top:53.72%">采葉庭１０座<b>53</b></span><span class="pl" style="left:49.81%;top:79.28%">采葉庭７座<b>53</b></span><span class="pl" style="left:34.97%;top:75.79%">采葉庭８座<b>53</b></span><span class="pl" style="left:20.48%;top:70.5%">采葉庭９座<b>53</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>采葉庭 14 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>長亨邨風水評分</h1>
 <p class="sub">葵青區 · 1990 年入伙 · 6 座 · 4,286 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/長亨邨.jpg" alt="長亨邨航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:58.11%;top:34.63%">亨緻樓<b>59</b></span><span class="pl" style="left:50.56%;top:44.18%">亨業樓<b>58</b></span><span class="pl" style="left:37.98%;top:17.41%">亨俊樓<b>52</b></span><span class="pl" style="left:62.34%;top:20.56%">亨怡樓<b>51</b></span><span class="pl" style="left:51.27%;top:69.99%">亨麗樓<b>47</b></span><span class="pl" style="left:39.31%;top:82.94%">亨翠樓<b>45</b></span>
+  <div class="pw" style="aspect-ratio:142/344">
+    <img src="/plan/長亨邨.jpg" alt="長亨邨航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="142" height="344"
+       loading="lazy" decoding="async"><span class="pl" style="left:58.11%;top:34.63%">亨緻樓<b>59</b></span><span class="pl" style="left:50.56%;top:44.18%">亨業樓<b>58</b></span><span class="pl" style="left:37.98%;top:17.41%">亨俊樓<b>52</b></span><span class="pl" style="left:62.34%;top:20.56%">亨怡樓<b>51</b></span><span class="pl" style="left:51.27%;top:69.99%">亨麗樓<b>47</b></span><span class="pl" style="left:39.31%;top:82.94%">亨翠樓<b>45</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>長亨邨 6 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

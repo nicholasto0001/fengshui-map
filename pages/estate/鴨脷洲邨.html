@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>鴨脷洲邨風水評分</h1>
 <p class="sub">南區 · 1980 年入伙 · 10 座 · 4,354 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/鴨脷洲邨.jpg" alt="鴨脷洲邨航空影像，10 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:71.57%;top:69.53%">利福樓高座<b>69</b></span><span class="pl" style="left:80.28%;top:46.79%">利滿樓低座<b>69</b></span><span class="pl" style="left:84.05%;top:54.37%">利滿樓高座<b>69</b></span><span class="pl" style="left:65.56%;top:42.28%">利添樓<b>54</b></span><span class="pl" style="left:30.86%;top:29.33%">利寧樓<b>48</b></span><span class="pl" style="left:22.11%;top:44.42%">利怡樓<b>48</b></span><span class="pl" style="left:52.75%;top:37.92%">利澤樓（Ｃ３）<b>47</b></span><span class="pl" style="left:41.15%;top:37.68%">利澤樓（Ｃ１）<b>47</b></span><span class="pl" style="left:47.45%;top:44.45%">利澤樓（Ｃ２）<b>47</b></span><span class="pl" style="left:67.75%;top:62.77%">利福樓低座<b>46</b></span>
+  <div class="pw" style="aspect-ratio:506/285">
+    <img src="/plan/鴨脷洲邨.jpg" alt="鴨脷洲邨航空影像，10 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="506" height="285"
+       loading="lazy" decoding="async"><span class="pl" style="left:71.57%;top:69.53%">利福樓高座<b>69</b></span><span class="pl" style="left:80.28%;top:46.79%">利滿樓低座<b>69</b></span><span class="pl" style="left:84.05%;top:54.37%">利滿樓高座<b>69</b></span><span class="pl" style="left:65.56%;top:42.28%">利添樓<b>54</b></span><span class="pl" style="left:30.86%;top:29.33%">利寧樓<b>48</b></span><span class="pl" style="left:22.11%;top:44.42%">利怡樓<b>48</b></span><span class="pl" style="left:52.75%;top:37.92%">利澤樓（Ｃ３）<b>47</b></span><span class="pl" style="left:41.15%;top:37.68%">利澤樓（Ｃ１）<b>47</b></span><span class="pl" style="left:47.45%;top:44.45%">利澤樓（Ｃ２）<b>47</b></span><span class="pl" style="left:67.75%;top:62.77%">利福樓低座<b>46</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>鴨脷洲邨 10 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

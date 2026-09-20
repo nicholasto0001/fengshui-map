@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>富雅花園風水評分</h1>
 <p class="sub">大埔區 · 1990 年入伙 · 4 座 · 1,023 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/富雅花園.jpg" alt="富雅花園航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:82.89%;top:42.03%"><b>77</b></span><span class="pl" style="left:71.52%;top:48.09%">富雅花園第３座<b>77</b></span><span class="pl" style="left:42.46%;top:45.58%">富雅花園第２座<b>58</b></span><span class="pl" style="left:75.85%;top:71.89%">富雅花園第４座<b>57</b></span><span class="pl" style="left:49.63%;top:29.08%"><b>50</b></span><span class="pl" style="left:21.65%;top:28.55%">富雅花園第１座<b>49</b></span>
+  <div class="pw" style="aspect-ratio:766/600">
+    <img src="/plan/富雅花園.jpg" alt="富雅花園航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="766" height="600"
+       loading="lazy" decoding="async"><span class="pl" style="left:82.89%;top:42.03%"><b>77</b></span><span class="pl" style="left:71.52%;top:48.09%">富雅花園第３座<b>77</b></span><span class="pl" style="left:42.46%;top:45.58%">富雅花園第２座<b>58</b></span><span class="pl" style="left:75.85%;top:71.89%">富雅花園第４座<b>57</b></span><span class="pl" style="left:49.63%;top:29.08%"><b>50</b></span><span class="pl" style="left:21.65%;top:28.55%">富雅花園第１座<b>49</b></span>
     <span class="sc-m">50 米</span><span class="nn">北</span></div>
   <figcaption>富雅花園 6 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

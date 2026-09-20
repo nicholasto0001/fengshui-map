@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>環翠邨風水評分</h1>
 <p class="sub">東區 · 1979 年入伙 · 13 座 · 3,592 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/環翠邨.jpg" alt="環翠邨航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:55.24%;top:60.85%">逸翠樓<b>78</b></span><span class="pl" style="left:56.47%;top:44.78%">富翠樓<b>69</b></span><span class="pl" style="left:33.99%;top:79.2%">盛翠樓<b>51</b></span><span class="pl" style="left:39.18%;top:72.99%">美翠樓<b>50</b></span><span class="pl" style="left:18.36%;top:56.34%">福翠樓<b>50</b></span><span class="pl" style="left:26.39%;top:74.07%">怡翠樓<b>50</b></span><span class="pl" style="left:53.34%;top:65.2%">逸翠樓<b>48</b></span><span class="pl" style="left:43.41%;top:69.15%">蕙翠樓<b>48</b></span><span class="pl" style="left:41.33%;top:67.29%">蕙翠樓<b>48</b></span><span class="pl" style="left:30.08%;top:41.45%">澤翠樓<b>47</b></span><span class="pl" style="left:62.76%;top:40.01%">貴翠樓<b>47</b></span><span class="pl" style="left:82.89%;top:22.59%">利翠樓<b>46</b></span><span class="pl" style="left:76.64%;top:27.56%">喜翠樓<b>46</b></span>
+  <div class="pw" style="aspect-ratio:435/333">
+    <img src="/plan/環翠邨.jpg" alt="環翠邨航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="435" height="333"
+       loading="lazy" decoding="async"><span class="pl" style="left:55.24%;top:60.85%">逸翠樓<b>78</b></span><span class="pl" style="left:56.47%;top:44.78%">富翠樓<b>69</b></span><span class="pl" style="left:33.99%;top:79.2%">盛翠樓<b>51</b></span><span class="pl" style="left:39.18%;top:72.99%">美翠樓<b>50</b></span><span class="pl" style="left:18.36%;top:56.34%">福翠樓<b>50</b></span><span class="pl" style="left:26.39%;top:74.07%">怡翠樓<b>50</b></span><span class="pl" style="left:53.34%;top:65.2%">逸翠樓<b>48</b></span><span class="pl" style="left:43.41%;top:69.15%">蕙翠樓<b>48</b></span><span class="pl" style="left:41.33%;top:67.29%">蕙翠樓<b>48</b></span><span class="pl" style="left:30.08%;top:41.45%">澤翠樓<b>47</b></span><span class="pl" style="left:62.76%;top:40.01%">貴翠樓<b>47</b></span><span class="pl" style="left:82.89%;top:22.59%">利翠樓<b>46</b></span><span class="pl" style="left:76.64%;top:27.56%">喜翠樓<b>46</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>環翠邨 13 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

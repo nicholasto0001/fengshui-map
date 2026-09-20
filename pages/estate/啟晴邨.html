@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>啟晴邨風水評分</h1>
 <p class="sub">九龍城區 · 2013 年入伙 · 6 座 · 5,034 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/啟晴邨.jpg" alt="啟晴邨航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:64.32%;top:79.38%">康晴樓<b>42</b></span><span class="pl" style="left:25.84%;top:48.31%">悅晴樓<b>42</b></span><span class="pl" style="left:42.06%;top:35.38%">滿晴樓<b>42</b></span><span class="pl" style="left:68.27%;top:60.01%">樂晴樓<b>42</b></span><span class="pl" style="left:70.91%;top:41.94%">欣晴樓<b>42</b></span><span class="pl" style="left:60.58%;top:21.2%">賞晴樓<b>41</b></span>
+  <div class="pw" style="aspect-ratio:428/567">
+    <img src="/plan/啟晴邨.jpg" alt="啟晴邨航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="428" height="567"
+       loading="lazy" decoding="async"><span class="pl" style="left:64.32%;top:79.38%">康晴樓<b>42</b></span><span class="pl" style="left:25.84%;top:48.31%">悅晴樓<b>42</b></span><span class="pl" style="left:42.06%;top:35.38%">滿晴樓<b>42</b></span><span class="pl" style="left:68.27%;top:60.01%">樂晴樓<b>42</b></span><span class="pl" style="left:70.91%;top:41.94%">欣晴樓<b>42</b></span><span class="pl" style="left:60.58%;top:21.2%">賞晴樓<b>41</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>啟晴邨 6 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

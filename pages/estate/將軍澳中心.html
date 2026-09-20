@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>將軍澳中心風水評分</h1>
 <p class="sub">西貢區 · 2002 年入伙 · 12 座 · 4,325 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/將軍澳中心.jpg" alt="將軍澳中心航空影像，12 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:31.23%;top:71.74%">將軍澳中心第五座<b>79</b></span><span class="pl" style="left:28.71%;top:40.99%">將軍澳中心第八座<b>78</b></span><span class="pl" style="left:43.39%;top:66.62%">將軍澳中心第三座<b>77</b></span><span class="pl" style="left:67.75%;top:56.13%">將軍澳中心第一座<b>77</b></span><span class="pl" style="left:38.68%;top:36.2%">將軍澳中心第九座<b>77</b></span><span class="pl" style="left:49.37%;top:31.67%">將軍澳中心第十座<b>77</b></span><span class="pl" style="left:55.59%;top:61.29%">將軍澳中心第二座<b>76</b></span><span class="pl" style="left:60.07%;top:27.41%">將軍澳中心第十一<b>69</b></span><span class="pl" style="left:19.15%;top:77.51%">將軍澳中心第六座<b>56</b></span><span class="pl" style="left:18.2%;top:44.88%">將軍澳中心第七座<b>56</b></span><span class="pl" style="left:81.58%;top:50.15%">將軍澳豪庭<b>49</b></span><span class="pl" style="left:71.28%;top:23.03%">將軍澳中心第十二<b>48</b></span>
+  <div class="pw" style="aspect-ratio:550/470">
+    <img src="/plan/將軍澳中心.jpg" alt="將軍澳中心航空影像，12 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="550" height="470"
+       loading="lazy" decoding="async"><span class="pl" style="left:31.23%;top:71.74%">將軍澳中心第五座<b>79</b></span><span class="pl" style="left:28.71%;top:40.99%">將軍澳中心第八座<b>78</b></span><span class="pl" style="left:43.39%;top:66.62%">將軍澳中心第三座<b>77</b></span><span class="pl" style="left:67.75%;top:56.13%">將軍澳中心第一座<b>77</b></span><span class="pl" style="left:38.68%;top:36.2%">將軍澳中心第九座<b>77</b></span><span class="pl" style="left:49.37%;top:31.67%">將軍澳中心第十座<b>77</b></span><span class="pl" style="left:55.59%;top:61.29%">將軍澳中心第二座<b>76</b></span><span class="pl" style="left:60.07%;top:27.41%">將軍澳中心第十一<b>69</b></span><span class="pl" style="left:19.15%;top:77.51%">將軍澳中心第六座<b>56</b></span><span class="pl" style="left:18.2%;top:44.88%">將軍澳中心第七座<b>56</b></span><span class="pl" style="left:81.58%;top:50.15%">將軍澳豪庭<b>49</b></span><span class="pl" style="left:71.28%;top:23.03%">將軍澳中心第十二<b>48</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>將軍澳中心 12 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

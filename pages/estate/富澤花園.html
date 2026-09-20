@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>富澤花園風水評分</h1>
 <p class="sub">東區 · 1981 年入伙 · 5 座 · 1,225 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/富澤花園.jpg" alt="富澤花園航空影像，5 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:33.19%;top:36.18%">富威閣<b>74</b></span><span class="pl" style="left:20.62%;top:27.93%">富邦閣<b>52</b></span><span class="pl" style="left:46.01%;top:45.82%">富達閣<b>52</b></span><span class="pl" style="left:79.57%;top:73.15%">富嘉閣<b>44</b></span><span class="pl" style="left:62.61%;top:58.01%">富慧閣<b>44</b></span>
+  <div class="pw" style="aspect-ratio:385/315">
+    <img src="/plan/富澤花園.jpg" alt="富澤花園航空影像，5 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="385" height="315"
+       loading="lazy" decoding="async"><span class="pl" style="left:33.19%;top:36.18%">富威閣<b>74</b></span><span class="pl" style="left:20.62%;top:27.93%">富邦閣<b>52</b></span><span class="pl" style="left:46.01%;top:45.82%">富達閣<b>52</b></span><span class="pl" style="left:79.57%;top:73.15%">富嘉閣<b>44</b></span><span class="pl" style="left:62.61%;top:58.01%">富慧閣<b>44</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>富澤花園 5 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

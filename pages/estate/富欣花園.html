@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>富欣花園風水評分</h1>
 <p class="sub">東區 · 1997 年入伙 · 8 座 · 2,245 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/富欣花園.jpg" alt="富欣花園航空影像，10 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:55.62%;top:75.93%">富欣花園第６座<b>74</b></span><span class="pl" style="left:29.57%;top:36.24%">富欣花園第１座<b>72</b></span><span class="pl" style="left:43.47%;top:24.23%">富欣花園第２座<b>72</b></span><span class="pl" style="left:35.29%;top:75.74%">富欣花園第７座<b>72</b></span><span class="pl" style="left:20.88%;top:58.94%">富欣花園第８座<b>54</b></span><span class="pl" style="left:79.0%;top:38.36%">富欣花園第４座<b>52</b></span><span class="pl" style="left:61.4%;top:31.21%">富欣花園第３座<b>52</b></span><span class="pl" style="left:58.36%;top:19.24%"><b>52</b></span><span class="pl" style="left:69.16%;top:60.3%">富欣花園第５座<b>52</b></span><span class="pl" style="left:14.83%;top:56.71%"><b>50</b></span>
+  <div class="pw" style="aspect-ratio:451/390">
+    <img src="/plan/富欣花園.jpg" alt="富欣花園航空影像，10 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="451" height="390"
+       loading="lazy" decoding="async"><span class="pl" style="left:55.62%;top:75.93%">富欣花園第６座<b>74</b></span><span class="pl" style="left:29.57%;top:36.24%">富欣花園第１座<b>72</b></span><span class="pl" style="left:43.47%;top:24.23%">富欣花園第２座<b>72</b></span><span class="pl" style="left:35.29%;top:75.74%">富欣花園第７座<b>72</b></span><span class="pl" style="left:20.88%;top:58.94%">富欣花園第８座<b>54</b></span><span class="pl" style="left:79.0%;top:38.36%">富欣花園第４座<b>52</b></span><span class="pl" style="left:61.4%;top:31.21%">富欣花園第３座<b>52</b></span><span class="pl" style="left:58.36%;top:19.24%"><b>52</b></span><span class="pl" style="left:69.16%;top:60.3%">富欣花園第５座<b>52</b></span><span class="pl" style="left:14.83%;top:56.71%"><b>50</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>富欣花園 10 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

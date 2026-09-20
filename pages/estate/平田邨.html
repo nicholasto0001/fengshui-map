@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>平田邨風水評分</h1>
 <p class="sub">觀塘區 · 1996 年入伙 · 8 座 · 5,437 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/平田邨.jpg" alt="平田邨航空影像，8 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:38.59%;top:68.13%">平仁樓<b>72</b></span><span class="pl" style="left:61.82%;top:81.26%">平誠樓<b>51</b></span><span class="pl" style="left:40.98%;top:81.17%">平旺樓<b>50</b></span><span class="pl" style="left:27.36%;top:58.56%">平信樓<b>42</b></span><span class="pl" style="left:37.1%;top:40.59%">平善樓<b>41</b></span><span class="pl" style="left:71.29%;top:24.52%">平真樓<b>40</b></span><span class="pl" style="left:39.76%;top:27.88%">平美樓<b>40</b></span><span class="pl" style="left:47.13%;top:17.48%">平田邨服務設施大<b>40</b></span>
+  <div class="pw" style="aspect-ratio:273/431">
+    <img src="/plan/平田邨.jpg" alt="平田邨航空影像，8 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="273" height="431"
+       loading="lazy" decoding="async"><span class="pl" style="left:38.59%;top:68.13%">平仁樓<b>72</b></span><span class="pl" style="left:61.82%;top:81.26%">平誠樓<b>51</b></span><span class="pl" style="left:40.98%;top:81.17%">平旺樓<b>50</b></span><span class="pl" style="left:27.36%;top:58.56%">平信樓<b>42</b></span><span class="pl" style="left:37.1%;top:40.59%">平善樓<b>41</b></span><span class="pl" style="left:71.29%;top:24.52%">平真樓<b>40</b></span><span class="pl" style="left:39.76%;top:27.88%">平美樓<b>40</b></span><span class="pl" style="left:47.13%;top:17.48%">平田邨服務設施大<b>40</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>平田邨 8 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

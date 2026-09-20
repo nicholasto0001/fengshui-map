@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>海之戀風水評分</h1>
 <p class="sub">荃灣區 · 2018 年入伙 · 10 座 · 2,092 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/海之戀.jpg" alt="海之戀航空影像，12 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:27.31%;top:42.09%">海之戀第５座<b>46</b></span><span class="pl" style="left:71.97%;top:80.14%">海之戀第１座<b>46</b></span><span class="pl" style="left:85.48%;top:84.6%"><b>46</b></span><span class="pl" style="left:18.61%;top:30.88%">海之戀第６座<b>45</b></span><span class="pl" style="left:25.54%;top:28.66%"><b>45</b></span><span class="pl" style="left:57.22%;top:69.87%">海之戀第２座<b>45</b></span><span class="pl" style="left:20.11%;top:20.47%">西鐵荃灣火牛房Ｄ<b>45</b></span><span class="pl" style="left:46.97%;top:60.35%">海之戀第３座<b>45</b></span><span class="pl" style="left:70.32%;top:49.32%">海之戀第９座<b>44</b></span><span class="pl" style="left:49.9%;top:29.57%">海之戀第８座<b>44</b></span><span class="pl" style="left:39.12%;top:19.21%">海之戀第７座<b>44</b></span><span class="pl" style="left:81.7%;top:59.68%">海之戀第１０座<b>43</b></span>
+  <div class="pw" style="aspect-ratio:576/596">
+    <img src="/plan/海之戀.jpg" alt="海之戀航空影像，12 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="576" height="596"
+       loading="lazy" decoding="async"><span class="pl" style="left:27.31%;top:42.09%">海之戀第５座<b>46</b></span><span class="pl" style="left:71.97%;top:80.14%">海之戀第１座<b>46</b></span><span class="pl" style="left:85.48%;top:84.6%"><b>46</b></span><span class="pl" style="left:18.61%;top:30.88%">海之戀第６座<b>45</b></span><span class="pl" style="left:25.54%;top:28.66%"><b>45</b></span><span class="pl" style="left:57.22%;top:69.87%">海之戀第２座<b>45</b></span><span class="pl" style="left:20.11%;top:20.47%">西鐵荃灣火牛房Ｄ<b>45</b></span><span class="pl" style="left:46.97%;top:60.35%">海之戀第３座<b>45</b></span><span class="pl" style="left:70.32%;top:49.32%">海之戀第９座<b>44</b></span><span class="pl" style="left:49.9%;top:29.57%">海之戀第８座<b>44</b></span><span class="pl" style="left:39.12%;top:19.21%">海之戀第７座<b>44</b></span><span class="pl" style="left:81.7%;top:59.68%">海之戀第１０座<b>43</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>海之戀 12 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

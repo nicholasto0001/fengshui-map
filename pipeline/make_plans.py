@@ -140,8 +140,12 @@ def main() -> None:
         north(d, out)
         out.thumbnail((W, H), Image.LANCZOS)
         out.save(OUT / f"{k}.jpg", "JPEG", quality=72, optimize=True, progressive=True)
+        # 記低真尺寸。thumbnail() 保持比例，所以出嚟好少係 880×600 ——
+        # 喺 HTML 寫死 880×600 嘅話，載入之前個框比例就錯，啲絕對定位
+        # 嘅標籤會喺圖載入嗰刻跳一跳。
         report[k] = {"contrast": round(med, 1), "blocks": len(rows),
-                     "scale_m": metres, "labels": labels}
+                     "scale_m": metres, "w": out.width, "h": out.height,
+                     "labels": labels}
         made += 1
         if made % 50 == 0:
             print(f"  … {made} 張", flush=True)

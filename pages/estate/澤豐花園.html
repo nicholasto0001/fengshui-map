@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>澤豐花園風水評分</h1>
 <p class="sub">屯門區 · 1989 年入伙 · 5 座 · 2,096 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/澤豐花園.jpg" alt="澤豐花園航空影像，7 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:65.56%;top:44.13%">澤民樓<b>50</b></span><span class="pl" style="left:59.26%;top:85.12%"><b>50</b></span><span class="pl" style="left:54.45%;top:73.81%">澤安樓<b>50</b></span><span class="pl" style="left:33.15%;top:56.67%">澤富樓<b>50</b></span><span class="pl" style="left:21.19%;top:50.9%"><b>50</b></span><span class="pl" style="left:72.43%;top:26.68%">澤泰樓<b>49</b></span><span class="pl" style="left:46.33%;top:21.67%">澤國樓<b>49</b></span>
+  <div class="pw" style="aspect-ratio:330/469">
+    <img src="/plan/澤豐花園.jpg" alt="澤豐花園航空影像，7 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="330" height="469"
+       loading="lazy" decoding="async"><span class="pl" style="left:65.56%;top:44.13%">澤民樓<b>50</b></span><span class="pl" style="left:59.26%;top:85.12%"><b>50</b></span><span class="pl" style="left:54.45%;top:73.81%">澤安樓<b>50</b></span><span class="pl" style="left:33.15%;top:56.67%">澤富樓<b>50</b></span><span class="pl" style="left:21.19%;top:50.9%"><b>50</b></span><span class="pl" style="left:72.43%;top:26.68%">澤泰樓<b>49</b></span><span class="pl" style="left:46.33%;top:21.67%">澤國樓<b>49</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>澤豐花園 7 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

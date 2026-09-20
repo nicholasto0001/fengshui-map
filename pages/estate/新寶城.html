@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>新寶城風水評分</h1>
 <p class="sub">西貢區 · 1999 年入伙 · 6 座 · 1,991 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/新寶城.jpg" alt="新寶城航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:51.66%;top:22.71%">新寶城第４座<b>51</b></span><span class="pl" style="left:45.21%;top:78.65%">新寶城第１座<b>50</b></span><span class="pl" style="left:61.32%;top:61.61%">新寶城第２座<b>50</b></span><span class="pl" style="left:22.53%;top:58.65%">新寶城第６座<b>50</b></span><span class="pl" style="left:76.1%;top:45.17%">新寶城第３座<b>50</b></span><span class="pl" style="left:37.51%;top:38.05%">新寶城第５座<b>50</b></span>
+  <div class="pw" style="aspect-ratio:583/594">
+    <img src="/plan/新寶城.jpg" alt="新寶城航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="583" height="594"
+       loading="lazy" decoding="async"><span class="pl" style="left:51.66%;top:22.71%">新寶城第４座<b>51</b></span><span class="pl" style="left:45.21%;top:78.65%">新寶城第１座<b>50</b></span><span class="pl" style="left:61.32%;top:61.61%">新寶城第２座<b>50</b></span><span class="pl" style="left:22.53%;top:58.65%">新寶城第６座<b>50</b></span><span class="pl" style="left:76.1%;top:45.17%">新寶城第３座<b>50</b></span><span class="pl" style="left:37.51%;top:38.05%">新寶城第５座<b>50</b></span>
     <span class="sc-m">50 米</span><span class="nn">北</span></div>
   <figcaption>新寶城 6 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>彩雲二邨風水評分</h1>
 <p class="sub">黃大仙區 · 1978 年入伙 · 5 座 · 2,855 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/彩雲二邨.jpg" alt="彩雲二邨航空影像，5 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:29.19%;top:27.14%">瓊宮樓<b>51</b></span><span class="pl" style="left:19.51%;top:23.28%">玉宇樓<b>51</b></span><span class="pl" style="left:52.53%;top:51.21%">明麗樓<b>42</b></span><span class="pl" style="left:77.13%;top:29.52%">豐澤樓<b>40</b></span><span class="pl" style="left:70.96%;top:71.46%">啓輝樓<b>40</b></span>
+  <div class="pw" style="aspect-ratio:626/527">
+    <img src="/plan/彩雲二邨.jpg" alt="彩雲二邨航空影像，5 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="626" height="527"
+       loading="lazy" decoding="async"><span class="pl" style="left:29.19%;top:27.14%">瓊宮樓<b>51</b></span><span class="pl" style="left:19.51%;top:23.28%">玉宇樓<b>51</b></span><span class="pl" style="left:52.53%;top:51.21%">明麗樓<b>42</b></span><span class="pl" style="left:77.13%;top:29.52%">豐澤樓<b>40</b></span><span class="pl" style="left:70.96%;top:71.46%">啓輝樓<b>40</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>彩雲二邨 5 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>鳳德邨風水評分</h1>
 <p class="sub">黃大仙區 · 1991 年入伙 · 10 座 · 5,010 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/鳳德邨.jpg" alt="鳳德邨航空影像，10 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:71.06%;top:64.31%">紫鳳樓<b>50</b></span><span class="pl" style="left:58.68%;top:26.44%">硃鳳樓<b>41</b></span><span class="pl" style="left:65.58%;top:39.81%">碧鳳樓<b>41</b></span><span class="pl" style="left:82.9%;top:71.59%">黛鳳樓<b>40</b></span><span class="pl" style="left:13.95%;top:51.49%">銀鳳樓<b>40</b></span><span class="pl" style="left:47.27%;top:76.02%">斑鳳樓<b>40</b></span><span class="pl" style="left:55.34%;top:74.07%">銀鳳樓<b>40</b></span><span class="pl" style="left:17.87%;top:52.92%">銀鳳樓<b>40</b></span><span class="pl" style="left:18.11%;top:51.7%">銀鳳樓<b>40</b></span><span class="pl" style="left:46.51%;top:48.05%">雪鳳樓<b>40</b></span>
+  <div class="pw" style="aspect-ratio:606/432">
+    <img src="/plan/鳳德邨.jpg" alt="鳳德邨航空影像，10 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="606" height="432"
+       loading="lazy" decoding="async"><span class="pl" style="left:71.06%;top:64.31%">紫鳳樓<b>50</b></span><span class="pl" style="left:58.68%;top:26.44%">硃鳳樓<b>41</b></span><span class="pl" style="left:65.58%;top:39.81%">碧鳳樓<b>41</b></span><span class="pl" style="left:82.9%;top:71.59%">黛鳳樓<b>40</b></span><span class="pl" style="left:13.95%;top:51.49%">銀鳳樓<b>40</b></span><span class="pl" style="left:47.27%;top:76.02%">斑鳳樓<b>40</b></span><span class="pl" style="left:55.34%;top:74.07%">銀鳳樓<b>40</b></span><span class="pl" style="left:17.87%;top:52.92%">銀鳳樓<b>40</b></span><span class="pl" style="left:18.11%;top:51.7%">銀鳳樓<b>40</b></span><span class="pl" style="left:46.51%;top:48.05%">雪鳳樓<b>40</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>鳳德邨 10 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

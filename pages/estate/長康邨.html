@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>長康邨風水評分</h1>
 <p class="sub">葵青區 · 1979 年入伙 · 13 座 · 8,107 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/長康邨.jpg" alt="長康邨航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:77.19%;top:67.35%">康貴樓<b>65</b></span><span class="pl" style="left:72.96%;top:58.32%">康和樓<b>47</b></span><span class="pl" style="left:78.15%;top:48.85%">康華樓<b>47</b></span><span class="pl" style="left:65.23%;top:37.16%">康平樓<b>43</b></span><span class="pl" style="left:71.47%;top:39.57%">康泰樓<b>43</b></span><span class="pl" style="left:84.96%;top:55.29%">康榮樓<b>43</b></span><span class="pl" style="left:60.12%;top:38.44%">康安樓<b>43</b></span><span class="pl" style="left:81.18%;top:45.27%">康富樓<b>43</b></span><span class="pl" style="left:42.92%;top:37.07%">康豐樓<b>42</b></span><span class="pl" style="left:57.27%;top:34.2%">康盛樓<b>42</b></span><span class="pl" style="left:23.12%;top:45.61%">康順樓<b>42</b></span><span class="pl" style="left:16.5%;top:35.53%">康美樓<b>42</b></span><span class="pl" style="left:36.71%;top:44.82%">康祥樓<b>42</b></span>
+  <div class="pw" style="aspect-ratio:451/227">
+    <img src="/plan/長康邨.jpg" alt="長康邨航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="451" height="227"
+       loading="lazy" decoding="async"><span class="pl" style="left:77.19%;top:67.35%">康貴樓<b>65</b></span><span class="pl" style="left:72.96%;top:58.32%">康和樓<b>47</b></span><span class="pl" style="left:78.15%;top:48.85%">康華樓<b>47</b></span><span class="pl" style="left:65.23%;top:37.16%">康平樓<b>43</b></span><span class="pl" style="left:71.47%;top:39.57%">康泰樓<b>43</b></span><span class="pl" style="left:84.96%;top:55.29%">康榮樓<b>43</b></span><span class="pl" style="left:60.12%;top:38.44%">康安樓<b>43</b></span><span class="pl" style="left:81.18%;top:45.27%">康富樓<b>43</b></span><span class="pl" style="left:42.92%;top:37.07%">康豐樓<b>42</b></span><span class="pl" style="left:57.27%;top:34.2%">康盛樓<b>42</b></span><span class="pl" style="left:23.12%;top:45.61%">康順樓<b>42</b></span><span class="pl" style="left:16.5%;top:35.53%">康美樓<b>42</b></span><span class="pl" style="left:36.71%;top:44.82%">康祥樓<b>42</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>長康邨 13 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

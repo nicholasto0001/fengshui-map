@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>頌明苑風水評分</h1>
 <p class="sub">西貢區 · 1993 年入伙 · 5 座 · 1,662 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/頌明苑.jpg" alt="頌明苑航空影像，5 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:25.92%;top:36.56%">輝明閣<b>73</b></span><span class="pl" style="left:74.9%;top:80.08%">冠明閣<b>52</b></span><span class="pl" style="left:53.98%;top:68.01%">翠明閣<b>44</b></span><span class="pl" style="left:36.82%;top:19.16%">嘉明閣<b>44</b></span><span class="pl" style="left:36.51%;top:55.43%">賢明閣<b>44</b></span>
+  <div class="pw" style="aspect-ratio:385/490">
+    <img src="/plan/頌明苑.jpg" alt="頌明苑航空影像，5 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="385" height="490"
+       loading="lazy" decoding="async"><span class="pl" style="left:25.92%;top:36.56%">輝明閣<b>73</b></span><span class="pl" style="left:74.9%;top:80.08%">冠明閣<b>52</b></span><span class="pl" style="left:53.98%;top:68.01%">翠明閣<b>44</b></span><span class="pl" style="left:36.82%;top:19.16%">嘉明閣<b>44</b></span><span class="pl" style="left:36.51%;top:55.43%">賢明閣<b>44</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>頌明苑 5 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

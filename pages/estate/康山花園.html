@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>康山花園風水評分</h1>
 <p class="sub">東區 · 1987 年入伙 · 14 座 · 2,054 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/康山花園.jpg" alt="康山花園航空影像，14 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:60.91%;top:45.06%">港鐵太古站<b>74</b></span><span class="pl" style="left:68.66%;top:66.99%">康山花園第９座<b>74</b></span><span class="pl" style="left:76.54%;top:66.26%">康山花園第１０座<b>74</b></span><span class="pl" style="left:20.74%;top:47.63%">康山花園第２座<b>52</b></span><span class="pl" style="left:17.61%;top:60.56%">康山花園第１座<b>52</b></span><span class="pl" style="left:49.37%;top:41.15%">康山花園第６座<b>52</b></span><span class="pl" style="left:42.29%;top:34.13%">康山花園第５座<b>52</b></span><span class="pl" style="left:26.55%;top:37.44%">康山花園第３座<b>52</b></span><span class="pl" style="left:60.6%;top:63.16%">康山花園第８座<b>52</b></span><span class="pl" style="left:54.43%;top:53.04%">康山花園第７座<b>52</b></span><span class="pl" style="left:84.75%;top:66.99%">港鐵太古站<b>51</b></span><span class="pl" style="left:85.56%;top:68.5%">港鐵太古站<b>51</b></span><span class="pl" style="left:34.11%;top:32.4%">康山花園第４座<b>45</b></span><span class="pl" style="left:86.44%;top:66.86%">港鐵太古站<b>44</b></span>
+  <div class="pw" style="aspect-ratio:636/367">
+    <img src="/plan/康山花園.jpg" alt="康山花園航空影像，14 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="636" height="367"
+       loading="lazy" decoding="async"><span class="pl" style="left:60.91%;top:45.06%">港鐵太古站<b>74</b></span><span class="pl" style="left:68.66%;top:66.99%">康山花園第９座<b>74</b></span><span class="pl" style="left:76.54%;top:66.26%">康山花園第１０座<b>74</b></span><span class="pl" style="left:20.74%;top:47.63%">康山花園第２座<b>52</b></span><span class="pl" style="left:17.61%;top:60.56%">康山花園第１座<b>52</b></span><span class="pl" style="left:49.37%;top:41.15%">康山花園第６座<b>52</b></span><span class="pl" style="left:42.29%;top:34.13%">康山花園第５座<b>52</b></span><span class="pl" style="left:26.55%;top:37.44%">康山花園第３座<b>52</b></span><span class="pl" style="left:60.6%;top:63.16%">康山花園第８座<b>52</b></span><span class="pl" style="left:54.43%;top:53.04%">康山花園第７座<b>52</b></span><span class="pl" style="left:84.75%;top:66.99%">港鐵太古站<b>51</b></span><span class="pl" style="left:85.56%;top:68.5%">港鐵太古站<b>51</b></span><span class="pl" style="left:34.11%;top:32.4%">康山花園第４座<b>45</b></span><span class="pl" style="left:86.44%;top:66.86%">港鐵太古站<b>44</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>康山花園 14 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

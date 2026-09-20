@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>安達邨風水評分</h1>
 <p class="sub">觀塘區 · 2016 年入伙 · 11 座 · 9,073 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/安達邨.jpg" alt="安達邨航空影像，11 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:62.79%;top:40.08%">賢達樓<b>44</b></span><span class="pl" style="left:73.1%;top:43.57%">孝達樓<b>44</b></span><span class="pl" style="left:50.77%;top:56.89%">禮達樓<b>44</b></span><span class="pl" style="left:49.44%;top:35.4%">俊達樓<b>44</b></span><span class="pl" style="left:57.42%;top:68.93%">善達樓<b>43</b></span><span class="pl" style="left:39.07%;top:48.73%">智達樓<b>43</b></span><span class="pl" style="left:33.93%;top:32.35%">誠達樓<b>43</b></span><span class="pl" style="left:76.11%;top:61.81%">正達樓<b>42</b></span><span class="pl" style="left:83.08%;top:53.85%">謙達樓<b>42</b></span><span class="pl" style="left:68.92%;top:79.72%">仁達樓<b>42</b></span><span class="pl" style="left:18.76%;top:21.22%">愛達樓<b>40</b></span>
+  <div class="pw" style="aspect-ratio:496/430">
+    <img src="/plan/安達邨.jpg" alt="安達邨航空影像，11 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="496" height="430"
+       loading="lazy" decoding="async"><span class="pl" style="left:62.79%;top:40.08%">賢達樓<b>44</b></span><span class="pl" style="left:73.1%;top:43.57%">孝達樓<b>44</b></span><span class="pl" style="left:50.77%;top:56.89%">禮達樓<b>44</b></span><span class="pl" style="left:49.44%;top:35.4%">俊達樓<b>44</b></span><span class="pl" style="left:57.42%;top:68.93%">善達樓<b>43</b></span><span class="pl" style="left:39.07%;top:48.73%">智達樓<b>43</b></span><span class="pl" style="left:33.93%;top:32.35%">誠達樓<b>43</b></span><span class="pl" style="left:76.11%;top:61.81%">正達樓<b>42</b></span><span class="pl" style="left:83.08%;top:53.85%">謙達樓<b>42</b></span><span class="pl" style="left:68.92%;top:79.72%">仁達樓<b>42</b></span><span class="pl" style="left:18.76%;top:21.22%">愛達樓<b>40</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>安達邨 11 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

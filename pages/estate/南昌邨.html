@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>南昌邨風水評分</h1>
 <p class="sub">深水埗區 · 1989 年入伙 · 7 座 · 1,821 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/南昌邨.jpg" alt="南昌邨航空影像，7 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:48.67%;top:78.28%">昌哲樓<b>44</b></span><span class="pl" style="left:27.2%;top:55.07%">昌逸樓<b>43</b></span><span class="pl" style="left:27.26%;top:28.86%">昌遜樓<b>43</b></span><span class="pl" style="left:53.25%;top:54.92%">昌安樓<b>42</b></span><span class="pl" style="left:45.96%;top:27.25%">昌謙樓<b>42</b></span><span class="pl" style="left:73.1%;top:60.43%">昌頌樓<b>42</b></span><span class="pl" style="left:70.11%;top:38.44%">昌賢樓<b>42</b></span>
+  <div class="pw" style="aspect-ratio:558/533">
+    <img src="/plan/南昌邨.jpg" alt="南昌邨航空影像，7 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="558" height="533"
+       loading="lazy" decoding="async"><span class="pl" style="left:48.67%;top:78.28%">昌哲樓<b>44</b></span><span class="pl" style="left:27.2%;top:55.07%">昌逸樓<b>43</b></span><span class="pl" style="left:27.26%;top:28.86%">昌遜樓<b>43</b></span><span class="pl" style="left:53.25%;top:54.92%">昌安樓<b>42</b></span><span class="pl" style="left:45.96%;top:27.25%">昌謙樓<b>42</b></span><span class="pl" style="left:73.1%;top:60.43%">昌頌樓<b>42</b></span><span class="pl" style="left:70.11%;top:38.44%">昌賢樓<b>42</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>南昌邨 7 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

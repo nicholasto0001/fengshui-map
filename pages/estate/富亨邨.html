@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>富亨邨風水評分</h1>
 <p class="sub">大埔區 · 1990 年入伙 · 9 座 · 5,500 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/富亨邨.jpg" alt="富亨邨航空影像，9 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:58.25%;top:34.98%">富亨鄰里社區中心<b>75</b></span><span class="pl" style="left:65.81%;top:48.39%">亨裕樓<b>59</b></span><span class="pl" style="left:64.57%;top:17.27%">亨耀樓<b>53</b></span><span class="pl" style="left:74.42%;top:29.68%">亨榮樓<b>53</b></span><span class="pl" style="left:44.7%;top:46.03%">亨翠樓<b>52</b></span><span class="pl" style="left:57.2%;top:74.36%">亨盛樓<b>50</b></span><span class="pl" style="left:25.96%;top:67.41%">亨泰樓<b>49</b></span><span class="pl" style="left:23.56%;top:82.66%">亨隆樓<b>48</b></span><span class="pl" style="left:39.11%;top:83.63%">亨昌樓<b>47</b></span>
+  <div class="pw" style="aspect-ratio:406/585">
+    <img src="/plan/富亨邨.jpg" alt="富亨邨航空影像，9 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="406" height="585"
+       loading="lazy" decoding="async"><span class="pl" style="left:58.25%;top:34.98%">富亨鄰里社區中心<b>75</b></span><span class="pl" style="left:65.81%;top:48.39%">亨裕樓<b>59</b></span><span class="pl" style="left:64.57%;top:17.27%">亨耀樓<b>53</b></span><span class="pl" style="left:74.42%;top:29.68%">亨榮樓<b>53</b></span><span class="pl" style="left:44.7%;top:46.03%">亨翠樓<b>52</b></span><span class="pl" style="left:57.2%;top:74.36%">亨盛樓<b>50</b></span><span class="pl" style="left:25.96%;top:67.41%">亨泰樓<b>49</b></span><span class="pl" style="left:23.56%;top:82.66%">亨隆樓<b>48</b></span><span class="pl" style="left:39.11%;top:83.63%">亨昌樓<b>47</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>富亨邨 9 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

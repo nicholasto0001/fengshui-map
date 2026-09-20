@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>竹園北邨風水評分</h1>
 <p class="sub">黃大仙區 · 1987 年入伙 · 8 座 · 6,514 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/竹園北邨.jpg" alt="竹園北邨航空影像，8 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:71.9%;top:30.11%">桃園樓<b>45</b></span><span class="pl" style="left:26.29%;top:50.81%">柏園樓<b>45</b></span><span class="pl" style="left:40.7%;top:66.16%">蕙園樓<b>43</b></span><span class="pl" style="left:18.11%;top:68.01%">松園樓<b>43</b></span><span class="pl" style="left:61.44%;top:47.79%">橡園樓<b>43</b></span><span class="pl" style="left:46.91%;top:47.9%">榕園樓<b>43</b></span><span class="pl" style="left:68.1%;top:65.85%">桐園樓<b>43</b></span><span class="pl" style="left:82.93%;top:65.68%">梅園樓<b>41</b></span>
+  <div class="pw" style="aspect-ratio:536/352">
+    <img src="/plan/竹園北邨.jpg" alt="竹園北邨航空影像，8 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="536" height="352"
+       loading="lazy" decoding="async"><span class="pl" style="left:71.9%;top:30.11%">桃園樓<b>45</b></span><span class="pl" style="left:26.29%;top:50.81%">柏園樓<b>45</b></span><span class="pl" style="left:40.7%;top:66.16%">蕙園樓<b>43</b></span><span class="pl" style="left:18.11%;top:68.01%">松園樓<b>43</b></span><span class="pl" style="left:61.44%;top:47.79%">橡園樓<b>43</b></span><span class="pl" style="left:46.91%;top:47.9%">榕園樓<b>43</b></span><span class="pl" style="left:68.1%;top:65.85%">桐園樓<b>43</b></span><span class="pl" style="left:82.93%;top:65.68%">梅園樓<b>41</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>竹園北邨 8 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>翔龍灣風水評分</h1>
 <p class="sub">九龍城區 · 2006 年入伙 · 6 座 · 1,639 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/翔龍灣.jpg" alt="翔龍灣航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:77.03%;top:73.76%">翔龍灣廣場<b>59</b></span><span class="pl" style="left:84.79%;top:49.41%">翔龍灣廣場<b>52</b></span><span class="pl" style="left:66.95%;top:41.7%">翔龍灣第六座<b>51</b></span><span class="pl" style="left:51.08%;top:55.27%">翔龍灣第五座<b>51</b></span><span class="pl" style="left:36.46%;top:43.67%">翔龍灣第三座<b>50</b></span><span class="pl" style="left:21.08%;top:33.86%">翔龍灣第二座<b>48</b></span>
+  <div class="pw" style="aspect-ratio:644/394">
+    <img src="/plan/翔龍灣.jpg" alt="翔龍灣航空影像，6 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="644" height="394"
+       loading="lazy" decoding="async"><span class="pl" style="left:77.03%;top:73.76%">翔龍灣廣場<b>59</b></span><span class="pl" style="left:84.79%;top:49.41%">翔龍灣廣場<b>52</b></span><span class="pl" style="left:66.95%;top:41.7%">翔龍灣第六座<b>51</b></span><span class="pl" style="left:51.08%;top:55.27%">翔龍灣第五座<b>51</b></span><span class="pl" style="left:36.46%;top:43.67%">翔龍灣第三座<b>50</b></span><span class="pl" style="left:21.08%;top:33.86%">翔龍灣第二座<b>48</b></span>
     <span class="sc-m">50 米</span><span class="nn">北</span></div>
   <figcaption>翔龍灣 6 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

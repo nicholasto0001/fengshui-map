@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>梨木樹二邨風水評分</h1>
 <p class="sub">荃灣區 · 1975 年入伙 · 11 座 · 4,137 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/梨木樹二邨.jpg" alt="梨木樹二邨航空影像，11 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:46.29%;top:44.79%">榕樹樓<b>70</b></span><span class="pl" style="left:85.33%;top:32.1%">竹樹樓<b>68</b></span><span class="pl" style="left:60.51%;top:34.62%">松樹樓<b>49</b></span><span class="pl" style="left:26.16%;top:44.7%">梨木樹邨第４座<b>48</b></span><span class="pl" style="left:69.3%;top:19.18%">葵樹樓<b>45</b></span><span class="pl" style="left:50.98%;top:26.38%">梨木樹邨第６座<b>44</b></span><span class="pl" style="left:34.86%;top:53.86%">柏樹樓<b>44</b></span><span class="pl" style="left:36.4%;top:64.39%">梨木樹邨第２座<b>44</b></span><span class="pl" style="left:36.03%;top:34.62%">梨木樹邨第５座<b>44</b></span><span class="pl" style="left:15.61%;top:58.27%">梨木樹邨第３座<b>43</b></span><span class="pl" style="left:31.32%;top:76.46%">梨木樹邨第１座<b>43</b></span>
+  <div class="pw" style="aspect-ratio:450/379">
+    <img src="/plan/梨木樹二邨.jpg" alt="梨木樹二邨航空影像，11 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="450" height="379"
+       loading="lazy" decoding="async"><span class="pl" style="left:46.29%;top:44.79%">榕樹樓<b>70</b></span><span class="pl" style="left:85.33%;top:32.1%">竹樹樓<b>68</b></span><span class="pl" style="left:60.51%;top:34.62%">松樹樓<b>49</b></span><span class="pl" style="left:26.16%;top:44.7%">梨木樹邨第４座<b>48</b></span><span class="pl" style="left:69.3%;top:19.18%">葵樹樓<b>45</b></span><span class="pl" style="left:50.98%;top:26.38%">梨木樹邨第６座<b>44</b></span><span class="pl" style="left:34.86%;top:53.86%">柏樹樓<b>44</b></span><span class="pl" style="left:36.4%;top:64.39%">梨木樹邨第２座<b>44</b></span><span class="pl" style="left:36.03%;top:34.62%">梨木樹邨第５座<b>44</b></span><span class="pl" style="left:15.61%;top:58.27%">梨木樹邨第３座<b>43</b></span><span class="pl" style="left:31.32%;top:76.46%">梨木樹邨第１座<b>43</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>梨木樹二邨 11 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

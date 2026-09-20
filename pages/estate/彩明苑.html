@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>彩明苑風水評分</h1>
 <p class="sub">西貢區 · 2001 年入伙 · 11 座 · 4,644 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/彩明苑.jpg" alt="彩明苑航空影像，11 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:46.67%;top:65.38%">彩耀閣<b>78</b></span><span class="pl" style="left:81.92%;top:48.37%">彩桃閣<b>78</b></span><span class="pl" style="left:80.27%;top:36.49%">彩梅閣<b>78</b></span><span class="pl" style="left:20.03%;top:78.82%">彩貴閣<b>78</b></span><span class="pl" style="left:24.48%;top:57.12%">彩富閣<b>70</b></span><span class="pl" style="left:70.43%;top:25.44%">彩柳閣<b>56</b></span><span class="pl" style="left:32.43%;top:71.48%">彩榮閣<b>50</b></span><span class="pl" style="left:29.01%;top:49.6%">彩富閣<b>50</b></span><span class="pl" style="left:65.05%;top:43.93%">彩柏閣<b>49</b></span><span class="pl" style="left:58.58%;top:32.27%">彩松閣<b>48</b></span><span class="pl" style="left:80.49%;top:19.38%">彩楊閣<b>48</b></span>
+  <div class="pw" style="aspect-ratio:330/326">
+    <img src="/plan/彩明苑.jpg" alt="彩明苑航空影像，11 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="330" height="326"
+       loading="lazy" decoding="async"><span class="pl" style="left:46.67%;top:65.38%">彩耀閣<b>78</b></span><span class="pl" style="left:81.92%;top:48.37%">彩桃閣<b>78</b></span><span class="pl" style="left:80.27%;top:36.49%">彩梅閣<b>78</b></span><span class="pl" style="left:20.03%;top:78.82%">彩貴閣<b>78</b></span><span class="pl" style="left:24.48%;top:57.12%">彩富閣<b>70</b></span><span class="pl" style="left:70.43%;top:25.44%">彩柳閣<b>56</b></span><span class="pl" style="left:32.43%;top:71.48%">彩榮閣<b>50</b></span><span class="pl" style="left:29.01%;top:49.6%">彩富閣<b>50</b></span><span class="pl" style="left:65.05%;top:43.93%">彩柏閣<b>49</b></span><span class="pl" style="left:58.58%;top:32.27%">彩松閣<b>48</b></span><span class="pl" style="left:80.49%;top:19.38%">彩楊閣<b>48</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>彩明苑 11 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

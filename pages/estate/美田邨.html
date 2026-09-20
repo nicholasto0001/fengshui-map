@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>美田邨風水評分</h1>
 <p class="sub">沙田區 · 2006 年入伙 · 8 座 · 6,618 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/美田邨.jpg" alt="美田邨航空影像，10 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:22.75%;top:64.66%">美麗樓<b>66</b></span><span class="pl" style="left:47.76%;top:38.09%">美致樓<b>58</b></span><span class="pl" style="left:36.14%;top:58.41%">美秀樓<b>57</b></span><span class="pl" style="left:75.72%;top:76.0%">美滿樓<b>50</b></span><span class="pl" style="left:76.88%;top:62.71%">美庭樓<b>50</b></span><span class="pl" style="left:58.7%;top:67.06%">美樂樓<b>50</b></span><span class="pl" style="left:56.11%;top:48.83%"><b>50</b></span><span class="pl" style="left:62.14%;top:51.48%"><b>50</b></span><span class="pl" style="left:19.39%;top:51.51%">美景樓<b>48</b></span><span class="pl" style="left:78.82%;top:26.64%">美全樓<b>48</b></span>
+  <div class="pw" style="aspect-ratio:419/337">
+    <img src="/plan/美田邨.jpg" alt="美田邨航空影像，10 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="419" height="337"
+       loading="lazy" decoding="async"><span class="pl" style="left:22.75%;top:64.66%">美麗樓<b>66</b></span><span class="pl" style="left:47.76%;top:38.09%">美致樓<b>58</b></span><span class="pl" style="left:36.14%;top:58.41%">美秀樓<b>57</b></span><span class="pl" style="left:75.72%;top:76.0%">美滿樓<b>50</b></span><span class="pl" style="left:76.88%;top:62.71%">美庭樓<b>50</b></span><span class="pl" style="left:58.7%;top:67.06%">美樂樓<b>50</b></span><span class="pl" style="left:56.11%;top:48.83%"><b>50</b></span><span class="pl" style="left:62.14%;top:51.48%"><b>50</b></span><span class="pl" style="left:19.39%;top:51.51%">美景樓<b>48</b></span><span class="pl" style="left:78.82%;top:26.64%">美全樓<b>48</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>美田邨 10 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

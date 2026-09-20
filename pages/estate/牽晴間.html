@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>牽晴間風水評分</h1>
 <p class="sub">北區 · 1999 年入伙 · 12 座 · 2,493 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/牽晴間.jpg" alt="牽晴間航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:71.3%;top:32.62%"><b>48</b></span><span class="pl" style="left:67.77%;top:36.01%">牽晴間第９座<b>48</b></span><span class="pl" style="left:57.0%;top:32.16%">牽晴間第１０座<b>47</b></span><span class="pl" style="left:45.74%;top:27.88%">牽晴間第１１座<b>47</b></span><span class="pl" style="left:34.07%;top:23.69%">牽晴間第１２座<b>47</b></span><span class="pl" style="left:82.13%;top:76.52%">牽晴間第７座<b>43</b></span><span class="pl" style="left:46.84%;top:71.16%">牽晴間第４座<b>42</b></span><span class="pl" style="left:62.41%;top:59.78%">牽晴間第５座<b>42</b></span><span class="pl" style="left:37.49%;top:63.38%">牽晴間第３座<b>42</b></span><span class="pl" style="left:18.54%;top:47.2%">牽晴間第１座<b>42</b></span><span class="pl" style="left:72.2%;top:67.98%">牽晴間第６座<b>42</b></span><span class="pl" style="left:79.85%;top:40.42%">牽晴間第８座<b>41</b></span><span class="pl" style="left:27.77%;top:55.11%">牽晴間第２座<b>41</b></span>
+  <div class="pw" style="aspect-ratio:523/420">
+    <img src="/plan/牽晴間.jpg" alt="牽晴間航空影像，13 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="523" height="420"
+       loading="lazy" decoding="async"><span class="pl" style="left:71.3%;top:32.62%"><b>48</b></span><span class="pl" style="left:67.77%;top:36.01%">牽晴間第９座<b>48</b></span><span class="pl" style="left:57.0%;top:32.16%">牽晴間第１０座<b>47</b></span><span class="pl" style="left:45.74%;top:27.88%">牽晴間第１１座<b>47</b></span><span class="pl" style="left:34.07%;top:23.69%">牽晴間第１２座<b>47</b></span><span class="pl" style="left:82.13%;top:76.52%">牽晴間第７座<b>43</b></span><span class="pl" style="left:46.84%;top:71.16%">牽晴間第４座<b>42</b></span><span class="pl" style="left:62.41%;top:59.78%">牽晴間第５座<b>42</b></span><span class="pl" style="left:37.49%;top:63.38%">牽晴間第３座<b>42</b></span><span class="pl" style="left:18.54%;top:47.2%">牽晴間第１座<b>42</b></span><span class="pl" style="left:72.2%;top:67.98%">牽晴間第６座<b>42</b></span><span class="pl" style="left:79.85%;top:40.42%">牽晴間第８座<b>41</b></span><span class="pl" style="left:27.77%;top:55.11%">牽晴間第２座<b>41</b></span>
     <span class="sc-m">100 米</span><span class="nn">北</span></div>
   <figcaption>牽晴間 13 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →

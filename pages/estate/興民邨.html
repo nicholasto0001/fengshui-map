@@ -75,6 +75,8 @@ ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
 figure.plan{margin:22px 0 0}
 .pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
  background:#dfddd6;line-height:0}
+/* aspect-ratio 由生成器寫落去，令個框喺圖未到之前已經係啱嘅形狀 ——
+   否則絕對定位嘅標籤會喺圖載入嗰刻跳位。 */
 .pw img{width:100%;height:auto;display:block}
 .pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
  background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
@@ -114,8 +116,10 @@ footer a{color:var(--ink2)}
 <h1>興民邨風水評分</h1>
 <p class="sub">東區 · 1982 年入伙 · 3 座 · 1,953 個住戶</p>
 <figure class="plan">
-  <div class="pw"><img src="/plan/興民邨.jpg" alt="興民邨航空影像，3 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
-       width="880" height="600" loading="lazy" decoding="async"><span class="pl" style="left:51.55%;top:80.44%">民逸樓<b>43</b></span><span class="pl" style="left:51.61%;top:52.67%">民澤樓<b>42</b></span><span class="pl" style="left:47.79%;top:20.01%">民富樓<b>41</b></span>
+  <div class="pw" style="aspect-ratio:125/315">
+    <img src="/plan/興民邨.jpg" alt="興民邨航空影像，3 座樓宇輪廓按風水評分上色，綠色分高、紅色分低"
+       width="125" height="315"
+       loading="lazy" decoding="async"><span class="pl" style="left:51.55%;top:80.44%">民逸樓<b>43</b></span><span class="pl" style="left:51.61%;top:52.67%">民澤樓<b>42</b></span><span class="pl" style="left:47.79%;top:20.01%">民富樓<b>41</b></span>
     <span class="sc-m">200 米</span><span class="nn">北</span></div>
   <figcaption>興民邨 3 座嘅位置同座向。
     顏色係風水評分：<i style="background:var(--s5)"></i> 高 →
