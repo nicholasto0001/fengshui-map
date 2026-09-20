@@ -1,0 +1,175 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>後台 · 香港風水地圖</title>
+<meta name="robots" content="noindex">
+<style>
+  :root{
+    --ink:#0b0b0b; --ink2:#55534e; --ink3:#86847d;
+    --bg:#faf9f6; --card:#fff; --line:#e6e4de; --good:#0f6354; --warn:#a01f1f;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#f2f1ee; --ink2:#c2c0ba; --ink3:#8e8c85;
+      --bg:#14140f; --card:#1b1b16; --line:#2c2b26; --good:#4da79a; --warn:#d76f6f;
+    }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:17px/1.6 -apple-system,BlinkMacSystemFont,"PingFang HK","Noto Sans HK",system-ui,sans-serif;
+    -webkit-text-size-adjust:100%;
+  }
+  main{max-width:720px; margin:0 auto; padding:22px 16px 80px}
+  h1{font-size:26px; margin:6px 0 2px; letter-spacing:-.02em}
+  .as{color:var(--ink3); font-size:14px; margin:0 0 22px}
+  h2{font-size:13px; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
+     color:var(--ink3); margin:30px 0 10px}
+
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px}
+  .k{
+    background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:15px 16px; min-height:96px; display:flex; flex-direction:column; justify-content:center;
+  }
+  .k .n{font-size:34px; font-weight:700; letter-spacing:-.03em; font-variant-numeric:tabular-nums;
+        line-height:1.1}
+  .k .l{font-size:14px; color:var(--ink2); margin-top:5px}
+  .k .h{font-size:12.5px; color:var(--ink3); margin-top:3px}
+  .k.hero .n{font-size:46px}
+  .k.hero{grid-column:1 / -1}
+  .pc{color:var(--good)} .pc.low{color:var(--warn)}
+
+  ul.d{list-style:none; margin:0; padding:0}
+  ul.d li{
+    display:flex; justify-content:space-between; align-items:center;
+    min-height:52px; padding:12px 4px; border-bottom:1px solid var(--line); font-size:17px;
+  }
+  ul.d li b{font-variant-numeric:tabular-nums}
+
+  .msg{
+    background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:20px; margin-top:18px;
+  }
+  .msg p{margin:0 0 12px; color:var(--ink2)}
+  pre{
+    background:var(--bg); border:1px solid var(--line); border-radius:10px;
+    padding:12px; overflow-x:auto; font-size:13px; line-height:1.5; color:var(--ink);
+    -webkit-overflow-scrolling:touch;
+  }
+  button{
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    width:100%; min-height:52px; border-radius:13px; border:1px solid #dadce0;
+    background:#fff; color:#1f1f1f; font:inherit; font-size:17px; font-weight:600; cursor:pointer;
+  }
+  a{color:#1b4f8f}
+  .back{display:inline-block; margin-bottom:14px; text-decoration:none; font-weight:600}
+</style>
+
+<main>
+  <a class="back" href="/">‹ 返回地圖</a>
+  <h1>後台</h1>
+  <p class="as" id="asof">載入緊…</p>
+  <div id="out"></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js"></script>
+<script>
+const SUPA_URL = "https://dpobzqzflmgkuzxqiggt.supabase.co";
+const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwb2J6cXpmbG1na3V6eHFpZ2d0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NzgzNzcsImV4cCI6MjEwNTQ1NDM3N30.8cqTo4SZbWhmvX2u69J1fHyp6gNu9N8vFedgeCVD_5M";
+const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+const out = document.getElementById("out");
+const asof = document.getElementById("asof");
+const n = v => (v ?? 0).toLocaleString();
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+// 留存係「呢批人入面有幾多返咗嚟」，唔係一個淨數。冇分母嘅百分比冇意思，
+// 所以分母細過 10 就寫返實數，唔好畫一個 100% 出嚟呃自己。
+function pct(a, b, lowAt){
+  if(!b) return {txt:"—", low:false};
+  if(b < 10) return {txt:`${a}/${b}`, low:false};
+  const v = Math.round(100*a/b);
+  return {txt:`${v}%`, low: lowAt != null && v < lowAt};
+}
+
+function card(num, label, hint, cls){
+  return `<div class="k ${cls||""}">
+    <div class="n">${num}</div><div class="l">${label}</div>
+    ${hint ? `<div class="h">${hint}</div>` : ""}</div>`;
+}
+
+function render(m){
+  asof.textContent = "截至 " + new Date(m.as_of).toLocaleString("zh-HK");
+  const act = pct(m.activated, m.members, 40);
+  const d1  = pct(m.ret_d1, m.cohort_d1);
+  const d7  = pct(m.ret_d7, m.cohort_d7, 20);
+  const sticky = pct(m.wau, m.mau, 20);
+
+  out.innerHTML = `
+    <div class="grid">
+      ${card(n(m.members), "會員總數", `今日新增 ${n(m.new_today)} · 七日 ${n(m.new_7d)}`, "hero")}
+    </div>
+
+    <h2>有幾多人真係喺度</h2>
+    <div class="grid">
+      ${card(n(m.dau), "今日活躍")}
+      ${card(n(m.wau), "七日活躍")}
+      ${card(n(m.mau), "三十日活躍")}
+      ${card(`<span class="pc ${sticky.low?"low":""}">${sticky.txt}</span>`, "黏性 WAU/MAU",
+             "20% 以上算好")}
+    </div>
+
+    <h2>有冇真係用</h2>
+    <div class="grid">
+      ${card(`<span class="pc ${act.low?"low":""}">${act.txt}</span>`, "啟動率",
+             "註冊咗而且儲過至少一個樓盤")}
+      ${card(n(m.saved_total), "收藏總數",
+             m.members ? `人均 ${(m.saved_total/m.members).toFixed(1)} 個` : "")}
+      ${card(n(m.lists_total), "清單總數")}
+      ${card(n(m.viewed_total), "睇過嘅樓宇")}
+    </div>
+
+    <h2>返唔返嚟（最重要）</h2>
+    <div class="grid">
+      ${card(d1.txt, "第二日返嚟", `${n(m.cohort_d1)} 人夠鐘計`)}
+      ${card(`<span class="pc ${d7.low?"low":""}">${d7.txt}</span>`, "第七日返嚟",
+             `${n(m.cohort_d7)} 人夠鐘計 · 呢個先係北極星`)}
+    </div>
+
+    <h2>其他</h2>
+    <div class="grid">
+      ${card(n(m.marketing_optin), "肯收通知", "可以 email 嘅人數")}
+    </div>
+
+    ${m.top_districts && m.top_districts.length ? `
+      <h2>最多人收藏嘅區</h2>
+      <ul class="d">${m.top_districts.map(d =>
+        `<li><span>${esc(d.district)}</span><b>${n(d.n)}</b></li>`).join("")}</ul>` : ""}`;
+}
+
+function needSignIn(){
+  asof.textContent = "";
+  out.innerHTML = `<div class="msg">
+    <p>呢版淨係俾管理員睇。</p>
+    <button id="go"><span>用 Google 登入</span></button></div>`;
+  document.getElementById("go").addEventListener("click", () =>
+    sb.auth.signInWithOAuth({provider:"google", options:{redirectTo: location.href.split("?")[0]}}));
+}
+
+function needAdmin(email){
+  asof.textContent = "";
+  out.innerHTML = `<div class="msg">
+    <p>你已經登入（${esc(email||"")}），但呢個帳戶仲未係管理員。</p>
+    <p>喺 Supabase 個 SQL Editor 跑一次呢句，然後重新整理呢版：</p>
+    <pre>update public.profiles set role = 'admin'
+ where id = (select id from auth.users
+              where email = '${esc(email||"")}');</pre>
+    <p>只需要做一次。</p></div>`;
+}
+
+(async () => {
+  const {data:{session}} = await sb.auth.getSession();
+  if(!session){ needSignIn(); return; }
+  const {data, error} = await sb.rpc("admin_metrics");
+  if(error){ needAdmin(session.user.email); return; }
+  render(data);
+})();
+</script>
