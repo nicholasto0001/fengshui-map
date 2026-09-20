@@ -933,25 +933,65 @@ const BUILD_ID = "dev";
 // ---------------------------------------------------------------------------
 const GA_ID = "G-P7981MBHEF";   // public by design - a measurement ID identifies the property, it is not a secret
 
+// Meta pixel. Empty until the id is pasted in, exactly like GA_ID above, so
+// nothing loads and nothing is sent until then. It is not a secret either —
+// a pixel id identifies an ad account's dataset, it grants nothing.
+const META_PIXEL = "";
+
+/* The same events go to both. Meta has its own vocabulary for the handful of
+   actions it optimises against, so ours are mapped onto it where one fits and
+   sent as custom events where none does. Without this the pixel would only
+   ever see page views, and an ad campaign optimising on page views buys
+   people who arrive and leave. */
+const FB_EVENT = {
+  view_building:  ["ViewContent",         o => ({content_type: "building",
+                                                 content_name: o.name,
+                                                 content_category: o.district})],
+  search:         ["Search",              o => ({search_string: o.term})],
+  save_building:  ["AddToWishlist",       o => ({content_name: o.name})],
+  signin_done:    ["CompleteRegistration", () => ({})],
+  share:          ["Share",               o => ({method: o.what})],
+};
+
 function track(event, params){
+  params = params || {};
   try{
-    if (window.gtag) window.gtag("event", event, params || {});
-    if (!GA_ID) console.debug("[track]", event, params || {});
+    if (window.gtag) window.gtag("event", event, params);
+    if (window.fbq){
+      const m = FB_EVENT[event];
+      if (m) fbq("track", m[0], m[1](params));
+      else   fbq("trackCustom", event, params);
+    }
+    if (!GA_ID) console.debug("[track]", event, params);
   }catch{}
 }
 
 (function initAnalytics(){
-  if(!GA_ID) return;
-  const sc = document.createElement("script");
-  sc.async = true;
-  sc.src = "https://www.googletagmanager.com/gtag/js?id=" + GA_ID;
-  document.head.appendChild(sc);
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = function(){ window.dataLayer.push(arguments); };
-  gtag("js", new Date());
-  // anonymize_ip keeps this the least intrusive configuration that still
-  // answers "how many, how long, doing what".
-  gtag("config", GA_ID, {anonymize_ip: true, app_version: APP_VERSION});
+  if(GA_ID){
+    const sc = document.createElement("script");
+    sc.async = true;
+    sc.src = "https://www.googletagmanager.com/gtag/js?id=" + GA_ID;
+    document.head.appendChild(sc);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){ window.dataLayer.push(arguments); };
+    gtag("js", new Date());
+    // anonymize_ip keeps this the least intrusive configuration that still
+    // answers "how many, how long, doing what".
+    gtag("config", GA_ID, {anonymize_ip: true, app_version: APP_VERSION});
+  }
+
+  if(META_PIXEL){
+    /* Meta's own snippet, with the queue kept so calls made before the
+       script lands are not lost. */
+    (function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){
+      n.callMethod ? n.callMethod.apply(n,arguments) : n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n; n.push=n; n.loaded=!0; n.version="2.0"; n.queue=[];
+      t=b.createElement(e); t.async=!0; t.src=v;
+      s=b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t,s);
+    })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
+    fbq("init", META_PIXEL);
+    fbq("track", "PageView");
+  }
 })();
 
 // ---------------------------------------------------------------------------
