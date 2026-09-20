@@ -2865,7 +2865,23 @@ map.whenReady(async ()=>{
   loadDistricts();
   if(!handled) loadBuildings();
 });
-setTimeout(()=>{ if(localStorage.getItem("seenIntro")) openSheet(); },600);
+/* 電腦版一開就攤開個清單。
+
+   同一個組件喺電話度係打橫冚晒成個底部嘅一條：58px 高、100% 闊、喺拇指
+   正下方，想唔見到都難。喺 1440px 嘅 mon 度，同一條變成右下角一塊
+   390×58 嘅小牌，佔成個screen 2% —— 而人隻眼喺左上角個搜尋欄同中間幅
+   地圖度，冇理由望向嗰個角。唔見到佢，剩返嘅路就只有喺地圖度carry住
+   scroll wheel 放大四五次。
+
+   電腦版「撳過一幢樓」嘅轉換率 23.8%，得電話版 51.3% 一半，最大嫌疑
+   就喺呢度。
+
+   電話唔跟住做：細screen度未望清楚幅地圖就俾一版清單冚住，係更差。
+   電腦screen夠闊，攤開之後仲有千零 px 畀地圖，所以冇代價。 */
+setTimeout(()=>{
+  const wide = matchMedia("(min-width:760px)").matches;
+  if(wide || localStorage.getItem("seenIntro")) openSheet();
+},600);
 </script>
 </body>
 </html>
