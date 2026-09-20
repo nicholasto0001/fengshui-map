@@ -86,14 +86,21 @@ ZI_HOUR_NEW = "hour_next"
 
 
 def build(y: int, m: int, d: int, hh: int, mm: int = 0, *,
-          lon: float = HK_LON, true_solar: bool = True,
+          lon: float = HK_LON, true_solar: bool = False,
           zi: str = ZI_NEW_DAY) -> Chart:
     """排一個盤。
 
     lon                出生地經度（東經為正）。香港 114.17°。
-    true_solar         要唔要校正真太陽時。香港同時區中線差 23 分鐘,
-                       加均時差最多再差 16 分鐘 —— 夠令一個生喺時辰
-                       邊界嘅人換咗成個時柱。
+    true_solar         要唔要校正真太陽時。預設唔校正。
+
+                       香港喺東經 114.17°，用緊東經 120° 嘅時區，差 23
+                       分鐘；加埋均時差，最多差 39 分鐘。一個時辰兩個鐘,
+                       所以呢個夠令生喺時辰頭尾嘅人換咗成個時柱。
+
+                       但我哋核對過嘅排盤網同 lunar-python 全部都冇校正,
+                       傳統師傅亦都有人校有人唔校。預設跟返市面做法，令
+                       用戶攞去第二度對得返；同時用 alt_hour() 講返「按
+                       真太陽時會係另一個時柱」，等佢知道有呢回事。
     zi                 23:00–23:59 點算。見上面三個常數。
     """
     notes = []
@@ -196,3 +203,18 @@ def build(y: int, m: int, d: int, hh: int, mm: int = 0, *,
 
     return Chart(gz(ypil), gz(mpil), gz(day_i), gz(hpil),
                  f"{sy}-{smo:02d}-{sd:02d} {sh:02d}:{smi:02d}", notes)
+
+
+def alt_hour(y: int, m: int, d: int, hh: int, mm: int = 0, *,
+             lon: float = HK_LON, zi: str = ZI_NEW_DAY):
+    """按真太陽時會唔會係另一個時柱？係就回傳 (另一個時柱, 校正咗幾多分鐘)。
+
+    預設唔校正，但唔講就等於扮咗呢件事唔存在。生喺時辰頭尾嘅人應該知道
+    自己踩喺界線上。
+    """
+    a = build(y, m, d, hh, mm, lon=lon, true_solar=False, zi=zi)
+    b = build(y, m, d, hh, mm, lon=lon, true_solar=True, zi=zi)
+    if a.hour == b.hour and a.day == b.day:
+        return None
+    mins = next((n for n in b.notes if "真太陽時校正" in n), "")
+    return b, mins
