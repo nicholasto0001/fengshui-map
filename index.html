@@ -84,6 +84,13 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
+  /* hidden 屬性要贏得過所有嘢。瀏覽器預設嘅 [hidden]{display:none} 係最低
+     優先級，任何一條寫咗 display 嘅 class 都打得贏佢 —— 呢個檔案已經中過
+     三次：#updatebar、#sharenudge，同埋介紹最後一頁嗰個 Google 掣
+     （.gbtn{display:flex} 令佢喺第一頁就同「繼續」掣黐埋一齊出）。
+     所以呢度一次過解決，唔好再逐個補。 */
+  [hidden]{display:none !important}
+
   :root{
     color-scheme: light;
     --bg:#f4f3f0; --card:#ffffff; --line:#e3e2dd;
@@ -285,7 +292,6 @@
   }
   #toast.show{opacity:1}
 
-  #updatebar[hidden]{display:none}        /* must outrank the rule below */
   #updatebar{
     position:fixed; z-index:700; left:50%; transform:translateX(-50%);
     top:calc(112px + env(safe-area-inset-top, 0px));
@@ -304,7 +310,6 @@
 
   /* Same shape as the update bar, in the brand blue so the two never read as
      the same message. It sits above the sheet at every snap point. */
-  #sharenudge[hidden]{display:none}
   #sharenudge{
     position:fixed; z-index:700; left:12px; right:12px;
     top:calc(112px + env(safe-area-inset-top, 0px));
