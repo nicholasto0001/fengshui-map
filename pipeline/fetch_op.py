@@ -81,6 +81,59 @@ def fetch_table(layer: int, fields: str, where: str = "1=1") -> list[dict]:
     return rows
 
 
+def merge_works_history(out: dict) -> None:
+    """Fill gaps from BuildingWorksHistory.
+
+    That table carries its own "Completion Date" and "OP Date" rows for
+    buildings the permit join never reaches. Only the EARLIEST is used, for the
+    same reason as above — its later rows are renovations, which is why a naive
+    read of it disagreed with the permit join on 97.8% of shared buildings.
+
+    It is a fallback only: where a permit exists, the permit wins.
+    """
+    rows = []
+    offset = 0
+    while True:
+        d = get_json(f"{REST}/1000/query", {
+            "where": "WorksType IN ('Completion Date','OP Date')",
+            "outFields": "BuildingCSUID,WorksDate",
+            "returnGeometry": "false",
+            "orderByFields": "OBJECTID",
+            "resultOffset": offset,
+            "resultRecordCount": PAGE,
+            "f": "json",
+        })
+        batch = [f["attributes"] for f in (d.get("features") or [])]
+        rows.extend(batch)
+        if len(batch) < PAGE:
+            break
+        offset += PAGE
+
+    added = 0
+    for r in rows:
+        cs, raw = r.get("BuildingCSUID"), r.get("WorksDate")
+        if not cs or cs in out or not raw:
+            continue
+        parts = str(raw).strip().split("/")          # dd/mm/yyyy in this table
+        if len(parts) != 3 or len(parts[2]) != 4:
+            continue
+        try:
+            year = int(parts[2])
+        except ValueError:
+            continue
+        if not (1864 <= year <= 2043):
+            continue
+        prev = out.get(cs)
+        if prev is None:
+            out[cs] = {"year": year, "type": None, "residential": None,
+                       "block": None, "src": "works"}
+            added += 1
+        elif year < prev["year"]:
+            prev["year"] = year
+
+    print(f"  works history filled {added:,} more buildings")
+
+
 def main() -> None:
     relate = fetch_table(1002, "BuildingCSUID,BuildingStructureID")
     structure = fetch_table(1003, "BuildingStructureID,OPNo,OPBuildingType,OPBlockType")
@@ -107,14 +160,23 @@ def main() -> None:
             "residential": classify(op_type),
             "block": st.get("OPBlockType"),
         }
-        # A building can carry several permits (phased developments). Keep the
-        # latest: that is the one whose 元運 the current structure belongs to.
+        # 元運 is set by when the building was COMPLETED, so where a building
+        # carries several permits the EARLIEST is the original structure; later
+        # ones are alterations. Taking the latest silently aged 樂生蓮社 from
+        # 1969 to 2019 — a fifty-year error that would have put it in the wrong
+        # 運 entirely.
+        #
+        # Deliberately no 換天心 handling: whether a major renovation resets the
+        # period is genuinely disputed between schools, and there is no
+        # renovation data here to act on either way.
         prev = out.get(csuid)
-        if prev is None or year > prev["year"]:
+        if prev is None or year < prev["year"]:
             out[csuid] = rec
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, separators=(",", ":"), ensure_ascii=False))
+
+    merge_works_history(out)
 
     res = sum(1 for v in out.values() if v["residential"])
     years = sorted(v["year"] for v in out.values())

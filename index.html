@@ -132,6 +132,42 @@
   .dchip.on{background:var(--brand); color:#fff}
   .dchip.on .caret{opacity:.8}
 
+  .favchip .hrt{color:#d64545; font-size:14px; line-height:1}
+  .favchip.on{background:#d64545; color:#fff}
+  .favchip.on .hrt{color:#fff}
+
+  /* ---------- save + share ---------- */
+  .actions{display:grid; grid-template-columns:1fr 1fr; gap:9px; margin:0 0 16px}
+  .act{
+    display:flex; align-items:center; justify-content:center; gap:7px;
+    border:1px solid var(--line); background:var(--card); border-radius:12px;
+    padding:13px; font:inherit; font-size:14.5px; font-weight:600;
+    color:var(--ink); cursor:pointer; min-height:48px;
+  }
+  .act:active{background:var(--bg); transform:scale(.985)}
+  .act.saved{background:#fdecec; border-color:#f2c9c9; color:#a01f1f}
+  .act .ico{font-size:17px; line-height:1}
+  .act.primary{background:var(--brand); border-color:var(--brand); color:#fff}
+
+  .sharebar{
+    display:flex; align-items:center; gap:10px; background:#eef4fb;
+    border:1px solid #d6e4f4; border-radius:12px; padding:12px 13px; margin:0 0 14px;
+  }
+  .sharebar div{flex:1; min-width:0}
+  .sharebar b{display:block; font-size:13.5px; color:#12467e; margin-bottom:2px}
+  .sharebar span{font-size:12px; color:#2a5f9e; line-height:1.45}
+  .sharebar button{
+    flex:0 0 auto; border:0; background:var(--brand); color:#fff; font:inherit;
+    font-size:13px; font-weight:700; padding:10px 16px; border-radius:999px; cursor:pointer;
+  }
+
+  .shared-note{
+    background:#fff8e8; border:1px solid #f0dcae; border-radius:12px;
+    padding:12px 14px; margin:0 0 14px;
+  }
+  .shared-note b{display:block; font-size:14px; color:#6b4c10; margin-bottom:3px}
+  .shared-note span{font-size:12.5px; color:#7a5c22; line-height:1.5}
+
   /* ---------- district picker, rendered inside the sheet ---------- */
   .dpick{list-style:none; margin:0 0 14px; padding:0}
   .dpick li{
@@ -200,15 +236,21 @@
   }
   #toast.show{opacity:1}
 
+  #updatebar[hidden]{display:none}        /* must outrank the rule below */
   #updatebar{
     position:fixed; z-index:700; left:50%; transform:translateX(-50%);
-    bottom:calc(74px + var(--safe-b)); display:flex; align-items:center; gap:12px;
+    top:calc(112px + env(safe-area-inset-top, 0px));
+    display:flex; align-items:center; gap:10px;
     background:var(--ink); color:#fff; border-radius:999px; padding:9px 9px 9px 18px;
     box-shadow:0 3px 14px rgba(0,0,0,.28); font-size:13.5px; font-weight:600;
   }
   #updatebar button{
     border:0; background:#fff; color:var(--ink); font:inherit; font-weight:700;
     padding:7px 15px; border-radius:999px; cursor:pointer;
+  }
+  #updatebar .x{
+    background:transparent; color:rgba(255,255,255,.65); font-size:17px;
+    padding:4px 8px; font-weight:400;
   }
 
   /* ---------- bottom sheet ---------- */
@@ -503,6 +545,7 @@
 <div id="updatebar" hidden>
   <span>有新版本</span>
   <button id="btnReload">更新</button>
+  <button class="x" id="btnDismissUpdate" aria-label="關閉">×</button>
 </div>
 
 <div id="sheet">
@@ -537,7 +580,7 @@ const TILE = "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz";
 const DATA = "data/tiles";
 // Bump on every release. Shown in the overview sheet so a stale cached page is
 // identifiable at a glance — otherwise there is no way to tell.
-const APP_VERSION = "v15";
+const APP_VERSION = "v16";
 // Replaced at deploy time by pipeline/stamp_build.py; "dev" when run locally.
 const BUILD_ID = "dev";
 
@@ -579,13 +622,18 @@ function track(event, params){
 // fetched uncached and compared with the id baked into this file; a mismatch
 // means a newer deploy exists and the page offers to pick it up.
 // ---------------------------------------------------------------------------
+let pendingBuild = null, dismissedBuild = null;
 async function checkForUpdate(){
   if(BUILD_ID === "dev") return;               // local runs are never stale
   try{
     const v = await (await fetch("version.json", {cache:"no-store"})).json();
-    if(!v.build || v.build === BUILD_ID) return;
-    track("update_available", {from: BUILD_ID, to: v.build});
     const bar = document.getElementById("updatebar");
+    if(!v.build || v.build === BUILD_ID || v.build === dismissedBuild){
+      bar.hidden = true;
+      return;
+    }
+    pendingBuild = v.build;
+    track("update_available", {from: BUILD_ID, to: v.build});
     bar.hidden = false;
   }catch{}
 }
@@ -800,9 +848,14 @@ const tileCache = new Map();
 const buildingRenderer = L.canvas({padding: 0.3});
 const buildingLayer=L.layerGroup().addTo(map);
 
-function styleFor(score){
-  const c = colorFor(score);
-  return {renderer:buildingRenderer, fillColor:c, fillOpacity:.88,
+// A theatre or a substation carries a score like anything else, but showing
+// it in the good/bad ramp reads as a verdict on somewhere to live. Those sit
+// in neutral grey instead: still on the map, because knowing a school is next
+// door matters, but plainly not part of the housing comparison.
+const NONRES = "#c7c5bd";
+function styleFor(score, res){
+  const c = (res === 0) ? NONRES : colorFor(score);
+  return {renderer:buildingRenderer, fillColor:c, fillOpacity: res === 0 ? .6 : .88,
           color:c, weight:.6, opacity:.55};
 }
 
@@ -872,11 +925,11 @@ async function loadBuildings(){
       if(!passesFilter(o.total)) continue;
       const ring=decodeRing(o.ring);
       const lyr = ring
-        ? L.polygon(ring, styleFor(o.total))
-        : L.circleMarker([o.lat,o.lon], {...styleFor(o.total), radius:5});
+        ? L.polygon(ring, styleFor(o.total, o.res))
+        : L.circleMarker([o.lat,o.lon], {...styleFor(o.total, o.res), radius:5});
       lyr.on("click",()=>select(o,lyr));
       lyr.on("mouseover",()=>{ if(o.id!==minSel) lyr.setStyle({weight:1.6,opacity:1}); });
-      lyr.on("mouseout", ()=>{ if(o.id!==minSel) lyr.setStyle(styleFor(o.total)); });
+      lyr.on("mouseout", ()=>{ if(o.id!==minSel) lyr.setStyle(styleFor(o.total, o.res)); });
       lyr.addTo(buildingLayer);
       if(o.id===minSel) selLayer={o,lyr};
       n++;
@@ -1051,6 +1104,7 @@ const NOW_NOTE = {
 function renderBuilding(o, layer){
   const title = clean(o.tc) || clean(o.en) || "未命名樓宇";
   const t = o.total, [vd,vs] = verdict(t);
+  const home = o.res !== 0;
   gripText.textContent = `${title} · ${num(t,1)} 分`;
 
   // Each component is coloured on the same scale as the headline, so a weak
@@ -1088,10 +1142,11 @@ function renderBuilding(o, layer){
     <p class="bname">${esc(title)}</p>
     <p class="ben">${esc([clean(o.en)!==title?clean(o.en):null, clean(o.district)].filter(Boolean).join(" · "))}</p>
     <div class="scorerow">
-      <div class="bigscore" style="background:${colorFor(t)};color:${inkOn(t)}">${num(t,0)}</div>
+      <div class="bigscore" style="background:${home?colorFor(t):NONRES};color:${home?inkOn(t):"#3a3833"}">${num(t,0)}</div>
       <div>
-        <p class="verdict" style="background:${colorFor(t)};color:${inkOn(t)}">${vd}</p>
-        <p class="vsub">${vs} · 地理環境 ${num(t,1)} / 100</p>
+        <p class="verdict" style="background:${home?colorFor(t):"#e8e6e0"};color:${home?inkOn(t):"#55534e"}">${home?vd:"非住宅"}</p>
+        <p class="vsub">${home ? `${vs} · 地理環境 ${num(t,1)} / 100`
+                              : `唔係住宅樓宇 · 地理環境 ${num(t,1)} / 100`}</p>
       </div>
     </div>
     <div class="bars">${bar("環境",o.env)}${bar("交通",o.traffic)}${bar("配套",o.ancil)}</div>
@@ -1660,6 +1715,11 @@ document.getElementById("btnLoc").addEventListener("click",()=>{
     },
     ()=>toast("定位失敗，請允許位置權限"),
     {enableHighAccuracy:true,timeout:8000});
+});
+
+document.getElementById("btnDismissUpdate").addEventListener("click", ()=>{
+  document.getElementById("updatebar").hidden = true;
+  dismissedBuild = pendingBuild;          // do not nag again for this build
 });
 
 document.getElementById("btnReload").addEventListener("click", ()=>{

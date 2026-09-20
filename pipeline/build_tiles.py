@@ -48,8 +48,9 @@ COLUMNS = [
     "face_m",    # 20 向 as one of the 24 mountains
     "pattern",   # 21 本命格局 at the building's own 元運
     "now",       # 22 how that chart stands in the CURRENT period (九運)
-    "conf",      # 23 confidence in the derived facing, 0-1
-    "ring",      # 24 footprint: [lon0, lat0, then integer deltas x1e-5 deg]
+    "res",       # 23 1 = looks like somewhere people live, 0 = not
+    "conf",      # 24 confidence in the derived facing, 0-1
+    "ring",      # 25 footprint: [lon0, lat0, then integer deltas x1e-5 deg]
 ]
 
 
@@ -140,7 +141,7 @@ def row_for(r: dict) -> list:
         r.get("mwds8"), r.get("h"), r.get("storeys"),
         r.get("op_year"), r.get("period"),
         r.get("facing"), r.get("sit_m"), r.get("face_m"), r.get("pattern"),
-        r.get("now"), r.get("conf"),
+        r.get("now"), 1 if is_dwelling(r) else 0, r.get("conf"),
         flat,
     ]
 
