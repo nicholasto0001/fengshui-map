@@ -953,7 +953,24 @@ const FB_EVENT = {
   share:          ["Share",               o => ({method: o.what})],
 };
 
+/* 開發同測試用嘅關掉開關。
+   開 /?notrack=1 一次，呢部機就永遠唔再上報（/?notrack=0 開返）。
+   用 localStorage 而唔用 IP 過濾：手機同家居寬頻嘅 IP 會變，而呢個唔會，
+   亦都跟得住無痕模式以外嘅所有分頁。自己試 app 試到成日都唔會污染數據。 */
+const NOTRACK_KEY = "fs_notrack";
+(function notrackSwitch(){
+  const v = new URLSearchParams(location.search).get("notrack");
+  if(v === null) return;
+  try{
+    if(v === "0"){ localStorage.removeItem(NOTRACK_KEY); alert("已重新開始統計呢部機嘅數據。"); }
+    else { localStorage.setItem(NOTRACK_KEY, "1"); alert("已停止統計呢部機嘅數據。\n\n以後喺呢部機點撳都唔會影響 GA 同 Meta。\n想開返就開 /?notrack=0"); }
+  }catch{}
+})();
+let NOTRACK = false;
+try{ NOTRACK = localStorage.getItem(NOTRACK_KEY) === "1"; }catch{}
+
 function track(event, params){
+  if(NOTRACK) return;
   params = params || {};
   try{
     if (window.gtag) window.gtag("event", event, params);
@@ -967,6 +984,7 @@ function track(event, params){
 }
 
 (function initAnalytics(){
+  if(NOTRACK) return;          // 連個 script 都唔好載
   if(GA_ID){
     const sc = document.createElement("script");
     sc.async = true;
@@ -1023,13 +1041,34 @@ addEventListener("visibilitychange", () => { if(!document.hidden) checkForUpdate
 
 // How long people actually stay, reported once on the way out. Without this
 // a session that ends by closing the tab reports no duration at all.
+/* 一次到訪講晒成個故事。
+   之前只報停留秒數，所以「100 個人入嚟、得 46 個撳過樓」呢件事要靠人手
+   夾幾個數先砌得返出嚟，而且永遠唔知剩低嗰 54 個卡喺邊。而家離開嗰陣一次過
+   報埋：有冇睇過教學、有冇搵過、搵唔搵到、有冇放大到見到樓、有冇撳過、
+   有冇收藏、有冇分享。一條 GA 漏斗就起得返。 */
+const trip = {buildings: 0, searches: 0, no_result: 0, zoomed: false,
+              shared: false, saved: false, intro: false};
+
 (function trackEngagement(){
   const start = Date.now();
   let sent = false;
   const flush = () => {
     if(sent) return;
     sent = true;
-    track("session_length", {seconds: Math.round((Date.now()-start)/1000)});
+    const secs = Math.round((Date.now()-start)/1000);
+    track("session_length", {seconds: secs});
+    track("trip_summary", {
+      seconds: secs,
+      buildings: trip.buildings,
+      searches: trip.searches,
+      no_result: trip.no_result,
+      zoomed_in: trip.zoomed,
+      saw_intro: trip.intro,
+      saved: trip.saved,
+      shared: trip.shared,
+      // 呢個先係要盯住嗰個：入咗嚟但一幢樓都冇撳過
+      opened_nothing: trip.buildings === 0,
+    });
   };
   addEventListener("visibilitychange", () => { if(document.hidden) flush(); });
   addEventListener("pagehide", flush);
@@ -1307,6 +1346,8 @@ async function getTile(z,x,y){
 async function loadBuildings(){
   const z=map.getZoom();
   if(z<BUILDING_ZOOM){ buildingLayer.clearLayers(); return; }
+  // 放大到見到逐棟樓 —— 冇行到呢步嘅人，係連個產品都未見過。
+  if(!trip.zoomed){ trip.zoomed = true; track("reached_buildings", {}); }
   districtLayer.clearLayers();
 
   const b=map.getBounds(), my=++reqSeq;
@@ -1481,6 +1522,7 @@ function openSheet(){ if(sheetState() === "peek") setSheet("half"); }
 
 function select(o,layer){
   minSel=o.id;
+  trip.buildings++;
   markViewed(o);
   track("view_building", {
     name: (o.tc || o.en || "unnamed"),
@@ -1928,13 +1970,29 @@ async function ensureIndex(){
   return searchLoading;
 }
 
+/* 搜尋一邊打一邊出結果，所以 doSearch 一次打字會跑好多次 —— 之前每次都
+   報一個 search 事件，令到「554 次搜尋」其實係 38 個人打字嘅過程。
+   報告要獨立 debounce：打完停一停先報一次，而且要報埋出咗幾多個結果，
+   因為「搵唔到」先係真正要知嘅嘢。 */
+let reportT = null, lastReported = "";
+function reportSearch(q, results, source){
+  clearTimeout(reportT);
+  reportT = setTimeout(() => {
+    if(q === lastReported) return;         // 同一個字唔好報兩次
+    lastReported = q;
+    trip.searches++;
+    if(!results) trip.no_result++;
+    track("search", {term: q, results, source, found: results > 0});
+    if(!results) track("search_no_result", {term: q});
+  }, 1200);
+}
+
 async function doSearch(){
   const q=qEl.value.trim(); if(q.length<2) return;
   resEl.innerHTML=`<li class="empty">搜尋中…</li>`; resEl.classList.add("show");
 
   const idx=await ensureIndex();
   const needle=q.toLowerCase();
-  track("search", {term: q});
   const hits=[];
   for(const o of idx){
     if((o.tc && o.tc.includes(q)) || (o.en && o.en.toLowerCase().includes(needle))){
@@ -1942,10 +2000,11 @@ async function doSearch(){
       if(hits.length>=12) break;
     }
   }
-  if(hits.length){ renderHits(hits); return; }
+  if(hits.length){ reportSearch(q, hits.length, "index"); renderHits(hits); return; }
 
   const als=await searchALS(q);
-  if(als.length){ renderHits(als); return; }
+  if(als.length){ reportSearch(q, als.length, "address"); renderHits(als); return; }
+  reportSearch(q, 0, "none");
   resEl.innerHTML=`<li class="empty">搵唔到「${esc(q)}」，試下屋苑名或街道名。</li>`;
 }
 
@@ -2265,6 +2324,7 @@ function toggleFav(o){
   // 睇幾多幢都得，分享出去照開得。要記低一樣嘢先至要有個戶口 —— 個理由
   // 自己成立，唔使砌。
   if(!me){ askSignIn(o); return "took-over"; }
+  trip.saved = true;
   favs.unshift({id:o.id, tc:o.tc, en:o.en, district:o.district,
                 lat:o.lat, lon:o.lon, total:o.total, now:o.now});
   track("save_building", {name:o.tc||o.en||"", score:Math.round(o.total||0),
@@ -2370,6 +2430,7 @@ function shareUrl(params){
 }
 
 async function doShare(title, text, url, what){
+  trip.shared = true;
   track("share", {what, url});
   nudgeSave({...nudgeState(), done: true});
   hideNudge();
@@ -2710,6 +2771,7 @@ document.getElementById("btnReload").addEventListener("click", ()=>{
     if(at < last){ goTo(at + 1); return; }
     document.getElementById("intro").classList.add("hide");
     localStorage.setItem("seenIntro","1");
+    trip.intro = true;
     track("intro_done", {});
     openSheet();
   });
