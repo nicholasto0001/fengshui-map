@@ -189,8 +189,11 @@ jobs:
 
       # Recorded once so ship.sh can show it, and nobody has to go digging
       # through a build log to find out where to look before shipping.
+      # Both a staging push and a tick-the-box live deploy run on main, so the
+      # branch alone does not say which one this was — and the live run wrote
+      # the production address into .staging-url. The target does say.
       - name: Remember the staging address
-        if: github.ref == 'refs/heads/main' && steps.deploy.outputs.url != ''
+        if: steps.target.outputs.env != '' && steps.deploy.outputs.url != ''
         run: |
           printf '%s\n' "${{ steps.deploy.outputs.url }}" > .staging-url
           # git diff says nothing about a file git has never tracked, so the
