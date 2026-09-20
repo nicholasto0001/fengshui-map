@@ -255,21 +255,44 @@ REPLIES = [
 ]
 
 
-def render(t: dict) -> str:
+def plan(i: int) -> tuple:
+    """第 i 個星期（由 0 數起）出邊個題目、邊個版本。
+
+    兩輪：第一輪 ABABAB，第二輪反過嚟 BABABA，咁每個題目都試齊兩個版本，
+    而同一個版本又唔會全部撞喺同一個月 —— 群組本身嘅活躍度會浮動，
+    唔間開就分唔清係版本嘅分別定係嗰個月嘅分別。
+
+    呢度係排期嘅唯一出處。docs/posts.md 同 weekly.py 都問呢個 function，
+    所以冇可能出現兩邊各數各嘅情況。
+    """
+    n_t = len(TOPICS)
+    flip = (i // n_t) % 2 == 1
+    ver = "A" if ((i % 2 == 0) != flip) else "B"
+    return TOPICS[i % n_t], ver
+
+
+def pieces(t: dict) -> dict:
+    """篇文嘅四舊字。render() 攞去砌 markdown，weekly.py 攞去單獨出一篇。"""
     body = f"{t['hook']}\n\n{t['body']}\n\n{t['ask']}"
     topic = "\n".join(t["com"])
+    return {
+        "A": "\n\n".join([body, f"{CTA}\n{SITE}",
+                           "免費、免登記、免裝 App。", FOOT]),
+        "B": "\n\n".join([body, "連結喺第一個 comment 👇",
+                           "免費、免登記、免裝 App。", FOOT]),
+        # A 篇正文已經有 link，留言唔好再貼多次 —— 重覆貼 link 睇落似 spam，
+        # 而且會冚咗留言本身嘅作用。佢淨係負責開個話題。
+        "com_A": topic + "\n\n有邊幢查完覺得唔對路？喺下面打個樓名。",
+        # B 篇靠留言帶 link，所以 link 要擺第一行 —— Facebook 淨係顯示頭一兩行。
+        "com_B": "\n".join([SITE, "", topic, "",
+                            "手機瀏覽器直接開，免裝 App、免登記。"]),
+    }
 
-    with_link = "\n\n".join([body, f"{CTA}\n{SITE}",
-                             "免費、免登記、免裝 App。", FOOT])
-    no_link = "\n\n".join([body, "連結喺第一個 comment 👇",
-                           "免費、免登記、免裝 App。", FOOT])
 
-    # A 篇正文已經有 link，留言唔好再貼多次 —— 重覆貼 link 睇落似 spam，
-    # 而且會冚咗留言本身嘅作用。佢淨係負責開個話題。
-    com_a = topic + "\n\n有邊幢查完覺得唔對路？喺下面打個樓名。"
-    # B 篇靠留言帶 link，所以 link 要擺第一行 —— Facebook 淨係顯示頭一兩行。
-    com_b = "\n".join([SITE, "", topic, "",
-                       "手機瀏覽器直接開，免裝 App、免登記。"])
+def render(t: dict) -> str:
+    pc = pieces(t)
+    with_link, no_link = pc["A"], pc["B"]
+    com_a, com_b = pc["com_A"], pc["com_B"]
 
     return "\n".join([
         f"## {t['name']}", "",
@@ -284,13 +307,9 @@ def render(t: dict) -> str:
 def main() -> None:
     sc, home, ds = load()
     topics = [fn(sc, home, ds) for fn in TOPICS]
-    # 兩輪：第一輪 ABABAB，第二輪反過嚟 BABABA，咁每個題目都試齊兩個版本，
-    # 而同一個版本又唔會全部撞喺同一個月 —— 群組本身嘅活躍度會浮動，
-    # 唔間開就分唔清係版本嘅分別定係嗰個月嘅分別。
-    named = "\n".join(
-        f"| 第 {i+1} 週 | {t['name']} | "
-        f"{'A' if (i % 2 == 0) != (i >= len(topics)) else 'B'} |"
-        for i, t in enumerate(topics + topics))
+    weeks = len(TOPICS) * 2
+    named = "\n".join(f"| 第 {i+1} 週 | {topics[TOPICS.index(plan(i)[0])]['name']}"
+                      f" | {plan(i)[1]} |" for i in range(weeks))
 
     parts = [
         "# 每週貼文（自動生成）\n",
@@ -313,8 +332,7 @@ def main() -> None:
         "出完之後入 Facebook 個 post 撳「查看成效」抄低。冇呢個表個 A/B 就等於冇做過。\n",
         "| 週 | 版本 | 觸及 | 撳 link | 留言 | 出街時間 |",
         "|---|---|---|---|---|---|",
-        *[f"| 第 {i+1} 週 | {'A' if (i % 2 == 0) != (i >= len(topics)) else 'B'}"
-          " |  |  |  |  |" for i in range(len(topics) * 2)],
+        *[f"| 第 {i+1} 週 | {plan(i)[1]} |  |  |  |  |" for i in range(weeks)],
         "",
         "六篇之後就算得出邊個版本贏。留意「撳 link」先係重點 —— ",
         "版本 B 就算觸及高，如果冇人撳落留言撳 link，一樣係輸。\n",
