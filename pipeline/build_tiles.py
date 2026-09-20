@@ -347,6 +347,21 @@ def percentiles(scores: list[dict]) -> dict[int, int]:
     return {s: round(100 * bisect.bisect_left(tot, s) / n) for s in range(21, 90)}
 
 
+# 八方，同 bazi.js 嗰邊同一個次序。搜尋索引擺一個 0–7 嘅數字，唔擺
+# 二十四山 —— 八宅配嘅係八方，而一個細數字喺五萬幾行度慳好多。
+DIR8 = ["北", "東北", "東", "東南", "南", "西南", "西", "西北"]
+SHAN_D8 = {}
+for _i, _shans in enumerate(("壬子癸", "丑艮寅", "甲卯乙", "辰巽巳",
+                             "丙午丁", "未坤申", "庚酉辛", "戌乾亥")):
+    for _s in _shans:
+        SHAN_D8[_s] = _i
+
+# 坐向信心值低過呢條線就唔出方位。同 index.html 出飛星盤嗰條線一樣 ——
+# 同一個項目唔應該有兩個「可靠」標準。推唔準長軸嘅樓唔應該攞嚟同人講
+# 「呢幢合你」。
+FACE_CONF = 0.6
+
+
 def build_search(scores: list[dict]) -> None:
     """One index of every named building, fetched once and searched locally.
 
@@ -365,14 +380,19 @@ def build_search(scores: list[dict]) -> None:
                      1 if is_dwelling(r) else 0,
                      # 打「太古城」要搵到佢六十幾座，唔係淨係搵到座名
                      # 入面啱啱好有呢三個字嗰幾幢。
-                     (r.get("estate") or {}).get("estate") or None])
+                     (r.get("estate") or {}).get("estate") or None,
+                     # 向首八方，俾八宅配樓用。坐向唔可靠就擺 None。
+                     (SHAN_D8.get(r.get("face_m"))
+                      if (r.get("conf") or 0) >= FACE_CONF else None)])
     rows.sort(key=lambda x: -(x[5] or 0))
     p = OUT / "search.json"
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps({"c": ["tc", "en", "district", "lon", "lat", "total", "now", "res", "est"],
+    p.write_text(json.dumps({"c": ["tc", "en", "district", "lon", "lat", "total", "now", "res", "est", "d8"],
                              "b": rows}, separators=(",", ":"), ensure_ascii=False))
     print(f"  of which look residential: {sum(r[7] for r in rows):,}")
     print(f"  with an estate name: {sum(1 for r in rows if r[8]):,}")
+    print(f"  with a reliable facing (conf >= {FACE_CONF}): "
+          f"{sum(1 for r in rows if r[9] is not None):,}")
     print(f"search index: {len(rows):,} named buildings, "
           f"{p.stat().st_size/1e6:.1f} MB raw (~1.4 MB gzipped on the wire)")
 

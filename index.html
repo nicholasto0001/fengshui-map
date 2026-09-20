@@ -419,6 +419,75 @@
   .fine-body b{color:var(--ink2)}
   .fine-body a{color:#1b4f8f}
 
+  /* 八字。同「收藏」一樣係一個篩選 —— 撳落去，地圖同清單只剩返合你
+     命卦嘅樓。所以佢應該住喺篩選列，唔應該另外開個 tab。 */
+  .guachip .gi{color:#8a6d3b; font-size:13px; margin-inline-end:4px}
+  .chip.guachip.on{background:#3d2f18; color:#fff; border-color:#3d2f18}
+  .chip.guachip.on .gi{color:#e3c489}
+
+  /* 清單頂嗰條命卦橫額。撳落去返去睇成個盤 —— 所以佢係一個掣，唔係
+     一段字。 */
+  .guaband{
+    display:flex; align-items:center; gap:12px; width:100%;
+    min-height:60px; padding:12px 14px; margin:0 0 14px;
+    background:#3d2f18; color:#fff; border:0; border-radius:14px;
+    font:inherit; text-align:start; cursor:pointer;
+  }
+  .guaband .gg2{
+    font-size:22px; font-weight:700; line-height:1; flex:none;
+    width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.12);
+    display:grid; place-items:center; color:#e3c489;
+  }
+  .guaband span:not(.gg2){flex:1; font-size:13px; line-height:1.55; opacity:.9}
+  .guaband b{display:block; font-size:15.5px; font-weight:650; opacity:1; margin:0 0 2px}
+  .guaband i{font-style:normal; font-size:20px; opacity:.6; flex:none}
+
+  .bzform{margin:6px 0 0}
+  .bzform label{display:block; font-size:13.5px; color:var(--ink3); margin:14px 0 6px}
+  .bzrow{display:flex; gap:8px}
+  .bzform select{
+    flex:1; min-width:0; height:52px; padding:0 10px; font:inherit; font-size:17px;
+    color:var(--ink); background:var(--card); border:1px solid var(--line);
+    border-radius:12px; appearance:none; text-align:center;
+    background-image:linear-gradient(45deg,transparent 50%,var(--ink3) 50%),
+                     linear-gradient(135deg,var(--ink3) 50%,transparent 50%);
+    background-position:calc(100% - 16px) 24px, calc(100% - 11px) 24px;
+    background-size:5px 5px, 5px 5px; background-repeat:no-repeat;
+  }
+  .bzsex{display:flex; gap:8px}
+  .bzsex button{
+    flex:1; height:52px; font:inherit; font-size:17px; font-weight:600;
+    background:var(--card); color:var(--ink2); border:1px solid var(--line);
+    border-radius:12px; cursor:pointer; min-height:52px;
+  }
+  .bzsex button.on{background:#3d2f18; color:#fff; border-color:#3d2f18}
+
+  .pillars{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:4px 0 0}
+  .pil{background:var(--card2,#f3f1ec); border:1px solid var(--line);
+       border-radius:12px; padding:10px 4px; text-align:center}
+  .pil u{display:block; text-decoration:none; font-size:11.5px; color:var(--ink3); margin:0 0 5px}
+  .pil b{display:block; font-size:21px; font-weight:650; letter-spacing:.06em; line-height:1.35}
+  .guabox{
+    display:flex; align-items:center; gap:14px; margin:16px 0 0;
+    background:#3d2f18; color:#fff; border-radius:16px; padding:15px 17px;
+  }
+  .guabox .gg{font-size:30px; font-weight:700; line-height:1; flex:none}
+  .guabox .gt{font-size:13.5px; line-height:1.6; opacity:.92}
+  .guabox .gt b{color:#e3c489}
+  .dirs{display:flex; flex-wrap:wrap; gap:6px; margin:12px 0 0}
+  .dirs span{
+    font-size:13px; padding:6px 11px; border-radius:999px;
+    background:var(--card2,#f3f1ec); border:1px solid var(--line); color:var(--ink2);
+  }
+  .dirs span b{color:var(--ink); font-weight:650}
+  .dirs span.best{background:#f0e6d2; border-color:#ddcba4}
+  .bznote{font-size:12.5px; color:var(--ink3); line-height:1.7; margin:14px 0 0}
+  .bzdel{
+    width:100%; min-height:44px; margin:14px 0 0; background:transparent;
+    border:0; color:var(--ink3); font:inherit; font-size:13.5px;
+    text-decoration:underline; text-underline-offset:3px; cursor:pointer;
+  }
+
   /* 由地圖行去 678 版詳細資料頁嗰道門。
      做到同清單一行一樣嘅樣，因為佢做緊同一件事：撳落去，見多啲。 */
   .deepwrap{margin:18px 0 0}
@@ -823,6 +892,7 @@
   <button class="chip dchip" id="btnDistrict"><b>地區</b>全港 <span class="caret">▾</span></button>
   <span class="chip-sep"></span>
   <button class="chip favchip" id="btnFav"><span class="hrt">♥</span>收藏</button>
+  <button class="chip guachip" id="btnGua"><span class="gi">✦</span>八字</button>
   <span class="chip-sep"></span>
   <button class="chip on" data-band="all">全部</button>
   <button class="chip" data-band="best"><i style="background:#0f6354"></i>大吉</button>
@@ -1333,6 +1403,30 @@ const passesFilter = v => {
   return typeof test !== "function" || (v != null && test(v));
 };
 
+/* 八字篩選要同時管地圖同清單 —— 清單話「4,689 棟符合」但地圖照樣畫晒
+   八萬幢，係自相矛盾。
+   圖磚帶住 face_m 同 conf，所以喺度計得到；conf 低過 0.6 就當冇坐向,
+   同搜尋索引嗰邊同一條線。 */
+const SHAN_D8 = {};
+["壬子癸","丑艮寅","甲卯乙","辰巽巳","丙午丁","未坤申","庚酉辛","戌乾亥"]
+  .forEach((g, i) => [...g].forEach(ch => SHAN_D8[ch] = i));
+let guaDirSet = null;           // 由 btnGua / showBazi 更新
+
+function passesGua(o){
+  if(!guaOn || !guaDirSet) return true;
+  if((o.conf ?? 0) < 0.6) return false;
+  const d = SHAN_D8[o.face_m];
+  return d != null && guaDirSet.has(d);
+}
+
+function refreshGuaDirs(){
+  guaDirSet = null;
+  if(guaOn && bzMod && birth){
+    const g = myGua();
+    if(g) guaDirSet = new Set(bzMod.goodDirs(g).map(d => DIR8.indexOf(d)));
+  }
+}
+
 function verdict(v){
   const l = levelFor(v);
   return l ? [l.label, l.sub] : ["未有評分", ""];
@@ -1498,6 +1592,7 @@ async function loadBuildings(){
       o.district = (t.dn && o.dn != null) ? t.dn[o.dn] : null;
       if(!b.contains([o.lat,o.lon])) continue;
       if(!passesFilter(o.total)) continue;
+      if(!passesGua(o)) continue;
       const ring=decodeRing(o.ring);
       const lyr = ring
         ? L.polygon(ring, styleFor(o.total, o.res))
@@ -1989,6 +2084,179 @@ function showFavs(){
   }));
 }
 
+/* ---------- 八字 ----------
+
+   點解八字係一個「篩選」，唔係另開一個 tab：佢答嘅係同一條問題 ——
+   「邊幾幢樓啱我」。撳落去，地圖同清單就只剩返合你命卦嘅樓，同「收藏」
+   完全一樣嘅行為。另開一個 tab 就變成兩個唔相干嘅 app 住喺一齊。
+
+   出生資料淨係存喺呢部機（localStorage），唔會上伺服器 —— 排盤同配樓
+   全部喺瀏覽器度計，所以做得到。私隱政策第三節有寫。 */
+const BIRTH_KEY = "fs_birth_v1";
+let guaOn = false, birth = null, bzMod = null;
+try{ birth = JSON.parse(localStorage.getItem(BIRTH_KEY) || "null"); }catch{}
+
+const DIR8 = ["北","東北","東","東南","南","西南","西","西北"];
+const SHICHEN = [
+  ["子","23:00–00:59",0],["丑","01:00–02:59",2],["寅","03:00–04:59",4],
+  ["卯","05:00–06:59",6],["辰","07:00–08:59",8],["巳","09:00–10:59",10],
+  ["午","11:00–12:59",12],["未","13:00–14:59",14],["申","15:00–16:59",16],
+  ["酉","17:00–18:59",18],["戌","19:00–20:59",20],["亥","21:00–22:59",22],
+];
+
+async function ensureBazi(){
+  if(bzMod) return bzMod;
+  bzMod = await import("./bazi.js?v=" + BUILD_ID);
+  await bzMod.ready(dataUrl("../solar_terms.json"));
+  return bzMod;
+}
+
+/** 由已存低嘅出生資料算命卦。冇資料就 null。 */
+function myGua(){
+  if(!birth || !bzMod) return null;
+  // 命卦要用八字年（立春為界），所以要行一次排盤先攞到年份。
+  const c = bzMod.chart(birth.y, birth.m, birth.d,
+                        birth.h == null ? 12 : birth.h, 0);
+  return c ? bzMod.mingGua(c.baziYear, birth.male) : null;
+}
+
+function bzForm(){
+  const now = new Date().getFullYear();
+  const yrs = [], mos = [], dys = [];
+  for(let y = now; y >= 1900; y--) yrs.push(`<option value="${y}">${y}</option>`);
+  for(let m = 1; m <= 12; m++) mos.push(`<option value="${m}">${m} 月</option>`);
+  for(let d = 1; d <= 31; d++) dys.push(`<option value="${d}">${d} 日</option>`);
+  const sel = birth || {};
+  return `
+    <p class="bname">你嘅八字</p>
+    <p class="mcount">入咗出生資料，就會計出你嘅四柱同本命卦，
+      再喺全港樓宇入面揀出合你嗰批。</p>
+    <div class="bzform">
+      <label for="bzY">出生日期（公曆）</label>
+      <div class="bzrow">
+        <select id="bzY" aria-label="年">${yrs.join("")}</select>
+        <select id="bzM" aria-label="月">${mos.join("")}</select>
+        <select id="bzD" aria-label="日">${dys.join("")}</select>
+      </div>
+      <label for="bzH">出生時辰</label>
+      <div class="bzrow"><select id="bzH" aria-label="時辰">
+        <option value="">唔記得 —— 一樣計到本命卦</option>
+        ${SHICHEN.map(([z,t,h]) => `<option value="${h}">${z}時　${t}</option>`).join("")}
+      </select></div>
+      <label>性別</label>
+      <div class="bzsex">
+        <button type="button" data-sex="1">男</button>
+        <button type="button" data-sex="0">女</button>
+      </div>
+      <button id="bzGo" style="margin-top:18px">計我嘅八字</button>
+      <p class="bznote">出生資料<b>淨係存喺你部機</b>，唔會上我哋個伺服器 ——
+        排盤全部喺你個瀏覽器度計。詳情見<a href="/privacy.html" target="_blank"
+        rel="noopener">私隱政策</a>。<br>
+        呢個係電腦計算嘅結果，唔係師傅睇。認真睇樓請搵專業風水師傅。</p>
+    </div>`;
+}
+
+function bzResult(){
+  const m = bzMod;
+  const c = m.chart(birth.y, birth.m, birth.d, birth.h == null ? 12 : birth.h, 0);
+  const gua = m.mingGua(c.baziYear, birth.male);
+  const grp = m.guaGroup(gua);
+  const dirs = m.goodDirs(gua);
+  const known = birth.h != null;
+  const pil = [["年", c.year], ["月", c.month], ["日", c.day],
+               ["時", known ? c.hour : "—"]];
+  const alt = m.chart(birth.y, birth.m, birth.d, birth.h == null ? 12 : birth.h, 0,
+                      {trueSolar: true});
+  const altDiff = known && alt && alt.hour !== c.hour;
+  const notes = c.notes.filter(n => n.startsWith("⚠"));
+
+  return `
+    <p class="bname">${birth.y} 年 ${birth.m} 月 ${birth.d} 日　${birth.male ? "男" : "女"}</p>
+    <p class="mcount">${known ? "" : "冇時辰，所以排唔到時柱 —— 但本命卦同配樓一樣計到。"}</p>
+    <div class="pillars">${pil.map(([k, v]) =>
+      `<div class="pil"><u>${k}柱</u><b>${v}</b></div>`).join("")}</div>
+    ${notes.map(n => `<p class="bznote">${esc(n)}</p>`).join("")}
+    ${altDiff ? `<p class="bznote">ⓘ 按真太陽時（香港同時區中線差 23 分鐘），
+      時柱會係 <b>${alt.hour}</b>。我哋預設唔校正，跟返市面排盤工具嘅做法。</p>` : ""}
+
+    <div class="guabox">
+      <div class="gg">${gua}</div>
+      <div class="gt">你係<b>${gua}命</b>，屬<b>${grp}命</b>。<br>
+        最旺嘅方位係<b>正${dirs[0]}</b>（${m.LUCK[gua][dirs[0]]}）。</div>
+    </div>
+    <div class="dirs">${dirs.map((d, i) =>
+      `<span class="${i === 0 ? "best" : ""}"><b>向${d}</b> ${m.LUCK[gua][d]}</span>`).join("")}</div>
+    <p class="bznote">八宅以<b>向</b>論 —— 配嘅係樓宇向邊，唔係坐邊。
+      八宅只分東四、西四兩組宅，所以同組嘅人合嘅樓係同一批；
+      因人而異嘅係邊個方位對你嚟講係邊個遊年星。</p>
+    <button id="bzSee" style="margin-top:18px">睇合我嘅樓（全港）</button>
+    <button class="bzdel" id="bzDel">刪除我嘅出生資料</button>`;
+}
+
+async function showBazi(){
+  await ensureBazi();
+  gripText.textContent = "八字";
+  if(!birth){
+    sheetBody.innerHTML = bzForm();
+    const f = sheetBody;
+    let sex = null;
+    f.querySelectorAll(".bzsex button").forEach(b => b.addEventListener("click", () => {
+      sex = b.dataset.sex === "1";
+      f.querySelectorAll(".bzsex button").forEach(x => x.classList.toggle("on", x === b));
+    }));
+    f.querySelector("#bzGo").addEventListener("click", () => {
+      if(sex === null){ toast("揀返男定女"); return; }
+      const h = f.querySelector("#bzH").value;
+      birth = {y: +f.querySelector("#bzY").value, m: +f.querySelector("#bzM").value,
+               d: +f.querySelector("#bzD").value, h: h === "" ? null : +h, male: sex};
+      try{ localStorage.setItem(BIRTH_KEY, JSON.stringify(birth)); }catch{}
+      track("bazi_saved", {has_hour: h !== ""});
+      showBazi();
+    });
+    return;
+  }
+  sheetBody.innerHTML = bzResult();
+  sheetBody.querySelector("#bzSee").addEventListener("click", () => {
+    guaOn = true;
+    favView = false; sharedList = null; pickingDistrict = false;
+    document.getElementById("btnGua").classList.add("on");
+    refreshGuaDirs();
+    track("bazi_filter", {on: true, gua: myGua()});
+    loadBuildings(); drawDistricts(); showOverview();
+  });
+  sheetBody.querySelector("#bzDel").addEventListener("click", () => {
+    if(!confirm("刪除你嘅出生資料？下次要再輸入一次。")) return;
+    birth = null;
+    try{ localStorage.removeItem(BIRTH_KEY); }catch{}
+    track("bazi_cleared", {});
+    guaOn = false;
+    document.getElementById("btnGua").classList.remove("on");
+    refreshGuaDirs();
+    showBazi();
+    loadBuildings(); drawDistricts();
+  });
+}
+
+document.getElementById("btnGua").addEventListener("click", async () => {
+  await ensureBazi();
+  if(!birth){                       // 未有資料：開表，但唔好即刻篩
+    guaOn = false;
+    document.getElementById("btnGua").classList.remove("on");
+    openSheet(); setSheet("full");
+    showBazi();
+    track("bazi_open", {has_birth: false});
+    return;
+  }
+  guaOn = !guaOn;
+  favView = false; sharedList = null; pickingDistrict = false;
+  document.getElementById("btnGua").classList.toggle("on", guaOn);
+  refreshGuaDirs();
+  track("bazi_filter", {on: guaOn, gua: myGua()});
+  openSheet();
+  loadBuildings(); drawDistricts();
+  showOverview();          // guaOn 嘅時候佢會路由去清單，上面帶條命卦橫額
+});
+
 document.getElementById("btnFav").addEventListener("click", ()=>{
   favView = !favView;
   sharedList = null;
@@ -2003,7 +2271,7 @@ async function showOverview(){
   if(favView || sharedList){ showFavs(); return; }
   // Either filter turns the panel into a pickable list of buildings rather
   // than a district ranking - that is the whole point of filtering.
-  if(band!=="all" || districtFilter){
+  if(band!=="all" || districtFilter || guaOn){
     sheetBody.innerHTML = `<p class="mcount">載入緊…</p>`;
     await ensureIndex();
     const list = matches();
@@ -2744,10 +3012,14 @@ const MATCH_LIMIT = 150;
 let homesOnly = true;      // a property search should not open with warehouses
 function matches(){
   if(!searchIndex) return null;
+  // 命卦篩選：八宅以向論，所以睇嘅係向首八方。d8 係 null 嘅樓唔係冇
+  // 坐向，係我哋推唔準佢長軸（conf < 0.6）—— 唔應該攞嚟同人講「合你」。
+  const okDir = guaOn ? guaDirSet : null;
   return searchIndex.filter(o =>
     (!districtFilter || o.district === districtFilter) &&
     passesFilter(o.total) &&
-    (!homesOnly || o.res !== 0));
+    (!homesOnly || o.res !== 0) &&
+    (!okDir || (o.d8 != null && okDir.has(o.d8))));
 }
 
 function renderMatches(list){
@@ -2762,7 +3034,21 @@ function renderMatches(list){
     : districtData.reduce((n,d)=>n+bandCount(d), 0);
   const unnamed = Math.max(0, mapped - list.length);
   gripText.textContent = `${where} · ${what} · ${list.length.toLocaleString()} 棟`;
+  // 開咗八字篩選嘅時候，清單上面要講返「點解係呢批樓」——
+  // 冇呢句，用戶淨係見到個清單縮咗，唔知發生咩事。
+  let guaTop = "";
+  if(guaOn && bzMod && birth){
+    const g = myGua();
+    if(g){
+      const d = bzMod.goodDirs(g);
+      guaTop = `<button class="guaband" id="guaBand">
+        <span class="gg2">${g}</span>
+        <span><b>${g}命 · ${bzMod.guaGroup(g)}命</b>
+        只顯示向${d.join("、向")}嘅樓宇　·　撳我睇成個盤</span><i>›</i></button>`;
+    }
+  }
   sheetBody.innerHTML = `
+    ${guaTop}
     <p class="bname">${esc(where)} · ${esc(what)}</p>
     <p class="mcount">${list.length.toLocaleString()} 棟符合，按分數由高至低排列。撳一下跳去該幢樓。${
       unnamed ? `<br>另有未命名樓宇未計在內，可以直接喺地圖撳。` : ""}</p>
@@ -2786,6 +3072,8 @@ function renderMatches(list){
     <p class="build" id="buildStamp">${APP_VERSION}</p>`;
   fillBuildStamp();
   const hb = sheetBody.querySelector("#homesOnly");
+  const gb = sheetBody.querySelector("#guaBand");
+  if(gb) gb.addEventListener("click", showBazi);
   if(hb) hb.addEventListener("change",()=>track("toggle_homes_only",{on:hb.checked}));
   if(hb) hb.addEventListener("change",()=>{ homesOnly = hb.checked; showOverview(); });
   sheetBody.querySelectorAll(".mlist li").forEach(li=>li.addEventListener("click",()=>{
