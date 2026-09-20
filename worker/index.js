@@ -13,6 +13,10 @@
  */
 
 const SITE = "香港風水地圖";
+// The same sentence the page uses when it shares itself, so whichever way a
+// link arrives it says the same thing about what this is.
+const ONELINE =
+  "全港 84,720 棟樓宇嘅九運風水評分，數據嚟自政府公開資料，免安裝免登記";
 const BREAKS = [41, 46, 52, 58];
 const LABELS = ["差", "欠佳", "平穩", "吉", "大吉"];
 const TILE_Z = 14;
@@ -106,13 +110,16 @@ async function cardFor(url, env) {
       title: home
         ? `${name} · ${score} 分（${lvl}）`
         : `${name} · 非住宅樓宇`,
+      // Someone who receives this already has the building; what they do not
+      // have is why it scores what it does. So the description leads with the
+      // reason to open it, not with a question about their own flat.
       description: [
         where,
         home ? `風水 ${score} / 100 分 · ${lvl}` : "唔係住宅樓宇",
         now && NOW_NOTE[o.now] ? `${now}（${NOW_NOTE[o.now]}）` : now,
-        // A non-residential building is shown without a chart, so promising
-        // one would be a promise the page does not keep.
-        home ? "撳入嚟睇飛星盤、坐向同山水方位。" : "撳入嚟睇山水方位同評分拆解。",
+        home ? "撳入嚟睇點解係呢個分數：山水方位、坐向、玄空飛星盤。"
+             : "撳入嚟睇山水方位同評分拆解。",
+        ONELINE,
       ]
         .filter(Boolean)
         .join(" · "),
@@ -126,8 +133,12 @@ async function cardFor(url, env) {
   if (many.length) {
     return {
       title: `${many.length} 個樓盤嘅風水評分`,
-      description: `有人用${SITE}揀咗 ${many.length} 個樓盤，撳入嚟睇晒評分同九運格局。`,
-      image: `${origin}/og.png`,
+      description: [
+        `有人揀咗 ${many.length} 個樓盤想同你一齊睇`,
+        "撳入嚟一次過睇晒每個嘅風水評分、坐向同飛星盤，仲可以比較",
+        ONELINE,
+      ].join(" · "),
+      image: `${origin}/og/list.png`,
     };
   }
 
@@ -137,7 +148,11 @@ async function cardFor(url, env) {
     const band = g && LABELS.includes(g) ? g : null;
     return {
       title: [d || "全港", band].filter(Boolean).join(" · ") + " 風水評分",
-      description: `${d || "全港"}${band ? `評為「${band}」嘅樓宇` : "逐棟樓宇嘅九運風水評分"}。撳入嚟睇排名。`,
+      description: [
+        `${d || "全港"}${band ? `評為「${band}」嘅樓宇` : "逐棟樓宇嘅九運風水評分"}`,
+        "撳入嚟睇排名，由高分到低分排好",
+        ONELINE,
+      ].join(" · "),
       image: `${origin}/og.png`,
     };
   }

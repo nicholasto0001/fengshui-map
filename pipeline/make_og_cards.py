@@ -237,6 +237,21 @@ def main() -> None:
     d.text((48, H - 58), "hkfengshuimap.com", font=f_foot, fill=GOLD)
     save(default, ROOT / "og.png")
 
+    # A shortlist has no single score, so it gets its own card rather than
+    # borrowing the generic one: what it has to sell is the comparing.
+    lst = card(None, badge, pct)
+    d = ImageDraw.Draw(lst)
+    d.rounded_rectangle([48, 156, W - 48, H - 76], radius=26, fill=IVORY)
+    d.text((92, 200), "一張樓盤清單", font=f_verdict, fill=INK)
+    d.text((96, 292), "每個都有風水評分、坐向同玄空飛星盤", font=f_sub, fill=INK2)
+    d.text((96, 336), "撳入嚟一次過睇晒，仲可以比較", font=f_unit, fill=INK3)
+    d.line([(92, 412), (W - 92, 412)], fill=(230, 228, 222), width=1)
+    d.text((92, 438), "有人揀咗呢幾個樓盤想同你一齊睇", font=f_cta, fill=INK)
+    d.text((92, 486), "山水方位 · 玄空飛星 · 政府公開數據 · 每日更新",
+           font=f_foot, fill=INK3)
+    d.text((48, H - 58), "hkfengshuimap.com", font=f_foot, fill=GOLD)
+    save(lst, OUT / "list.png")
+
     n = len(list(OUT.glob("*.png")))
     print(f"og.png + {n} cards -> {OUT}  ({total/1024:.0f} KB total, "
           f"{total/n/1024:.0f} KB each)")

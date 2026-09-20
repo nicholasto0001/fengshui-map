@@ -274,18 +274,34 @@ def main() -> None:
     build_search(scores)
     build_districts(scores)   # the on-map subset, so counts match the filter
     build_estates(scores)
-    stamp(len(scores), len(all_scores))
+    stamp(len(scores), len(all_scores), percentiles(scores))
 
 
-def stamp(on_map: int, total: int) -> None:
+def stamp(on_map: int, total: int, pct: dict[int, int] | None = None) -> None:
     """A build stamp the page can display. Without one there is no way to tell a
-    stale cached page from a current one just by looking at it."""
+    stale cached page from a current one just by looking at it.
+
+    It also carries the score percentiles — 69 numbers — because the share text
+    reads far better as 「贏全港 97%」than as a bare score, and this file is
+    already fetched on every load.
+    """
     (OUT / "build.json").write_text(json.dumps({
         "built": datetime.datetime.now(datetime.UTC).strftime("%Y-%m-%d %H:%M UTC"),
         "on_map": on_map,
         "total": total,
+        "pct": pct or {},
     }, separators=(",", ":")))
     print(f"build stamp written")
+
+
+def percentiles(scores: list[dict]) -> dict[int, int]:
+    """For each whole score, the share of homes it beats."""
+    import bisect
+    tot = sorted(round(r["total"]) for r in scores if is_dwelling(r))
+    if not tot:
+        return {}
+    n = len(tot)
+    return {s: round(100 * bisect.bisect_left(tot, s) / n) for s in range(21, 90)}
 
 
 def build_search(scores: list[dict]) -> None:

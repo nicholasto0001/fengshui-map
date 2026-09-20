@@ -1728,9 +1728,14 @@ function showFavs(){
       <p class="bname">${esc(title)}</p>
       <p class="mcount">仲未收藏任何樓宇。撳地圖上任何一棟樓，再撳「收藏」就會加入呢度，
          之後可以一次過分享成張清單俾屋企人或者經紀。</p>
+      <div class="sharebar">
+        <div><b>介紹俾朋友</b><span>一條連結，撳開就用得。</span></div>
+        <button id="btnShareApp2">分享</button></div>
       <p class="build" id="buildStamp">${APP_VERSION}</p>`;
     fillBuildStamp();
     if(mine) wireFavChrome();
+    const sa2 = sheetBody.querySelector("#btnShareApp2");
+    if(sa2) sa2.addEventListener("click", shareApp);
     return;
   }
   sheetBody.innerHTML = `
@@ -1821,12 +1826,17 @@ async function showOverview(){
         </div>
         <div class="chev2">›</div></li>`;
     }).join("")}</ul>
+    <div class="sharebar">
+      <div><b>介紹俾朋友</b><span>一條連結，唔使裝 App、唔使登記，撳開就用得。</span></div>
+      <button id="btnShareApp">分享</button></div>
     <p class="note-foot" style="border-top:1px solid var(--line)">
       地理環境分屬「外巒頭」分析；有入伙年份同可靠坐向嘅樓宇會另外顯示九運飛星判斷。<br>
       樓宇資料每日由地政總署 CSDI 更新。僅供參考，不構成置業建議。
     </p>
     <p class="build" id="buildStamp">${APP_VERSION}</p>`;
   fillBuildStamp();
+  const sa = sheetBody.querySelector("#btnShareApp");
+  if(sa) sa.addEventListener("click", shareApp);
   sheetBody.querySelectorAll(".dlist li").forEach(li=>li.addEventListener("click",()=>{
     const a=rows[+li.dataset.i];
     districtFilter = a.tc;
@@ -2385,13 +2395,26 @@ addEventListener("keydown", e => {
   if(shot && nudgeFor !== null) showNudge(nudgeFor, "screenshot_key");
 });
 
+/* ---------------------------------------------------- 三種分享 ---
+   三個情境，三段唔同嘅文字。之前一段用晒，所以將一幢樓傳俾人嗰陣會問
+   「你屋企幾多分？」—— 問錯咗人：對方收到嘅係呢幢樓，佢想知嘅係點解係
+   呢個分數。每段都用同一個結構：講緊乜 → 撳入去會見到乜 → 呢個係乜嚟。 */
+
+const ONELINE = "香港風水地圖：全港 84,720 棟樓宇嘅九運風水評分，數據嚟自政府公開資料，免安裝免登記。";
+
+const beats = score => {
+  const p = buildInfo && buildInfo.pct && buildInfo.pct[Math.round(score)];
+  return p == null ? "" : `贏全港 ${p}% 住宅`;
+};
+
 function shareBuilding(o){
   const name = clean(o.tc) || clean(o.en) || "呢棟樓";
-  const lvl = (levelFor(o.total)||{}).label || "";
-  // The text is written to make the reader want to check their own home —
-  // that is the whole mechanism by which this spreads.
+  const lvl  = (levelFor(o.total)||{}).label || "";
+  const rank = beats(o.total);
   doShare("香港風水地圖",
-    `${name} 風水 ${num(o.total,0)} 分（${lvl}）${o.now ? " · 九運" + o.now : ""}。你屋企幾多分？`,
+    [`${name} 風水 ${num(o.total,0)} 分（${lvl}）${rank ? " · " + rank : ""}`,
+     `撳入嚟睇點解係呢個分數 —— 山水方位、坐向、玄空飛星盤全部有拆解。`,
+     ONELINE].join("\n"),
     shareUrl({b: pack([o])}), "building");
 }
 
@@ -2399,8 +2422,20 @@ function shareList(){
   if(!favs.length) return;
   const top = favs.slice(0,3).map(f => clean(f.tc)||clean(f.en)).filter(Boolean).join("、");
   doShare("我揀咗嘅樓盤",
-    `我用香港風水地圖揀咗 ${favs.length} 個樓盤${top ? "：" + top : ""}${favs.length>3 ? " 等" : ""}。撳入去睇晒評分同九運格局。`,
+    [`我揀咗 ${favs.length} 個樓盤${top ? "：" + top : ""}${favs.length>3 ? " 等" : ""}`,
+     `撳入嚟一次過睇晒每個嘅風水評分、坐向同飛星盤，仲可以比較。`,
+     ONELINE].join("\n"),
     shareUrl({list: pack(favs)}), "list");
+}
+
+/* 分享成個 app。之前冇呢個 —— 想介紹俾朋友嘅人，得個辦法係傳返自己啱啱
+   睇緊嗰幢樓，而嗰幢樓同佢完全無關。 */
+function shareApp(){
+  doShare("香港風水地圖",
+    ["香港風水地圖 —— 全港 84,720 棟樓宇，每一棟都有九運風水評分。",
+     "打你住緊嗰幢樓個名落去，即刻睇到幾多分、山喺邊、水喺邊，仲有玄空飛星盤。",
+     "數據全部嚟自政府公開資料，免安裝、免登記、免費。"].join("\n"),
+    location.origin + "/", "app");
 }
 
 // --- district picker ---
