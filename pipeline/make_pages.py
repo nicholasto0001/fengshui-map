@@ -265,9 +265,16 @@ def meta_panel(m):
             f'<div class="tw"><table class="kvt"><tbody>{rows}</tbody></table></div>')
 
 
+SCHEME = {"HOS": "居屋", "GSH": "綠置居", "EFAS": "白居二"}
+
+
 def tx_panel(name, tx):
-    """居屋／綠置居成交。呢啲係土地註冊處以外唯一一批免費而且逐個單位
-    嘅真成交價 —— 二手嗰啲要向土地註冊處買，我哋冇。"""
+    """資助房屋成交。呢啲係土地註冊處以外唯一一批免費而且逐個單位嘅真
+    成交價 —— 二手嗰啲要向土地註冊處買，我哋冇。
+
+    居屋同綠置居唔可以溝埋計一個中位數：綠置居折扣深好多，長安邨嗰 53 宗
+    入面 29 宗綠置居、24 宗居屋，溝埋出嚟嗰個數邊種都唔代表到。
+    """
     if not tx:
         return ""
     # 房委會啲日期係 DD/MM/YYYY。照字串排就變咗先排「日」——
@@ -276,33 +283,43 @@ def tx_panel(name, tx):
         d = (t.get("date") or "").split("/")
         return (d[2], d[1], d[0]) if len(d) == 3 else ("", "", "")
     tx = sorted(tx, key=when, reverse=True)
-    ps = sorted(t["price"] for t in tx)
-    med = ps[len(ps) // 2]
-    areas = [t["area"] for t in tx if t.get("area")]
-    per = None
-    if areas:
-        r = sorted(t["price"] / t["area"] for t in tx if t.get("area"))
-        per = r[len(r) // 2]
-    kv = [("成交宗數", f"{len(tx):,} 宗"),
-          ("成交價中位數", f"HK${med:,.0f}"),
-          ("最低 / 最高", f"HK${ps[0]:,.0f} / HK${ps[-1]:,.0f}")]
-    if per:
-        kv.append(("每平方米中位數", f"HK${per:,.0f}"))
-    grid = "".join(f'<div class="kv"><b>{e(b)}</b><span>{e(a)}</span></div>'
-                   for a, b in kv)
-    rows = "".join(
+
+    by = collections.defaultdict(list)
+    for t in tx:
+        by[t.get("scheme") or "—"].append(t)
+
+    mid = lambda xs: sorted(xs)[len(xs) // 2] if xs else None
+    rows = []
+    for sc, g in sorted(by.items(), key=lambda kv: -len(kv[1])):
+        ps = [t["price"] for t in g]
+        per = [t["price"] / t["area"] for t in g if t.get("area")]
+        rows.append(
+            f'<tr><td class="nm">{e(SCHEME.get(sc, sc))}</td>'
+            f'<td>{len(g):,} 宗</td>'
+            f'<td class="sc">HK${mid(ps):,.0f}</td>'
+            f'<td>HK${min(ps):,.0f} – {max(ps):,.0f}</td>'
+            f'<td>{f"HK${mid(per):,.0f}" if per else "—"}</td></tr>')
+
+    recent = "".join(
         f'<tr><td class="nm">{e(t["block"])}</td><td>{e(t["floor"])} 樓</td>'
-        f'<td>{t["area"]:.1f} ㎡</td>'
-        f'<td class="sc">HK${t["price"]:,.0f}</td><td>{e(t["date"])}</td></tr>'
+        f'<td>{t["area"]:.1f} ㎡</td><td class="sc">HK${t["price"]:,.0f}</td>'
+        f'<td>{e(SCHEME.get(t.get("scheme"), t.get("scheme") or "—"))}</td>'
+        f'<td>{e(t["date"])}</td></tr>'
         for t in tx[:12] if t.get("area"))
-    return (f'<h2>居屋成交紀錄</h2>'
-            f'<p class="note">房屋委員會公開嘅銷售成交，'
+
+    kinds = "、".join(SCHEME.get(k, k) for k in by)
+    return (f'<h2>資助房屋成交紀錄</h2>'
+            f'<p class="note">房屋委員會公開嘅銷售成交（{e(kinds)}），'
             f'{e(tx[-1].get("date",""))} 至 {e(tx[0].get("date",""))}。'
-            f'呢啲係政府銷售價，唔係二手市價。</p>'
-            f'<div class="grid">{grid}</div>'
+            f'呢啲係政府首次銷售價，唔係二手市價 —— 綠置居同居屋嘅折扣唔同，'
+            f'所以分開列。</p>'
+            f'<div class="tw"><table><thead><tr><th>計劃</th><th>宗數</th>'
+            f'<th>成交價中位</th><th>最低 – 最高</th><th>每㎡中位</th></tr></thead>'
+            f'<tbody>{"".join(rows)}</tbody></table></div>'
             + (f'<div class="tw" style="margin-top:12px"><table><thead><tr>'
-               f'<th>座</th><th>樓層</th><th>實用面積</th><th>成交價</th><th>日期</th>'
-               f'</tr></thead><tbody>{rows}</tbody></table></div>' if rows else ""))
+               f'<th>座</th><th>樓層</th><th>實用面積</th><th>成交價</th>'
+               f'<th>計劃</th><th>日期</th></tr></thead><tbody>{recent}</tbody>'
+               f'</table></div>' if recent else ""))
 
 
 def blocks_table(rows):
@@ -422,7 +439,7 @@ def estate_page(es, rank, total_est, siblings, extra):
             f"{total_est} 個屋苑中排第 {rank}。逐座列出評分、坐向、四大格局、"
             f"九運飛星同最近山水距離"
             + ("、發展商同落成年份" if extra["meta"].get("dev") else "")
-            + ("、居屋成交價" if extra["tx"] else "")
+            + ("、資助房屋成交價" if extra["tx"] else "")
             + "，另附 2021 年人口普查資料。")
 
     sib = "".join(
