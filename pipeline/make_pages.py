@@ -380,46 +380,23 @@ def census_panel(s):
 
 # --------------------------------------------------------------- 數據 ---
 def gather():
-    """每幢樓歸邊個屋苑。
-
-    屋苑身份用人口普查嘅邊界（點對面），唔用撞名 —— 撞名喺 409 個公營屋苑
-    入面得 266 個對到（65%），而「翠湖別墅」「怡景花園」呢啲名全港唔止一個
-    地方有。
-
-    但**顯示嘅名用房委會嗰個**：兩邊對得返嘅 2,247 幢入面 87.9% 完全一致，
-    唔一致嗰啲全部係同一個邨唔同寫法（石籬二邨 vs 石籬（２）邨）。人搜嘅係
-    房委會嗰個寫法，所以顯示用佢，普查數字照樣由 polygon 拎。
-    """
-    E = census.load()
+    """每幢樓歸邊個屋苑。分組規則喺 census.group()，只此一份 ——
+    出頁同出圖都問佢，所以冇可能出現兩邊各有各叫法嘅情況。"""
     sc = [r for r in json.loads((ROOT / "data" / "scores.json").read_text()) if keep(r)]
-    home = [r for r in sc if is_dwelling(r)]
+    home = [r for r in sc if is_dwelling(r) and (r.get("tc") or r.get("en"))]
     ds = json.loads((ROOT / "data" / "district_stats.json").read_text())
 
-    groups = collections.defaultdict(list)
-    for r in home:
-        if not (r.get("tc") or r.get("en")):
-            continue
-        cen = E.at(r["lon"], r["lat"])
-        ha = (r.get("estate") or {}).get("estate")
-        if not cen and not ha:
-            continue
-        groups[cen["name"] if cen else ha].append((r, cen, ha))
-
     out = {}
-    for key, items in groups.items():
-        rows = [r for r, _, _ in items]
-        names = collections.Counter(ha for _, _, ha in items if ha)
-        name = names.most_common(1)[0][0] if names else key
-        cen = next((c for _, c, _ in items if c), None)
+    for name, g in census.group(home).items():
+        rows = sorted(g["rows"], key=lambda r: -r["total"])
+        cen = g["census"]
         out[name] = {
-            "name": name, "census": key if cen else None,
-            "stats": cen["stats"] if cen else {},
-            "en": cen["en"] if cen else None,
-            "rows": sorted(rows, key=lambda r: -r["total"]),
+            "name": name, "stats": cen["stats"] if cen else {},
+            "en": cen["en"] if cen else None, "ha": g["ha"],
+            "rows": rows,
             "district": collections.Counter(
                 r["district"] for r in rows).most_common(1)[0][0],
             "avg": sum(r["total"] for r in rows) / len(rows),
-            "ha": names.most_common(1)[0][0] if names else None,
         }
     return sc, home, ds, out
 

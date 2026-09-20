@@ -74,3 +74,32 @@ def load() -> Estates:
     if not CENSUS.exists():
         raise SystemExit("冇 data/census.json —— 先行 pipeline/fetch_census.py")
     return Estates(json.loads(CENSUS.read_text()))
+
+
+def group(rows) -> dict:
+    """將樓宇分落屋苑，回傳 {顯示名: [樓宇]}。
+
+    只此一份。之前 make_pages 同 make_plans 各自寫過一次，兩邊對
+    「顯示邊個名」嘅處理唔同，結果 627 張圖得 603 張搵得返對應嗰版 ——
+    差嗰 24 個正正係兩個來源叫法唔同嗰啲（石籬二邨／石籬（２）邨）。
+
+    身份用人口普查嘅邊界（點對面），顯示名用房委會嗰個（如果有）——
+    兩邊對得返嗰 2,247 幢有 87.9% 一致，而人搜嘅係房委會嗰個寫法。
+    """
+    import collections
+    E = load()
+    g = collections.defaultdict(list)
+    for r in rows:
+        c = E.at(r["lon"], r["lat"])
+        ha = (r.get("estate") or {}).get("estate")
+        if c or ha:
+            g[c["name"] if c else ha].append((r, c, ha))
+
+    out = {}
+    for key, items in g.items():
+        names = collections.Counter(ha for _, _, ha in items if ha)
+        name = names.most_common(1)[0][0] if names else key
+        cen = next((c for _, c, _ in items if c), None)
+        out[name] = {"rows": [r for r, _, _ in items], "census": cen,
+                     "ha": names.most_common(1)[0][0] if names else None}
+    return out

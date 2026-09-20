@@ -23,6 +23,7 @@ import pathlib
 import ssl
 import sys
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 
 from PIL import Image, ImageDraw, ImageStat
 
@@ -80,6 +81,13 @@ def tile(z, x, y):
     return Image.open(io.BytesIO(b)).convert("RGB")
 
 
+def _safe_tile(z, x, y):
+    try:
+        return tile(z, x, y)
+    except Exception:
+        return None
+
+
 def frame(rows, w=900, h=620, pad=0.18):
     xs = [p[0] for r in rows for p in r["ring"]]
     ys = [p[1] for r in rows for p in r["ring"]]
@@ -94,18 +102,27 @@ def frame(rows, w=900, h=620, pad=0.18):
     return 12, *deg2tile(W, N, 12), *deg2tile(E, S, 12)
 
 
+# 一個屋苑要六至九塊圖磚，逐塊排隊落就係六百幾個屋苑行四個鐘。並行落
+# 快好多，但唔好開太多 —— 對面係政府部伺服器，唔係嚟俾人捶嘅。有 cache,
+# 所以第二次行落去幾乎唔使再攞。
+POOL = 6
+
+
 def canvas_for(rows):
     z, x0, y0, x1, y1 = frame(rows)
     tx0, ty0 = math.floor(x0), math.floor(y0)
     cols, rws = math.ceil(x1) - tx0, math.ceil(y1) - ty0
     im = Image.new("RGB", (cols * 256, rws * 256), (228, 226, 220))
     got = miss = 0
-    for i in range(cols):
-        for j in range(rws):
-            try:
-                im.paste(tile(z, tx0 + i, ty0 + j), (i * 256, j * 256)); got += 1
-            except Exception:
-                miss += 1
+    want = [(i, j) for i in range(cols) for j in range(rws)]
+    with ThreadPoolExecutor(POOL) as ex:
+        fetched = list(ex.map(
+            lambda ij: (ij, _safe_tile(z, tx0 + ij[0], ty0 + ij[1])), want))
+    for (i, j), t in fetched:
+        if t is None:
+            miss += 1
+        else:
+            im.paste(t, (i * 256, j * 256)); got += 1
     px = lambda lon, lat: (((deg2tile(lon, lat, z)[0] - tx0) * 256),
                            ((deg2tile(lon, lat, z)[1] - ty0) * 256))
     box = (int((x0 - tx0) * 256), int((y0 - ty0) * 256),

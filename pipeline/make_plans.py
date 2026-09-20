@@ -27,6 +27,7 @@ from build_tiles import is_dwelling, keep            # noqa: E402
 from verify_plans import FLOOR, PASS, canvas_for, check_projection, contrast  # noqa: E402
 
 OUT = ROOT / "pages" / "plan"
+REPORT = ROOT / "pages" / "plan-report.json"
 W, H = 880, 600
 
 BREAKS = [41, 46, 52, 58]
@@ -96,19 +97,20 @@ def main() -> None:
     if bad:
         raise SystemExit("投影檢查唔過：" + "; ".join(bad))
 
-    E = census.load()
     home = [r for r in json.loads((ROOT / "data" / "scores.json").read_text())
             if keep(r) and is_dwelling(r) and r.get("ring")]
-    g = collections.defaultdict(list)
-    for r in home:
-        c = E.at(r["lon"], r["lat"])
-        ha = (r.get("estate") or {}).get("estate")
-        if c or ha:
-            g[(c["name"] if c else ha)].append(r)
+    # 同 make_pages 用同一個分組同同一個顯示名，所以檔名一定對得返版名。
+    g = {k: v["rows"] for k, v in census.group(home).items()}
 
     only = set(sys.argv[1:]) or None
     OUT.mkdir(parents=True, exist_ok=True)
     made, skipped, report = 0, [], {}
+    # 淨係跑幾個屋苑嘅時候要合併，唔可以覆寫 —— 之前跑三個屋苑就冚咗
+    # 六百幾個嘅記錄，跟住出頁嗰陣一張圖都搵唔返。
+    prev = {"ok": {}, "skipped": {}}
+    if only and REPORT.exists():
+        prev = json.loads(REPORT.read_text())
+        report = dict(prev.get("ok", {}))
     names = sorted(g)
     for i, k in enumerate(names):
         if only and k not in only:
@@ -125,8 +127,11 @@ def main() -> None:
             skipped.append((k, "量唔到對比")); continue
         med = sorted(cs)[len(cs) // 2]
         weak = sum(1 for c in cs if c < FLOOR)
-        if med < PASS or weak > len(cs) * 0.34:
-            skipped.append((k, f"對比度 {med:.1f} < {PASS}")); continue
+        if med < PASS:
+            skipped.append((k, f"中位對比度 {med:.1f} < {PASS}")); continue
+        if weak > len(cs) * 0.34:
+            skipped.append((k, f"{weak}/{len(cs)} 幢對唔正（中位 {med:.1f} 過到）"))
+            continue
 
         lat = sum(r["lat"] for r in rows) / len(rows)
         out, labels = draw(rows, im, px, box)
@@ -141,14 +146,26 @@ def main() -> None:
         if made % 50 == 0:
             print(f"  … {made} 張", flush=True)
 
+    # 改咗屋苑顯示名之後，舊名嗰啲檔仲會留喺度 —— 冇任何一版指住佢哋,
+    # 但會跟住 deploy 上線。全量跑嘅時候清走佢。
+    if not only:
+        stale = [f for f in OUT.glob("*.jpg") if f.stem not in report]
+        for f in stale:
+            f.unlink()
+        if stale:
+            print(f"清走 {len(stale)} 個舊名留低嘅檔")
+
     tot = sum((OUT / f"{k}.jpg").stat().st_size for k in report)
     print(f"\n出咗 {made} 張 · 平均 {tot/max(made,1)/1024:.0f} KB · 共 {tot/1024/1024:.1f} MB")
     print(f"唔出圖 {len(skipped)} 個（驗唔過）：")
     for k, why in skipped[:15]:
         print(f"   {k} — {why}")
-    (ROOT / "pages" / "plan-report.json").write_text(
-        json.dumps({"ok": report, "skipped": dict(skipped)},
-                   ensure_ascii=False, indent=1))
+    drop = dict(prev.get("skipped", {}))
+    drop.update(dict(skipped))
+    for k in report:
+        drop.pop(k, None)          # 今次出到圖嘅，唔應該仲留喺唔合格名單
+    REPORT.write_text(json.dumps({"ok": report, "skipped": drop},
+                                 ensure_ascii=False, indent=1))
 
 
 if __name__ == "__main__":
