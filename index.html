@@ -754,6 +754,7 @@
     font-size:11px; color:#1a1a1a; white-space:nowrap; text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff;
     font-weight:600;
   }
+  /* 平板：清單變成右下角一張卡，唔再打橫冚住成個底。 */
   @media (min-width:760px){
     #sheet{left:auto; right:14px; bottom:14px; width:390px; border-radius:18px;
            height:auto; max-height:min(78vh,720px);
@@ -763,6 +764,40 @@
     #grip{padding-bottom:12px; cursor:pointer}
     #sheetbody{padding-bottom:20px}
   }
+
+  /* ---------- 電腦版：左邊一條完整側欄 ----------
+
+     電話同電腦唔應該係同一個版面。電話得一隻手、一個拇指、五吋屏幕,
+     所以由底部推上嚟嘅 sheet 係啱嘅 —— Google Maps、Apple Maps、Uber
+     全部咁做。
+
+     但同一個設計搬去 1512 × 945 就變成浪費：一張 720px 高嘅卡貼住右下
+     角，上面吊住 211px 死位；而一個搜尋框橫跨成 1512px 闊。
+
+     電腦版嘅慣例係一條完整側欄（Google Maps、Airbnb、Zillow 都係）：
+     搜尋、篩選、清單全部喺同一條直欄，由頂去到底；地圖獨佔右邊，係一
+     塊乾淨矩形。眼同滑鼠唔使喺四個角之間跳嚟跳去。 */
+  @media (min-width:1024px){
+    :root{--rail:420px}
+    #top{top:14px; left:14px; right:14px; padding:0}
+    #searchwrap{flex:0 0 var(--rail); max-width:var(--rail)}
+    /* 地圖樣式同定位掣屬於地圖，唔屬於側欄 —— 推去地圖右上角。 */
+    #tools{margin-inline-start:auto}
+    #filters{
+      left:14px; right:auto; top:74px; width:var(--rail);
+      padding:8px 0 2px; flex-wrap:wrap; overflow:visible;
+    }
+    #filters .chip-sep{display:none}
+    /* 側欄由篩選下面開始。--rail-top 係由 JS 度返嚟嘅 —— 篩選列喺
+       460px 闊度下會換行，寫死一個數字嘅話，字體大細一變就會有一行掣
+       俾側欄冚住。 */
+    #sheet{
+      left:14px; right:auto; top:var(--rail-top,170px); bottom:14px;
+      width:var(--rail); height:auto; max-height:none; border-radius:18px;
+    }
+  }
+  /* 再闊啲就俾條側欄闊啲，唔係俾地圖無限大 —— 清單每行嘅字先係人睇緊嗰樣。 */
+  @media (min-width:1500px){ :root{--rail:460px} }
 </style>
 </head>
 <body>
@@ -3021,6 +3056,18 @@ map.whenReady(async ()=>{
 
    電話唔跟住做：細screen度未望清楚幅地圖就俾一版清單冚住，係更差。
    電腦screen夠闊，攤開之後仲有千零 px 畀地圖，所以冇代價。 */
+/* 側欄要企喺篩選列下面，而篩選列幾高要睇佢換咗幾多行 —— 闊度、字體
+   大細、語言都會影響。所以量返佢，唔好估。 */
+(function railTop(){
+  const f = document.getElementById("filters");
+  if(!f) return;
+  const set = () => document.documentElement.style.setProperty(
+    "--rail-top", (f.getBoundingClientRect().bottom + 8) + "px");
+  set();
+  addEventListener("resize", set);
+  if(window.ResizeObserver) new ResizeObserver(set).observe(f);
+})();
+
 setTimeout(()=>{
   const wide = matchMedia("(min-width:760px)").matches;
   if(wide || localStorage.getItem("seenIntro")) openSheet();
