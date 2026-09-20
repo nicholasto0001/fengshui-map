@@ -6,7 +6,18 @@
   // site even though they live in the repo.
   "name": "fengshuimap",
   "compatibility_date": "2026-09-01",
+  // The Worker only intervenes on shared links (?b=, ?list=, ?d=, ?g=), where
+  // it rewrites the Open Graph tags so the preview describes that building.
+  // Everything else is served straight from ./public by the assets binding.
+  "main": "./worker/index.js",
   "assets": {
-    "directory": "./public/"
+    "directory": "./public/",
+    "binding": "ASSETS",
+    // Static assets are served before the Worker unless it is named here, so
+    // "/" would match public/index.html and the rewrite would never run.
+    // Scoped to the document alone on purpose: listing every path would put
+    // all 361 tile fetches through the Worker and turn one page view into
+    // hundreds of invocations.
+    "run_worker_first": ["/"]
   }
 }

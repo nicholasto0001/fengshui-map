@@ -13,6 +13,7 @@ mkdir -p public
 
 cp index.html manifest.webmanifest public/
 cp og.png favicon.ico apple-touch-icon.png icon-192.png icon-512.png public/
+cp -R og public/og          # one preview card per score, chosen by the Worker
 # An allowlist, not a delete list. Every new pipeline stage drops another
 # intermediate into data/, and a delete list publishes each one until someone
 # notices — bd_age.json (2.9 MB) and the housing register were being served to

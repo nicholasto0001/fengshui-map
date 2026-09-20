@@ -253,6 +253,28 @@
     padding:4px 8px; font-weight:400;
   }
 
+  /* Same shape as the update bar, in the brand blue so the two never read as
+     the same message. It sits above the sheet at every snap point. */
+  #sharenudge[hidden]{display:none}
+  #sharenudge{
+    position:fixed; z-index:700; left:12px; right:12px;
+    top:calc(112px + env(safe-area-inset-top, 0px));
+    display:flex; align-items:center; gap:10px;
+    background:#1b4f8f; color:#fff; border-radius:16px; padding:11px 10px 11px 15px;
+    box-shadow:0 3px 14px rgba(0,0,0,.28); font-size:13px; font-weight:600;
+    line-height:1.35;
+  }
+  #sharenudge .txt{flex:1; font-weight:600}
+  #sharenudge button{
+    border:0; background:#fff; color:#1b4f8f; font:inherit; font-weight:700;
+    padding:8px 14px; border-radius:999px; cursor:pointer; white-space:nowrap;
+  }
+  #sharenudge .x{
+    background:transparent; color:rgba(255,255,255,.7); font-size:17px;
+    padding:4px 6px; font-weight:400;
+  }
+  @media (min-width:560px){ #sharenudge{left:50%; right:auto; transform:translateX(-50%); max-width:480px} }
+
   /* ---------- bottom sheet ---------- */
   /* Three snap points, the way every native map app behaves. Opening a
      building used to fill the screen, leaving no map to steer by — half is
@@ -554,6 +576,12 @@
   <span>有新版本</span>
   <button id="btnReload">更新</button>
   <button class="x" id="btnDismissUpdate" aria-label="關閉">×</button>
+</div>
+
+<div id="sharenudge" hidden>
+  <span class="txt">想俾朋友睇？撳「分享」整條 link，對方撳開就即刻見到呢幢樓。</span>
+  <button id="btnNudgeShare">分享</button>
+  <button class="x" id="btnNudgeClose" aria-label="關閉">×</button>
 </div>
 
 <div id="sheet">
@@ -949,6 +977,8 @@ async function loadBuildings(){
     COLS = t.c;
     for(const row of t.b){
       const o=rowToObj(row);
+      // District is stored as a position in the tile's own name list.
+      o.district = (t.dn && o.dn != null) ? t.dn[o.dn] : null;
       if(!b.contains([o.lat,o.lon])) continue;
       if(!passesFilter(o.total)) continue;
       const ring=decodeRing(o.ring);
@@ -1142,6 +1172,8 @@ const NOW_NOTE = {
 };
 
 function renderBuilding(o, layer){
+  nudgeFor = o;
+  armNudge(o);
   const title = clean(o.tc) || clean(o.en) || "未命名樓宇";
   const t = o.total, [vd,vs] = verdict(t);
   const home = o.res !== 0;
@@ -1423,7 +1455,7 @@ async function showOverview(){
     chip.innerHTML = '<b>地區</b>' + a.tc + ' <span class="caret">▾</span>';
     chip.classList.add("on");
     map.flyTo([a.lat,a.lon], 14, {duration:.9});
-    minSel = null; highlight.clearLayers();
+    minSel = null; highlight.clearLayers(); nudgeFor = null; hideNudge();
     drawDistricts();
     showOverview();
   }));
@@ -1591,6 +1623,8 @@ function shareUrl(params){
 
 async function doShare(title, text, url, what){
   track("share", {what, url});
+  nudgeSave({...nudgeState(), done: true});
+  hideNudge();
   try{
     if(navigator.share){ await navigator.share({title, text, url}); return; }
   }catch{ return; }               // user dismissed the sheet - not a failure
@@ -1599,6 +1633,59 @@ async function doShare(title, text, url, what){
     toast("已複製連結，可以貼上分享");
   }catch{ prompt("複製呢條連結分享：", url); }
 }
+
+/* ------------------------------------------------- the screenshot habit ---
+   People who want to send a building to a friend photograph the screen,
+   because nothing told them the link carries the building with it. A
+   screenshot loses the score the moment it is cropped, and the friend cannot
+   tap through to anything.
+
+   There is no way to detect a screenshot on the mobile web — iOS Safari and
+   Android Chrome expose no such event, and every trick claiming otherwise is
+   guesswork. So this does not pretend to detect one. It offers the share at
+   the moment someone is plainly studying a building and has not yet found the
+   button, and on a desktop it also takes the actual screenshot keys, which
+   are a real signal.
+
+   Shown at most three times ever, never again once they use it, and never to
+   someone who has already shared. */
+const NUDGE_KEY = "shareNudge";
+let nudgeTimer = null, nudgeFor = null;
+
+const nudgeState = () => {
+  try{ return JSON.parse(localStorage.getItem(NUDGE_KEY)) || {n:0}; }
+  catch{ return {n:0}; }
+};
+const nudgeSave = v => { try{ localStorage.setItem(NUDGE_KEY, JSON.stringify(v)); }catch{} };
+
+function hideNudge(){
+  clearTimeout(nudgeTimer);
+  document.getElementById("sharenudge").hidden = true;
+}
+
+function showNudge(o, why){
+  const st = nudgeState();
+  if(st.done || st.n >= 3) return;
+  nudgeFor = o;
+  document.getElementById("sharenudge").hidden = false;
+  nudgeSave({...st, n: st.n + 1});
+  track("share_nudge_shown", {why});
+}
+
+/* Restarted every time a building is opened; cancelled the moment they share,
+   dismiss, or close the sheet. */
+function armNudge(o){
+  hideNudge();
+  const st = nudgeState();
+  if(st.done || st.n >= 3) return;
+  nudgeTimer = setTimeout(() => showNudge(o, "dwell"), 9000);
+}
+
+addEventListener("keydown", e => {
+  const shot = e.key === "PrintScreen" ||
+               ((e.metaKey && e.shiftKey) && ["3","4","5"].includes(e.key));
+  if(shot && nudgeFor !== null) showNudge(nudgeFor, "screenshot_key");
+});
 
 function shareBuilding(o){
   const name = clean(o.tc) || clean(o.en) || "呢棟樓";
@@ -1629,7 +1716,7 @@ function setDistrict(tc){
   chip.classList.toggle("on", !!districtFilter);
   const d = districtData.find(x=>x.tc===districtFilter);
   if(d) map.flyTo([d.lat,d.lon], 14, {duration:.9});
-  minSel = null; highlight.clearLayers();
+  minSel = null; highlight.clearLayers(); nudgeFor = null; hideNudge();
   pickingDistrict = false;
   drawDistricts(); showOverview();
 }
@@ -1779,6 +1866,18 @@ document.getElementById("btnLoc").addEventListener("click",()=>{
     },
     ()=>toast("定位失敗，請允許位置權限"),
     {enableHighAccuracy:true,timeout:8000});
+});
+
+document.getElementById("btnNudgeShare").addEventListener("click", ()=>{
+  track("share_nudge_used", {});
+  if(nudgeFor) shareBuilding(nudgeFor);   // also retires the nudge
+  hideNudge();
+});
+
+document.getElementById("btnNudgeClose").addEventListener("click", ()=>{
+  track("share_nudge_dismissed", {});
+  nudgeSave({...nudgeState(), done: true});
+  hideNudge();
 });
 
 document.getElementById("btnDismissUpdate").addEventListener("click", ()=>{

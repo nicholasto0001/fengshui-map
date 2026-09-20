@@ -58,7 +58,10 @@ COLUMNS = [
     "conf",      # 24 confidence in the derived facing, 0-1
     "est",       # 25 estate name, when the Housing Authority register names it;
                  #    look the rest of the estate's detail up in estates.json
-    "ring",      # 26 footprint: [lon0, lat0, then integer deltas x1e-5 deg]
+    "dn",        # 26 index into the tile's own "dn" list of district names —
+                 #    a tile spans one or two districts, so an integer costs a
+                 #    byte where the name would cost eleven, 84,720 times over
+    "ring",      # 27 footprint: [lon0, lat0, then integer deltas x1e-5 deg]
 ]
 
 
@@ -151,8 +154,17 @@ def encode_ring(ring: list) -> list | None:
     return out
 
 
-def row_for(r: dict) -> list:
+def row_for(r: dict, districts: list) -> list:
+    """`districts` is the tile's own name list, extended in place as new ones
+    are met; the row stores a position in it."""
     flat = encode_ring(r.get("ring"))
+    d = r.get("district")
+    if d is None:
+        di = None
+    else:
+        if d not in districts:
+            districts.append(d)
+        di = districts.index(d)
     return [
         r.get("id"), r.get("tc"), r.get("en"),
         r.get("lon"), r.get("lat"),
@@ -163,6 +175,7 @@ def row_for(r: dict) -> list:
         r.get("facing"), r.get("sit_m"), r.get("face_m"), r.get("pattern"),
         r.get("now"), 1 if is_dwelling(r) else 0, r.get("conf"),
         (r.get("estate") or {}).get("estate") or None,
+        di,
         flat,
     ]
 
@@ -214,7 +227,9 @@ def main() -> None:
         buckets.setdefault((Z, x, y), []).append(r)
 
     def blob_of(rows: list) -> str:
-        return json.dumps({"c": COLUMNS, "b": [row_for(r) for r in rows]},
+        districts: list[str] = []
+        body = [row_for(r, districts) for r in rows]
+        return json.dumps({"c": COLUMNS, "dn": districts, "b": body},
                           separators=(",", ":"), ensure_ascii=False)
 
     leaves: dict[tuple[int, int, int], list] = {}
