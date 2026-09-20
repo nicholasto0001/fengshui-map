@@ -368,6 +368,34 @@
   }
   .card .dots button.on{width:22px; border-radius:4px; background:var(--ink)}
 
+  /* 最後一頁係開戶口。免費 app 嘅慣例做法：教完先問，唔肯就一個交叉閂咗佢。
+     唔攔路，但亦唔會乜都唔問 —— 呢一刻佢啱啱睇完「收藏」做到乜,
+     係全程最容易明白開戶口有咩用嘅一刻。 */
+  .card{position:relative}
+  .pg .joinwhy{list-style:none; margin:16px 0 0; padding:0; text-align:left}
+  .pg .joinwhy li{
+    position:relative; padding:0 0 0 26px; margin:0 0 9px;
+    font-size:14.5px; line-height:1.5; color:var(--ink2);
+  }
+  .pg .joinwhy li::before{
+    content:"✓"; position:absolute; left:4px; top:0; color:#0f6354; font-weight:700;
+  }
+  /* 交叉要夠大隻先撳得中 —— 44px 係 Apple 由第一代 iPhone 用到而家嘅最細
+     觸控目標，而呢個掣偏偏就係唔想撳錯嗰個。 */
+  .card .xbtn{
+    position:absolute; top:8px; right:8px; z-index:2;
+    width:44px; height:44px; min-height:44px; padding:0;
+    border:0; background:transparent; color:var(--ink3);
+    font-size:26px; line-height:1; cursor:pointer; border-radius:50%;
+  }
+  .card .xbtn:active{background:var(--line)}
+  .card .linkbtn{
+    background:transparent; border:0; color:var(--ink2); font-size:14.5px;
+    font-weight:500; min-height:44px; width:100%; padding:0; margin:4px 0 0;
+    cursor:pointer; text-decoration:underline; text-underline-offset:3px;
+  }
+  .card .gbtn{margin-top:0}
+
   /* 「戴頭盔」收埋，撳咗先展開 —— 唔可以冇，但亦唔應該喺第一眼就擋住個人。 */
   .fine{margin:14px 0 0}
   .fine summary{
@@ -864,10 +892,51 @@
            一條 link 傳出去，對方撳開就見到同一棟樓同個分數。</p>
       </section>
 
+      <section class="pg">
+        <svg class="ill" viewBox="0 0 220 132" aria-hidden="true">
+          <rect x="30" y="10" width="160" height="112" rx="14" fill="var(--bg)" stroke="var(--line)"/>
+          <g>
+            <rect x="44" y="26" width="132" height="26" rx="8" fill="var(--card)" stroke="var(--line)"/>
+            <path d="M60 39c0-3.2 2.4-5.6 5.2-5.6 1.8 0 3.1 1 3.6 2.1.5-1.1 1.8-2.1 3.6-2.1 2.8 0 5.2 2.4 5.2 5.6 0 4-6 8-8.8 10-2.8-2-8.8-6-8.8-10z" fill="#c8102e"/>
+            <rect x="88" y="34" width="52" height="8" rx="4" fill="var(--line)"/>
+            <circle cx="158" cy="39" r="9" fill="#0f6354"/>
+            <text x="158" y="43" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">81</text>
+          </g>
+          <g>
+            <rect x="44" y="58" width="132" height="26" rx="8" fill="var(--card)" stroke="var(--line)"/>
+            <path d="M60 71c0-3.2 2.4-5.6 5.2-5.6 1.8 0 3.1 1 3.6 2.1.5-1.1 1.8-2.1 3.6-2.1 2.8 0 5.2 2.4 5.2 5.6 0 4-6 8-8.8 10-2.8-2-8.8-6-8.8-10z" fill="#c8102e"/>
+            <rect x="88" y="66" width="38" height="8" rx="4" fill="var(--line)"/>
+            <circle cx="158" cy="71" r="9" fill="#4da79a"/>
+            <text x="158" y="75" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">64</text>
+          </g>
+          <g>
+            <rect x="44" y="90" width="132" height="26" rx="8" fill="var(--card)" stroke="var(--line)"/>
+            <path d="M60 103c0-3.2 2.4-5.6 5.2-5.6 1.8 0 3.1 1 3.6 2.1.5-1.1 1.8-2.1 3.6-2.1 2.8 0 5.2 2.4 5.2 5.6 0 4-6 8-8.8 10-2.8-2-8.8-6-8.8-10z" fill="#c8102e"/>
+            <rect x="88" y="98" width="60" height="8" rx="4" fill="var(--line)"/>
+          </g>
+        </svg>
+        <h1>下次返嚟，清單仲喺度</h1>
+        <p>而家收藏係淨係記喺呢一部機。<b>開個戶口</b>就跟住你走 ——
+           換部電話、喺公司用電腦，一開就見返同一張清單。</p>
+        <ul class="joinwhy">
+          <li>收藏唔會唔見，唔使再由頭搵過</li>
+          <li>分開幾張清單：自住、收租、畀屋企人睇</li>
+          <li>記得你睇過邊幾棟，睇樓嗰陣唔會撞返</li>
+        </ul>
+      </section>
+
     </div>
+
+    <button class="xbtn" id="introX" type="button" aria-label="唔使住，直接睇地圖" hidden>×</button>
 
     <div class="dots" id="dots" role="tablist" aria-label="介紹"></div>
     <button id="introGo">繼續</button>
+
+    <button class="gbtn" id="introJoin" type="button" hidden>
+      <svg viewBox="0 0 18 18" width="19" height="19" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.9 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+      <span>用 Google 開戶口 · 免費</span>
+    </button>
+    <button class="linkbtn" id="introSkip" type="button" hidden>唔使住，直接睇地圖</button>
     <p class="warn">呢個係一個好簡單嘅參考工具，<b>唔可以作準</b>。認真睇樓請搵專業風水師傅。</p>
 
     <details class="fine">
@@ -2725,12 +2794,20 @@ document.getElementById("btnReload").addEventListener("click", ()=>{
   location.replace(location.pathname + "?u=" + Date.now() + location.hash);
 });
 
-/* 四頁介紹。個掣喺最後一頁之前係「繼續」，最後一頁先變「開始」——
-   一個掣做兩件事，唔使再多一個「跳過」喺度嘈。 */
+/* 五頁介紹。頭四頁教嘢，個掣係「繼續」；最後一頁問開唔開戶口。
+
+   開戶口擺喺最尾，唔擺喺最頭：呢一刻佢啱啱睇完「收藏」做到乜，係全程
+   最容易明白開戶口有咩著數嘅一刻。擺喺最頭就變咗未講清楚係咩嚟就要人
+   交電郵 —— 嗰個係最易嚇走人嘅位。
+
+   唔肯開就撳交叉或者下面條字，一樣入得去。呢個唔係收費牆。 */
 (function introPager(){
   const pager = document.getElementById("pager");
   const dots  = document.getElementById("dots");
   const go    = document.getElementById("introGo");
+  const join  = document.getElementById("introJoin");
+  const skip  = document.getElementById("introSkip");
+  const x     = document.getElementById("introX");
   if(!pager || !dots || !go) return;
   const pages = [...pager.querySelectorAll(".pg")];
   const last  = pages.length - 1;
@@ -2746,7 +2823,11 @@ document.getElementById("btnReload").addEventListener("click", ()=>{
 
   const paint = () => {
     [...dots.children].forEach((d, i) => d.classList.toggle("on", i === at));
-    go.textContent = at === last ? "開始" : "繼續";
+    const join_page = at === last;
+    go.hidden = join_page;
+    // 交叉同「唔使住」得最後一頁先出 —— 頭四頁行落去係應該嘅，唔想喺
+    // 度擺個出口引人中途走。
+    [join, skip, x].forEach(b => { if(b) b.hidden = !join_page; });
   };
   // 撳掣即刻記低去咗第幾頁，唔等 scroll 事件。CSS scroll-behavior:smooth
   // 令連直接設定 scrollLeft 都變成動畫，所以連續撳幾下嘅時候，頁碼仲未追
@@ -2767,13 +2848,24 @@ document.getElementById("btnReload").addEventListener("click", ()=>{
     }, 140);
   }, {passive: true});
 
-  go.addEventListener("click", () => {
-    if(at < last){ goTo(at + 1); return; }
+  const finish = how => {
     document.getElementById("intro").classList.add("hide");
     localStorage.setItem("seenIntro","1");
     trip.intro = true;
-    track("intro_done", {});
+    track("intro_done", {how});
     openSheet();
+  };
+
+  go.addEventListener("click", () => goTo(at + 1));
+  if(skip) skip.addEventListener("click", () => finish("skip"));
+  if(x)    x.addEventListener("click",    () => finish("close"));
+  if(join) join.addEventListener("click", () => {
+    // signIn() 會離開個頁面去 Google，返到嚟係一次全新載入。唔喺走之前
+    // 記低睇過介紹，佢返到嚟就要由第一頁再睇一次。
+    localStorage.setItem("seenIntro","1");
+    trip.intro = true;
+    track("intro_done", {how: "join"});
+    signIn();
   });
   paint();
 })();
