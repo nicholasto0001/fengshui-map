@@ -442,6 +442,14 @@
   .guaband b{display:block; font-size:15.5px; font-weight:650; opacity:1; margin:0 0 2px}
   .guaband i{font-style:normal; font-size:20px; opacity:.6; flex:none}
 
+  /* 電腦版清單頂嗰個完整八字區塊。 */
+  .bzmore{
+    width:100%; min-height:44px; margin:12px 0 0; background:transparent;
+    border:0; color:var(--ink3); font:inherit; font-size:13px; cursor:pointer;
+    text-align:start; padding:0;
+  }
+  .guahr{border-top:1px solid var(--line); margin:14px 0 4px}
+
   .bzform{margin:6px 0 0}
   .bzform label{display:block; font-size:13.5px; color:var(--ink3); margin:14px 0 6px}
   .bzrow{display:flex; gap:8px}
@@ -3078,15 +3086,38 @@ function renderMatches(list){
   gripText.textContent = `${where} · ${what} · ${list.length.toLocaleString()} 棟`;
   // 開咗八字篩選嘅時候，清單上面要講返「點解係呢批樓」——
   // 冇呢句，用戶淨係見到個清單縮咗，唔知發生咩事。
+  // 電腦版唔使喺「睇個盤」同「睇清單」之間揀 —— 側欄夠位兩樣一齊擺,
+  // 所以四柱同命卦直接排喺清單上面。手機先需要切換，因為五吋屏幕一次
+  // 淨係擺得落一樣嘢。
   let guaTop = "";
   if(guaOn && bzMod && birth){
     const g = myGua();
     if(g){
       const d = bzMod.goodDirs(g);
-      guaTop = `<button class="guaband" id="guaBand">
-        <span class="gg2">${g}</span>
-        <span><b>${g}命 · ${bzMod.guaGroup(g)}命</b>
-        只顯示向${d.join("、向")}嘅樓宇　·　撳我睇成個盤</span><i>›</i></button>`;
+      const wide = matchMedia("(min-width:1024px)").matches;
+      if(wide){
+        const ch = bzMod.chart(birth.y, birth.m, birth.d,
+                               birth.h == null ? 12 : birth.h, 0);
+        const pil = [["年", ch.year], ["月", ch.month], ["日", ch.day],
+                     ["時", birth.h == null ? "—" : ch.hour]];
+        guaTop = `
+          <p class="bname">${birth.y} 年 ${birth.m} 月 ${birth.d} 日　${birth.male ? "男" : "女"}</p>
+          <div class="pillars">${pil.map(([k, v]) =>
+            `<div class="pil"><u>${k}柱</u><b>${v}</b></div>`).join("")}</div>
+          <div class="guabox"><div class="gg">${g}</div>
+            <div class="gt">你係<b>${g}命</b>，屬<b>${bzMod.guaGroup(g)}命</b>。<br>
+            最旺嘅方位係<b>正${d[0]}</b>（${bzMod.LUCK[g][d[0]]}）。</div></div>
+          <div class="dirs">${d.map((x, i) =>
+            `<span class="${i === 0 ? "best" : ""}"><b>向${x}</b> ${bzMod.LUCK[g][x]}</span>`
+          ).join("")}</div>
+          <button class="bzmore" id="guaBand">睇埋真太陽時、門派分歧同刪除資料　›</button>
+          <div class="guahr"></div>`;
+      } else {
+        guaTop = `<button class="guaband" id="guaBand">
+          <span class="gg2">${g}</span>
+          <span><b>${g}命 · ${bzMod.guaGroup(g)}命</b>
+          只顯示向${d.join("、向")}嘅樓宇　·　撳我睇成個盤</span><i>›</i></button>`;
+      }
     }
   }
   sheetBody.innerHTML = `
