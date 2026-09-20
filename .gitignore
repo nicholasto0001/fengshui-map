@@ -19,3 +19,5 @@ public/
 data/tiles/
 data/search.json
 data/district_stats.json
+
+data/bd_age.json

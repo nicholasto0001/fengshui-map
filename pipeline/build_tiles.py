@@ -70,7 +70,8 @@ NOT_A_HOME = (
 
 
 def is_dwelling(r: dict) -> bool:
-    """Would someone live here? Permit first, name second.
+    """Would someone live here? The Buildings Department use class decides it
+    where there is one; the name blacklist is only for what it does not cover.
 
     A property search that opens with a warehouse and a substation as its top
     two results is not answering the question that was asked.

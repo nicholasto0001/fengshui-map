@@ -70,6 +70,23 @@ def main() -> None:
     op = load("op.json") or {}
     print(f"occupation permits: {len(op):,} buildings")
 
+    # Buildings Department age records: more occupation years, and an official
+    # use classification instead of guessing from building names.
+    bd_raw = load("bd_age.json") or {}
+    bd_pts, bd_vals = [], []
+    for key, v in bd_raw.items():
+        try:
+            lat, lon = (float(x) for x in key.split(","))
+        except ValueError:
+            continue
+        bd_pts.append(to_plane(lon, lat))
+        bd_vals.append(v)
+    bd_idx = GridIndex(bd_pts, cell=120.0) if bd_pts else None
+    print(f"BD age records: {len(bd_pts):,} points")
+
+    BD_TOL = 35.0        # metres between a footprint centroid and a BD point
+    BD_HOME = "住宅"      # 住宅/綜合用途 is the only class people live in
+
     # CSDI's building layer carries no district, so assign it here.
     districts = load("districts.json")
     dsets = PolygonSet(districts) if districts else None
@@ -104,6 +121,19 @@ def main() -> None:
         axis, elong = b.get("axis"), b.get("elong")
         rec = op.get(b["id"] or "")
         op_year = rec["year"] if rec else None
+        residential = rec["residential"] if rec else None
+
+        # Fall back to the BD record for anything the permit join missed, and
+        # always prefer its use class — it is an official classification, not
+        # an inference from a name.
+        if bd_idx:
+            bd_d, bd_i = bd_idx.nearest(x, y)
+            if bd_d is not None and bd_d <= BD_TOL:
+                bv = bd_vals[bd_i]
+                if op_year is None and bv.get("year"):
+                    op_year = bv["year"]
+                if bv.get("use"):
+                    residential = BD_HOME in bv["use"]
 
         if axis is not None:
             a, c = facing_candidates(axis)
@@ -130,7 +160,7 @@ def main() -> None:
             "conf": round(conf, 2),
             "op_year": op_year, "period": period,
             "sit_m": sit_m, "face_m": face_m, "pattern": pattern, "now": now_code,
-            "residential": rec["residential"] if rec else None,
+            "residential": residential,
         })
 
     print(f"scored {len(rows):,} buildings")
@@ -186,7 +216,9 @@ def main() -> None:
     print("  九運當下:")
     for code, n in collections.Counter(r["now"] for r in charted).most_common():
         print(f"    {code:<10} {n:>7,}")
-    print(f"\n住宅 (by OP type) : {sum(1 for r in out if r['residential']):,}")
+    print(f"\n住宅              : {sum(1 for r in out if r['residential']):,}")
+    print(f"明確非住宅        : {sum(1 for r in out if r['residential'] is False):,}")
+    print(f"用途不詳          : {sum(1 for r in out if r['residential'] is None):,}")
     print(f"分區已判定        : {sum(1 for r in out if r['district']):,}")
 
 
