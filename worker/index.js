@@ -220,9 +220,16 @@ async function handle(request, env, ctx) {
     const url = new URL(request.url);
     const live = url.hostname === LIVE_HOST;
 
-    if (!live && url.pathname === "/robots.txt") {
-      return new Response("User-agent: *\nDisallow: /\n",
-                          {headers: {"content-type": "text/plain; charset=utf-8"}});
+    // Cloudflare serves a managed robots.txt when a site has none of its own,
+    // and that one says nothing about where the sitemap is. Ours does.
+    if (url.pathname === "/robots.txt") {
+      const body = live
+        ? `User-agent: *\nAllow: /\n\nSitemap: https://${LIVE_HOST}/sitemap.xml\n`
+        : "User-agent: *\nDisallow: /\n";
+      return new Response(body, {
+        headers: {"content-type": "text/plain; charset=utf-8",
+                  "cache-control": "public, max-age=3600"},
+      });
     }
     const shared =
       url.searchParams.has("b") ||

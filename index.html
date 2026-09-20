@@ -12,6 +12,49 @@
      relative paths, which is why the first WhatsApp previews showed no image.
      SITE_URL is the one place to change when the domain moves. -->
 <link rel="canonical" href="https://hkfengshuimap.com/">
+
+<!-- Structured data so Google reads 香港風水地圖 as the name of a thing rather
+     than four characters that happen to be in the title. Dataset is the honest
+     type here: what this site actually is, is a computed dataset over every
+     building in Hong Kong, with a map on top of it. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://hkfengshuimap.com/#website",
+      "url": "https://hkfengshuimap.com/",
+      "name": "香港風水地圖",
+      "alternateName": "Hong Kong Feng Shui Map",
+      "description": "全港 84,720 棟樓宇嘅九運風水評分同玄空飛星盤，數據嚟自政府公開資料。",
+      "inLanguage": "zh-Hant-HK",
+      "publisher": {"@id": "https://hkfengshuimap.com/#org"}
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://hkfengshuimap.com/#org",
+      "name": "香港風水地圖",
+      "url": "https://hkfengshuimap.com/",
+      "logo": "https://hkfengshuimap.com/icon-512.png"
+    },
+    {
+      "@type": "Dataset",
+      "name": "香港樓宇九運風水評分",
+      "description": "全港 84,720 棟樓宇嘅地理環境評分（0–100）同玄空飛星盤，按三元九運第九運（2024–2043）計算。評分方法逆向工程自 2023 年政府公開嘅風水地圖圖層。",
+      "url": "https://hkfengshuimap.com/",
+      "inLanguage": "zh-Hant-HK",
+      "license": "https://hkfengshuimap.com/method",
+      "spatialCoverage": {"@type": "Place", "name": "香港 Hong Kong"},
+      "creator": {"@id": "https://hkfengshuimap.com/#org"},
+      "isBasedOn": [
+        "https://portal.csdi.gov.hk/",
+        "https://data.gov.hk/"
+      ]
+    }
+  ]
+}
+</script>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="香港風水地圖">
 <meta property="og:url" content="https://hkfengshuimap.com/">
@@ -278,6 +321,16 @@
   }
   @media (min-width:560px){ #sharenudge{left:50%; right:auto; transform:translateX(-50%); max-width:480px} }
 
+
+  /* 開場卡入面嘅說明。字細過主要指示，但係真真正正俾人睇嘅內容 —— 唔係
+     藏起身嘅文字，Google 會罰嗰啲。 */
+  .about{
+    margin-top:22px; padding-top:18px; border-top:1px solid var(--line);
+    font-size:13.5px; line-height:1.7; color:var(--ink3);
+  }
+  .about p{margin:0 0 9px}
+  .about b{color:var(--ink2); font-weight:650}
+  .about a{color:#1b4f8f; font-weight:600}
 
   /* ---------- 會員 ----------
      Apple 嘅內文標準係 17pt。呢個 app 之前喺 13–13.5px，對「好大年紀都
@@ -571,6 +624,10 @@
   .card{
     background:var(--card); border-radius:20px; padding:26px 22px 20px; max-width:380px; width:100%;
     box-shadow:0 10px 40px rgba(0,0,0,.3);
+    /* 有咗下面段說明之後，張卡喺 667 高嘅電話會超出屏幕。俾佢捲得郁 ——
+       喺 HTML 入面有、但用家永遠掂唔到嘅文字，Google 當係隱藏文字。 */
+    max-height:calc(100dvh - 44px); overflow-y:auto; -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
   }
   .card h1{font-size:21px; margin:0 0 4px}
   .card .tag{font-size:13px; color:var(--ink3); margin:0 0 18px}
@@ -677,6 +734,20 @@
     </ol>
     <p class="warn">評分根據公開地理數據同三元九運山水方位計算，屬於「外巒頭」地理分析，並唔包括坐向飛星盤或室內風水。僅供參考，不構成置業建議。</p>
     <button id="introGo">開始</button>
+
+    <!-- 呢段唔係為咗 SEO 而塞落嚟嘅關鍵字：佢係每個新用戶第一眼就見到嘅嘢，
+         亦都係成個網站嘅內容喺原始 HTML 入面唯一存在嘅地方。之前成版得 270
+         個字，即係 Google 見到嘅同一個空殼。 -->
+    <div class="about">
+      <p><b>香港風水地圖</b>為全港 <b>84,720</b> 棟樓宇計算咗一個 0–100 分嘅地理環境
+      評分，並為其中 <b>24,229</b> 棟排出玄空飛星盤，覆蓋 18 區、409 個屋苑。</p>
+      <p>數據全部嚟自香港政府公開資料 —— 地政總署嘅樓宇輪廓、屋宇署嘅入伙紙同樓齡
+      紀錄、房屋委員會嘅公屋居屋登記冊 —— 每日自動更新一次。</p>
+      <p>評分方法逆向工程自 2023 年政府公開發佈嘅風水地圖圖層；飛星盤依足三元九運
+      傳統排法，由入伙年份定元運，由樓宇外形同明堂開闊度推算坐向。
+      <b>查唔到年份、或者外形太方正嘅，我哋會老實寫「未能起盤」，唔會夾硬砌一個假盤。</b></p>
+      <p><a href="/method">睇完整評分方法、數據來源同限制 →</a></p>
+    </div>
   </div>
 </div>
 

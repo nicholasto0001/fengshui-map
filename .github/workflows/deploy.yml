@@ -149,6 +149,7 @@ jobs:
         run: |
           python pipeline/score.py
           python pipeline/build_tiles.py
+          python pipeline/make_sitemap.py
 
       - name: Assemble the site
         run: bash build.sh

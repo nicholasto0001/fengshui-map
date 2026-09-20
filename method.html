@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>評分方法 — 呢個分數點計出嚟？ · 香港風水地圖</title>
+<meta name="description" content="香港風水地圖嘅評分方法全公開：數據嚟自地政總署、屋宇署、房屋委員會等政府公開資料，分數逆向工程自 2023 年官方風水地圖圖層，飛星盤依足三元九運排法。連限制同誤差都寫明。">
+<link rel="canonical" href="https://hkfengshuimap.com/method">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="香港風水地圖">
+<meta property="og:title" content="評分方法 — 呢個分數點計出嚟？">
+<meta property="og:description" content="數據嚟源、評分公式、飛星排盤方法，連限制同誤差都寫明。">
+<meta property="og:url" content="https://hkfengshuimap.com/method">
+<meta property="og:image" content="https://hkfengshuimap.com/og.png">
+<meta property="og:locale" content="zh_HK">
+<style>
+  :root{ --ink:#0b0b0b; --ink2:#55534e; --ink3:#86847d; --bg:#faf9f6; --card:#fff;
+         --line:#e6e4de; --brand:#1b4f8f; --good:#0f6354; --bad:#a01f1f; }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#f2f1ee; --ink2:#c2c0ba; --ink3:#8e8c85; --bg:#14140f; --card:#1b1b16;
+      --line:#2c2b26; --brand:#7fb0e8; --good:#4da79a; --bad:#d76f6f; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font:17px/1.75 -apple-system,BlinkMacSystemFont,"PingFang HK","Noto Sans HK",system-ui,sans-serif;
+    -webkit-text-size-adjust:100%}
+  main{max-width:720px; margin:0 auto; padding:26px 20px 90px}
+  a{color:var(--brand)}
+  .back{display:inline-block; margin-bottom:16px; text-decoration:none; font-weight:600}
+  h1{font-size:30px; line-height:1.3; letter-spacing:-.02em; margin:6px 0 8px}
+  .lede{font-size:19px; color:var(--ink2); margin:0 0 28px; line-height:1.65}
+  h2{font-size:22px; letter-spacing:-.01em; margin:40px 0 10px; padding-top:8px}
+  h3{font-size:17.5px; margin:26px 0 6px}
+  p,li{color:var(--ink2)}
+  ul,ol{padding-left:22px} li{margin:7px 0}
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:15.5px}
+  th,td{text-align:left; padding:10px; border-bottom:1px solid var(--line); vertical-align:top}
+  th{color:var(--ink); font-size:14.5px} td{color:var(--ink2)}
+  .box{background:var(--card); border:1px solid var(--line); border-radius:14px;
+       padding:16px 18px; margin:20px 0}
+  .box b{color:var(--ink)}
+  .warn{border-left:3px solid var(--bad)}
+  .cta{display:inline-block; background:var(--good); color:#fff; text-decoration:none;
+       font-weight:700; padding:14px 24px; border-radius:13px; margin-top:8px; min-height:52px}
+  .n{font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="/">‹ 返回地圖</a>
+
+  <h1>呢個分數點計出嚟？</h1>
+  <p class="lede">香港風水地圖為全港 <b class="n">84,720</b> 幢樓宇計算咗一個 0–100 分嘅
+  地理環境評分，並為其中 <b class="n">24,229</b> 幢排出玄空飛星盤。所有數據嚟自政府
+  公開資料。呢一版將成套方法公開，包括我哋做唔到嘅部分。</p>
+
+  <div class="box warn">
+    <p style="margin:0"><b>先講清楚：風水係玄學，冇一個公認標準，亦冇所謂啱同錯。</b>
+    呢個網站係一個參考工具，唔係判詞。我哋能夠保證嘅，只係「每一個數字都追查得到來源、
+    每一個計算都重複得到」。至於呢啲數字有幾大意義，係你自己判斷。</p>
+  </div>
+
+  <h2>一、數據嚟自邊度</h2>
+  <p>全部係香港政府公開數據，冇用任何收費 API，亦冇抄任何地產網站嘅資料。</p>
+  <table>
+    <tr><th>資料</th><th>來源</th></tr>
+    <tr><td>樓宇輪廓、座標、樓高、層數</td><td>地政總署 / 空間數據共享平台（CSDI）</td></tr>
+    <tr><td>入伙紙（佔用許可證）年份</td><td>屋宇署，經 CSDI</td></tr>
+    <tr><td>樓宇樓齡紀錄、官方用途分類</td><td>屋宇署，data.gov.hk</td></tr>
+    <tr><td>公屋 / 居屋落成年份、座數、單位、管理公司</td><td>香港房屋委員會，data.gov.hk</td></tr>
+    <tr><td>18 區界線</td><td>地政總署</td></tr>
+    <tr><td>周邊設施</td><td>政府設施資料</td></tr>
+    <tr><td>地圖底圖</td><td>地政總署圖磚</td></tr>
+  </table>
+  <p>數據每日重新抓取一次。政府出咗新嘅入伙紙、有新樓落成，第二日就會反映。</p>
+
+  <h2>二、地理環境分（0–100）</h2>
+  <p>呢部分<b>唔係我哋自己發明</b>。2023 年香港政府公開發佈過一個風水地圖 StoryMap
+  圖層，我哋對返佢每一幢樓嘅分數，反推出佢條公式，再用同一條公式套落全港最新嘅樓宇
+  資料上面。</p>
+
+  <h3>三個組成部分</h3>
+  <ol>
+    <li><b>山水距離</b> — 每幢樓去最近嘅山同最近嘅水有幾遠。<b>距離係取負值</b>：越近
+    分越高。呢點係對返官方圖層驗證出嚟嘅（0 米對應 74.7 分，1,555 米對應 1.0 分）。</li>
+    <li><b>山水配對</b> — 山喺邊個方位、水喺邊個方位，呢個組合本身合唔合九運格局，
+    0 至 9 分。</li>
+    <li><b>百分位常態化</b> — 每項原始數值先轉成 z-score，再過常態分佈變成 0–100。
+    所以「60 分」嘅意思係「贏全港六成樓」，唔係一個憑空定出嚟嘅數字。</li>
+  </ol>
+  <p>最後加權：<b>環境 × 0.8 ＋ 配套 × 0.15 ＋ 交通 × 0.05</b>。</p>
+  <p>全港實際分數由 <span class="n">21.1</span> 分去到 <span class="n">88.5</span> 分。
+  分區平均最高係大埔區（<span class="n">53.6</span>）、沙田區（<span class="n">53.1</span>）、
+  西貢區（<span class="n">52.9</span>）；最低係深水埗區（<span class="n">43.9</span>）、
+  油尖旺區（<span class="n">45.5</span>）、黃大仙區（<span class="n">45.8</span>）。</p>
+
+  <h2>三、玄空飛星盤點排</h2>
+  <p>呢部分依足傳統排盤法，唔係求其填。</p>
+  <ol>
+    <li><b>定元運</b> — 三元九運，每運 20 年，用<b>入伙年份</b>定。一幢樓如果有幾張
+    入伙紙，取<b>最早</b>嗰張：後面嗰啲係改建加建，元運跟原本落成。差餉物業估價署
+    自己份刊物都係咁做。</li>
+    <li><b>定坐向</b> — 香港冇公開資料庫記低每幢樓嘅坐向。我哋用兩樣嘢推算：樓宇輪廓
+    嘅<b>長軸</b>（向一般垂直於長邊），加<b>明堂開闊度</b>（長軸兩個方向，邊邊前面
+    空曠啲就當係向）。</li>
+    <li><b>排盤</b> — 運盤入中順飛，按洛書九宮飛行路徑；山星、向星睇坐向落喺二十四山
+    邊一個山，查佢嘅<b>三元龍陰陽</b>，陽順飛、陰逆飛。</li>
+    <li><b>定格局</b> — 睇向首同坐山嘅山向星：旺山旺向／上山下水／雙星到向／雙星到坐。</li>
+    <li><b>睇九運當下</b> — 本命盤唔等於今日嘅運。再計呢幢樓喺 2024 年起嘅九運係
+    入囚、當運旺財、當運旺丁，定當運平平。</li>
+  </ol>
+  <p><b>驗證：</b>排盤程式用公開嘅飛星盤例對過，五個測試全中。</p>
+
+  <h3>目前實際分佈</h3>
+  <p>喺見到飛星盤嗰 <span class="n">24,229</span> 幢入面：</p>
+  <ul>
+    <li>本命格局 — 上山下水 <span class="n">6,708</span>、旺山旺向 <span class="n">6,542</span>、
+    雙星到坐 <span class="n">5,532</span>、雙星到向 <span class="n">5,447</span></li>
+    <li>九運當下 — 當運平平 <span class="n">18,461</span>、入囚 <span class="n">3,163</span>、
+    當運旺財 <span class="n">1,421</span>、當運旺丁 <span class="n">1,184</span></li>
+  </ul>
+
+  <h2>四、有啲樓點解起唔到盤</h2>
+  <p>網站會直接寫俾你知係邊個原因：</p>
+  <ul>
+    <li><b>查唔到入伙年份</b> — 冇年份就冇元運，冇元運就冇盤。</li>
+    <li><b>樓宇外形太接近正方形</b> — 長軸推算唔可靠，坐向就唔可靠。</li>
+  </ul>
+  <div class="box">
+    <p style="margin:0"><b>我哋寧願寫「未能起盤」，都唔會夾硬砌一個睇落好權威、
+    但其實係亂嚟嘅盤。</b></p>
+  </div>
+
+  <h2>五、覆蓋率：兩個數，唔好混淆</h2>
+  <p>計埋全港 <span class="n">213,328</span> 幢建築物（連水泵房、變電站、更亭），
+  有入伙年份嘅只有 <span class="n">30.3%</span>。呢個數常被引用，但<b>唔係用家見到
+  嗰個</b> —— 查唔到年份嗰啲，絕大部分根本冇人住，亦冇擺上地圖。</p>
+  <table>
+    <tr><th>範圍</th><th>有入伙年份</th></tr>
+    <tr><td>全港 213,328 幢建築物</td><td>30.3%</td></tr>
+    <tr><td>地圖上當住宅顯示嘅 56,841 幢</td><td><b>92.2%</b></td></tr>
+    <tr><td>住宅入面真正見到飛星盤</td><td><b>36.1%</b>（仲要坐向可靠）</td></tr>
+  </table>
+  <p>我哋逐層補：CSDI 入伙紙 22.5% → 加屋宇署工程紀錄 23.5% → 加屋宇署樓齡紀錄
+  29.1% → 加房委會登記冊 30.3%。</p>
+  <p>最後嗰步值得一提：公屋係按政策被排除喺差餉物業估價署嘅落成年份數據之外，
+  即係全港一大批人住嘅樓本來完全冇元運。房屋委員會自己有公開。訣竅係要配<b>座名</b>
+  唔係<b>屋邨名</b> —— 一座叫「德璋樓」，唔叫「德朗邨」。配屋邨名得 477 幢，
+  配座名得 <span class="n">2,582</span> 幢，覆蓋 <span class="n">409</span> 個屋苑。</p>
+
+  <h2>六、限制（請認真睇）</h2>
+  <ol>
+    <li><b>風水係玄學，冇公認標準，冇啱同錯。</b>呢個係參考工具，唔係判詞。</li>
+    <li><b>坐向係由樓宇外形推算</b>，誤差約 ±10–20°，有機會差一個山。
+    <b>唔係羅盤實測。</b>網站每次顯示飛星盤都會寫住呢句。</li>
+    <li><b>住宅入面只有約三分一真正見到飛星盤</b>，其餘老實寫「未能起盤」同原因。</li>
+    <li><b>地理分只計環境、配套、交通</b>，唔包樓價、單位間隔、樓層、景觀、實際坐向。</li>
+    <li><b>唔取代實地睇樓，更加唔取代你自己揾師傅。</b></li>
+  </ol>
+
+  <h2>七、試下</h2>
+  <p>打你住緊嗰幢樓個名落去，睇下幾多分。免安裝、免登記。</p>
+  <p><a class="cta" href="/">開啟地圖 →</a></p>
+
+  <p style="margin-top:34px; font-size:14.5px; color:var(--ink3)">
+    相關：<a href="/privacy.html">私隱政策</a>
+  </p>
+</main>
+</body>
+</html>
