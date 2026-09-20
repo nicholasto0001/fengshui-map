@@ -68,6 +68,31 @@ f_sub = ImageFont.truetype(LIGHT, 30)
 f_unit = ImageFont.truetype(LIGHT, 31)
 f_cta = ImageFont.truetype(BOLD, 33)
 f_foot = ImageFont.truetype(LIGHT, 24)
+f_small = ImageFont.truetype(LIGHT, 21)
+f_big = ImageFont.truetype(BOLD, 44)
+
+
+def percentiles() -> dict[int, int]:
+    """How many of Hong Kong's homes each score beats.
+
+    The three component bars cannot go on a card: the cards are cut by total
+    score, and 2,015 buildings share a score of 54 with 環境 running from 46
+    to 64 between them — a drawn bar would be wrong for most of them. This is
+    derived from the total alone, so it is right for every building that lands
+    on the card.
+    """
+    import bisect
+    f = ROOT / "data" / "scores.json"
+    if not f.exists():
+        return {}
+    import json
+    import sys
+    sys.path.insert(0, str(ROOT / "pipeline"))
+    from build_tiles import is_dwelling, keep
+    tot = sorted(round(r["total"]) for r in json.loads(f.read_text())
+                 if keep(r) and is_dwelling(r))
+    n = len(tot)
+    return {s: round(100 * bisect.bisect_left(tot, s) / n) for s in range(21, 90)}
 
 
 def rgb(h: str) -> tuple[int, int, int]:
@@ -111,7 +136,7 @@ def centred(d, box, text, font, fill):
             y0 + (y1 - y0 - (b[3] - b[1])) / 2 - b[1]), text, font=font, fill=fill)
 
 
-def card(score: int | None, badge: Image.Image) -> Image.Image:
+def card(score: int | None, badge: Image.Image, pct: dict) -> Image.Image:
     img = Image.new("RGB", (W, H), RED)
     d = ImageDraw.Draw(img)
 
@@ -146,15 +171,33 @@ def card(score: int | None, badge: Image.Image) -> Image.Image:
     centred(d, (CX - R, CY - R, CX + R, CY + R),
             "—" if score is None else str(score), f_score, ink)
 
-    x = CX + R + 56
-    d.text((x, 208), label, font=f_verdict, fill=INK)
-    d.text((x + 4, 292), sub, font=f_sub, fill=INK2)
+    x = CX + R + 52
+    d.text((x, 206), label, font=f_verdict, fill=INK)
+    d.text((x + 4, 288), sub, font=f_sub, fill=INK2)
     if score is not None:
-        d.text((x + 4, 336), f"{score} / 100 分", font=f_unit, fill=INK3)
+        d.text((x + 4, 330), f"{score} / 100 分", font=f_unit, fill=INK3)
 
-    d.line([(PX0 + 44, 404), (PX1 - 44, 404)], fill=(230, 228, 222), width=1)
-    d.text((PX0 + 44, 432), "撳入嚟睇飛星盤、坐向同山水方位", font=f_cta, fill=INK)
-    d.text((PX0 + 44, 480), "山水方位 · 玄空飛星 · 政府公開數據 · 每日更新",
+    # The right half was empty. What belongs there is the thing the score
+    # alone can honestly say: where it sits among every home in Hong Kong,
+    # and what the five colours on the map mean.
+    SX0, SX1 = 672, PX1 - 52
+    d.text((SX0, 200), "全港分佈", font=f_small, fill=INK3)
+    seg = (SX1 - SX0) / len(RAMP)
+    for i, hexc in enumerate(RAMP):
+        x0 = SX0 + i * seg
+        d.rectangle([x0 + 2, 232, x0 + seg - 2, 262], fill=rgb(hexc))
+        centred(d, (x0, 268, x0 + seg, 296), LABELS[i], f_small,
+                INK if (score is not None and band(score) == i) else INK3)
+    if score is not None:
+        i = band(score)
+        cx = SX0 + i * seg + seg / 2
+        d.polygon([(cx - 9, 226), (cx + 9, 226), (cx, 212)], fill=INK)
+        d.text((SX0, 318), f"贏全港 {pct.get(score, 0)}%", font=f_big, fill=INK)
+        d.text((SX0 + 2, 372), "住宅樓宇", font=f_small, fill=INK3)
+
+    d.line([(PX0 + 44, 412), (PX1 - 44, 412)], fill=(230, 228, 222), width=1)
+    d.text((PX0 + 44, 438), "撳入嚟睇飛星盤、坐向同評分拆解", font=f_cta, fill=INK)
+    d.text((PX0 + 44, 486), "山水方位 · 玄空飛星 · 政府公開數據 · 每日更新",
            font=f_foot, fill=INK3)
 
     d.text((PX0, H - 58), "hkfengshuimap.com", font=f_foot, fill=GOLD)
@@ -175,20 +218,21 @@ def main() -> None:
         f.unlink()
 
     badge = mark(96)
+    pct = percentiles()
     total = 0
     for s in range(21, 90):
-        total += save(card(s, badge), OUT / f"s{s}.png")
-    total += save(card(None, badge), OUT / "nonres.png")
+        total += save(card(s, badge, pct), OUT / f"s{s}.png")
+    total += save(card(None, badge, pct), OUT / "nonres.png")
 
     # The default card, for the home page and for links that name no building.
-    default = card(None, badge)
+    default = card(None, badge, pct)
     d = ImageDraw.Draw(default)
     d.rounded_rectangle([48, 156, W - 48, H - 76], radius=26, fill=IVORY)
     d.text((92, 206), "全港 84,720 棟樓宇", font=f_verdict, fill=INK)
     d.text((96, 300), "每一棟都有九運風水評分同玄空飛星盤", font=f_sub, fill=INK2)
-    d.line([(92, 404), (W - 92, 404)], fill=(230, 228, 222), width=1)
-    d.text((92, 432), "睇下你屋企幾多分？", font=f_cta, fill=INK)
-    d.text((92, 480), "山水方位 · 玄空飛星 · 政府公開數據 · 每日更新",
+    d.line([(92, 412), (W - 92, 412)], fill=(230, 228, 222), width=1)
+    d.text((92, 438), "撳入嚟睇下你屋企幾多分", font=f_cta, fill=INK)
+    d.text((92, 486), "山水方位 · 玄空飛星 · 政府公開數據 · 每日更新",
            font=f_foot, fill=INK3)
     d.text((48, H - 58), "hkfengshuimap.com", font=f_foot, fill=GOLD)
     save(default, ROOT / "og.png")
