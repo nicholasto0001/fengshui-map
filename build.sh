@@ -20,6 +20,12 @@ cp -R og public/og          # one preview card per score, chosen by the Worker
 # the public internet despite nothing on the page ever fetching them. These
 # tiles/ (which is also where build.json, index.json and search.json land)
 # plus these two are exactly what index.html asks for.
+# 區頁、屋苑頁同佢哋嘅平面圖。由 pipeline/make_pages.py 同 make_plans.py 出,
+# 全部係已經計好嘅數據印出嚟 —— Google 淨係讀得到呢啲，讀唔到個地圖入面嘅嘢。
+if [ -d pages/district ]; then cp -R pages/district public/district; fi
+if [ -d pages/estate ];   then cp -R pages/estate   public/estate;   fi
+if [ -d pages/plan ];     then cp -R pages/plan     public/plan;     fi
+
 mkdir -p public/data
 cp -R data/tiles public/data/tiles
 for f in district_stats.json estates.json; do
@@ -40,3 +46,4 @@ rm -f public/index.html.bak
 printf '{"build":"%s","at":"%s"}' "$BUILD" "$(date -u +'%Y-%m-%d %H:%M UTC')" > public/version.json
 
 echo "staged build ${BUILD}: $(du -sh public | cut -f1)"
+echo "  區頁 $(ls public/district 2>/dev/null | wc -l | tr -d ' ') · 屋苑頁 $(ls public/estate 2>/dev/null | wc -l | tr -d ' ') · 平面圖 $(ls public/plan 2>/dev/null | wc -l | tr -d ' ')"

@@ -28,6 +28,15 @@ from build_tiles import is_dwelling, keep        # noqa: E402
 OUT = ROOT / "pages"
 SITE = "https://hkfengshuimap.com"
 
+
+def side(path, default):
+    """額外數據唔應該搞冧主要內容。攞唔到就當冇，照出頁。"""
+    f = ROOT / path
+    if not f.exists():
+        print(f"  （冇 {path}，呢部分跳過）")
+        return default
+    return json.loads(f.read_text())
+
 BREAKS = [41, 46, 52, 58]
 LABELS = ["差", "欠佳", "平穩", "吉", "大吉"]
 TONE = ["s1", "s2", "s3", "s4", "s5"]
@@ -120,6 +129,26 @@ ul.links a{display:flex;justify-content:space-between;gap:10px;align-items:basel
  background:var(--card);border:1px solid var(--line);border-radius:12px;
  padding:11px 14px;text-decoration:none;color:var(--ink);font-size:15px;font-weight:550}
 ul.links a b{font-variant-numeric:tabular-nums;font-size:15px}
+figure.plan{margin:22px 0 0}
+.pw{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
+ background:#dfddd6;line-height:0}
+.pw img{width:100%;height:auto;display:block}
+.pl{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
+ background:rgba(0,0,0,.62);color:#fff;font-size:12px;font-weight:600;
+ padding:3px 7px;border-radius:6px;line-height:1.4;letter-spacing:.01em}
+.pl b{margin-inline-start:5px;font-variant-numeric:tabular-nums}
+.sc-m{position:absolute;left:18px;bottom:44px;color:#fff;font-size:11.5px;
+ font-weight:600;text-shadow:0 1px 3px rgba(0,0,0,.9)}
+.nn{position:absolute;right:26px;top:56px;color:#fff;font-size:11px;
+ font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.9);transform:translateX(50%)}
+figure.plan figcaption{font-size:13px;color:var(--ink3);margin:9px 2px 0;line-height:1.6}
+figure.plan i{display:inline-block;width:10px;height:10px;border-radius:3px;
+ vertical-align:-1px;margin:0 2px}
+table.kvt th{width:36%;color:var(--ink3);font-weight:600;background:transparent;position:static}
+table.kvt td{white-space:normal;font-weight:550}
+.mkt{display:flex;align-items:flex-end;gap:3px;height:74px;margin:6px 0 0}
+.mkt span{flex:1;background:var(--brand);opacity:.72;border-radius:3px 3px 0 0;min-height:2px}
+.mkt span:last-child{opacity:1}
 .cta{display:block;background:var(--brand);color:#fff;text-align:center;
  text-decoration:none;font-weight:650;font-size:17px;padding:16px;border-radius:14px;margin:30px 0 0}
 .src{font-size:13px;color:var(--ink3);margin:10px 0 0;line-height:1.6}
@@ -184,6 +213,96 @@ DISCLAIM = """<div class="warn">呢版嘅評分係<b>電腦計算</b>嘅結果�
 坐向由樓宇外形推算，誤差大約 ±10–20°，唔係羅盤實測；分數只計得到山水方位、
 坐向同周邊環境，計唔到單位入面嘅間隔、門口、爐灶、床位，亦冇夾你嘅八字。
 認真睇樓請搵專業風水師傅。</div>"""
+
+
+def plan_figure(name, rep):
+    """屋苑平面圖。標籤係真 HTML 字，唔係燒落張圖 —— 揀得、放大唔矇、
+    Google 讀得到，而且 CI 嗰邊唔使有中文字體。"""
+    if not rep:
+        return ""
+    lab = "".join(
+        f'<span class="pl" style="left:{l["x"]}%;top:{l["y"]}%">'
+        f'{e(l["t"])}<b>{l["s"]:.0f}</b></span>' for l in rep.get("labels", []))
+    alt = (f"{name}航空影像，{rep['blocks']} 座樓宇輪廓按風水評分上色，"
+           f"綠色分高、紅色分低")
+    return f"""<figure class="plan">
+  <div class="pw"><img src="/plan/{e(name)}.jpg" alt="{e(alt)}"
+       width="880" height="600" loading="lazy" decoding="async">{lab}
+    <span class="sc-m">{rep.get('scale_m', 0)} 米</span><span class="nn">北</span></div>
+  <figcaption>{e(name)} {rep['blocks']} 座嘅位置同座向。
+    顏色係風水評分：<i style="background:var(--s5)"></i> 高 →
+    <i style="background:var(--s1)"></i> 低。
+    航空影像：地政總署。</figcaption>
+</figure>"""
+
+
+def meta_panel(m):
+    """發展商、地址、落成 —— 中原同 28Hse 自己喺 data.gov.hk 出嘅開放數據。"""
+    if not m:
+        return ""
+    kv = []
+    if m.get("dev"):
+        kv.append(("發展商", "、".join(m["dev"])))
+    if m.get("dev_alt"):
+        kv.append(("發展商（另一說法）", "、".join(m["dev_alt"])))
+    if m.get("addr"):
+        kv.append(("地址", m["addr"]))
+    if m.get("year"):
+        kv.append(("落成", f"{m['year']}–{m['year_to']}" if m.get("year_to")
+                   else str(m["year"])))
+    if m.get("blocks"):
+        kv.append(("座數", f"{m['blocks']} 座"))
+    if m.get("flats"):
+        kv.append(("單位總數", f"{m['flats']:,} 伙"))
+    if not kv:
+        return ""
+    rows = "".join(f'<tr><th>{e(a)}</th><td>{e(b)}</td></tr>' for a, b in kv)
+    src = "、".join(m.get("src") or [])
+    note = ("兩個來源講嘅發展商唔同，所以兩個都列出嚟。"
+            if m.get("dev_alt") else "")
+    return (f'<h2>屋苑資料</h2><p class="note">{e(src)}喺 data.gov.hk 發佈嘅'
+            f'開放數據。{e(note)}</p>'
+            f'<div class="tw"><table class="kvt"><tbody>{rows}</tbody></table></div>')
+
+
+def tx_panel(name, tx):
+    """居屋／綠置居成交。呢啲係土地註冊處以外唯一一批免費而且逐個單位
+    嘅真成交價 —— 二手嗰啲要向土地註冊處買，我哋冇。"""
+    if not tx:
+        return ""
+    # 房委會啲日期係 DD/MM/YYYY。照字串排就變咗先排「日」——
+    # 出嚟個範圍會係「01/02/2023 至 31/01/2023」，開始遲過結束。
+    def when(t):
+        d = (t.get("date") or "").split("/")
+        return (d[2], d[1], d[0]) if len(d) == 3 else ("", "", "")
+    tx = sorted(tx, key=when, reverse=True)
+    ps = sorted(t["price"] for t in tx)
+    med = ps[len(ps) // 2]
+    areas = [t["area"] for t in tx if t.get("area")]
+    per = None
+    if areas:
+        r = sorted(t["price"] / t["area"] for t in tx if t.get("area"))
+        per = r[len(r) // 2]
+    kv = [("成交宗數", f"{len(tx):,} 宗"),
+          ("成交價中位數", f"HK${med:,.0f}"),
+          ("最低 / 最高", f"HK${ps[0]:,.0f} / HK${ps[-1]:,.0f}")]
+    if per:
+        kv.append(("每平方米中位數", f"HK${per:,.0f}"))
+    grid = "".join(f'<div class="kv"><b>{e(b)}</b><span>{e(a)}</span></div>'
+                   for a, b in kv)
+    rows = "".join(
+        f'<tr><td class="nm">{e(t["block"])}</td><td>{e(t["floor"])} 樓</td>'
+        f'<td>{t["area"]:.1f} ㎡</td>'
+        f'<td class="sc">HK${t["price"]:,.0f}</td><td>{e(t["date"])}</td></tr>'
+        for t in tx[:12] if t.get("area"))
+    return (f'<h2>居屋成交紀錄</h2>'
+            f'<p class="note">房屋委員會公開嘅銷售成交，'
+            f'{e(tx[-1].get("date",""))} 至 {e(tx[0].get("date",""))}。'
+            f'呢啲係政府銷售價，唔係二手市價。</p>'
+            f'<div class="grid">{grid}</div>'
+            + (f'<div class="tw" style="margin-top:12px"><table><thead><tr>'
+               f'<th>座</th><th>樓層</th><th>實用面積</th><th>成交價</th><th>日期</th>'
+               f'</tr></thead><tbody>{rows}</tbody></table></div>' if rows else ""))
 
 
 def blocks_table(rows):
@@ -306,7 +425,7 @@ def gather():
 
 
 # --------------------------------------------------------------- 出頁 ---
-def estate_page(es, rank, total_est, siblings):
+def estate_page(es, rank, total_est, siblings, extra):
     rows, nm = es["rows"], es["name"]
     lbl, tone = band(es["avg"])
     hi, lo = rows[0], rows[-1]
@@ -324,7 +443,10 @@ def estate_page(es, rank, total_est, siblings):
     title = (f"{nm}風水評分 — {len(rows)} 座逐座坐向、格局、飛星盤｜香港風水地圖")
     desc = (f"{nm}（{es['district']}）風水平均 {es['avg']:.1f} 分，"
             f"{total_est} 個屋苑中排第 {rank}。逐座列出評分、坐向、四大格局、"
-            f"九運飛星同最近山水距離，另附 2021 年人口普查資料。")
+            f"九運飛星同最近山水距離"
+            + ("、發展商同落成年份" if extra["meta"].get("dev") else "")
+            + ("、居屋成交價" if extra["tx"] else "")
+            + "，另附 2021 年人口普查資料。")
 
     sib = "".join(
         f'<li><a href="/estate/{e(s["name"])}">{e(s["name"])}<b>{s["avg"]:.1f}</b></a></li>'
@@ -333,6 +455,7 @@ def estate_page(es, rank, total_est, siblings):
     body = f"""
 <h1>{e(nm)}風水評分</h1>
 <p class="sub">{e(facts)}</p>
+{plan_figure(nm, extra["plan"])}
 
 <div class="hero">
   <div><div class="big" style="color:var(--{tone})">{es['avg']:.1f}</div></div>
@@ -347,7 +470,11 @@ def estate_page(es, rank, total_est, siblings):
 <p class="note">按評分由高至低排。{e(spread)}</p>
 {blocks_table(rows)}
 
+{meta_panel(extra["meta"])}
+
 {census_panel(st)}
+
+{tx_panel(nm, extra["tx"])}
 
 {'<h2>同區其他屋苑</h2><p class="note">按平均分排</p><ul class="links">' + sib + '</ul>' if sib else ''}
 
@@ -359,7 +486,37 @@ def estate_page(es, rank, total_est, siblings):
     return shell(title, desc, f"/estate/{nm}", crumbs, body)
 
 
-def district_page(d, rank, rows, estates, n_est):
+def market_panel(dname, mk):
+    """土地註冊處嘅買賣合約宗數。
+
+    佢自己嗰 10 個分區對唔正 18 個區議會分區，所以只有對得正嗰 7 個區
+    先出呢一格。夾硬砌個對應出嚟，就係講咗一樣數據本身冇講過嘅嘢。
+    """
+    if not mk or not mk.get("landreg"):
+        return ""
+    key = next((tc for en, tc in mk.get("lr_district", {}).items() if tc == dname), None)
+    if not key:
+        return ""
+    short = dname.replace("區", "")
+    series = [(m["ym"], m["regions"].get(short)) for m in mk["landreg"]]
+    series = [(a, b) for a, b in series if b is not None]
+    if len(series) < 6:
+        return ""
+    top = max(b for _, b in series)
+    bars = "".join(f'<span style="height:{100*b/top:.0f}%" '
+                   f'title="{a} · {b} 宗"></span>' for a, b in series)
+    last, prev = series[-1], series[-13] if len(series) > 13 else series[0]
+    delta = (100 * (last[1] - prev[1]) / prev[1]) if prev[1] else 0
+    return (f'<h2>{e(dname)}買賣合約宗數</h2>'
+            f'<p class="note">土地註冊處每月數字，{e(series[0][0])} 至 {e(last[0])}。'
+            f'計嘅係所有樓宇單位，唔分住宅非住宅。</p>'
+            f'<div class="bars"><div class="mkt">{bars}</div>'
+            f'<div class="bar" style="margin-top:10px"><u>{e(last[0])}</u>'
+            f'<span></span><em>{last[1]:,} 宗　'
+            f'{"↑" if delta >= 0 else "↓"} {abs(delta):.0f}% 按年</em></div></div>')
+
+
+def district_page(d, rank, rows, estates, n_est, mk):
     lbl, tone = band(d["avg"])
     top = rows[:20]
     pat = sorted(d["patterns"].items(), key=lambda x: -x[1])
@@ -395,6 +552,8 @@ def district_page(d, rank, rows, estates, n_est):
 <div class="tw"><table><thead><tr><th>樓宇</th><th>評分</th><th>等級</th>
 <th>格局</th><th>九運</th></tr></thead><tbody>{tr}</tbody></table></div>
 
+{market_panel(d["tc"], mk)}
+
 <h2>四大格局分佈</h2>
 <p class="note">排得出玄空飛星盤嗰啲樓宇</p>
 {bars(pat, sum(v for _, v in pat))}
@@ -408,6 +567,56 @@ def district_page(d, rank, rows, estates, n_est):
     return shell(title, desc, f"/district/{d['tc']}", crumbs, body)
 
 
+def hub_estates(ranked):
+    """屋苑總目錄。28Hse 排到名嘅機制唔係每版寫得好，係成個網互相扣實 ——
+    一版樞紐扣住一百幾十版，爬蟲行一次就見晒。所以呢版唔分頁。"""
+    by = collections.defaultdict(list)
+    for x in ranked:
+        by[x["district"]].append(x)
+    secs = []
+    for d in sorted(by, key=lambda k: -len(by[k])):
+        li = "".join(
+            f'<li><a href="/estate/{e(x["name"])}">{e(x["name"])}'
+            f'<b>{x["avg"]:.1f}</b></a></li>' for x in by[d])
+        secs.append(f'<h2><a href="/district/{e(d)}">{e(d)}</a></h2>'
+                    f'<p class="note">{len(by[d])} 個屋苑</p>'
+                    f'<ul class="links">{li}</ul>')
+    body = (f'<h1>香港屋苑風水評分</h1>'
+            f'<p class="sub">{len(ranked)} 個屋苑，逐座計咗九運風水評分</p>'
+            + "".join(secs) + f'<a class="cta" href="/">開地圖 →</a>{DISCLAIM}')
+    return shell(
+        f"香港屋苑風水評分一覽 — {len(ranked)} 個屋苑逐座排名｜香港風水地圖",
+        f"全港 {len(ranked)} 個屋苑嘅九運風水評分，按 18 區分類，"
+        f"每個屋苑逐座列出評分、坐向、格局同飛星盤。",
+        "/estate/", [("香港風水地圖", "/"), ("屋苑", None)], body)
+
+
+def hub_districts(ds, drank, by_dist):
+    li = "".join(
+        f'<li><a href="/district/{e(d["tc"])}">{e(d["tc"])}'
+        f'<b>{d["avg"]:.1f}</b></a></li>'
+        for d in sorted(ds, key=lambda a: -a["avg"]))
+    rows = "".join(
+        f'<tr><td class="nm">{drank[d["tc"]]}</td>'
+        f'<td class="nm"><a href="/district/{e(d["tc"])}">{e(d["tc"])}</a></td>'
+        f'<td class="sc"><span class="dot" style="background:var(--{band(d["avg"])[1]})">'
+        f'</span>{d["avg"]:.1f}</td><td>{band(d["avg"])[0]}</td>'
+        f'<td>{n(d["n"])}</td><td>{len(by_dist.get(d["tc"], []))}</td></tr>'
+        for d in sorted(ds, key=lambda a: -a["avg"]))
+    body = (f'<h1>香港 18 區風水評分排名</h1>'
+            f'<p class="sub">{n(sum(d["n"] for d in ds))} 幢樓宇，按區計平均分</p>'
+            f'<div class="tw"><table><thead><tr><th>排名</th><th>地區</th>'
+            f'<th>平均分</th><th>等級</th><th>樓宇</th><th>屋苑</th></tr></thead>'
+            f'<tbody>{rows}</tbody></table></div>'
+            f'<h2>全部地區</h2><ul class="links">{li}</ul>'
+            f'<a class="cta" href="/">開地圖 →</a>{DISCLAIM}')
+    return shell(
+        "香港 18 區風水評分排名｜香港風水地圖",
+        f"香港 18 區嘅九運風水評分排名，全港 {n(sum(d['n'] for d in ds))} 幢樓宇，"
+        f"列出各區平均分、最高分樓宇同區內屋苑排名。",
+        "/district/", [("香港風水地圖", "/"), ("地區", None)], body)
+
+
 def write(path, text):
     p = OUT / path
     p.parent.mkdir(parents=True, exist_ok=True)
@@ -418,6 +627,14 @@ def write(path, text):
 def main() -> None:
     only = sys.argv[1:] or None
     sc, home, ds, est = gather()
+    meta = side("data/estate_meta.json", {})
+    mk = side("data/market.json", {})
+    plans = side("pages/plan-report.json", {}).get("ok", {})
+    by_en = {v["en"]: v for v in meta.values() if v.get("en")}
+    tx = collections.defaultdict(list)
+    for t in mk.get("hos", []):
+        tx[t["estate"]].append(t)
+    print(f"  平面圖 {len(plans)} · 屋苑資料 {len(meta)} · 居屋成交 {len(tx)} 個屋苑")
     ranked = sorted(est.values(), key=lambda x: -x["avg"])
     for i, x in enumerate(ranked):
         x["rank"] = i + 1
@@ -437,18 +654,30 @@ def main() -> None:
         if only and x["name"] not in only:
             continue
         sib = [s for s in by_dist[x["district"]] if s["name"] != x["name"]][:12]
+        extra = {"plan": plans.get(x["name"]),
+                 "meta": meta.get(x["name"]) or by_en.get(x.get("en")) or {},
+                 "tx": tx.get(x["name"]) or []}
         write(f"estate/{x['name']}.html",
-              estate_page(x, x["rank"], len(ranked), sib))
+              estate_page(x, x["rank"], len(ranked), sib, extra))
         made += 1
     for d in ds:
         if only and d["tc"] not in only:
             continue
         write(f"district/{d['tc']}.html",
               district_page(d, drank[d["tc"]], rows_by_dist[d["tc"]],
-                            by_dist[d["tc"]][:40], len(by_dist[d["tc"]])))
+                            by_dist[d["tc"]][:40], len(by_dist[d["tc"]]), mk))
         made += 1
 
+    if not only:
+        write("estate/index.html", hub_estates(ranked))
+        write("district/index.html", hub_districts(ds, drank, by_dist))
+        made += 2
+
+    got = sum(1 for x in ranked if plans.get(x["name"]))
     print(f"{made} 版 -> {OUT}")
+    print(f"  有平面圖 {got} · 有發展商 "
+          f"{sum(1 for x in ranked if (meta.get(x['name']) or {}).get('dev'))} · "
+          f"有成交 {sum(1 for x in ranked if tx.get(x['name']))}")
     print(f"  屋苑 {len(ranked)} 個（房委會 {sum(1 for x in ranked if x['ha'])} · "
           f"普查新增 {sum(1 for x in ranked if not x['ha'])}）")
 
