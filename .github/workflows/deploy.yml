@@ -84,6 +84,7 @@ jobs:
           python pipeline/fetch_op.py
           python pipeline/fetch_districts.py
           python pipeline/fetch_bd_age.py
+          python pipeline/fetch_housing.py
           python pipeline/fetch_facilities.py
 
       # Saved as soon as the crawl lands, before anything downstream can fail.

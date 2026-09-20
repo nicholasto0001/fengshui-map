@@ -50,7 +50,9 @@ COLUMNS = [
     "now",       # 22 how that chart stands in the CURRENT period (九運)
     "res",       # 23 1 = looks like somewhere people live, 0 = not
     "conf",      # 24 confidence in the derived facing, 0-1
-    "ring",      # 25 footprint: [lon0, lat0, then integer deltas x1e-5 deg]
+    "est",       # 25 estate name, when the Housing Authority register names it;
+                 #    look the rest of the estate's detail up in estates.json
+    "ring",      # 26 footprint: [lon0, lat0, then integer deltas x1e-5 deg]
 ]
 
 
@@ -154,8 +156,33 @@ def row_for(r: dict) -> list:
         r.get("op_year"), r.get("period"),
         r.get("facing"), r.get("sit_m"), r.get("face_m"), r.get("pattern"),
         r.get("now"), 1 if is_dwelling(r) else 0, r.get("conf"),
+        (r.get("estate") or {}).get("estate") or None,
         flat,
     ]
+
+
+def build_estates(scores: list[dict]) -> None:
+    """How many blocks, how many flats, who manages it — what a buyer asks
+    before anything else. The Housing Authority publishes it per estate, so it
+    lives in one file the page fetches once, keyed by the name in column `est`.
+    """
+    out: dict[str, dict] = {}
+    for r in scores:
+        e = r.get("estate")
+        if not e or not e.get("estate"):
+            continue
+        out.setdefault(e["estate"], {
+            "kind": e.get("kind"),
+            "mgmt": e.get("mgmt"),
+            "flats": e.get("flats"),
+            "nblocks": e.get("nblocks"),
+            "year": e.get("year"),
+        })
+    p = DATA / "estates.json"
+    p.write_text(json.dumps(out, separators=(",", ":"), ensure_ascii=False))
+    named = sum(1 for r in scores if (r.get("estate") or {}).get("estate"))
+    print(f"estates: {len(out):,} 個屋苑 · {named:,} 幢有屋苑資料 "
+          f"-> {p.name} ({p.stat().st_size/1024:.0f} KB)")
 
 
 def main() -> None:
@@ -198,6 +225,7 @@ def main() -> None:
 
     build_search(scores)
     build_districts(scores)   # the on-map subset, so counts match the filter
+    build_estates(scores)
     stamp(len(scores), len(all_scores))
 
 

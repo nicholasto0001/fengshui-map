@@ -307,6 +307,14 @@
      value a defined edge whatever its colour. */
   .bars .fl{height:11px; border-radius:0 4px 4px 0; box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
   .bars .vl{text-align:right; font-size:13px; font-variant-numeric:tabular-nums}
+  .fhd{
+    font-size:10.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--ink3); margin:0 0 8px;
+  }
+  .ftag{
+    display:inline-block; padding:2px 8px; border-radius:999px; background:#eceae4;
+    color:#55534e; font-size:11.5px; font-weight:600; letter-spacing:.02em;
+  }
   dl.facts{display:grid; grid-template-columns:auto 1fr; gap:6px 14px; margin:0 0 16px}
   dl.facts dt{color:var(--ink3); font-size:13px}
   dl.facts dd{margin:0; font-size:13.5px; font-variant-numeric:tabular-nums}
@@ -966,6 +974,18 @@ async function loadDistricts(){
     if(!minSel) showOverview();
   }catch(e){ toast("分區數據載入失敗"); }
 }
+// 屋苑資料 covers 2,543 blocks out of 74,696, so it is fetched the first time
+// someone actually opens one rather than held in front of the first paint.
+let estateData = null, estatePromise = null;
+function loadEstates(){
+  if(!estatePromise)
+    estatePromise = fetch(dataUrl('../estates.json'))
+      .then(r => r.json())
+      .then(d => (estateData = d))
+      .catch(() => (estateData = {}));
+  return estatePromise;
+}
+
 function drawDistricts(){
   districtLayer.clearLayers();
   if(map.getZoom()>=BUILDING_ZOOM) return;
@@ -1138,6 +1158,29 @@ function renderBuilding(o, layer){
             <p class="liqi-sub">未能起盤 — ${why}。</p></div>`;
   }
 
+  // Blocks in the Housing Authority register come with what a buyer asks first:
+  // which estate, how many blocks, how many flats, who manages it.
+  let estate = "";
+  if (o.est){
+    if (estateData === null) loadEstates().then(() => {
+      if (minSel === o.id) renderBuilding(o, layer);   // still the open one
+    });
+    const e = (estateData || {})[o.est] || {};
+    const rows = [
+      ["座數", e.nblocks && `${num(+e.nblocks,0)} 座`],
+      ["單位數目", e.flats && `${num(+e.flats,0)} 個`],
+      ["管理公司", clean(e.mgmt)],
+    ].filter(r => r[1]);
+    estate = `
+      <div class="estate">
+        <p class="fhd">屋苑資料</p>
+        <dl class="facts">
+          <dt>屋苑</dt><dd>${esc(o.est)}${e.kind?` <span class="ftag">${esc(e.kind)}</span>`:""}</dd>
+          ${rows.map(([k,v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join("")}
+        </dl>
+      </div>`;
+  }
+
   sheetBody.innerHTML=`
     <p class="bname">${esc(title)}</p>
     <p class="ben">${esc([clean(o.en)!==title?clean(o.en):null, clean(o.district)].filter(Boolean).join(" · "))}</p>
@@ -1157,6 +1200,7 @@ function renderBuilding(o, layer){
       <dt>山水配對</dt><dd>${o.mwds8>0?`合九運格局（${o.mwds8}/9）`:"不成對，此項 0 分"}</dd>
       <dt>樓高</dt><dd>${num(o.h,0)} 米${o.storeys?`　${num(o.storeys,0)} 層`:""}</dd>
     </dl>
+    ${estate}
     <div class="actions">
       <button class="act ${isFav(o)?"saved":""}" id="btnSave">
         <span class="ico">${isFav(o)?"♥":"♡"}</span>${isFav(o)?"已收藏":"收藏"}</button>

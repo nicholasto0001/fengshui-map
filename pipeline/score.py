@@ -87,6 +87,16 @@ def main() -> None:
     BD_TOL = 35.0        # metres between a footprint centroid and a BD point
     BD_HOME = "住宅"      # 住宅/綜合用途 is the only class people live in
 
+    # Public housing is excluded from RVD's completion years by policy and the
+    # permit join never reaches it, so these blocks had no 元運 at all.
+    housing = load("housing.json") or {}
+    print(f"housing authority blocks: {len(housing):,}")
+
+    import re as _re, unicodedata as _ud
+    def hkey(s):
+        s = _ud.normalize("NFKC", s or "").upper()
+        return _re.sub(r"[\s·・,，.。\-–—()（）'’\"]", "", s)
+
     # CSDI's building layer carries no district, so assign it here.
     districts = load("districts.json")
     dsets = PolygonSet(districts) if districts else None
@@ -126,13 +136,25 @@ def main() -> None:
         # Fall back to the BD record for anything the permit join missed, and
         # always prefer its use class — it is an official classification, not
         # an inference from a name.
+        # Housing Authority block names are exact, so they outrank a spatial
+        # guess; they only ever fill a gap, never overwrite a permit.
+        est = None
+        if housing and op_year is None:
+            for nm in (b.get("tc"), b.get("en")):
+                h = housing.get(hkey(nm))
+                if h:
+                    op_year = h["year"]
+                    residential = True
+                    est = h
+                    break
+
         if bd_idx:
             bd_d, bd_i = bd_idx.nearest(x, y)
             if bd_d is not None and bd_d <= BD_TOL:
                 bv = bd_vals[bd_i]
                 if op_year is None and bv.get("year"):
                     op_year = bv["year"]
-                if bv.get("use"):
+                if bv.get("use") and est is None:
                     residential = BD_HOME in bv["use"]
 
         if axis is not None:
@@ -160,6 +182,7 @@ def main() -> None:
             "conf": round(conf, 2),
             "op_year": op_year, "period": period,
             "sit_m": sit_m, "face_m": face_m, "pattern": pattern, "now": now_code,
+            "estate": est,
             "residential": residential,
         })
 
@@ -194,6 +217,7 @@ def main() -> None:
             "op_year": r["op_year"], "period": r["period"],
             "sit_m": r["sit_m"], "face_m": r["face_m"], "pattern": r["pattern"],
             "now": r["now"], "residential": r["residential"],
+            "estate": r.get("estate"),
         })
 
     out.sort(key=lambda r: -r["total"])
