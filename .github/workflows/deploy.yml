@@ -1,8 +1,19 @@
 name: Build and deploy
 
-# One path to production. Every deploy rebuilds the data and hands the result
-# straight to Cloudflare, so nothing generated is ever committed — a fresh 33 MB
-# of tiles per day would bury the repository within a month.
+# Two targets, and main is not the live one.
+#
+#   push to main        -> staging   (fengshuimap-staging.workers.dev)
+#   push to production  -> live      (hkfengshuimap.com)
+#   nightly cron        -> live      (the daily data refresh)
+#
+# A push used to reach every reader about two minutes later with nobody having
+# looked at it. Now ./ship.sh is the only thing that moves the live site, and
+# it only ever promotes a commit that has already been built and seen on
+# staging.
+#
+# Every deploy rebuilds the data and hands the result straight to Cloudflare,
+# so nothing generated is ever committed — a fresh 33 MB of tiles per day would
+# bury the repository within a month.
 #
 # The slow part is crawling CSDI for 213k buildings (~25 min). That result is
 # cached per day, so the first run each day pays for it and every push
@@ -10,7 +21,7 @@ name: Build and deploy
 
 on:
   push:
-    branches: [main]
+    branches: [main, production]
   schedule:
     - cron: "0 21 * * *"      # 05:00 Hong Kong time
   workflow_dispatch:
@@ -24,7 +35,9 @@ permissions:
   contents: write
 
 concurrency:
-  group: deploy
+  # Staging and live queue separately, so checking something on staging cannot
+  # hold up a fix to the live site.
+  group: deploy-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -32,6 +45,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # A schedule always fires on the default branch, so the nightly data
+          # refresh would otherwise carry whatever happens to be sitting on
+          # main straight to the live site. It builds the live branch instead:
+          # new data, reviewed code.
+          ref: ${{ github.event_name == 'schedule' && 'production' || github.ref }}
+
+      - name: Decide where this is going
+        id: target
+        run: |
+          # Anything that is not the production branch or the nightly refresh
+          # goes to staging. Defaulting the other way is how a site ends up
+          # live by accident.
+          if [ "${{ github.ref }}" = "refs/heads/production" ] || \
+             [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "env=" >> "$GITHUB_OUTPUT"
+            echo "where=live · hkfengshuimap.com" >> "$GITHUB_OUTPUT"
+          else
+            echo "env=--env staging" >> "$GITHUB_OUTPUT"
+            echo "where=staging" >> "$GITHUB_OUTPUT"
+          fi
 
       - uses: actions/setup-python@v5
         with:
@@ -120,8 +154,8 @@ jobs:
       # `assets` config — it still expected `experimental_assets`, so it could
       # not read wrangler.jsonc at all. Calling wrangler directly pins the
       # current major instead of whatever the action happens to ship.
-      - name: Deploy to Cloudflare
-        run: npx --yes wrangler@4 deploy
+      - name: Deploy to Cloudflare (${{ steps.target.outputs.where }})
+        run: npx --yes wrangler@4 deploy ${{ steps.target.outputs.env }}
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -137,5 +171,8 @@ jobs:
             echo "reference data unchanged"
           else
             git commit -m "data: refresh reference layers $(date -u +%Y-%m-%d)"
-            git push
+            # Onto main, where development happens — the live branch is only
+            # ever moved by ship.sh, and a commit made here would be discarded
+            # by the next promotion anyway.
+            git push origin HEAD:main || echo "could not fast-forward main; skipped"
           fi

@@ -144,6 +144,18 @@ async function cardFor(url, env) {
   return null;
 }
 
+/** Stamp a staging response: visible to a reader, and closed to crawlers. */
+function mark(res, url) {
+  if (!res.headers.get("content-type")?.includes("text/html")) return res;
+  const out = new HTMLRewriter()
+    .on("body", {
+      element(el) { el.prepend(STAGING_RIBBON, {html: true}); },
+    })
+    .transform(new Response(res.body, res));
+  out.headers.set("x-robots-tag", "noindex, nofollow");
+  return out;
+}
+
 /** Replace the value of the meta tags the card owns; leave the rest alone. */
 class Meta {
   constructor(card, url) {
@@ -195,15 +207,33 @@ export default {
   },
 };
 
+const LIVE_HOST = "hkfengshuimap.com";
+
+/* Staging carries the whole site at a different address, which is exactly how
+   someone ends up reading it, sharing it, or letting Google index it by
+   mistake. So it says so on its face and asks not to be indexed. */
+const STAGING_RIBBON = `<div style="position:fixed;z-index:9999;left:0;right:0;top:0;
+  background:#b4530f;color:#fff;font:600 12px/1.6 -apple-system,system-ui,sans-serif;
+  text-align:center;padding:3px 8px;letter-spacing:.04em">測試版 STAGING · 未上線</div>`;
+
 async function handle(request, env, ctx) {
     const url = new URL(request.url);
+    const live = url.hostname === LIVE_HOST;
+
+    if (!live && url.pathname === "/robots.txt") {
+      return new Response("User-agent: *\nDisallow: /\n",
+                          {headers: {"content-type": "text/plain; charset=utf-8"}});
+    }
     const shared =
       url.searchParams.has("b") ||
       url.searchParams.has("list") ||
       url.searchParams.has("d") ||
       url.searchParams.has("g");
 
-    if (!shared || request.method !== "GET") return env.ASSETS.fetch(request);
+    if (!shared || request.method !== "GET") {
+      const plain = await env.ASSETS.fetch(request);
+      return live ? plain : mark(plain, url);
+    }
 
     // Real visitors follow these links too, so the rewritten document is
     // cached: only the first request for a given building pays for the tile
@@ -229,6 +259,7 @@ async function handle(request, env, ctx) {
       .transform(new Response(res.body, res));
 
     out.headers.set("cache-control", "public, max-age=300, s-maxage=86400");
+    if (!live) return mark(out, url);
     ctx.waitUntil(cache.put(request, out.clone()));
     return out;
 }

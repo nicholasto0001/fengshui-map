@@ -18,6 +18,23 @@
     // Scoped to the document alone on purpose: listing every path would put
     // all 361 tile fetches through the Worker and turn one page view into
     // hundreds of invocations.
-    "run_worker_first": ["/"]
+    "run_worker_first": ["/", "/robots.txt"]
+  },
+
+  // A staging copy of the whole site, so nothing reaches hkfengshuimap.com
+  // without someone having looked at it first. Same code, same data, its own
+  // Worker and its own workers.dev URL; the custom domain stays on the
+  // production Worker and is never touched by a staging deploy.
+  "env": {
+    "staging": {
+      "name": "fengshuimap-staging",
+      "workers_dev": true,
+      "main": "./worker/index.js",
+      "assets": {
+        "directory": "./public/",
+        "binding": "ASSETS",
+        "run_worker_first": ["/", "/robots.txt"]
+      }
+    }
   }
 }
