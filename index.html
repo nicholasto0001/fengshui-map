@@ -182,19 +182,22 @@
 
   /* ---------- match list ---------- */
   .mlist{list-style:none; margin:0 0 14px; padding:0}
+  /* 一行至少 56px 高 —— 44pt 係 Apple 由第一代 iPhone 用到今日嘅最細觸控
+     目標，一張要用手指篤嘅清單值得畀多過最低要求。 */
   .mlist li{
-    display:grid; grid-template-columns:40px 1fr auto; align-items:center; gap:11px;
-    padding:9px 8px; border-radius:10px; cursor:pointer; border-bottom:1px solid #f4f3ef;
+    display:grid; grid-template-columns:46px 1fr auto; align-items:center; gap:13px;
+    min-height:56px; padding:11px 8px; border-radius:10px; cursor:pointer;
+    border-bottom:1px solid #f4f3ef;
   }
   .mlist li:hover,.mlist li:active{background:var(--bg)}
   .mlist .sc{
-    width:40px; height:40px; border-radius:50%; display:grid; place-items:center;
-    font-size:14px; font-weight:700; font-variant-numeric:tabular-nums;
+    width:46px; height:46px; border-radius:50%; display:grid; place-items:center;
+    font-size:16px; font-weight:700; font-variant-numeric:tabular-nums;
   }
-  .mlist .nm{font-size:14px; font-weight:600; line-height:1.3}
-  .mlist .mt{font-size:11.5px; color:var(--ink3); margin-top:1px}
-  .mlist .go{color:var(--ink3); font-size:15px}
-  .mcount{font-size:12.5px; color:var(--ink3); margin:0 0 10px}
+  .mlist .nm{font-size:17px; font-weight:600; line-height:1.3}
+  .mlist .mt{font-size:13.5px; color:var(--ink3); margin-top:2px}
+  .mlist .go{color:var(--ink3); font-size:17px}
+  .mcount{font-size:14.5px; color:var(--ink3); margin:0 0 12px; line-height:1.55}
   .homes{
     display:flex; align-items:center; gap:8px; margin:0 0 14px; cursor:pointer;
     font-size:13px; color:var(--ink2); user-select:none;
@@ -275,6 +278,80 @@
   }
   @media (min-width:560px){ #sharenudge{left:50%; right:auto; transform:translateX(-50%); max-width:480px} }
 
+
+  /* ---------- 會員 ----------
+     Apple 嘅內文標準係 17pt。呢個 app 之前喺 13–13.5px，對「好大年紀都
+     識用」嚟講太細，所以清單同資料嗰啲字推上 16–17px，所有撳得嘅嘢最少
+     44px 高 —— 44pt 係 Apple 由第一代 iPhone 用到而家嘅最細觸控目標。 */
+  .acct{
+    display:flex; align-items:center; gap:12px; width:100%;
+    min-height:56px; padding:10px 14px; margin:0 0 14px;
+    background:var(--card2,#f3f1ec); border:1px solid var(--line);
+    border-radius:14px; text-align:left; font:inherit; cursor:pointer;
+  }
+  .acct .av{
+    width:34px; height:34px; border-radius:50%; flex:none; object-fit:cover;
+    background:#1b4f8f; color:#fff; display:grid; place-items:center;
+    font-size:16px; font-weight:700;
+  }
+  .acct .ai{font-size:16px; font-weight:650; color:var(--ink); flex:1}
+  .acct-out{flex-wrap:wrap}
+  .acct-out .ai{flex:0 0 auto}
+  .acct-out .as{font-size:13.5px; color:var(--ink3); flex:1 0 100%; margin-top:-2px}
+  .acct-out .ag{color:var(--ink3); font-size:20px; line-height:1}
+  .aout{
+    border:0; background:transparent; color:var(--ink3);
+    font:inherit; font-size:14px; padding:10px 4px; min-height:44px; cursor:pointer;
+  }
+
+  .ltabs{display:flex; gap:8px; overflow-x:auto; margin:0 0 14px; padding-bottom:2px;
+         -webkit-overflow-scrolling:touch; scrollbar-width:none}
+  .ltabs::-webkit-scrollbar{display:none}
+  .ltab{
+    flex:none; min-height:38px; padding:8px 15px; border-radius:999px;
+    border:1px solid var(--line); background:var(--card); color:var(--ink2);
+    font:inherit; font-size:15px; font-weight:600; cursor:pointer; white-space:nowrap;
+  }
+  .ltab.on{background:var(--ink); color:#fff; border-color:var(--ink)}
+  .ltab-new{color:var(--ink3); font-size:18px; padding:8px 14px}
+
+  .signin{padding:8px 2px 4px}
+  .si-h{font-size:24px; font-weight:700; letter-spacing:-.02em; margin:0 0 6px}
+  .si-s{font-size:16px; color:var(--ink2); margin:0 0 22px; line-height:1.55}
+  /* Google 規定用佢自己個掣、佢自己個 logo、佢自己嗰句字，唔可以自己砌。 */
+  .gbtn{
+    display:flex; align-items:center; justify-content:center; gap:11px;
+    width:100%; min-height:52px; border-radius:13px;
+    background:#fff; color:#1f1f1f; border:1px solid #dadce0;
+    font:inherit; font-size:17px; font-weight:600; cursor:pointer;
+    box-shadow:0 1px 2px rgba(0,0,0,.06);
+  }
+  .gbtn:active{background:#f4f4f4}
+  .si-opt{
+    display:flex; gap:12px; align-items:flex-start;
+    margin:22px 0 0; padding:12px 2px; min-height:44px; cursor:pointer;
+  }
+  .si-opt input{width:22px; height:22px; margin:0; flex:none; accent-color:#1b4f8f}
+  .si-opt span{font-size:16px; color:var(--ink); line-height:1.45}
+  .si-opt i{display:block; font-style:normal; font-size:13.5px; color:var(--ink3); margin-top:2px}
+  .si-legal{font-size:13.5px; color:var(--ink3); line-height:1.6; margin:18px 0 0}
+  .si-legal a{color:#1b4f8f}
+
+  .picklist{list-style:none; margin:12px 0 0; padding:0}
+  .picklist li{
+    display:flex; align-items:center; justify-content:space-between;
+    min-height:56px; padding:14px 4px; border-bottom:1px solid var(--line);
+    font-size:17px; cursor:pointer;
+  }
+  .picklist li b{color:#0f6354; font-size:18px}
+  .picklist .newl{color:#1b4f8f; font-weight:600; border-bottom:0}
+
+  /* toast 上面嗰個動作 */
+  .tact{
+    margin-left:12px; border:0; background:transparent; color:#7fb0e8;
+    font:inherit; font-weight:700; padding:6px 2px; cursor:pointer;
+  }
+
   /* ---------- bottom sheet ---------- */
   /* Three snap points, the way every native map app behaves. Opening a
      building used to fill the screen, leaving no map to steer by — half is
@@ -338,8 +415,8 @@
     color:#55534e; font-size:11.5px; font-weight:600; letter-spacing:.02em;
   }
   dl.facts{display:grid; grid-template-columns:auto 1fr; gap:6px 14px; margin:0 0 16px}
-  dl.facts dt{color:var(--ink3); font-size:13px}
-  dl.facts dd{margin:0; font-size:13.5px; font-variant-numeric:tabular-nums}
+  dl.facts dt{color:var(--ink3); font-size:15px}
+  dl.facts dd{margin:0; font-size:16px; font-variant-numeric:tabular-nums}
   .gmaps{
     display:block; text-align:center; text-decoration:none; font-size:14px; font-weight:600;
     color:var(--brand); border:1px solid var(--line); border-radius:12px; padding:11px; margin-bottom:14px;
@@ -885,10 +962,19 @@ function markBase(name){
 
 /* -------------------------------------------------------------- toast --- */
 const toastEl=document.getElementById("toast"); let toastT=null;
-function toast(msg,ms=2200){
+function toast(msg,ms=2200,action){
   clearTimeout(toastT);
   if(!msg){toastEl.classList.remove("show");return;}
-  toastEl.textContent=msg; toastEl.classList.add("show");
+  toastEl.textContent=msg;
+  // 「已收藏到「大埔」· 更改」—— 撳一下就得，唔撳就當冇事。一個動作永遠
+  // 唔應該逼人做第二個決定。
+  if(action){
+    const b=document.createElement("button");
+    b.className="tact"; b.textContent=action.label;
+    b.addEventListener("click",e=>{e.stopPropagation(); toast(null); action.run();});
+    toastEl.appendChild(b);
+  }
+  toastEl.classList.add("show");
   if(ms) toastT=setTimeout(()=>toastEl.classList.remove("show"),ms);
 }
 
@@ -1128,6 +1214,7 @@ function openSheet(){ if(sheetState() === "peek") setSheet("half"); }
 
 function select(o,layer){
   minSel=o.id;
+  markViewed(o);
   track("view_building", {
     name: (o.tc || o.en || "unnamed"),
     district: o.district || "",
@@ -1334,7 +1421,11 @@ function renderBuilding(o, layer){
     </details>`;
 
   const bs = sheetBody.querySelector("#btnSave");
-  if(bs) bs.addEventListener("click", () => { toggleFav(o); renderBuilding(o, layer); });
+  // toggleFav 有機會自己接管咗成個面板（未登入去收藏），嗰陣唔可以再畫返
+  // 樓宇資料落去，否則個登入畫面出咗一剎就冇咗。
+  if(bs) bs.addEventListener("click", () => {
+    if(toggleFav(o) !== "took-over") renderBuilding(o, layer);
+  });
   const sh = sheetBody.querySelector("#btnShare");
   if(sh) sh.addEventListener("click", () => shareBuilding(o));
 }
@@ -1342,24 +1433,75 @@ function renderBuilding(o, layer){
 let favView = false;
 let sharedList = null;          // a shortlist opened from someone else's link
 
+/* 帳戶唔會出現喺頂部工具列 —— 九成半人入嚟只想睇自己屋企幾多分，一個登入
+   掣對佢哋嚟講只係阻頭阻勢。佢淨係出現喺收藏面板，即係佢真正有用嗰個位。 */
+function accountHTML(){
+  if(!me) return `
+    <button class="acct acct-out" id="btnAcctIn">
+      <span class="ai">登入保存</span>
+      <span class="as">換部電話都仲喺度</span>
+      <span class="ag">›</span>
+    </button>`;
+  const initial = (me.name || me.email || "?").trim().charAt(0);
+  return `
+    <div class="acct acct-in">
+      ${me.avatar ? `<img class="av" src="${esc(me.avatar)}" alt="" referrerpolicy="no-referrer">`
+                  : `<span class="av av-t">${esc(initial)}</span>`}
+      <span class="ai">${esc(me.name || me.email)}</span>
+      <button class="aout" id="btnAcctOut">登出</button>
+    </div>`;
+}
+
+function listTabsHTML(){
+  if(!me || myLists.length < 1) return "";
+  return `<div class="ltabs">
+    ${myLists.map(l=>`<button class="ltab${l.id===curListId?" on":""}" data-id="${l.id}">
+      ${esc(l.name)}</button>`).join("")}
+    <button class="ltab ltab-new" data-new="1">＋</button>
+  </div>`;
+}
+
+function wireFavChrome(){
+  const i = sheetBody.querySelector("#btnAcctIn");
+  if(i) i.addEventListener("click", ()=>askSignIn(null));
+  const o = sheetBody.querySelector("#btnAcctOut");
+  if(o) o.addEventListener("click", signOut);
+  sheetBody.querySelectorAll(".ltab").forEach(t=>t.addEventListener("click", async ()=>{
+    if(t.dataset.new){
+      const name = prompt("新清單叫咩名？例如「大埔」", "");
+      if(!name || !name.trim()) return;
+      await createList(name);
+    } else {
+      setCurrentList(t.dataset.id);
+      track("list_switch", {});
+    }
+    await loadSaved();
+    showFavs();
+  }));
+}
+
 function showFavs(){
   const list = sharedList || favs;
   const mine = !sharedList;
-  gripText.textContent = mine ? `我的收藏 · ${favs.length} 個` : `朋友分享嘅清單 · ${list.length} 個`;
+  const title = mine ? (me ? curListName() : "我的收藏") : "朋友分享嘅清單";
+  gripText.textContent = mine ? `${title} · ${favs.length} 個` : `${title} · ${list.length} 個`;
   if(!list.length){
     sheetBody.innerHTML = `
-      <p class="bname">我的收藏</p>
+      ${mine ? accountHTML() + listTabsHTML() : ""}
+      <p class="bname">${esc(title)}</p>
       <p class="mcount">仲未收藏任何樓宇。撳地圖上任何一棟樓，再撳「收藏」就會加入呢度，
          之後可以一次過分享成張清單俾屋企人或者經紀。</p>
       <p class="build" id="buildStamp">${APP_VERSION}</p>`;
     fillBuildStamp();
+    if(mine) wireFavChrome();
     return;
   }
   sheetBody.innerHTML = `
+    ${mine ? accountHTML() + listTabsHTML() : ""}
     ${mine ? "" : `<div class="shared-note">
       <b>呢個係朋友分享嘅樓盤清單</b>
       <span>你可以逐個撳入去睇評分。想睇自己屋企幾多分？用上面搜尋欄搵你個屋苑。</span></div>`}
-    <p class="bname">${mine ? "我的收藏" : "朋友揀咗嘅樓盤"}</p>
+    <p class="bname">${mine ? esc(title) : "朋友揀咗嘅樓盤"}</p>
     <p class="mcount">${list.length} 個樓盤，按分數由高至低排列。</p>
     ${mine ? `<div class="sharebar">
       <div><b>分享成一張清單</b><span>一條連結，對方撳開就睇晒你揀嘅樓同評分。</span></div>
@@ -1373,6 +1515,7 @@ function showFavs(){
       </li>`).join("")}</ul>
     <p class="build" id="buildStamp">${APP_VERSION}</p>`;
   fillBuildStamp();
+  if(mine) wireFavChrome();
   const sl = sheetBody.querySelector("#btnShareList");
   if(sl) sl.addEventListener("click", shareList);
   const sorted = [...list].sort((a,b)=>(b.total||0)-(a.total||0));
@@ -1585,25 +1728,339 @@ try{ favs = JSON.parse(localStorage.getItem(FAV_KEY) || "[]"); }catch{ favs = []
 const favKeyOf = o => `${(+o.lat).toFixed(5)},${(+o.lon).toFixed(5)}`;
 const isFav = o => favs.some(f => favKeyOf(f) === favKeyOf(o));
 
-function saveFavs(){
-  try{ localStorage.setItem(FAV_KEY, JSON.stringify(favs)); }catch{}
+function paintFavChip(){
   const chip = document.getElementById("btnFav");
+  if(!chip) return;
   chip.innerHTML = `<span class="hrt">♥</span>收藏` +
     (favs.length ? `<span class="cnt">${favs.length}</span>` : "");
   chip.classList.toggle("on", favView);
 }
 
+// 登入咗就以伺服器為準；localStorage 只係未登入時嘅家，登入之後唔再寫，
+// 否則兩邊各有一份，第二部機打開就對唔上。
+function saveFavs(){
+  if(!me){ try{ localStorage.setItem(FAV_KEY, JSON.stringify(favs)); }catch{} }
+  paintFavChip();
+}
+
+/* =========================================================== 會員 ===
+   設計上一個決定：supabase-js 係 218 KB，而九成半入嚟嘅人只係想睇下自己
+   屋企幾多分，一世都唔會撳登入。所以個 library 唔會喺開頁嗰陣載 —— 要到
+   真係需要（有人撳收藏、開收藏面板、或者啱啱由 Google 跳返嚟）先至載。
+   個地圖依然係純靜態檔，冇咗資料庫都照用。
+   ------------------------------------------------------------------ */
+const SUPA_URL = "https://dpobzqzflmgkuzxqiggt.supabase.co";
+const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwb2J6cXpmbG1na3V6eHFpZ2d0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NzgzNzcsImV4cCI6MjEwNTQ1NDM3N30.8cqTo4SZbWhmvX2u69J1fHyp6gNu9N8vFedgeCVD_5M";
+const SUPA_JS  = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js";
+const PRIVACY_VERSION = "2026-09-20";
+
+let sb = null, me = null, myLists = [], curListId = null;
+let sbLoading = null;
+
+const LAST_LIST_KEY = "fs_last_list";
+
+async function ensureSupabase(){
+  if(sb) return sb;
+  if(!sbLoading) sbLoading = new Promise((res, rej) => {
+    const el = document.createElement("script");
+    el.src = SUPA_JS; el.async = true;
+    el.onload = res; el.onerror = rej;
+    document.head.appendChild(el);
+  }).then(() => {
+    sb = window.supabase.createClient(SUPA_URL, SUPA_KEY, {
+      auth: {persistSession: true, autoRefreshToken: true, detectSessionInUrl: true},
+    });
+    sb.auth.onAuthStateChange((_e, session) => applySession(session));
+    return sb;
+  }).catch(() => {
+    // 冇網絡或者俾攔截器擋住：唔好整冧個地圖，靜靜哋退返去本機收藏。
+    sbLoading = null;
+    return null;
+  });
+  return sbLoading;
+}
+
+function applySession(session){
+  const u = session && session.user;
+  me = u ? {
+    id: u.id,
+    name: (u.user_metadata && (u.user_metadata.full_name || u.user_metadata.name)) || "",
+    avatar: (u.user_metadata && u.user_metadata.avatar_url) || "",
+    email: u.email || "",
+  } : null;
+  // GA 認得同一個人喺唔同部機，但收到嘅係一串無意義嘅 id，唔係電郵。
+  if(me && window.gtag) gtag("config", GA_ID, {user_id: me.id});
+  paintFavChip();
+}
+
+/* 由 Google 返嚟嗰陣 URL 會帶住 ?code= 或者 #access_token，要即刻處理，
+   唔可以等人撳嘢先至載 library。 */
+function hasAuthResponse(){
+  return /[?&]code=/.test(location.search) || /access_token=/.test(location.hash);
+}
+
+async function signIn(){
+  const s = await ensureSupabase();
+  if(!s){ toast("連唔到伺服器，請稍後再試"); return; }
+  localStorage.setItem("fs_pending_consent", JSON.stringify({
+    marketing: !!document.getElementById("optMarketing")?.checked,
+    at: Date.now(),
+  }));
+  track("signin_start", {});
+  await s.auth.signInWithOAuth({
+    provider: "google",
+    options: {redirectTo: location.origin + location.pathname + location.search},
+  });
+}
+
+async function signOut(){
+  if(!sb) return;
+  await sb.auth.signOut();
+  me = null; myLists = []; curListId = null;
+  track("signout", {});
+  loadLocalFavs();
+  showFavs();
+}
+
+/* 登入之後第一件事 —— 靜靜哋做，唔好彈框問「要唔要合併」。 */
+async function afterSignIn(){
+  let pending = null;
+  try{ pending = JSON.parse(localStorage.getItem("fs_pending_consent") || "null"); }catch{}
+  if(pending){
+    localStorage.removeItem("fs_pending_consent");
+    await sb.from("consents").insert([
+      {user_id: me.id, kind: "privacy",   version: PRIVACY_VERSION, granted: true, source: "signup"},
+      {user_id: me.id, kind: "marketing", version: PRIVACY_VERSION, granted: !!pending.marketing, source: "signup"},
+    ]);
+    track("signin_done", {marketing: !!pending.marketing});
+  }
+  await loadLists();
+  await mergeLocalFavs();
+
+  // 佢撳收藏先至去登入嘅，返到嚟就要見到收藏咗，唔係要佢再撳多次。
+  let pend = null;
+  try{ pend = JSON.parse(localStorage.getItem("fs_pending_save") || "null"); }catch{}
+  if(pend && curListId){
+    localStorage.removeItem("fs_pending_save");
+    await serverSave(pend).catch(()=>{});
+    track("save_building", {name: pend.tc || pend.en || "", after_signin: true});
+    setTimeout(()=>toast(`已收藏「${clean(pend.tc)||clean(pend.en)||"呢棟樓"}」`), 900);
+  }
+  await loadSaved();
+}
+
+/* ------------------------------------------------------------ 清單 --- */
+async function loadLists(){
+  const {data} = await sb.from("lists").select("id,name,sort").order("sort").order("created_at");
+  myLists = data || [];
+  const remembered = localStorage.getItem(LAST_LIST_KEY);
+  curListId = (myLists.find(l => l.id === remembered) || myLists[0] || {}).id || null;
+}
+
+async function createList(name){
+  const {data, error} = await sb.from("lists")
+    .insert({user_id: me.id, name: name.trim(), sort: myLists.length}).select().single();
+  if(error){ toast("開唔到清單"); return null; }
+  myLists.push(data);
+  setCurrentList(data.id);
+  track("list_create", {total: myLists.length});
+  return data;
+}
+
+function setCurrentList(id){
+  curListId = id;
+  try{ localStorage.setItem(LAST_LIST_KEY, id); }catch{}
+}
+
+const curListName = () =>
+  (myLists.find(l => l.id === curListId) || {}).name || "我的收藏";
+
+/* ------------------------------------------------------------ 收藏 --- */
+function rowToFav(r){
+  return {id: r.building_id, tc: r.tc, en: r.en, district: r.district,
+          lat: r.lat, lon: r.lon, total: r.total == null ? null : +r.total,
+          now: r.now_code, _row: r.id};
+}
+
+async function loadSaved(){
+  if(!me || !curListId) return;
+  const {data} = await sb.from("saved").select("*")
+    .eq("list_id", curListId).order("created_at", {ascending: false});
+  favs = (data || []).map(rowToFav);
+  paintFavChip();
+}
+
+async function mergeLocalFavs(){
+  let local = [];
+  try{ local = JSON.parse(localStorage.getItem(FAV_KEY) || "[]"); }catch{}
+  if(!local.length || !curListId) return;
+  const rows = local.map(o => ({
+    user_id: me.id, list_id: curListId,
+    building_id: o.id || favKeyOf(o),
+    lat: o.lat, lon: o.lon, tc: o.tc, en: o.en, district: o.district,
+    total: o.total, now_code: o.now,
+  }));
+  // 已經有就當冇事發生 —— 重複登入唔應該整多份出嚟。
+  await sb.from("saved").upsert(rows, {onConflict: "user_id,building_id,list_id",
+                                       ignoreDuplicates: true});
+  localStorage.removeItem(FAV_KEY);
+  track("favs_merged", {count: rows.length});
+}
+
+async function serverSave(o){
+  const {error} = await sb.from("saved").insert({
+    user_id: me.id, list_id: curListId,
+    building_id: o.id || favKeyOf(o),
+    lat: o.lat, lon: o.lon, tc: o.tc, en: o.en, district: o.district,
+    total: o.total, now_code: o.now,
+  });
+  if(error && error.code !== "23505") throw error;   // 23505 = 已經收藏咗
+}
+
+async function serverUnsave(o){
+  await sb.from("saved").delete()
+    .eq("user_id", me.id).eq("list_id", curListId)
+    .eq("building_id", o.id || favKeyOf(o));
+}
+
+/* ------------------------------------------------------------ 睇過 --- */
+let viewedSent = new Set();
+function markViewed(o){
+  if(!me || !sb) return;
+  const k = o.id || favKeyOf(o);
+  if(viewedSent.has(k)) return;      // 同一次到訪唔使記幾次
+  viewedSent.add(k);
+  sb.rpc("mark_viewed", {
+    p_building_id: k, p_lat: o.lat, p_lon: o.lon,
+    p_tc: o.tc || null, p_en: o.en || null,
+    p_district: o.district || null, p_total: o.total ?? null,
+  }).then(()=>{}, ()=>{});           // 記唔到就算，唔好阻住個用戶
+}
+
+function loadLocalFavs(){
+  try{ favs = JSON.parse(localStorage.getItem(FAV_KEY) || "[]"); }catch{ favs = []; }
+  paintFavChip();
+}
+
+/* 開頁嗰陣只做一件事：如果係由 Google 跳返嚟，就即刻接手。 */
+(async function bootMember(){
+  if(!hasAuthResponse()) {
+    // 之前登入過嘅人，session 喺 localStorage 度，值得靜靜哋續返。
+    const hasSession = Object.keys(localStorage).some(k => k.startsWith("sb-"));
+    if(!hasSession) return;
+  }
+  const s = await ensureSupabase();
+  if(!s) return;
+  const {data} = await s.auth.getSession();
+  applySession(data && data.session);
+  if(me){
+    await afterSignIn();
+    if(favView) showFavs();
+  }
+  if(hasAuthResponse()){
+    // 條 URL 唔應該留低 ?code=，否則重新整理會試第二次兌換而失敗。
+    const u = new URL(location.href);
+    u.searchParams.delete("code"); u.hash = "";
+    history.replaceState(null, "", u.toString());
+  }
+})();
+
 function toggleFav(o){
   const k = favKeyOf(o);
   const i = favs.findIndex(f => favKeyOf(f) === k);
-  if(i >= 0){ favs.splice(i,1); track("unsave_building", {name:o.tc||o.en||""}); }
-  else{
-    favs.push({tc:o.tc, en:o.en, district:o.district, lat:o.lat, lon:o.lon,
-               total:o.total, now:o.now});
-    track("save_building", {name:o.tc||o.en||"", score:Math.round(o.total||0),
-                            total_saved: favs.length});
+  if(i >= 0){
+    favs.splice(i,1);
+    track("unsave_building", {name:o.tc||o.en||""});
+    if(me && sb) serverUnsave(o).catch(()=>{});
+    saveFavs();
+    return;
   }
+  // 睇幾多幢都得，分享出去照開得。要記低一樣嘢先至要有個戶口 —— 個理由
+  // 自己成立，唔使砌。
+  if(!me){ askSignIn(o); return "took-over"; }
+  favs.unshift({id:o.id, tc:o.tc, en:o.en, district:o.district,
+                lat:o.lat, lon:o.lon, total:o.total, now:o.now});
+  track("save_building", {name:o.tc||o.en||"", score:Math.round(o.total||0),
+                          total_saved: favs.length});
   saveFavs();
+  serverSave(o).catch(()=>toast("儲存失敗，請再試"));
+  toast(`已收藏到「${curListName()}」`, 3600,
+        myLists.length > 1 || true ? {label:"更改", run:()=>pickListFor(o)} : null);
+}
+
+/* 撳咗收藏但未登入。唔係彈個錯誤出嚟叫佢走開 —— 記住佢想收藏邊幢樓，
+   登入返嚟之後幫佢收藏埋，佢撳嗰一下唔會白撳。 */
+function askSignIn(o){
+  if(o) try{ localStorage.setItem("fs_pending_save", JSON.stringify({
+    id:o.id, tc:o.tc, en:o.en, district:o.district,
+    lat:o.lat, lon:o.lon, total:o.total, now:o.now})); }catch{}
+  track("signin_prompt", {from: o ? "save" : "panel"});
+  openSheet(); setSheet("full");
+  sheetBody.innerHTML = signInHTML(o);
+  gripText.textContent = "登入";
+  wireSignIn();
+}
+
+function signInHTML(o){
+  const name = o ? (clean(o.tc) || clean(o.en) || "呢棟樓") : null;
+  return `
+    <div class="signin">
+      <p class="si-h">${name ? `收藏「${esc(name)}」` : "登入"}</p>
+      <p class="si-s">登入就唔會唔見，換部電話、用電腦都仲喺度。</p>
+      <button class="gbtn" id="btnGoogle">
+        <svg viewBox="0 0 18 18" width="19" height="19" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.9 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+        <span>用 Google 繼續</span>
+      </button>
+      <label class="si-opt">
+        <input type="checkbox" id="optMarketing">
+        <span>我想收到新功能通知<i>唔剔一樣用得晒所有功能</i></span>
+      </label>
+      <p class="si-legal">繼續即表示你同意我哋嘅
+        <a href="/privacy.html" target="_blank" rel="noopener">私隱政策</a>。
+        我哋唔會將你嘅個人資料賣俾或者交俾任何第三方。</p>
+    </div>`;
+}
+
+function wireSignIn(){
+  const b = sheetBody.querySelector("#btnGoogle");
+  if(b) b.addEventListener("click", signIn);
+}
+
+/* 揀清單。已經收藏咗嘅話係「搬去邊張」，未有嘅話係「收藏落邊張」。 */
+async function pickListFor(o){
+  if(!me) return;
+  openSheet(); setSheet("full");
+  gripText.textContent = "揀清單";
+  sheetBody.innerHTML = `
+    <p class="bname">放入邊張清單？</p>
+    <ul class="picklist">
+      ${myLists.map(l=>`<li data-id="${l.id}" class="${l.id===curListId?"on":""}">
+        <span>${esc(l.name)}</span><b>${l.id===curListId?"✓":""}</b></li>`).join("")}
+      <li class="newl" data-new="1"><span>＋ 新清單</span><b></b></li>
+    </ul>`;
+  sheetBody.querySelectorAll(".picklist li").forEach(li=>li.addEventListener("click", async ()=>{
+    if(li.dataset.new){
+      const name = prompt("新清單叫咩名？", "");
+      if(!name || !name.trim()) return;
+      const l = await createList(name);
+      if(!l) return;
+    } else {
+      setCurrentList(li.dataset.id);
+    }
+    if(o){
+      await serverUnsaveAllLists(o);
+      await serverSave(o).catch(()=>{});
+      toast(`已放入「${curListName()}」`);
+    }
+    await loadSaved();
+    favView = true; showFavs();
+  }));
+}
+
+async function serverUnsaveAllLists(o){
+  if(!me || !sb) return;
+  await sb.from("saved").delete()
+    .eq("user_id", me.id).eq("building_id", o.id || favKeyOf(o));
 }
 
 // ---------------------------------------------------------------------------
