@@ -206,6 +206,15 @@ def term_time(year: int, index: int) -> float:
     return jde - delta_t(year) / 86400.0    # TT -> UT
 
 
+def term_jd_hkt(year: int, index: int) -> float:
+    """節氣嘅香港時間儒略日，唔四捨五入。
+
+    比較界線要用呢個，唔好用 term_hkt 嗰個分鐘 —— 節氣落喺 14:46:20,
+    四捨五入變 14:46，跟住 14:46:00 出世嗰個就會被當成過咗節。
+    """
+    return term_time(year, index) + 8.0 / 24.0
+
+
 def term_hkt(year: int, index: int) -> tuple[int, int, int, int]:
     """節氣喺香港時間（UTC+8）嘅 年、月、日、分鐘（由 00:00 起計）。
 
