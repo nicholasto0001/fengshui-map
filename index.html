@@ -2063,12 +2063,26 @@ async function doSearch(){
   const idx=await ensureIndex();
   const needle=q.toLowerCase();
   const hits=[];
+  // 屋苑名都要搜得到。打「太古城」應該出佢六十幾座，唔係淨係出座名
+  // 入面啱啱好有嗰三個字嗰幾幢 —— 座名同屋苑名好多時完全唔似。
+  // 座名撞中排先，屋苑撞中排後，因為打全名嗰個人多數搵緊嗰一座。
+  const byName=[], byEstate=[];
   for(const o of idx){
     if((o.tc && o.tc.includes(q)) || (o.en && o.en.toLowerCase().includes(needle))){
-      hits.push(o);
-      if(hits.length>=12) break;
+      byName.push(o);
+    } else if(o.est && o.est.includes(q)){
+      byEstate.push(o);
     }
+    // 收夠先停，唔係一撞夠十二個座名就停 —— 太古城有七個「太古城中心」
+    // 咁樣嘅座名，全部非住宅，一停就永遠見唔到佢啲住宅座數。
+    if(byName.length + byEstate.length >= 60) break;
   }
+  // 住宅行先，兩桶一齊排。打「太古城」嘅人想見住宅座數，唔係太古城中心
+  // 同第一期停車場 —— 三樣都叫太古城，但得一樣係人哋搵緊嗰樣。
+  // 住宅入面，座名撞中排先過屋苑撞中：打全名嗰個人多數搵緊嗰一座。
+  hits.push(...byName.filter(o=>o.res), ...byEstate.filter(o=>o.res),
+            ...byName.filter(o=>!o.res), ...byEstate.filter(o=>!o.res));
+  hits.length = Math.min(hits.length, 12);
   if(hits.length){ reportSearch(q, hits.length, "index"); renderHits(hits); return; }
 
   const als=await searchALS(q);

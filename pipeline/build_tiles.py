@@ -15,6 +15,7 @@ import datetime
 import json
 import math
 import pathlib
+import sys
 import shutil
 
 # z13 put ~10k buildings and 2.7 MB into a single dense-Kowloon tile, which is a
@@ -180,6 +181,38 @@ def row_for(r: dict, districts: list) -> list:
     ]
 
 
+def join_census(scores: list[dict]) -> None:
+    """私樓補返「屋苑」呢個概念。
+
+    房委會個登記冊得公營房屋，所以打「太古城」落搜尋，出嚟係一堆散裝
+    樓宇 —— 我哋根本唔知邊幾幢係太古城。人口普查嘅主要屋苑有邊界圖形,
+    用點對面就補得返，540 個入面有 249 個係我哋本來冇 group 到嘅。
+
+    已經有房委會個名嘅唔改。兩邊對得返嗰 2,247 幢有 87.9% 完全一致,
+    唔一致嗰啲係同一個邨唔同寫法（石籬二邨 / 石籬（２）邨），而人搜嘅
+    係房委會嗰個寫法。
+    """
+    sys.path.insert(0, str(pathlib.Path(__file__).parent))
+    try:
+        import census
+        E = census.load()
+    except (ImportError, SystemExit) as exc:
+        print(f"  （{exc}；私人屋苑分組跳過）")
+        return
+    added = 0
+    for r in scores:
+        if (r.get("estate") or {}).get("estate"):
+            continue
+        c = E.at(r["lon"], r["lat"])
+        if c:
+            # 人口普查唔講管理公司、單位數、落成年，所以嗰幾格留空,
+            # 唔好攞住戶數當單位數 —— 兩樣唔同嘢。
+            r["estate"] = {"estate": c["name"], "kind": None, "mgmt": None,
+                           "flats": None, "nblocks": None, "year": None}
+            added += 1
+    print(f"census: 用邊界補返 {added:,} 幢樓宇嘅屋苑")
+
+
 def build_estates(scores: list[dict]) -> None:
     """How many blocks, how many flats, who manages it — what a buyer asks
     before anything else. The Housing Authority publishes it per estate, so it
@@ -197,6 +230,15 @@ def build_estates(scores: list[dict]) -> None:
             "nblocks": e.get("nblocks"),
             "year": e.get("year"),
         })
+    # 房委會冇報座數嘅（即係用邊界補返嗰啲），自己數返幢數。
+    counts: dict[str, int] = {}
+    for r in scores:
+        n = (r.get("estate") or {}).get("estate")
+        if n and is_dwelling(r):
+            counts[n] = counts.get(n, 0) + 1
+    for n, rec in out.items():
+        if not rec.get("nblocks"):
+            rec["nblocks"] = counts.get(n)
     p = DATA / "estates.json"
     p.write_text(json.dumps(out, separators=(",", ":"), ensure_ascii=False))
     named = sum(1 for r in scores if (r.get("estate") or {}).get("estate"))
@@ -209,6 +251,7 @@ def main() -> None:
     scores = [r for r in all_scores if keep(r)]
     print(f"{len(all_scores):,} scored buildings -> {len(scores):,} on the map "
           f"({len(all_scores) - len(scores):,} unnamed low-rise structures dropped)")
+    join_census(scores)
 
     if OUT.exists():
         shutil.rmtree(OUT)
@@ -319,13 +362,17 @@ def build_search(scores: list[dict]) -> None:
         rows.append([r.get("tc"), r.get("en"), r.get("district"),
                      round(r["lon"], 5), round(r["lat"], 5),
                      r.get("total"), r.get("now"),
-                     1 if is_dwelling(r) else 0])
+                     1 if is_dwelling(r) else 0,
+                     # 打「太古城」要搵到佢六十幾座，唔係淨係搵到座名
+                     # 入面啱啱好有呢三個字嗰幾幢。
+                     (r.get("estate") or {}).get("estate") or None])
     rows.sort(key=lambda x: -(x[5] or 0))
     p = OUT / "search.json"
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps({"c": ["tc", "en", "district", "lon", "lat", "total", "now", "res"],
+    p.write_text(json.dumps({"c": ["tc", "en", "district", "lon", "lat", "total", "now", "res", "est"],
                              "b": rows}, separators=(",", ":"), ensure_ascii=False))
     print(f"  of which look residential: {sum(r[7] for r in rows):,}")
+    print(f"  with an estate name: {sum(1 for r in rows if r[8]):,}")
     print(f"search index: {len(rows):,} named buildings, "
           f"{p.stat().st_size/1e6:.1f} MB raw (~1.4 MB gzipped on the wire)")
 
