@@ -97,8 +97,12 @@ def main() -> None:
     if bad:
         raise SystemExit("投影檢查唔過：" + "; ".join(bad))
 
+    # 同 make_pages 收一樣嘅樓：要有名。唔要名嘅話，長安邨會多咗一幢
+    # 冇名嘅樓，張圖寫「11 座」但個表列 10 座，而且會有個淨係得分數、
+    # 冇名嘅標籤浮喺度。
     home = [r for r in json.loads((ROOT / "data" / "scores.json").read_text())
-            if keep(r) and is_dwelling(r) and r.get("ring")]
+            if keep(r) and is_dwelling(r) and r.get("ring")
+            and (r.get("tc") or r.get("en"))]
     # 同 make_pages 用同一個分組同同一個顯示名，所以檔名一定對得返版名。
     g = {k: v["rows"] for k, v in census.group(home).items()}
 
