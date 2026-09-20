@@ -20,6 +20,12 @@ import shutil
 # z13 put ~10k buildings and 2.7 MB into a single dense-Kowloon tile, which is a
 # bad first fetch on mobile. z14 quarters that.
 Z = 14
+# A tile is one fetch on a phone. 250 KB of JSON is roughly 50 KB over the
+# wire once Cloudflare gzips it, which is a reasonable worst case; anything
+# denser splits. z16 is the floor — below that the request count costs more
+# than the bytes saved.
+TILE_LIMIT = 250_000
+MAX_Z = 16
 DATA = pathlib.Path(__file__).parent.parent / "data"
 OUT = DATA / "tiles"
 
@@ -194,33 +200,60 @@ def main() -> None:
     if OUT.exists():
         shutil.rmtree(OUT)
 
-    tiles: dict[tuple[int, int], list] = {}
+    # A uniform grid is the wrong shape for Hong Kong: one z14 tile over
+    # Mong Kok held 4,893 buildings and a megabyte, while most of the
+    # territory is country park. Dense tiles descend a zoom until they fit,
+    # so the worst first fetch on a phone is bounded and nothing splits
+    # where nothing is there.
+    buckets: dict[tuple[int, int, int], list] = {}
     for r in scores:
         lon, lat = r.get("lon"), r.get("lat")
         if lon is None or lat is None:
             continue
-        tiles.setdefault(deg2tile(lon, lat, Z), []).append(row_for(r))
+        x, y = deg2tile(lon, lat, Z)
+        buckets.setdefault((Z, x, y), []).append(r)
+
+    def blob_of(rows: list) -> str:
+        return json.dumps({"c": COLUMNS, "b": [row_for(r) for r in rows]},
+                          separators=(",", ":"), ensure_ascii=False)
+
+    leaves: dict[tuple[int, int, int], list] = {}
+    pending = list(buckets.items())
+    while pending:
+        (z, x, y), rows = pending.pop()
+        if z < MAX_Z and len(blob_of(rows).encode()) > TILE_LIMIT:
+            kids: dict[tuple[int, int, int], list] = {}
+            for r in rows:
+                kx, ky = deg2tile(r["lon"], r["lat"], z + 1)
+                kids.setdefault((z + 1, kx, ky), []).append(r)
+            # All in one child means splitting cannot help; stop here.
+            if len(kids) > 1:
+                pending.extend(kids.items())
+                continue
+        leaves[(z, x, y)] = rows
 
     total_bytes = 0
-    for (x, y), rows in tiles.items():
-        p = OUT / str(Z) / str(x) / f"{y}.json"
-        p.parent.mkdir(parents=True, exist_ok=True)
-        blob = json.dumps({"c": COLUMNS, "b": rows}, separators=(",", ":"), ensure_ascii=False)
-        p.write_text(blob)
+    for (z, x, y), rows in leaves.items():
+        f = OUT / str(z) / str(x) / f"{y}.json"
+        f.parent.mkdir(parents=True, exist_ok=True)
+        blob = blob_of(rows)
+        f.write_text(blob)
         total_bytes += len(blob.encode())
 
-    counts = {f"{x}/{y}": len(rows) for (x, y), rows in tiles.items()}
+    counts = {f"{z}/{x}/{y}": len(rows) for (z, x, y), rows in leaves.items()}
     (OUT / "index.json").write_text(json.dumps({
         "z": Z,
+        "maxz": MAX_Z,
         "columns": COLUMNS,
-        "tiles": counts,
-        "buildings": sum(len(v) for v in tiles.values()),
+        "leaves": counts,
+        "buildings": sum(len(v) for v in leaves.values()),
     }, separators=(",", ":")))
 
-    sizes = sorted(len(json.dumps({"c": COLUMNS, "b": r}, ensure_ascii=False).encode())
-                   for r in tiles.values())
-    print(f"{len(tiles):,} tiles, {total_bytes/1e6:.1f} MB total")
+    sizes = sorted(len(blob_of(r).encode()) for r in leaves.values())
+    split = sum(1 for k in leaves if k[0] > Z)
+    print(f"{len(leaves):,} tiles ({split:,} below z{Z}), {total_bytes/1e6:.1f} MB total")
     print(f"  median tile {sizes[len(sizes)//2]/1024:.0f} KB, "
+          f"p90 {sizes[int(len(sizes)*.9)]/1024:.0f} KB, "
           f"largest {sizes[-1]/1024:.0f} KB")
 
     build_search(scores)

@@ -88,6 +88,18 @@ def count(v) -> int | None:
     return int(digits) if digits else None
 
 
+# "第一座", "Ａ座", "二期", "服務設施大樓" are positions inside an estate, not
+# names of anything. Matched as names they attach a random tower in Tsuen Wan
+# to a court in Pok Fu Lam — 梨木樹二邨's 第一座 was landing on buildings 16 km
+# away. A block only counts if its name identifies it on its own.
+POSITIONAL = re.compile(
+    r"^(?:第?[0-9０-９一二三四五六七八九十]+[座期棟樓]?"
+    r"|[A-ZＡ-Ｚ][0-9０-９]?[座棟]"
+    r"|[上中下東南西北新舊]?期"
+    r"|服務設施大樓|商場|停車場|平台)$"
+)
+
+
 def fetch(url: str) -> list:
     req = urllib.request.Request(url, headers={"User-Agent": UA})
     with urllib.request.urlopen(req, timeout=120, context=SSL_CTX) as r:
@@ -95,7 +107,7 @@ def fetch(url: str) -> list:
 
 
 def main() -> None:
-    out: dict[str, dict] = {}
+    out: dict[str, list] = {}
     for url, year_key, flats_key, kind in SOURCES:
         rows = fetch(url)
         print(f"{kind}: {len(rows)} 個")
@@ -103,8 +115,14 @@ def main() -> None:
             year = "".join(c for c in pick(r.get(year_key), "en") if c.isdigit())[:4]
             if not (year.isdigit() and 1950 <= int(year) <= 2043):
                 continue
+            try:
+                lat = float(r["Estate Map Latitude"])
+                lon = float(r["Estate Map Longitude"])
+            except (TypeError, ValueError, KeyError):
+                continue
             meta = {
                 "year": int(year),
+                "lat": lat, "lon": lon,
                 "estate": pick(r.get("Estate Name")),
                 "kind": kind,
                 "mgmt": company(r.get("Property Management")),
@@ -115,12 +133,15 @@ def main() -> None:
                 raw = pick(r.get("Name of Block(s)"), lang)
                 for b in re.split(r"[\n,、/]+", raw):
                     key = norm(b)
-                    if len(key) >= minlen:
-                        out.setdefault(key, meta)
+                    if len(key) < minlen or POSITIONAL.match(key):
+                        continue
+                    out.setdefault(key, []).append(meta)
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, separators=(",", ":"), ensure_ascii=False))
-    print(f"\n{len(out):,} block names -> {OUT} ({OUT.stat().st_size/1024:.0f} KB)")
+    shared = sum(1 for v in out.values() if len(v) > 1)
+    print(f"\n{len(out):,} block names ({shared} shared by more than one estate)"
+          f" -> {OUT} ({OUT.stat().st_size/1024:.0f} KB)")
 
 
 if __name__ == "__main__":

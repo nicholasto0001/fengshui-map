@@ -92,6 +92,11 @@ def main() -> None:
     housing = load("housing.json") or {}
     print(f"housing authority blocks: {len(housing):,}")
 
+    # An estate's published point is its centre, so a block at the far edge of
+    # a large estate is legitimately several hundred metres from it. 1.5 km is
+    # well past that and still nowhere near the next estate of the same name.
+    EST_TOL = 1500.0
+
     import re as _re, unicodedata as _ud
     def hkey(s):
         s = _ud.normalize("NFKC", s or "").upper()
@@ -138,14 +143,31 @@ def main() -> None:
         # an inference from a name.
         # Housing Authority block names are exact, so they outrank a spatial
         # guess; they only ever fill a gap, never overwrite a permit.
+        # The register is looked up for every block, not only the ones missing
+        # a year: 座數, 單位數目 and 管理公司 are worth showing whether or not
+        # the occupation permit already dated the building. Only the year
+        # itself defers to the permit.
         est = None
-        if housing and op_year is None:
+        if housing:
             for nm in (b.get("tc"), b.get("en")):
-                h = housing.get(hkey(nm))
-                if h:
-                    op_year = h["year"]
+                cands = housing.get(hkey(nm))
+                if not cands:
+                    continue
+                # 34 block names are shared by more than one estate, and a
+                # name alone would pick whichever was loaded first — 耀明樓
+                # landed on an estate 24 km away. Take the nearest candidate,
+                # and only if the building is actually in that estate.
+                best, bd = None, None
+                for h in cands:
+                    hx, hy = to_plane(h["lon"], h["lat"])
+                    d = math.hypot(x - hx, y - hy)
+                    if bd is None or d < bd:
+                        best, bd = h, d
+                if bd is not None and bd <= EST_TOL:
+                    if op_year is None:
+                        op_year = best["year"]
                     residential = True
-                    est = h
+                    est = best
                     break
 
         if bd_idx:

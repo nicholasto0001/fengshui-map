@@ -676,14 +676,31 @@ let buildInfo = null;
 // a viewport routinely asks for tiles that were never written — each one a
 // wasted request and a 404 in the console. The index is tiny; consulting it
 // first removes both.
-let tileSet = null;
+// Tiles are not all at one zoom: dense ones are split until they fit, so the
+// index lists leaves as "z/x/y" and the viewport descends to find them.
+let tileSet = null, MAXZ = 16;
 async function loadTileIndex(){
   if(tileSet) return tileSet;
   try{
     const idx = await (await fetch(dataUrl("index.json"))).json();
-    tileSet = new Set(Object.keys(idx.tiles || {}));
+    MAXZ = idx.maxz || MAXZ;
+    tileSet = idx.leaves
+      ? new Set(Object.keys(idx.leaves))
+      : new Set(Object.keys(idx.tiles || {}).map(k => `${TILE_Z}/${k}`));
   }catch{ tileSet = null; }      // unavailable: fall back to asking for each
   return tileSet;
+}
+
+// Which files actually cover this z14 square — itself, or the children it was
+// split into. Returns nothing where Hong Kong is country park or water.
+function leavesUnder(z, x, y){
+  if(!tileSet) return [[TILE_Z, x, y]];
+  if(tileSet.has(`${z}/${x}/${y}`)) return [[z, x, y]];
+  if(z >= MAXZ) return [];
+  const out = [];
+  for(const [dx, dy] of [[0,0],[1,0],[0,1],[1,1]])
+    out.push(...leavesUnder(z+1, x*2+dx, y*2+dy));
+  return out;
 }
 
 async function loadBuildStamp(){
@@ -895,11 +912,11 @@ function lonLat2tile(lon,lat,z){
           Math.floor((1-Math.log(Math.tan(rad)+1/Math.cos(rad))/Math.PI)/2*n)];
 }
 
-async function getTile(x,y){
-  const key=`${x}/${y}`;
+async function getTile(z,x,y){
+  const key=`${z}/${x}/${y}`;
   if(tileCache.has(key)) return tileCache.get(key);
   if(tileSet && !tileSet.has(key)){ tileCache.set(key, null); return null; }
-  const pr = fetch(dataUrl(`${TILE_Z}/${x}/${y}.json`))
+  const pr = fetch(dataUrl(`${z}/${x}/${y}.json`))
     .then(r => r.ok ? r.json() : null)
     .catch(() => null);
   tileCache.set(key, pr);
@@ -915,11 +932,14 @@ async function loadBuildings(){
   const [x0,y1]=lonLat2tile(b.getWest(), b.getNorth(), TILE_Z);
   const [x1,y0]=lonLat2tile(b.getEast(), b.getSouth(), TILE_Z);
 
-  const wanted=[];
-  for(let x=x0;x<=x1;x++) for(let y=y1;y<=y0;y++) wanted.push([x,y]);
-  if(wanted.length>20){ toast("範圍太大，請放大啲"); return; }
+  // The guard counts z14 squares, not files, so splitting a dense area does
+  // not make the viewport look "too large".
+  const squares=[];
+  for(let x=x0;x<=x1;x++) for(let y=y1;y<=y0;y++) squares.push([x,y]);
+  if(squares.length>20){ toast("範圍太大，請放大啲"); return; }
 
-  const tiles=await Promise.all(wanted.map(([x,y])=>getTile(x,y)));
+  const wanted=squares.flatMap(([x,y])=>leavesUnder(TILE_Z,x,y));
+  const tiles=await Promise.all(wanted.map(([z,x,y])=>getTile(z,x,y)));
   if(my!==reqSeq) return;
 
   buildingLayer.clearLayers();
@@ -1167,8 +1187,8 @@ function renderBuilding(o, layer){
     });
     const e = (estateData || {})[o.est] || {};
     const rows = [
-      ["座數", e.nblocks && `${num(+e.nblocks,0)} 座`],
-      ["單位數目", e.flats && `${num(+e.flats,0)} 個`],
+      ["座數", e.nblocks && `${e.nblocks.toLocaleString()} 座`],
+      ["單位數目", e.flats && `${e.flats.toLocaleString()} 個`],
       ["管理公司", clean(e.mgmt)],
     ].filter(r => r[1]);
     estate = `
