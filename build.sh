@@ -12,6 +12,7 @@ rm -rf public
 mkdir -p public
 
 cp index.html privacy.html admin.html method.html sitemap.xml manifest.webmanifest public/
+cp bazi.js public/                       # 八字引擎，用到先載
 cp og.png favicon.ico apple-touch-icon.png icon-192.png icon-512.png public/
 cp -R og public/og          # one preview card per score, chosen by the Worker
 # An allowlist, not a delete list. Every new pipeline stage drops another
@@ -28,7 +29,7 @@ if [ -d pages/plan ];     then cp -R pages/plan     public/plan;     fi
 
 mkdir -p public/data
 cp -R data/tiles public/data/tiles
-for f in district_stats.json estates.json; do
+for f in district_stats.json estates.json solar_terms.json; do
   cp "data/$f" "public/data/$f"
 done
 
