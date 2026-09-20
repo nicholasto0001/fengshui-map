@@ -419,6 +419,20 @@
   .fine-body b{color:var(--ink2)}
   .fine-body a{color:#1b4f8f}
 
+  /* 由地圖行去 678 版詳細資料頁嗰道門。
+     做到同清單一行一樣嘅樣，因為佢做緊同一件事：撳落去，見多啲。 */
+  .deepwrap{margin:18px 0 0}
+  .deep{
+    display:flex; align-items:center; gap:10px; width:100%;
+    min-height:56px; padding:11px 14px; margin:8px 0 0;
+    background:var(--card2,#f3f1ec); border:1px solid var(--line);
+    border-radius:14px; text-decoration:none; color:var(--ink);
+  }
+  .deep span{flex:1; font-size:13.5px; line-height:1.5; color:var(--ink3)}
+  .deep b{display:block; font-size:16px; font-weight:650; color:var(--ink); margin:0 0 2px}
+  .deep i{font-style:normal; font-size:20px; color:var(--ink3); flex:none}
+  .deep:active{background:var(--line)}
+
   /* ---------- 會員 ----------
      Apple 嘅內文標準係 17pt。呢個 app 之前喺 13–13.5px，對「好大年紀都
      識用」嚟講太細，所以清單同資料嗰啲字推上 16–17px，所有撳得嘅嘢最少
@@ -1693,6 +1707,11 @@ function renderBuilding(o, layer){
       ["單位數目", e.flats && `${e.flats.toLocaleString()} 個`],
       ["管理公司", clean(e.mgmt)],
     ].filter(r => r[1]);
+    // 屋苑頁有嘅嘢，地圖上面放唔落：逐座排名、航空平面圖、人口普查、
+    // 發展商、成交價。所以呢度唔係重複，係一道門。
+    //
+    // 一定要係真 <a href>。用 JS 跳轉嘅話，Google 行唔到落去 —— 而首頁
+    // 係成個網權重最高嗰版，佢傳唔傳連結落去，決定嗰 678 版有冇人搵到。
     estate = `
       <div class="estate">
         <p class="fhd">屋苑資料</p>
@@ -1700,6 +1719,9 @@ function renderBuilding(o, layer){
           <dt>屋苑</dt><dd>${esc(o.est)}${e.kind?` <span class="ftag">${esc(e.kind)}</span>`:""}</dd>
           ${rows.map(([k,v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join("")}
         </dl>
+        <a class="deep" href="/estate/${encodeURIComponent(o.est)}">
+          <span><b>${esc(o.est)}　詳細資料</b>
+          逐座排名、航空平面圖、人口普查、成交價</span><i>›</i></a>
       </div>`;
   }
 
@@ -1982,6 +2004,13 @@ async function showOverview(){
         </div>
         <div class="chev2">›</div></li>`;
     }).join("")}</ul>
+    <div class="deepwrap">
+      <p class="fhd">詳細資料頁</p>
+      <a class="deep" href="/district/"><span><b>18 區風水評分排名</b>
+        每區平均分、最高分樓宇、格局分佈</span><i>›</i></a>
+      <a class="deep" href="/estate/"><span><b>658 個屋苑逐座評分</b>
+        航空平面圖、人口普查、發展商、成交價</span><i>›</i></a>
+    </div>
     <div class="sharebar">
       <div><b>介紹俾朋友</b><span>一條連結，唔使裝 App、唔使登記，撳開就用得。</span></div>
       <button id="btnShareApp">分享</button></div>
@@ -2704,6 +2733,9 @@ function renderMatches(list){
       unnamed ? `<br>另有未命名樓宇未計在內，可以直接喺地圖撳。` : ""}</p>
     <label class="homes"><input type="checkbox" id="homesOnly" ${homesOnly?"checked":""}>
       <span>只顯示住宅樓宇</span></label>
+    ${districtFilter ? `<a class="deep" href="/district/${encodeURIComponent(districtFilter)}">
+      <span><b>${esc(districtFilter)}　詳細資料</b>
+      區內排名、格局分佈、區內屋苑逐個睇</span><i>›</i></a>` : ""}
     <ul class="mlist">${shown.map((o,i)=>`
       <li data-i="${i}">
         <div class="sc" style="background:${colorFor(o.total)};color:${inkOn(o.total)}">${num(o.total,0)}</div>
