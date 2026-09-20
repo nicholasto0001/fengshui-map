@@ -1,33 +1,57 @@
-"""App icons.
+"""App icons, cut from the brand artwork in brand/.
 
-Without these the browser asks for /favicon.ico on every load and logs a 404,
-and "add to home screen" — the closest this gets to being an app — falls back
-to a screenshot of the page.
+The old icons were a teal square with 風 set in a system font — a placeholder.
+These come from the real logo instead.
+
+Two crops, not one, and the reason is size. The full lockup carries
+「香港風水地圖」under the mark, which is six characters that turn to mush below
+about 64px: at a favicon's 32px they are three grey smudges. So the tab icon
+and the small sizes use the mark alone — house, bagua, 吉 pin — which still
+reads as a shape at 16px, and only the home-screen sizes keep the wordmark.
+
+Source: brand/logo-square.jpg (the rounded-tile version).
+Output: favicon.ico, apple-touch-icon.png, icon-192.png, icon-512.png
 """
-from PIL import Image, ImageDraw, ImageFont
+from __future__ import annotations
+
 import pathlib
 
+from PIL import Image
+
 ROOT = pathlib.Path(__file__).parent.parent
-TEAL = (15, 99, 84)
-FONT = "/System/Library/Fonts/STHeiti Medium.ttc"
+SRC = ROOT / "brand" / "logo-square.jpg"
+
+# Measured off the artwork. The tile is the rounded square; the mark is the
+# pin on its own, with the wordmark left out.
+TILE = (626, 148, 1386, 940)     # full lockup, square-ish
+MARK = (736, 175, 1266, 705)     # pin only
 
 
-def icon(size: int, radius_ratio: float = 0.5) -> Image.Image:
-    # Render at 4x and downsample: keeps the glyph edge clean at 32px.
-    s = size * 4
-    img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
-    d = ImageDraw.Draw(img)
-    d.rounded_rectangle([0, 0, s, s], radius=int(s * radius_ratio), fill=TEAL)
-    f = ImageFont.truetype(FONT, int(s * 0.62))
-    bb = d.textbbox((0, 0), "風", font=f)
-    d.text(((s - bb[2] - bb[0]) / 2, (s - bb[3] - bb[1]) / 2 - s * 0.02),
-           "風", font=f, fill=(255, 255, 255))
-    return img.resize((size, size), Image.LANCZOS)
+def cut(box: tuple[int, int, int, int], size: int) -> Image.Image:
+    im = Image.open(SRC).convert("RGB").crop(box)
+    # Square it off by padding with the artwork's own red rather than
+    # stretching, so the bagua stays a circle.
+    side = max(im.size)
+    bg = im.getpixel((4, 4))
+    pad = Image.new("RGB", (side, side), bg)
+    pad.paste(im, ((side - im.width) // 2, (side - im.height) // 2))
+    return pad.resize((size, size), Image.LANCZOS)
 
 
-icon(180, 0.22).save(ROOT / "apple-touch-icon.png")          # iOS home screen
-icon(512, 0.22).save(ROOT / "icon-512.png")
-icon(192, 0.22).save(ROOT / "icon-192.png")
-ico = icon(64)
-ico.save(ROOT / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)])
-print("wrote favicon.ico, apple-touch-icon.png, icon-192.png, icon-512.png")
+def main() -> None:
+    # Home screen: the OS applies its own mask, so the lockup is safe here.
+    for name, size in (("apple-touch-icon.png", 180),
+                       ("icon-192.png", 192),
+                       ("icon-512.png", 512)):
+        cut(TILE, size).save(ROOT / name, optimize=True)
+        print(f"{name:<22} {size}x{size}  (full lockup)")
+
+    # Tab icon: mark only, and rendered at each size rather than downscaled
+    # from one, which is what keeps 16px from turning to porridge.
+    ico = ROOT / "favicon.ico"
+    cut(MARK, 256).save(ico, sizes=[(16, 16), (32, 32), (48, 48), (64, 64)])
+    print(f"{'favicon.ico':<22} 16/32/48/64   (mark only)")
+
+
+if __name__ == "__main__":
+    main()
