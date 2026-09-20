@@ -450,6 +450,12 @@
   }
   .guahr{border-top:1px solid var(--line); margin:14px 0 4px}
 
+  /* 未接數據嗰截權重。唔刪走佢 —— 佢係總分嘅一部分，刪咗就係講大話;
+     但亦都唔可以扮量過。 */
+  .wbar .wpend{opacity:.45; background-image:repeating-linear-gradient(
+    45deg, transparent, transparent 4px, rgba(255,255,255,.35) 4px, rgba(255,255,255,.35) 8px)}
+  .pend{font-size:12px; color:var(--ink3); line-height:1.65; margin:8px 0 0}
+
   .bzform{margin:6px 0 0}
   .bzform label{display:block; font-size:13.5px; color:var(--ink3); margin:14px 0 6px}
   .bzrow{display:flex; gap:8px}
@@ -1874,7 +1880,11 @@ function renderBuilding(o, layer){
                               : `唔係住宅樓宇 · 地理環境 ${num(t,1)} / 100`}</p>
       </div>
     </div>
-    <div class="bars">${bar("環境",o.env)}${bar("交通",o.traffic)}${bar("配套",o.ancil)}</div>
+    <!-- 冇「交通」條 bar：score.py 入面 traffic 係個 placeholder，全港
+         84,720 幢都係 50。畫一條人人一樣嘅 bar，係當住人講緊一樣我哋
+         根本冇量過嘅嘢。佢仲係佔總分 5%（即係人人加同一個 2.5 分,
+         唔影響任何排名），所以分數唔郁，只係唔再扮量過。 -->
+    <div class="bars">${bar("環境",o.env)}${bar("配套",o.ancil)}</div>
     ${liqi}
     <dl class="facts">
       <dt>山在</dt><dd>${dirTC(o.mt_dir)}方　${num(o.mt_d,0)} 米</dd>
@@ -1937,8 +1947,11 @@ function renderBuilding(o, layer){
             <div class="wbar">
               <div style="flex:80"><span>環境</span>80%</div>
               <div style="flex:15"><span>配套</span>15%</div>
-              <div style="flex:5"><span>交通</span>5%</div>
+              <div style="flex:5" class="wpend"><span>交通</span>5%</div>
             </div>
+            <p class="pend">交通嗰 5% 仲未接數據 —— 全港每一幢都當 50 分,
+               即係人人加同一個 2.5 分，唔影響任何一幢樓嘅排名。
+               接到運輸署嘅數據我哋就會計返，到時會喺呢度講。</p>
           </div>
         </div>
 
@@ -2866,7 +2879,7 @@ async function doShare(title, text, url, what){
     if(navigator.share){ await navigator.share({title, text, url}); return; }
   }catch{ return; }               // user dismissed the sheet - not a failure
   try{
-    await navigator.clipboard.writeText(`${text}\n${url}`);
+    await navigator.clipboard.writeText(`${text}\n\n${url}`);
     toast("已複製連結，可以貼上分享");
   }catch{ prompt("複製呢條連結分享：", url); }
 }
@@ -2929,7 +2942,6 @@ addEventListener("keydown", e => {
    「你屋企幾多分？」—— 問錯咗人：對方收到嘅係呢幢樓，佢想知嘅係點解係
    呢個分數。每段都用同一個結構：講緊乜 → 撳入去會見到乜 → 呢個係乜嚟。 */
 
-const ONELINE = "香港風水地圖：全港 84,720 棟樓宇嘅九運風水評分，數據嚟自政府公開資料，免安裝免登記。";
 
 const beats = score => {
   const p = buildInfo && buildInfo.pct && buildInfo.pct[Math.round(score)];
@@ -2963,9 +2975,15 @@ async function shareBuilding(o){
   const name = clean(o.tc) || clean(o.en) || "呢棟樓";
   const lvl  = (levelFor(o.total)||{}).label || "";
   const rank = beats(o.total);
-  const text = [`${name} 風水 ${num(o.total,0)} 分（${lvl}）${rank ? " · " + rank : ""}`,
-                `撳入嚟睇點解係呢個分數 —— 山水方位、坐向、玄空飛星盤全部有拆解。`,
-                ONELINE].join("\n");
+  /* 分享文案要一眼睇得晒。
+     舊嗰段第一行就塞咗樓名、分數、等級同排名，跟住三句長嘢貼晒一齊,
+     喺 WhatsApp 度摺埋變一嚿 —— 收到嘅人要讀先知講乜。
+     而家：樓名自己一行（佢先係主角），分數一行，空一行，一句原因,
+     空一行，連結。而且張卡已經帶住所有數據，段字唔使再講多次。 */
+  const text = [`${name}`,
+                `風水 ${num(o.total,0)} 分（${lvl}）${rank ? " · " + rank : ""}`,
+                ``,
+                `撳入嚟睇點解 —— 山水方位、坐向、玄空飛星盤`].join("\n");
   const url = shareUrl({b: pack([o])});
 
   if(o.res !== 0 && navigator.canShare){
@@ -2980,7 +2998,7 @@ async function shareBuilding(o){
         track("share", {what: "building_card", url});
         nudgeSave({...nudgeState(), done: true});
         hideNudge();
-        try{ await navigator.share({files: [file], text: `${text}\n${url}`}); }
+        try{ await navigator.share({files: [file], text: `${text}\n\n${url}`}); }
         catch{}
         return;
       }
@@ -2992,20 +3010,22 @@ async function shareBuilding(o){
 function shareList(){
   if(!favs.length) return;
   const top = favs.slice(0,3).map(f => clean(f.tc)||clean(f.en)).filter(Boolean).join("、");
-  doShare("我揀咗嘅樓盤",
-    [`我揀咗 ${favs.length} 個樓盤${top ? "：" + top : ""}${favs.length>3 ? " 等" : ""}`,
-     `撳入嚟一次過睇晒每個嘅風水評分、坐向同飛星盤，仲可以比較。`,
-     ONELINE].join("\n"),
-    shareUrl({list: pack(favs)}), "list");
+  const lines = [`我揀咗 ${favs.length} 個樓盤`];
+  if(top) lines.push(`${top}${favs.length > 3 ? " 等" : ""}`);
+  lines.push("", "一次過睇晒每個嘅風水評分、坐向同飛星盤");
+  doShare("我揀咗嘅樓盤", lines.join("\n"), shareUrl({list: pack(favs)}), "list");
 }
 
 /* 分享成個 app。之前冇呢個 —— 想介紹俾朋友嘅人，得個辦法係傳返自己啱啱
    睇緊嗰幢樓，而嗰幢樓同佢完全無關。 */
 function shareApp(){
   doShare("香港風水地圖",
-    ["香港風水地圖 —— 全港 84,720 棟樓宇，每一棟都有九運風水評分。",
-     "打你住緊嗰幢樓個名落去，即刻睇到幾多分、山喺邊、水喺邊，仲有玄空飛星盤。",
-     "數據全部嚟自政府公開資料，免安裝、免登記、免費。"].join("\n"),
+    ["香港風水地圖",
+     "",
+     "全港 84,720 棟樓宇，每一棟都有九運風水評分。",
+     "打你住緊嗰幢樓個名落去就睇到。",
+     "",
+     "免費、免登記、免裝 App。"].join("\n"),
     location.origin + "/", "app");
 }
 
