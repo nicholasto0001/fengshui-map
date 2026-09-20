@@ -9,6 +9,11 @@
 # anything that has not been built and looked at first.
 set -euo pipefail
 
+# Needs a terminal that can push to GitHub. This machine pushes through GitHub
+# Desktop, which keeps its token to itself, so the usual route is the button:
+#   Actions -> Build and deploy -> Run workflow -> tick 上線 -> Run
+# That does the same thing, including moving the live branch.
+
 BR="production"
 say() { printf '%s\n' "$*"; }
 die() { printf '\n  ✗ %s\n\n' "$*" >&2; exit 1; }

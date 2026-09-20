@@ -26,6 +26,10 @@ on:
     - cron: "0 21 * * *"      # 05:00 Hong Kong time
   workflow_dispatch:
     inputs:
+      live:
+        description: "上線去 hkfengshuimap.com（唔剔就只係上 staging）"
+        type: boolean
+        default: false
       refresh:
         description: "Re-crawl CSDI even if today's cache is usable"
         type: boolean
@@ -59,7 +63,8 @@ jobs:
           # goes to staging. Defaulting the other way is how a site ends up
           # live by accident.
           if [ "${{ github.ref }}" = "refs/heads/production" ] || \
-             [ "${{ github.event_name }}" = "schedule" ]; then
+             [ "${{ github.event_name }}" = "schedule" ] || \
+             [ "${{ github.event.inputs.live }}" = "true" ]; then
             echo "env=" >> "$GITHUB_OUTPUT"
             echo "where=live · hkfengshuimap.com" >> "$GITHUB_OUTPUT"
           else
@@ -171,6 +176,16 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      # Promoting from the button has to move the live branch too, or the
+      # nightly refresh — which builds that branch — would quietly put the old
+      # code back the next morning.
+      - name: Mark this commit as the live one
+        if: github.event.inputs.live == 'true'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git push --force origin HEAD:production
 
       # Recorded once so ship.sh can show it, and nobody has to go digging
       # through a build log to find out where to look before shipping.
