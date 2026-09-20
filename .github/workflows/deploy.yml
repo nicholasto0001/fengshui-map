@@ -155,10 +155,36 @@ jobs:
       # not read wrangler.jsonc at all. Calling wrangler directly pins the
       # current major instead of whatever the action happens to ship.
       - name: Deploy to Cloudflare (${{ steps.target.outputs.where }})
-        run: npx --yes wrangler@4 deploy ${{ steps.target.outputs.env }}
+        id: deploy
+        run: |
+          set -o pipefail
+          npx --yes wrangler@4 deploy ${{ steps.target.outputs.env }} 2>&1 | tee deploy.log
+          # workers.dev addresses are per Cloudflare account, so the address
+          # cannot be written down in advance — it is read back from what
+          # wrangler actually published.
+          URL=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | head -1 || true)
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          {
+            echo "### ${{ steps.target.outputs.where }}"
+            [ -n "$URL" ] && echo "$URL" || echo "(no workers.dev address in the output)"
+          } >> "$GITHUB_STEP_SUMMARY"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      # Recorded once so ship.sh can show it, and nobody has to go digging
+      # through a build log to find out where to look before shipping.
+      - name: Remember the staging address
+        if: github.ref == 'refs/heads/main' && steps.deploy.outputs.url != ''
+        run: |
+          printf '%s\n' "${{ steps.deploy.outputs.url }}" > .staging-url
+          if ! git diff --quiet .staging-url; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add .staging-url
+            git commit -m "ci: staging is at ${{ steps.deploy.outputs.url }}"
+            git push origin HEAD:main || echo "could not fast-forward main; skipped"
+          fi
 
       # Only the small, slow-moving reference layers stay in the repository.
       - name: Commit reference data if it changed
