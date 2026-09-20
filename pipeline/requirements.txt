@@ -1,1 +1,7 @@
+# 行 pipeline 要嘅嘢，得兩樣。
+#
+# certifi —— python.org 個 macOS build 冇 root store，冇佢連唔到政府啲 https。
 certifi
+# Pillow —— 淨係 make_plans.py 用（屋苑平面圖：航空圖磚拼埋，再畫樓宇輪廓）。
+# 唔擺圖入 git：658 張 × 45 KB，每次重出就係一個 30 MB 嘅新 blob 入歷史。
+Pillow

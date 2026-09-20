@@ -145,22 +145,30 @@ jobs:
       # They get their own cache, restored before and saved after, purely as a
       # fallback: a government server having a slow minute took down a whole
       # deploy once, and shipping without the data is worse than shipping
-      # yesterday's copy of it.
+      # yesterday's copy of it. Five sources now, and the same rule holds for
+      # all of them — 人口普查嘅屋苑邊界、中原同 28Hse 嘅屋苑資料、
+      # 土地註冊處同房委會嘅成交。
       - name: Restore the registers
         uses: actions/cache/restore@v4
         with:
           path: |
             data/bd_age.json
             data/housing.json
+            data/census.json
+            data/estate_meta.json
+            data/market.json
           key: registers-${{ github.run_id }}
           restore-keys: registers-
 
-      - name: Fetch the age and housing registers
+      - name: Fetch the registers and the reference data
         run: |
-          for name in fetch_bd_age fetch_housing; do
+          for name in fetch_bd_age fetch_housing fetch_census fetch_estate_meta fetch_market; do
             case "$name" in
-              fetch_bd_age)  f=data/bd_age.json ;;
-              fetch_housing) f=data/housing.json ;;
+              fetch_bd_age)      f=data/bd_age.json ;;
+              fetch_housing)     f=data/housing.json ;;
+              fetch_census)      f=data/census.json ;;
+              fetch_estate_meta) f=data/estate_meta.json ;;
+              fetch_market)      f=data/market.json ;;
             esac
             if python "pipeline/$name.py"; then continue; fi
             if [ -s "$f" ]; then
@@ -177,13 +185,38 @@ jobs:
           path: |
             data/bd_age.json
             data/housing.json
+            data/census.json
+            data/estate_meta.json
+            data/market.json
           key: registers-${{ github.run_id }}
+
+      - name: Restore the aerial tile cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .tilecache
+          key: tiles-${{ github.run_id }}
+          restore-keys: tiles-
 
       - name: Score and tile
         run: |
           python pipeline/score.py
           python pipeline/build_tiles.py
+
+      # 屋苑頁同區頁。平面圖擺喺頁之前，因為 make_pages 會讀
+      # plan-report.json 去砌張圖嘅標籤 —— 冇圖就冇嗰格，唔會爆。
+      #
+      # 兩樣都唔可以拉冧成個 deploy：呢啲係額外內容，個地圖本身唔靠佢哋。
+      - name: Build the estate and district pages
+        run: |
+          python pipeline/make_plans.py || echo "::warning::make_plans failed; 出頁時冇平面圖"
+          python pipeline/make_pages.py || echo "::warning::make_pages failed; 今次唔出屋苑頁"
           python pipeline/make_sitemap.py
+
+      - name: Save the aerial tile cache
+        uses: actions/cache/save@v4
+        with:
+          path: .tilecache
+          key: tiles-${{ github.run_id }}
 
       - name: Assemble the site
         run: bash build.sh
