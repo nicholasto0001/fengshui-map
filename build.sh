@@ -13,8 +13,17 @@ mkdir -p public
 
 cp index.html manifest.webmanifest public/
 cp og.png favicon.ico apple-touch-icon.png icon-192.png icon-512.png public/
-cp -R data public/data
-rm -f public/data/buildings.json public/data/scores.json public/data/op.json
+# An allowlist, not a delete list. Every new pipeline stage drops another
+# intermediate into data/, and a delete list publishes each one until someone
+# notices — bd_age.json (2.9 MB) and the housing register were being served to
+# the public internet despite nothing on the page ever fetching them. These
+# tiles/ (which is also where build.json, index.json and search.json land)
+# plus these two are exactly what index.html asks for.
+mkdir -p public/data
+cp -R data/tiles public/data/tiles
+for f in district_stats.json estates.json; do
+  cp "data/$f" "public/data/$f"
+done
 
 # Stamp the build so a cached page can tell it has fallen behind.
 #

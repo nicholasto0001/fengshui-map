@@ -83,8 +83,6 @@ jobs:
           python pipeline/fetch_buildings.py
           python pipeline/fetch_op.py
           python pipeline/fetch_districts.py
-          python pipeline/fetch_bd_age.py
-          python pipeline/fetch_housing.py
           python pipeline/fetch_facilities.py
 
       # Saved as soon as the crawl lands, before anything downstream can fail.
@@ -96,6 +94,17 @@ jobs:
             data/buildings.json
             data/op.json
           key: csdi-${{ github.run_id }}
+
+      # Outside the cache gate on purpose. These are two plain file downloads,
+      # not a 213k-record crawl, and the cache only carries buildings.json and
+      # op.json — so riding on it meant every push on a day the crawl was
+      # already cached deployed with no 樓齡 records and no 房委會 register at
+      # all: 元運 silently back from 30.3% to 23.5%, and the official use class
+      # gone, which is what keeps a substation from being graded as a home.
+      - name: Fetch the age and housing registers
+        run: |
+          python pipeline/fetch_bd_age.py
+          python pipeline/fetch_housing.py
 
       - name: Score and tile
         run: |
