@@ -670,6 +670,56 @@
           cursor:pointer; min-height:38px}
   .bzedit:active{opacity:.6}
 
+  /* ---------- 電腦版右欄 ----------
+
+     1512 × 900 入面，左邊側欄佔 460，其餘成千 pixel 全部係地圖 —— 得個睇字。
+     而我哋手上嘅嘢（航空平面圖、屋苑逐座、每個區量出嚟嘅形）喺手機度要
+     scroll 好耐先見到，喺電腦度根本擺得落同時睇。
+
+     1360px 以下唔出：再窄就會逼到個地圖剩返一條，三欄變咗冇一欄夠用。 */
+  #side{display:none}
+  @media (min-width:1360px){
+    #side{
+      display:block; position:fixed; z-index:390;
+      top:14px; right:14px; width:360px; max-height:calc(100dvh - 28px);
+      overflow-y:auto; overscroll-behavior:contain;
+      background:var(--card); border:1px solid var(--line); border-radius:18px;
+      box-shadow:0 10px 34px rgba(0,0,0,.10);
+      padding:16px 16px 18px;
+    }
+    #side[hidden]{display:none}
+    /* 地圖嘅工具掣唔可以俾右欄冚住。 */
+    #tools{margin-inline-end:374px}
+  }
+  .sidehd{display:flex; align-items:baseline; gap:8px; margin:0 0 3px}
+  .sidehd b{font-size:17px; font-weight:650}
+  .sidehd span{font-size:11.5px; color:var(--ink3)}
+  .sidesub{font-size:12.5px; color:var(--ink3); margin:0 0 12px; line-height:1.5}
+  .planimg{width:100%; border-radius:12px; border:1px solid var(--line);
+           display:block; background:var(--bg)}
+  .plancap{font-size:11.5px; color:var(--ink3); margin:6px 0 0; line-height:1.5}
+  .sideblocks{list-style:none; margin:12px 0 0; padding:0;
+              display:flex; flex-direction:column; gap:6px}
+  .sideblocks li{display:flex; align-items:center; gap:9px; padding:7px 9px;
+                 border-radius:10px; cursor:pointer}
+  .sideblocks li:hover{background:var(--bg)}
+  .sideblocks li.here{background:var(--bg); outline:1px solid var(--line)}
+  .sideblocks .bs{width:30px; height:30px; border-radius:50%; flex:none; display:grid;
+                  place-items:center; font-size:13px; font-weight:700}
+  .sideblocks .bn{flex:1; font-size:13.5px; line-height:1.3}
+  .sideblocks .bf{font-size:11.5px; color:var(--ink3)}
+  .sidewx{display:flex; gap:6px; margin:10px 0 0}
+  .sidewx div{flex:1; text-align:center; background:var(--bg); border:1px solid var(--line);
+              border-radius:10px; padding:8px 4px}
+  .sidewx u{display:block; text-decoration:none; font-size:15px; font-weight:700}
+  .sidewx span{font-size:11px; color:var(--ink3)}
+
+  .famrow{cursor:pointer; border-radius:10px; padding:3px 6px; margin-inline:-6px}
+  .famrow:hover{background:var(--bg)}
+  .famrow.off{opacity:.45}
+  .famrow.off .fnm b{text-decoration:line-through; text-decoration-thickness:1px}
+  .fsw{width:20px; flex:none; text-align:center; font-size:14px; color:var(--good,#1d6b4f)}
+
   .tagline{font-size:13.5px; font-weight:600; color:var(--gold,#8a6d2f); margin:-2px 0 6px;
            letter-spacing:.01em}
 
@@ -1170,6 +1220,9 @@
   <button id="btnNudgeShare">分享</button>
   <button class="x" id="btnNudgeClose" aria-label="關閉">×</button>
 </div>
+
+<!-- 電腦版右欄。手機唔存在 —— 五吋屏幕擺唔落第三欄，亦都唔需要。 -->
+<aside id="side" hidden><div id="sidebody"></div></aside>
 
 <div id="sheet">
   <div id="grip"><div class="bar"></div>
@@ -2130,6 +2183,90 @@ const NOW_NOTE = {
   "入囚":"向星當運入中宮，氣被困",
 };
 
+/* ---------- 電腦版右欄 ----------
+
+   同左欄唔同：左欄係「你揀緊乜」，右欄係「你揀咗嗰樣嘢係點」。所以右欄
+   永遠跟住 selection 走，唔會有自己嘅導航。
+
+   放嘅嘢係手機版要 scroll 好耐先見到、或者根本淨係喺 678 版屋苑頁度先有
+   嘅嘢 —— 航空平面圖、同屋苑逐座比較、呢個區量出嚟嘅形。 */
+const sideEl = () => document.getElementById("side");
+
+function sideBlocks(o){
+  if(!o.est || !searchIndex) return "";
+  const rows = searchIndex.filter(x => x.est === o.est && x.res !== 0)
+    .map(x => ({...x, _fit: fitOf(x)}))
+    .sort((a, b) => (b.total || 0) - (a.total || 0));
+  if(rows.length < 2) return "";
+  return `
+    <p class="fhd" style="margin:16px 0 0">同屋苑逐座　<span>${rows.length} 座</span></p>
+    <ul class="sideblocks">${rows.slice(0, 24).map(x => `
+      <li data-lat="${x.lat}" data-lon="${x.lon}"${
+        x.lat === o.lat && x.lon === o.lon ? ' class="here"' : ""}>
+        <span class="bs" style="background:${colorFor(x.total)};color:${inkOn(x.total)}">${num(x.total,0)}</span>
+        <span class="bn">${esc(clean(x.tc) || clean(x.en) || "未命名")}
+          ${x._fit != null ? `<span class="bf">夾你 ${x._fit}</span>` : ""}</span>
+      </li>`).join("")}</ul>
+    ${rows.length > 24 ? `<p class="plancap">仲有 ${rows.length - 24} 座，喺屋苑頁度睇得晒。</p>` : ""}`;
+}
+
+function sideWx(tc){
+  const e = elemData && elemData[tc];
+  if(!e) return "";
+  const f = e.form;
+  const top = Object.keys(f).sort((a, b) => f[b] - f[a])[0];
+  return `
+    <p class="fhd" style="margin:16px 0 0">${esc(tc)}量出嚟嘅形</p>
+    <p class="sidesub" style="margin:4px 0 0">平均樓高 ${e.h_med} 米　·　
+      ${e.shore.toFixed(0)}% 住宅喺離水邊 200 米內　·　每平方公里 ${e.density} 幢</p>
+    <div class="sidewx">${["木","火","土","水"].map(w => `
+      <div><u class="wx-${w}" style="color:${w === top ? "" : "var(--ink2)"}">${w}</u>
+        <span>${f[w]}</span></div>`).join("")}</div>
+    <p class="plancap">分數係全港十八區入面嘅排名。金冇形嘅數據支持，所以唔列。</p>`;
+}
+
+function renderSide(o){
+  const el = sideEl();
+  if(!el || !matchMedia("(min-width:1360px)").matches){ if(el) el.hidden = true; return; }
+  const body = document.getElementById("sidebody");
+
+  if(!o){ el.hidden = true; return; }
+  const title = clean(o.tc) || clean(o.en) || "未命名樓宇";
+  const est = o.est ? clean(o.est) : null;
+
+  body.innerHTML = `
+    <p class="sidehd"><b>${esc(est || title)}</b>
+      <span>${esc(clean(o.district) || "")}</span></p>
+    <p class="sidesub">${est ? `${esc(title)}　·　` : ""}地理環境 ${num(o.total,1)} / 100</p>
+    ${est ? `
+      <img class="planimg" alt="${esc(est)}航空平面圖"
+           src="plan/${encodeURIComponent(est)}.jpg"
+           onerror="this.remove(); const c=document.getElementById('plancap'); if(c) c.remove();">
+      <p class="plancap" id="plancap">地政總署航空圖。北向上，比例見圖。</p>` : ""}
+    ${sideBlocks(o)}
+    ${sideWx(o.district)}
+    ${est ? `<a class="deep" style="margin-top:14px"
+       href="/estate/${encodeURIComponent(est)}">
+       <span><b>${esc(est)}　詳細資料</b>人口普查、發展商、成交價</span><i>›</i></a>` : ""}`;
+  el.hidden = false;
+  el.scrollTop = 0;
+
+  body.querySelectorAll(".sideblocks li").forEach(li =>
+    li.addEventListener("click", () => {
+      const lat = +li.dataset.lat, lon = +li.dataset.lon;
+      map.setView([lat, lon], 18);
+      setTimeout(() => {
+        let best = null, bd = Infinity;
+        buildingLayer.eachLayer(l => {
+          const c = l.getBounds ? l.getBounds().getCenter() : l.getLatLng();
+          const d = (c.lat - lat) ** 2 + (c.lng - lon) ** 2;
+          if(d < bd){ bd = d; best = l; }
+        });
+        if(best && bd < 1e-7) best.fire("click");
+      }, 700);
+    }));
+}
+
 /* ---------- 一屋人 ----------
 
    搵樓嘅人好少係一個人。一個爸爸幫成家搵，佢要知嘅唔係「呢層樓啱唔啱
@@ -2152,6 +2289,21 @@ const REL = [
 const relTC = r => (REL.find(x => x[0] === r) || [, "其他"])[1];
 
 let family = [];          // [{id, name, relation, is_self, y, m, d, h, male}]
+
+/* 邊幾個人計緊。
+
+   「我同老婆」、「我同個女」、「全家」係三條唔同嘅問題，而人搵樓嗰陣
+   三條都會問。所以逐個人撳得著撳得熄，唔使開幾個 profile。
+
+   揀邊幾個係睇緊嘅一刻嘅嘢，唔係身份，所以留喺部機就夠。 */
+const FAM_OFF_KEY = "fs_fam_off_v1";
+let famOff = new Set();
+try{ famOff = new Set(JSON.parse(localStorage.getItem(FAM_OFF_KEY) || "[]")); }catch{}
+const famOn = p => !famOff.has(p.id);
+function toggleFam(id){
+  if(famOff.has(id)) famOff.delete(id); else famOff.add(id);
+  try{ localStorage.setItem(FAM_OFF_KEY, JSON.stringify([...famOff])); }catch{}
+}
 
 function rowToPerson(r){
   if(!r.birth_at) return null;
@@ -2209,6 +2361,7 @@ async function removePerson(id){
 function familyFits(o){
   const rows = [];
   for(const p of family){
+    if(!famOn(p)) continue;
     const f = fitOf(o, p);
     if(f != null) rows.push({...p, fit: f});
   }
@@ -2318,21 +2471,31 @@ function personalPanel(o, layer){
   // 一個人嘅分上面，再加一層：成屋人。加咗家人先有，所以亦都係
   // 開戶口之後最明顯嘅一個好處。
   const fam = (me && family.length > 1) ? familyFits(o) : null;
-  const famBlock = fam ? `
+  const off = family.filter(x => !famOn(x));
+  const famBlock = (me && family.length > 1) ? `
     <div class="fam">
-      <p class="famh">成家夾唔夾　<b>${fam.avg}</b><span>平均</span></p>
-      <ul class="faml">${fam.rows.map(r => `
-        <li>
-          <span class="fn" style="background:${colorFor(r.fit)};color:${inkOn(r.fit)}">${r.fit}</span>
+      <p class="famh">${fam ? `成家夾唔夾　<b>${fam.avg}</b><span>平均${
+        off.length ? `，計緊 ${fam.rows.length} 個人` : ""}</span>`
+        : "成家夾唔夾　<span>一個人都冇揀</span>"}</p>
+      <ul class="faml">${family.map(r => {
+        const on = famOn(r), f = on ? (fam ? fam.rows.find(x => x.id === r.id) : null) : null;
+        return `
+        <li class="famrow${on ? "" : " off"}" data-fid="${r.id}" role="button" tabindex="0">
+          <span class="fn" style="${on && f
+            ? `background:${colorFor(f.fit)};color:${inkOn(f.fit)}`
+            : "background:var(--bg);color:var(--ink3);border:1px solid var(--line)"}">${
+            on && f ? f.fit : "–"}</span>
           <span class="fnm"><b>${esc(r.name || relTC(r.relation))}</b>${
             r.name ? `<em>${esc(r.is_self ? "自己" : relTC(r.relation))}</em>` : ""}</span>
-          ${r.fit === fam.worst.fit && fam.rows.length > 1
+          ${on && fam && fam.rows.length > 1 && f && f.fit === fam.worst.fit
             ? '<span class="ftag2">最唔夾</span>' : ""}
-        </li>`).join("")}</ul>
-      <p class="ppnote">${fam.worst.fit < 55
+          <span class="fsw" aria-hidden="true">${on ? "✓" : ""}</span>
+        </li>`;}).join("")}</ul>
+      <p class="plancap">撳一撳就計／唔計嗰個人 —— 「我同老婆」同「全家」係兩條問題。</p>
+      ${!fam ? "" : `<p class="ppnote">${fam.worst.fit < 55
         ? `<b>${esc(fam.worst.name || relTC(fam.worst.relation))}</b>嗰度得 ${fam.worst.fit} 分
            —— 平均分冚唔到呢件事，所以照講。`
-        : "一屋人都喺同一個水平，冇邊個特別唔夾。"}</p>
+        : "一屋人都喺同一個水平，冇邊個特別唔夾。"}</p>`}
     </div>` : "";
 
   const famCta = (me && family.length <= 1) ? `
@@ -2554,6 +2717,14 @@ function renderBuilding(o, layer){
   const sh = sheetBody.querySelector("#btnShare");
   if(sh) sh.addEventListener("click", () => shareBuilding(o));
 
+  renderSide(o);
+  sheetBody.querySelectorAll(".famrow").forEach(li => {
+    const flip = () => { toggleFam(li.dataset.fid); renderBuilding(o, layer); };
+    li.addEventListener("click", flip);
+    li.addEventListener("keydown", e => {
+      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); flip(); }
+    });
+  });
   const pf = sheetBody.querySelector("#ppFam");
   if(pf) pf.addEventListener("click", () => {
     track("family_cta", {from: "building"});

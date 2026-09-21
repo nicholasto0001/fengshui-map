@@ -40,3 +40,6 @@ data/estates.json
 
 # 天文台曆法數據，淨係驗證嗰陣用，bazi/fetch_hko.py 攞得返。
 bazi/.hko/
+
+# 本機測試用：等 dev server 揾到 /plan/ 啲圖（build.sh 會真係 copy 過去 public/）
+/plan
