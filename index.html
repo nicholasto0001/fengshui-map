@@ -783,6 +783,12 @@
        padding-top:11px; border-top:1px solid var(--line)}
   .fsn b{color:var(--ink)}
 
+  /* 加咗屋企人之後，畫面一定要睇得出唔同咗 —— 唔係人哋會以為冇 save 到。 */
+  .famnote{background:#f3f7fd; border:1px solid #d6e2f3; border-radius:12px;
+           padding:11px 13px; margin:10px 0 8px; font-size:12.5px; line-height:1.65;
+           color:var(--ink3)}
+  .famnote b{color:#1b4f8f}
+
   .tagline{font-size:13.5px; font-weight:600; color:var(--gold,#8a6d2f); margin:-2px 0 6px;
            letter-spacing:.01em}
 
@@ -1840,19 +1846,31 @@ function passesGua(o){
   return d != null && guaDirSet.has(d);
 }
 
+/* 一屋人分咗東四西四，即係冇一個向對每個人都吉 —— 嗰陣唔可以再硬篩,
+   硬篩落去會篩到一幢都冇。改為唔篩向，等個分自己講（八宅本身已經佔
+   咗個分一半，所以唔夾嘅樓自然會沉底）。 */
+let guaSplit = false;
+
 function refreshGuaDirs(){
   guaDirSet = guaRegions = null;
-  if(!(guaOn && bzMod && birth)) return;
-  const g = myGua();
-  if(g) guaDirSet = new Set(bzMod.goodDirs(g).map(d => DIR8.indexOf(d)));
-  const hh = birth.h == null ? 12 : birth.h;
-  const c = bzMod.chart(birth.y, birth.m, birth.d, hh, 0);
-  const hc = bzMod.hotCold(birth.y, birth.m, birth.d, hh, 0);
-  // elements.json 未返到就唔篩地區 —— 篩錯好過唔篩呢句係啱嘅反面。
-  if(c && hc){
-    const {areas} = rankAreas(hc.like, bzMod.strength(c).pct);
-    if(areas.length) guaRegions = new Set(areas.map(a => a.tc));
+  guaSplit = false;
+  if(!(guaOn && bzMod)) return;
+  const ppl = counted();
+  if(!ppl.length) return;
+
+  // 每個人四個吉方，取交集。一個人嘅時候，交集就係佢自己嗰四個。
+  let shared = null;
+  for(const person of ppl){
+    const g = guaOf(person);
+    if(!g) continue;
+    const dirs = new Set(bzMod.goodDirs(g).map(d => DIR8.indexOf(d)));
+    shared = shared === null ? dirs : new Set([...shared].filter(d => dirs.has(d)));
   }
+  if(shared && shared.size) guaDirSet = shared;
+  else if(ppl.length > 1) guaSplit = true;   // 分咗組：唔篩向，唔係會清空
+
+  const {areas} = rankAreas();
+  if(areas.length) guaRegions = new Set(areas.map(a => a.tc));
 }
 
 function verdict(v){
@@ -3136,17 +3154,61 @@ function fitOf(o, who){
 /* 夾你嘅地區。面板同地圖篩選一定要行同一條數 —— 之前面板用寒熱命，
    地圖篩選用扶抑用神加一張寫死嘅五區表，所以面板叫你睇觀塘，撳「睇合
    我嘅樓」之後個地圖淨係剩返新界。 */
-function rankAreas(like, pct, n = 6){
-  const wts = wxWeights(like, pct);
-  if(!elemData || !districtData.length) return {wts, areas: []};
+/* 邊幾個人計緊。
+
+   之前成個 app 淨係用 `birth`（戶主自己），所以加咗屋企人之後，地區、
+   樓宇清單、地圖篩選、清單頂嗰條橫額，一個字都唔會變 —— 用家加完人見唔
+   到任何分別，會以為冇 save 到。
+
+   而家一處計，全部跟：冇登入或者未加人就係你自己一個；加咗就係撳住咗
+   嗰幾個。 */
+function counted(){
+  const on = (me && family.length) ? family.filter(famOn) : [];
+  if(on.length) return on;
+  return birth ? [birth] : [];
+}
+
+/** 逐個人嘅寒熱命同權重，用嚟砌地區排名。 */
+function chartsOf(people){
+  if(!bzMod) return [];
+  return people.map(p => {
+    const hh = p.h == null ? 12 : p.h;
+    const c = bzMod.chart(p.y, p.m, p.d, hh, 0);
+    const hc = bzMod.hotCold(p.y, p.m, p.d, hh, 0);
+    if(!c || !hc) return null;
+    return {p, hc, w: wxWeights(hc.like, bzMod.strength(c).pct)};
+  }).filter(Boolean);
+}
+
+/** 一幢樓對成屋人嘅分 —— 逐個人計完取平均。 */
+function houseFit(o){
+  const ppl = counted();
+  if(!ppl.length) return null;
+  let t = 0;
+  for(const p of ppl){
+    const f = fitOf(o, p);
+    if(f == null) return null;
+    t += f;
+  }
+  return Math.round(t / ppl.length);
+}
+
+/* 地區排名。一個人就係佢自己嗰份；一屋人就逐個計完取平均 —— 同樓宇嗰邊
+   用同一條規矩，唔好一處平均一處唔平均。 */
+function rankAreas(n = 6){
+  const ppl = counted();
+  const cs = chartsOf(ppl);
+  if(!cs.length || !elemData || !districtData.length) return {cs, areas: []};
+  const lead = cs[0];
   const areas = districtData.map(d => {
     const e = elemData[d.tc];
     if(!e) return null;
-    return {tc: d.tc, avg: d.avg, n: d.n, e, wx: like[0], dir: e.zone,
-            f1: fitFor(e, like[0]), f2: fitFor(e, like[1]),
-            fit: Math.round(wts.reduce((t, [w, k]) => t + k * fitFor(e, w), 0))};
+    const each = cs.map(c => c.w.reduce((t, [w, k]) => t + k * fitFor(e, w), 0));
+    return {tc: d.tc, avg: d.avg, n: d.n, e, wx: lead.hc.like[0], dir: e.zone,
+            f1: fitFor(e, lead.hc.like[0]), f2: fitFor(e, lead.hc.like[1]),
+            fit: Math.round(each.reduce((t, v) => t + v, 0) / each.length)};
   }).filter(Boolean).sort((a, b) => b.fit - a.fit).slice(0, n);
-  return {wts, areas};
+  return {cs, areas};
 }
 
 const NO_FORM = "金";
@@ -3318,7 +3380,9 @@ function bzResult(){
   // 主用神行七成，次用神三成 —— 寒命喜火，木生火，所以火先係要嗰個，
   // 木係幫手。兩個等量齊觀會令到「幫手」蓋過「要嗰個」。
   const [p1, p2] = want;
-  const {wts, areas} = rankAreas(want, st.pct);
+  const {cs, areas} = rankAreas();
+  const wts = cs.length ? cs[0].w : wxWeights(want, st.pct);
+  const nPeople = cs.length;
   const wxb = w => `<b class="wx-${w}">${w}</b>`;
   const lead = wts[0][1] >= wts[1][1] ? p1 : p2;
   // 夾你嗰幾個區，九運分數可以係全港最低嗰批 —— 寒命喜火，而火形就係
@@ -3392,6 +3456,13 @@ function bzResult(){
     </div>
 
     <h3 class="bzh">宜住邊區</h3>
+    ${nPeople > 1 ? `<p class="famnote"><b>計緊 ${nPeople} 個人。</b>
+      下面每個區嘅分，係${cs.map(c => esc(c.p.name || relTC(c.p.relation))).join("、")}
+      逐個計完取平均。${
+        cs.length > 1 && new Set(cs.map(c => c.hc.type)).size > 1
+          ? `佢哋唔同命（${[...new Set(cs.map(c => c.hc.type))].join("、")}），
+             所以冇一個區係人人滿分 —— 想淨係睇一個人，去屋企人嗰度撳熄其他。`
+          : "佢哋同命，所以次序同一個人睇差唔多。"}</p>` : ""}
     <p class="bznote" style="margin-top:-2px">${
       // 一句中文中間唔應該有空隙，所以呢兩段用駁字串砌，唔用換行 ——
       // 模板字串一換行就會喺句子中間留低一個空格。
@@ -4900,9 +4971,10 @@ function renderMatches(list){
   // 開咗八字就按「夾你」排，唔係按九運分排 —— 兩個答唔同問題，而開咗
   // 八字嘅人問嘅係嗰個。冇形嘅數據（例如冇高度）就跌返去九運分。
   const personal = guaOn && myWeights() && elemData;
+  const nCount = personal ? counted().length : 0;
   let groups = null, groupName = null;
   if(personal){
-    for(const o of list) o._fit = fitOf(o);
+    for(const o of list) o._fit = houseFit(o);
     list = [...list].sort((a, b) =>
       (b._fit ?? -1) - (a._fit ?? -1) || (b.total || 0) - (a.total || 0));
     // 揀咗一個屋苑就淨係睇嗰個屋苑；未揀就睇屋苑一層，唔係逐幢。
@@ -4982,7 +5054,10 @@ function renderMatches(list){
     <p class="mcount">${
       groups
         ? `${list.length.toLocaleString()} 棟符合，歸成 ${groups.length.toLocaleString()} 個屋苑／大廈，
-           按最夾你嗰座排。撳入去睇嗰個屋苑逐座。`
+           按最夾${nCount > 1 ? "你哋" : "你"}嗰座排。撳入去睇嗰個屋苑逐座。${
+           nCount > 1 ? `<br><b>計緊 ${nCount} 個人</b>，每一幢樓都係逐個計完取平均。${
+             guaSplit ? "你哋分咗東四／西四兩組，所以冇按坐向硬篩 —— 硬篩會一幢都唔剩。"
+                      : ""}` : ""}`
         : `${list.length.toLocaleString()} 棟${groupSel ? "" : "符合"}，${
             personal ? "按同你夾唔夾由高至低排列" : "按分數由高至低排列"}。撳一下跳去該幢樓。`}${
       unnamed && !groupSel ? `<br>另有未命名樓宇未計在內，可以直接喺地圖撳。` : ""}</p>
