@@ -17,6 +17,7 @@ from __future__ import annotations
 import collections
 import html
 import json
+import re
 import urllib.parse
 import pathlib
 import sys
@@ -168,6 +169,10 @@ table.kvt td{white-space:normal;font-weight:550}
 footer{margin:40px 0 0;padding:20px 0 0;border-top:1px solid var(--line);
  font-size:13px;color:var(--ink3);line-height:1.7}
 footer a{color:var(--ink2)}
+.faqs{margin:34px 0 0}
+.faq{border-top:1px solid var(--line);padding:18px 0 0;margin:18px 0 0}
+.faq h2{font-size:19px;margin:0 0 8px}
+.faq p{margin:0;font-size:15.5px;line-height:1.75;color:var(--ink2)}
 .bzbox{background:linear-gradient(135deg,#3d2f18,#5a4622);color:#fff;border-radius:16px;
  padding:20px 22px;margin:34px 0 0;line-height:1.7}
 .bzbox p{margin:0 0 10px;font-size:14.5px;opacity:.9}
@@ -180,16 +185,43 @@ footer a{color:var(--ink2)}
 """
 
 
-def shell(title, desc, canon, crumbs, body):
+def faq_html(faqs):
+    """問題做標題，第一句就答。
+
+    呢個唔淨係俾 Google —— AI 爬蟲唔行 JavaScript，佢哋見到嘅就係呢啲
+    靜態文字。一個「答案行先」嘅段落，係佢哋引用得到嘅嘢；一張數據表
+    唔係。所以每一版都要用人真係會打嗰句問題做標題。
+    """
+    if not faqs:
+        return ""
+    items = "".join(
+        f'<div class="faq"><h2>{e(q)}</h2><p>{a}</p></div>' for q, a in faqs)
+    return f'<section class="faqs">{items}</section>'
+
+
+def strip_tags(x):
+    return re.sub(r"<[^>]+>", "", x)
+
+
+def shell(title, desc, canon, crumbs, body, faqs=None):
     trail = " › ".join(
         f'<a href="{u}">{e(t)}</a>' if u else e(t) for t, u in crumbs)
-    ld = {
-        "@context": "https://schema.org", "@type": "BreadcrumbList",
+    graph = [{
+        "@type": "BreadcrumbList",
         "itemListElement": [
             {"@type": "ListItem", "position": i + 1, "name": t,
              **({"item": SITE + u} if u else {})}
             for i, (t, u) in enumerate(crumbs)],
-    }
+    }]
+    if faqs:
+        graph.append({
+            "@type": "FAQPage",
+            "mainEntity": [
+                {"@type": "Question", "name": q,
+                 "acceptedAnswer": {"@type": "Answer", "text": strip_tags(a)}}
+                for q, a in faqs],
+        })
+    ld = {"@context": "https://schema.org", "@graph": graph}
     return f"""<!doctype html>
 <html lang="zh-HK">
 <head>
@@ -216,6 +248,7 @@ def shell(title, desc, canon, crumbs, body):
 <div class="wrap">
 <nav class="crumb">{trail}</nav>
 {body}
+{faq_html(faqs)}
 <div class="bzbox">
   <p class="bzh2">呢個分係「呢幢樓點起」，唔係「啱唔啱你」</p>
   <p>上面每個分都係九運格局分 —— <b>邊個睇都一樣</b>。九運嘅好樓對大部分人好，
@@ -450,6 +483,43 @@ def gather():
 
 
 # --------------------------------------------------------------- 出頁 ---
+def estate_faqs(es, rank, total_est):
+    """屋苑頁嘅問題 —— 人打嘅係「太古城風水好唔好」，唔係「太古城評分」。"""
+    rows, nm = es["rows"], es["name"]
+    hi, lo = rows[0], rows[-1]
+    lbl = band(es["avg"])[0]
+    bn = lambda r: e(r["tc"] or r["en"] or "未命名樓宇")
+
+    out = [(
+        f"{nm}風水好唔好？",
+        f"{nm}（{e(es['district'])}）{len(rows)} 座嘅九運風水平均分係 "
+        f"<b>{es['avg']:.1f} 分</b>，喺全港 {n(total_est)} 個屋苑入面"
+        f"<b>排第 {rank}</b>，整體屬「{lbl}」。"
+        f"分數計嘅係山水方位、周邊設施同玄空飛星盤，"
+        f"唔包括室內間隔、樓層同單位座向。"
+    )]
+
+    if len(rows) > 1:
+        gap = hi["total"] - lo["total"]
+        out.append((
+            f"{nm}邊座風水最好？",
+            f"最高分係 <b>{bn(hi)}</b>（{hi['total']:.1f} 分），"
+            f"最低係 {bn(lo)}（{lo['total']:.1f} 分），"
+            f"{'爭 %.1f 分' % gap if gap >= 1 else '差別好細'}。"
+            f"同一個屋苑各座嘅坐向同山水方位唔同，所以分數唔會一樣 —— "
+            f"上面逐座列晒。"
+        ))
+
+    out.append((
+        f"{nm}啱唔啱我？",
+        f"上面個分答嘅係「{nm}點起」，<b>邊個睇都一樣</b>。"
+        f"啱唔啱你係另一條問題：要睇你嘅八字同本命卦。"
+        f"同一座樓，向北對乾命嘅人係「六煞」，對巽命嘅人可以係「生氣」。"
+        f"打個出生日期落去就計到，屋企人都加得埋一齊計。"
+    ))
+    return out
+
+
 def estate_page(es, rank, total_est, siblings, extra):
     rows, nm = es["rows"], es["name"]
     lbl, tone = band(es["avg"])
@@ -508,7 +578,8 @@ def estate_page(es, rank, total_est, siblings, extra):
 """
     crumbs = [("香港風水地圖", "/"), ("屋苑", "/estate/"),
               (es["district"], url("district", es["district"])), (nm, None)]
-    return shell(title, desc, url("estate", nm), crumbs, body)
+    return shell(title, desc, url("estate", nm), crumbs, body,
+                 estate_faqs(es, rank, total_est))
 
 
 def market_panel(dname, mk):
@@ -539,6 +610,59 @@ def market_panel(dname, mk):
             f'<div class="bar" style="margin-top:10px"><u>{e(last[0])}</u>'
             f'<span></span><em>{last[1]:,} 宗　'
             f'{"↑" if delta >= 0 else "↓"} {abs(delta):.0f}% 按年</em></div></div>')
+
+
+ELEM = {x["tc"]: x for x in side("data/elements.json", [])}
+
+WX_WHY = {
+    "木": lambda x: f"平均樓高 {x['h_med']} 米，高度係地基闊度嘅 {x['slender']} 倍 —— 高而直",
+    "土": lambda x: f"平均樓高得 {x['h_med']} 米，矮而闊",
+    "火": lambda x: (f"{x['spike']:.0f}% 樓宇高出四周一倍以上，"
+                    f"每平方公里 {x['density']} 幢"),
+    "水": lambda x: f"{x['shore']:.0f}% 住宅喺離水邊 200 米內",
+}
+
+
+def district_faqs(d, rank, rows, estates):
+    """人真係會打嘅問題，唔係我哋想講嘅嘢。
+
+    「觀塘屬咩五行」呢條問題，全網得一篇 2011 年嘅匿名網誌答，而佢自己
+    都矛盾。我哋有量出嚟嘅數據，所以答得比全網都好 —— 呢個先係值得
+    被引用嘅原因。
+    """
+    tc, lbl = d["tc"], band(d["avg"])[0]
+    out = [(
+        f"{tc}風水好唔好？",
+        f"{tc}全部 {n(d['n'])} 幢樓宇嘅九運風水平均分係 <b>{d['avg']:.1f} 分</b>，"
+        f"喺十八區入面<b>排第 {rank}</b>，整體屬「{lbl}」。"
+        f"區內最高分係 {e(rows[0]['tc'] or rows[0]['en'] or '未命名樓宇')}"
+        f"（{rows[0]['total']:.1f} 分）。分數計嘅係山水方位、周邊設施同玄空飛星，"
+        f"唔包括室內間隔。"
+    )]
+
+    x = ELEM.get(tc)
+    if x:
+        f = x["form"]
+        top = max(f, key=f.get)
+        out.append((
+            f"{tc}屬咩五行？",
+            f"按形勢計，{tc}<b>最突出係{top}</b>（全港十八區入面排 {f[top]}／100）。"
+            f"{WX_WHY[top](x)}。楊筠松《撼龍經》以形定五行 —— 金圓、木直、水曲、"
+            f"火尖、土方 —— 呢度嘅數字係由區內 {n(x['n'])} 幢住宅嘅實際高度、"
+            f"地基輪廓同離水距離量出嚟，唔係抄坊間清單。"
+            f"（金冇形嘅數據支持，所以唔計；{tc}位處全港{x['zone']}面，"
+            f"按方位屬{x['dir_wx']}。）"
+        ))
+
+    if estates:
+        best = estates[0]
+        out.append((
+            f"{tc}邊個屋苑風水最好？",
+            f"區內平均分最高係 <b>{e(best['name'])}</b>（{best['avg']:.1f} 分）。"
+            f"但平均分係成個屋苑嘅，逐座可以差好遠 —— 撳入去睇逐座坐向同飛星盤。"
+            f"另外，格局好唔等於啱你：同一幢樓對唔同八字嘅人分數唔同。"
+        ))
+    return out
 
 
 def district_page(d, rank, rows, estates, n_est, mk):
@@ -589,7 +713,8 @@ def district_page(d, rank, rows, estates, n_est, mk):
 {DISCLAIM}
 """
     crumbs = [("香港風水地圖", "/"), ("地區", "/district/"), (d["tc"], None)]
-    return shell(title, desc, url("district", d["tc"]), crumbs, body)
+    return shell(title, desc, url("district", d["tc"]), crumbs, body,
+                 district_faqs(d, rank, rows, estates))
 
 
 def hub_estates(ranked):
