@@ -39,16 +39,17 @@ y = 96
 
 d.text((PAD, y), "香港風水地圖", font=f_title, fill=INK)
 y += 108
-d.text((PAD, y), "九運 2024–2043 · 逐棟樓宇評分", font=f_sub, fill=INK2)
+d.text((PAD, y), "八字揀樓 · 九運 2024–2043", font=f_sub, fill=INK2)
 y += 86
 
-# The hook, phrased as the question a reader answers by tapping.
-d.rounded_rectangle([PAD, y, PAD + 470, y + 66], radius=33, fill=(238, 244, 251),
+# 卡上面嗰句要講返我哋同人唔同嗰樣 —— 分數邊個睇都一樣，啱唔啱你先係
+# 得你一個人有。所以問句係「啱你八字」，唔係「幾多分」。
+d.rounded_rectangle([PAD, y, PAD + 530, y + 66], radius=33, fill=(238, 244, 251),
                     outline=(214, 228, 244), width=2)
-d.text((PAD + 30, y + 16), "睇下你屋企幾多分？", font=f_pill, fill=BRAND)
+d.text((PAD + 30, y + 16), "邊幢樓啱你八字？", font=f_pill, fill=BRAND)
 y += 118
 
-stats = [("213,328", "棟樓宇"), ("18", "區"), ("每日", "更新")]
+stats = [("84,720", "幢逐幢計"), ("18", "區"), ("每日", "更新")]
 x = PAD
 for value, label in stats:
     d.text((x, y), value, font=f_stat, fill=INK)
@@ -57,7 +58,7 @@ for value, label in stats:
     x = d.textbbox((x, y), value, font=f_stat)[2] + 12 + \
         d.textbbox((0, 0), label, font=f_lab)[2] + 60
 
-d.text((PAD, H - 88), "山水方位 · 玄空飛星 · 政府公開數據", font=f_lab, fill=INK3)
+d.text((PAD, H - 88), "四柱八字 · 八宅 · 玄空飛星 · 政府公開數據", font=f_lab, fill=INK3)
 
 # Score chips on the right, showing the colour language the map uses.
 cx, cy = W - 300, 150
