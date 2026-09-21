@@ -601,6 +601,36 @@
   .whyme ol b{color:var(--ink)}
   .whyme .wm2{font-size:12.5px; color:var(--ink3); margin:10px 0 0; line-height:1.6}
 
+  /* ---- 逐幢樓嘅個人分析 ----
+     九運嗰半係人人一樣嘅，呢半係你自己嘅。兩者要一眼睇得出唔同,
+     所以呢格有自己嘅底色同標題，唔係接落去嘅另一段字。 */
+  .pp{background:var(--card); border:1px solid var(--line); border-radius:16px;
+      padding:15px 16px; margin:16px 0 0}
+  .pp .fhd{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin:0 0 10px}
+  .pp .fhd span{font-size:11.5px; font-weight:500; color:var(--ink3); letter-spacing:.02em}
+  .ppq{font-size:13px; line-height:1.6; color:var(--ink3); margin:0 0 12px}
+  .ppscore{display:flex; align-items:center; gap:13px}
+  .ppn{width:52px; height:52px; border-radius:50%; flex:none; display:grid;
+       place-items:center; font-size:21px; font-weight:700}
+  .ppv{font-size:16px; font-weight:650; margin:0}
+  .ppvs{font-size:12.5px; line-height:1.55; color:var(--ink3); margin:2px 0 0}
+  .ppd{display:grid; grid-template-columns:auto 1fr; gap:8px 14px; margin:14px 0 0;
+       font-size:13px; line-height:1.6}
+  .ppd dt{color:var(--ink3); white-space:nowrap}
+  .ppd dd{margin:0; color:var(--ink)}
+  .ppdt{color:var(--ink3); font-size:12.5px}
+  .ppd .ppok{color:#1d6b4f} .ppd .ppno{color:#a01f1f}
+  .ppnote{font-size:11.5px; line-height:1.6; color:var(--ink3); margin:12px 0 0}
+
+  /* 見到有嘢喺度，但讀唔到 —— 淨係講「登入有嘢睇」冇人信。 */
+  .ppwrap{position:relative; margin-top:12px}
+  .ppblur{filter:blur(5px); opacity:.5; user-select:none; pointer-events:none;
+          max-height:190px; overflow:hidden}
+  .ppgate{position:absolute; inset:auto 0 0; padding:16px 14px 2px;
+          background:linear-gradient(to bottom, transparent, var(--card) 38%)}
+  .ppgh{font-size:15px; font-weight:650; margin:0 0 4px}
+  .ppgs{font-size:12.5px; line-height:1.6; color:var(--ink3); margin:0 0 12px}
+
   .bzform{margin:6px 0 0}
   .bzform label{display:block; font-size:13.5px; color:var(--ink3); margin:14px 0 6px}
   .bzrow{display:flex; gap:8px}
@@ -759,7 +789,18 @@
   }
   #grip:active{cursor:grabbing}
   #grip .bar{width:40px; height:5px; border-radius:3px; background:#d5d3cb; margin:0 auto 8px}
-  #griptext{font-size:13.5px; color:var(--ink2); text-align:center}
+  /* 返回擺喺同一個位，唔好散落每一頁入面 —— 人搵返回掣嗰陣係望同一個
+     角落，唔係逐頁搵。標題照舊置中，所以返回掣係絕對定位，唔會推歪佢。 */
+  .griprow{position:relative; display:flex; align-items:center; justify-content:center;
+           min-height:22px}
+  #griptext{font-size:13.5px; color:var(--ink2); text-align:center;
+            padding-inline:56px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  #gripback{position:absolute; inset-inline-start:0; top:50%; transform:translateY(-50%);
+            background:transparent; border:0; font:inherit; font-size:13.5px;
+            color:var(--ink2); cursor:pointer; padding:6px 10px 6px 0; min-height:34px;
+            display:flex; align-items:center; max-width:52%}
+  #gripback span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  #gripback:active{opacity:.55}
   #sheetbody{
     flex:1 1 auto; overflow-y:auto; overscroll-behavior:contain;
     padding:0 16px calc(22px + var(--safe-b));
@@ -1089,7 +1130,12 @@
 </div>
 
 <div id="sheet">
-  <div id="grip"><div class="bar"></div><div id="griptext">撳任何一棟樓睇風水評分</div></div>
+  <div id="grip"><div class="bar"></div>
+    <div class="griprow">
+      <button id="gripback" type="button" hidden>‹　<span></span></button>
+      <div id="griptext">撳任何一棟樓睇風水評分</div>
+    </div>
+  </div>
   <div id="sheetbody"></div>
 </div>
 
@@ -1891,6 +1937,50 @@ function drawDistricts(){
 const sheet=document.getElementById("sheet");
 const sheetBody=document.getElementById("sheetbody");
 const gripText=document.getElementById("griptext");
+/* ---------- 返回 ----------
+
+   之前每一頁都係「行入去就返唔到轉頭」：撳咗八字裡面一個區，就淨係剩
+   返嗰區嘅樓，想睇返邊幾個區啱自己就冇路；撳手機個返回掣係直接離開成
+   個 app。
+
+   所以留一條路徑返轉頭。每次「行入去」推一格（連埋一個 history entry），
+   撳畫面上面個返回、或者手機硬件返回掣，都係彈返上一格；彈到冇得彈，
+   先至真係離開。 */
+const backStack = [];
+let backPushed = 0;
+
+function pushBack(label, run){
+  if(backStack.length >= 8) backStack.shift();
+  backStack.push({label, run});
+  try{ history.pushState({fs: ++backPushed}, ""); }catch{}
+  syncBack();
+}
+function popBack(){
+  const t = backStack.pop();
+  syncBack();
+  if(t) t.run();
+  return !!t;
+}
+function clearBack(){ backStack.length = 0; syncBack(); }
+function syncBack(){
+  const b = document.getElementById("gripback");
+  if(!b) return;
+  const t = backStack[backStack.length - 1];
+  b.hidden = !t;
+  if(t) b.querySelector("span").textContent = t.label;
+}
+addEventListener("popstate", () => {
+  if(backPushed > 0) backPushed--;
+  popBack();                       // 空咗就乜都唔做，瀏覽器自己行落去
+});
+
+document.getElementById("gripback").addEventListener("click", e => {
+  e.stopPropagation();             // 唔好順便開關咗個面板
+  if(!backStack.length) return;
+  if(backPushed > 0) history.back();   // popstate 會做嘢，兩邊唔會失散
+  else popBack();
+});
+
 document.getElementById("grip").addEventListener("click", e=>{
   if(e.detail === 0) return;                 // ignore clicks synthesised by drag
   setSheet(sheetState() === "full" ? "peek" : sheetState() === "half" ? "full" : "half");
@@ -1998,6 +2088,121 @@ const NOW_NOTE = {
   "入囚":"向星當運入中宮，氣被困",
 };
 
+/* ---------- 逐幢樓嘅個人分析 ----------
+
+   樓宇頁本來只答「呢幢樓格局好唔好」，即係人人見到同一個答案。呢一格答
+   另一條：呢幢樓點解啱你。兩件事擺埋一齊但分開講，唔撈埋做一個分數。
+
+   頭兩行免費睇，其餘 blur 住 —— 唔係為咗擋住人，係因為要記得住你係邊個
+   先幫到你（換部電話、下次返嚟都仲喺度），而嗰樣嘢要有個戶口。 */
+const WX_HELP = {木:"火", 火:"土", 土:"金", 金:"水", 水:"木"};   // 生
+
+function bldWhy(o, wx, dEl){
+  const v = bldWx(o, wx, dEl);
+  if(v == null) return null;
+  if(wx === "火")
+    return {wx, v, txt: dEl ? `${clean(o.district)}有 ${dEl.spike.toFixed(1)}% 樓宇高出四周一倍以上，
+      每平方公里 ${dEl.density} 幢` : "", scope: "區"};
+  if(wx === "金")
+    return {wx, v, txt: dEl && dEl.dir_wx === "金" ? `${clean(o.district)}位處全港西面，西屬金`
+      : `${clean(o.district)}唔喺全港西面`, scope: "區"};
+  if(wx === "水")
+    return {wx, v, txt: `離水邊 ${num(o.wt_d, 0)} 米`, scope: "樓"};
+  const size = `樓高 ${num(o.h, 0)} 米${o.storeys ? `、${num(o.storeys, 0)} 層` : ""}`;
+  return {wx, v, txt: wx === "木" ? `${size} —— 高而直` : `${size} —— 矮而闊`, scope: "樓"};
+}
+
+/* 八宅以向論：呢幢樓個向，對你個命卦嚟講係邊隻遊年星。 */
+function guaWhy(o){
+  const g = myGua();
+  if(!g || !bzMod || o.face_m == null) return null;
+  const i = SHAN_D8[o.face_m];
+  if(i == null) return null;
+  if((o.conf ?? 0) < 0.6)
+    return {ok: null, txt: "坐向推算唔夠準（樓形太方正），所以呢一項唔計。"};
+  const dir = DIR8[i], star = bzMod.LUCK[g][dir];
+  const good = bzMod.goodDirs(g).includes(dir);
+  return {ok: good, dir, star, gua: g,
+          txt: `向${dir} —— 你係${g}命，${dir}方對你係「${star}」，八宅${good ? "取" : "唔取"}。`};
+}
+
+function personalPanel(o, layer){
+  if(o.res === 0) return "";          // 唔係住宅，講夾唔夾冇意思
+
+  // 八字引擎本來淨係開八字面板嗰陣先載入，所以由地圖直接撳一幢樓入嚟
+  // 嗰陣佢仲未喺度，成格嘢會當「量唔到」。載咗佢再畫過。
+  if(birth && (!bzMod || !elemData)){
+    Promise.all([ensureBazi(), loadElements()]).then(() => {
+      if(minSel === o.id) renderBuilding(o, layer);
+    }).catch(() => {});
+    return `<div class="pp"><p class="fhd">呢幢樓啱唔啱你？</p>
+            <p class="ppq">計緊…</p></div>`;
+  }
+
+  if(!birth) return `
+    <div class="pp">
+      <p class="fhd">呢幢樓啱唔啱你？</p>
+      <p class="ppq">上面嗰個分數，答嘅係「呢幢樓格局好唔好」—— 邊個睇都一樣。
+        入咗出生日期，就會用你自己個八字，逐項度返呢一幢樓夾唔夾你。</p>
+      <button class="pbtn dark" id="ppBz">用我嘅八字睇呢幢樓</button>
+    </div>`;
+
+  const w = myWeights();
+  const dEl = elemData && elemData[o.district];
+  const fit = fitOf(o);
+  if(!w || fit == null) return `
+    <div class="pp"><p class="fhd">呢幢樓啱唔啱你？</p>
+      <p class="ppq">呢幢樓冇高度紀錄，所以度唔到佢嘅形，夾唔夾你講唔出。
+        唔係「一般」—— 係我哋真係冇呢個數。</p></div>`;
+
+  const hc = bzMod.hotCold(birth.y, birth.m, birth.d,
+                           birth.h == null ? 12 : birth.h, 0);
+  const rows = w.map(([wx, k]) => ({...bldWhy(o, wx, dEl), k})).filter(r => r.v != null);
+  const gw = guaWhy(o);
+  const lead = rows[0];
+
+  // 分幾多先叫夾 —— 用全港住宅嘅分佈講，唔用一個冇根據嘅及格線。
+  const verdict = fit >= 75 ? "幾夾你" : fit >= 55 ? "一般" : "唔算夾你";
+
+  const free = `
+    <div class="ppscore">
+      <div class="ppn" style="background:${colorFor(fit)};color:${inkOn(fit)}">${fit}</div>
+      <div><p class="ppv">${verdict}</p>
+        <p class="ppvs">你${hc.type}，喜<b class="wx-${lead.wx}">${lead.wx}</b>。
+          呢幢樓喺${lead.scope === "樓" ? "樓身" : "地區"}嗰度${lead.wx} ${lead.v} 分。</p></div>
+    </div>`;
+
+  const locked = !me;
+  const detail = `
+    <dl class="ppd">
+      ${rows.map(r => `
+        <dt><b class="wx-${r.wx}">${r.wx}</b>　佔 ${(r.k * 100).toFixed(0)}%</dt>
+        <dd><b>${r.v} / 100</b>（${r.scope === "樓" ? "呢一幢" : "成個區"}）<br>
+          <span class="ppdt">${esc(r.txt.replace(/\s+/g, ""))}</span></dd>`).join("")}
+      ${gw ? `<dt>坐向</dt><dd class="${gw.ok === true ? "ppok" : gw.ok === false ? "ppno" : ""}">
+        ${esc(gw.txt)}</dd>` : ""}
+    </dl>
+    <p class="ppnote">八宅同五行係兩套唔同嘅方法，都係師傅嘅講法；
+      樓高、地基同離水距離係我哋自己量嘅。兩者分開睇。</p>`;
+
+  return `
+    <div class="pp">
+      <p class="fhd">呢幢樓啱唔啱你？<span>第二部分 · 睇你個八字</span></p>
+      ${free}
+      ${locked ? `
+        <div class="ppwrap">
+          <div class="ppblur">${detail}</div>
+          <div class="ppgate">
+            <p class="ppgh">逐項拆開睇</p>
+            <p class="ppgs">呢幢樓每一項點解夾你（或者唔夾），連量到嘅數字。
+              同時會<b>記住你同屋企人嘅八字</b>，換部電話、用電腦開返都仲喺度。</p>
+            <button class="pbtn dark" id="ppLogin">登入睇全部</button>
+            <p class="gf">免費，用 Google 一撳就得。</p>
+          </div>
+        </div>` : detail}
+    </div>`;
+}
+
 function renderBuilding(o, layer){
   nudgeFor = o;
   armNudge(o);
@@ -2091,6 +2296,7 @@ function renderBuilding(o, layer){
       <dt>山水配對</dt><dd>${o.mwds8>0?`合九運格局（${o.mwds8}/9）`:"不成對，此項 0 分"}</dd>
       <dt>樓高</dt><dd>${num(o.h,0)} 米${o.storeys?`　${num(o.storeys,0)} 層`:""}</dd>
     </dl>
+    ${personalPanel(o, layer)}
     ${estate}
     <div class="actions">
       <button class="act ${isFav(o)?"saved":""}" id="btnSave">
@@ -2193,8 +2399,17 @@ function renderBuilding(o, layer){
   });
   const sh = sheetBody.querySelector("#btnShare");
   if(sh) sh.addEventListener("click", () => shareBuilding(o));
+
+  const pz = sheetBody.querySelector("#ppBz");
+  if(pz) pz.addEventListener("click", () => { track("pp_bazi_cta", {}); showBazi(); });
+  const pl = sheetBody.querySelector("#ppLogin");
+  if(pl) pl.addEventListener("click", () => {
+    track("pp_signin_prompt", {});
+    askSignIn(null);
+  });
 }
 
+let groupSel = null;      // 撳開咗邊個屋苑／大廈
 let favView = false;
 let sharedList = null;          // a shortlist opened from someone else's link
 
@@ -2444,11 +2659,18 @@ const SHICHEN = [
   ["酉","17:00–18:59",18],["戌","19:00–20:59",20],["亥","21:00–22:59",22],
 ];
 
+/* bzMod 要等到 ready() 行完先擺上去。之前一 import 完就擺，於是有一段
+   時間佢係「有值但未 ready」—— 嗰陣任何人撞正嚟 chart() 就會掟
+   「要先 await ready()」。由地圖直接撳一幢樓入去，就啱啱撞正嗰段。 */
+let bzLoading = null;
 async function ensureBazi(){
   if(bzMod) return bzMod;
-  bzMod = await import("./bazi.js?v=" + BUILD_ID);
-  await bzMod.ready(dataUrl("../solar_terms.json"));
-  return bzMod;
+  if(!bzLoading) bzLoading = (async () => {
+    const m = await import("./bazi.js?v=" + BUILD_ID);
+    await m.ready(dataUrl("../solar_terms.json"));
+    return (bzMod = m);
+  })().catch(e => { bzLoading = null; throw e; });
+  return bzLoading;
 }
 
 /** 由已存低嘅出生資料算命卦。冇資料就 null。 */
@@ -2732,7 +2954,10 @@ async function showBazi(){
       askSignIn(null);
       return;
     }
-    // 揀咗區就即刻入到嗰區嘅樓宇清單，同時保留八宅篩選。
+    // 揀咗區就即刻入到嗰區嘅屋苑清單，同時保留八宅篩選。
+    // 留返條路返八字 —— 之前撳咗入去就再望唔返邊幾個區啱自己。
+    pushBack("八字", () => { groupSel = null; showBazi(); });
+    groupSel = null;
     districtFilter = b.dataset.d;
     guaOn = true;
     favView = false; sharedList = null; pickingDistrict = false;
@@ -2785,6 +3010,7 @@ document.getElementById("btnGua").addEventListener("click", async () => {
     return;
   }
   guaOn = !guaOn;
+  groupSel = null; clearBack();
   favView = false; sharedList = null; pickingDistrict = false;
   document.getElementById("btnGua").classList.toggle("on", guaOn);
   refreshGuaDirs();
@@ -2798,6 +3024,7 @@ document.getElementById("btnFav").addEventListener("click", ()=>{
   favView = !favView;
   sharedList = null;
   pickingDistrict = false;
+  groupSel = null; clearBack();
   saveFavs();
   track("open_favourites", {count: favs.length});
   if(favView){ showFavs(); openSheet(); } else showOverview();
@@ -2882,6 +3109,14 @@ async function showOverview(){
   if(sa) sa.addEventListener("click", shareApp);
   sheetBody.querySelectorAll(".dlist li").forEach(li=>li.addEventListener("click",()=>{
     const a=rows[+li.dataset.i];
+    pushBack("全港", () => {
+      districtFilter = null; groupSel = null;
+      const c = document.getElementById("btnDistrict");
+      c.innerHTML = '<b>地區</b>全港 <span class="caret">▾</span>';
+      c.classList.remove("on");
+      drawDistricts(); showOverview();
+    });
+    groupSel = null;
     districtFilter = a.tc;
     track("filter_district", {district: a.tc, from: "home_list"});
     const chip = document.getElementById("btnDistrict");
@@ -3742,16 +3977,17 @@ async function showEstate(name){
     }));
 }
 
-/* 同一個屋苑啲樓形一樣，夾你分就一樣，於是排成一串 —— 愉景灣蔚陽一口氣
-   出十幾座，佔晒個清單頭。每組留最夾嗰兩座，其餘摺埋，數目寫喺第二行度,
-   撳入去個屋苑一樣睇得晒。
+/* ---------- 一層一層撳落去 ----------
 
-   只喺個人清單度摺：全港清單按分數排，同屋苑各座分數唔同，本來就會散開。 */
-const EST_KEEP = 2;
+   開咗八字，全港夾你嘅樓有兩千幾幢，一個區都成七百幢。掉一條七百行嘅
+   清單出嚟，等於冇篩過 —— 而且同一個屋苑啲樓形一樣，夾你分就一樣,
+   愉景灣蔚陽會一口氣霸住十四行。
 
-/* 分組用屋苑名，冇屋苑名就用樓名減走座數 —— 房委會個登記冊得公營房屋,
-   84,720 幢入面得 13,578 幢有屋苑名，剩返嘅私樓（龍珠島花園、Paloma Cove
-   嗰啲）淨係得個樓名。減唔走座數就唔分組，即係當佢自己一幢。 */
+   所以分三層：區 → 屋苑／大廈 → 逐座。每層都揀得少，每層都返得轉頭。
+
+   分組用屋苑名，冇屋苑名就用樓名減走座數 —— 房委會個登記冊得公營房屋,
+   84,720 幢入面得 13,578 幢有屋苑名，剩返嘅私樓（龍珠島花園、Paloma
+   Cove 嗰啲）淨係得個樓名。減唔走座數就當佢自己一幢。 */
 const BLOCK_TAIL = new RegExp(
   "(?:\\s*第?[0-9０-９A-ZＡ-Ｚa-zａ-ｚ一二三四五六七八九十百]{1,8}[－–—-]?" +
   "[0-9０-９A-ZＡ-Ｚ一二三四五六七八九十百]{0,8}座" +
@@ -3766,46 +4002,49 @@ function groupOf(o){
   return base && base !== n ? {key: "n:" + base, name: base} : null;
 }
 
-function foldEstates(list){
-  const total = new Map(), grp = new Map();
+function groupsIn(list){
+  const g = new Map();
   for(const o of list){
-    const g = groupOf(o);
-    if(!g) continue;
-    grp.set(o, g);
-    total.set(g.key, (total.get(g.key) || 0) + 1);
+    const k = groupOf(o);
+    const key = k ? k.key : "s:" + o.id;
+    let e = g.get(key);
+    if(!e){
+      e = {key, solo: !k, rows: [],
+           name: k ? k.name : (clean(o.tc) || clean(o.en) || "未命名樓宇")};
+      g.set(key, e);
+    }
+    e.rows.push(o);
   }
-
-  const seen = new Map(), kept = [], last = new Map();
-  for(const o of list){
-    const g = grp.get(o);
-    if(!g){ kept.push(o); continue; }
-    const n = (seen.get(g.key) || 0) + 1;
-    seen.set(g.key, n);
-    if(n > EST_KEEP) continue;
-    kept.push(o);
-    last.set(g.key, o);            // 記住每組最後留低嗰座
+  for(const e of g.values()){
+    e.rows.sort((x, y) => (y._fit ?? -1) - (x._fit ?? -1) || (y.total || 0) - (x.total || 0));
+    e.best = e.rows[0];
+    e.fit = e.best._fit;
+    e.n = e.rows.length;
+    e.top = Math.max(...e.rows.map(r => r.total || 0));
+    if(e.n === 1) e.solo = true;          // 得一座就唔使再撳多一層
   }
-  for(const [key, o] of last){
-    const more = total.get(key) - EST_KEEP;
-    if(more > 0){ o._more = more; o._grp = grp.get(o).name; }
-  }
-  return kept;
+  return [...g.values()].sort((x, y) =>
+    (y.fit ?? -1) - (x.fit ?? -1) || (y.top || 0) - (x.top || 0));
 }
 
 function renderMatches(list){
   // 開咗八字就按「夾你」排，唔係按九運分排 —— 兩個答唔同問題，而開咗
   // 八字嘅人問嘅係嗰個。冇形嘅數據（例如冇高度）就跌返去九運分。
   const personal = guaOn && myWeights() && elemData;
-  let folded = 0;
+  let groups = null, groupName = null;
   if(personal){
     for(const o of list) o._fit = fitOf(o);
     list = [...list].sort((a, b) =>
       (b._fit ?? -1) - (a._fit ?? -1) || (b.total || 0) - (a.total || 0));
-    list = foldEstates(list);
-    folded = list.reduce((t, o) => t + (o._more || 0), 0);
+    // 揀咗一個屋苑就淨係睇嗰個屋苑；未揀就睇屋苑一層，唔係逐幢。
+    if(groupSel){
+      const g = groupsIn(list).find(x => x.key === groupSel);
+      if(g){ list = g.rows; groupName = g.name; } else groupSel = null;
+    }
+    if(!groupSel) groups = groupsIn(list);
   }
   const shown = list.slice(0, MATCH_LIMIT);
-  const ests = districtFilter ? estatesIn(list) : [];
+  const ests = (districtFilter && !personal) ? estatesIn(list) : [];
   const estBlock = ests.length ? `
     <div class="estwrap">
       <p class="fhd">區內屋苑　<span>${ests.length} 個</span></p>
@@ -3816,7 +4055,7 @@ function renderMatches(list){
         </button>`).join("")}</div>
       ${ests.length > 40 ? `<p class="bznote">仲有 ${ests.length - 40} 個，喺下面嘅樓宇清單度搵得到。</p>` : ""}
     </div>` : "";
-  const where = districtFilter || "全港";
+  const where = groupName || districtFilter || "全港";
   const what  = band === "all" ? "所有評分" : chipLabel();
   // The list can only show buildings that carry a name; the map and the
   // district bubbles count every matching footprint. Saying both numbers
@@ -3870,30 +4109,44 @@ function renderMatches(list){
   sheetBody.innerHTML = `
     ${guaTop}
     <p class="bname">${esc(where)} · ${esc(what)}</p>
-    <p class="mcount">${(list.length + folded).toLocaleString()} 棟符合，${
-      personal ? "按同你夾唔夾由高至低排列" : "按分數由高至低排列"}。撳一下跳去該幢樓。${
-      folded ? `<br>同一個屋苑啲樓形一樣，夾你分就一樣 —— 每個屋苑只列最夾嘅
-        ${EST_KEEP} 座，另外 ${folded.toLocaleString()} 座摺埋咗。` : ""}${
-      unnamed ? `<br>另有未命名樓宇未計在內，可以直接喺地圖撳。` : ""}</p>
+    <p class="mcount">${
+      groups
+        ? `${list.length.toLocaleString()} 棟符合，歸成 ${groups.length.toLocaleString()} 個屋苑／大廈，
+           按最夾你嗰座排。撳入去睇嗰個屋苑逐座。`
+        : `${list.length.toLocaleString()} 棟${groupSel ? "" : "符合"}，${
+            personal ? "按同你夾唔夾由高至低排列" : "按分數由高至低排列"}。撳一下跳去該幢樓。`}${
+      unnamed && !groupSel ? `<br>另有未命名樓宇未計在內，可以直接喺地圖撳。` : ""}</p>
     <label class="homes"><input type="checkbox" id="homesOnly" ${homesOnly?"checked":""}>
       <span>只顯示住宅樓宇</span></label>
     ${estBlock}
     ${districtFilter ? `<a class="deep" href="/district/${encodeURIComponent(districtFilter)}">
       <span><b>${esc(districtFilter)}　詳細資料</b>
       區內排名、格局分佈、區內屋苑逐個睇</span><i>›</i></a>` : ""}
+    ${groups ? `
+    <ul class="mlist">${groups.slice(0, MATCH_LIMIT).map((g, i) => `
+      <li data-g="${i}">
+        <div class="sc" style="background:${colorFor(g.fit)};color:${inkOn(g.fit)}">${g.fit}</div>
+        <div><div class="nm">${esc(g.name)}</div>
+             <div class="mt">${esc(clean(g.best.district) || "")}　${
+               g.solo ? `九運 ${num(g.best.total,0)} 分`
+                      : `${g.n} 座　最夾嗰座 ${g.fit} 分　九運最高 ${num(g.top,0)}`}</div></div>
+        <div class="go">›</div>
+      </li>`).join("")}</ul>
+    ${groups.length > MATCH_LIMIT
+      ? `<p class="mmore">只顯示最夾你嘅 ${MATCH_LIMIT} 個，收窄地區可以睇到更多。</p>` : ""}
+    ` : `
     <ul class="mlist">${shown.map((o,i)=>`
       <li data-i="${i}">
         <div class="sc" style="background:${colorFor(o.total)};color:${inkOn(o.total)}">${num(o.total,0)}</div>
         <div><div class="nm">${esc(clean(o.tc)||clean(o.en)||"未命名樓宇")}</div>
              <div class="mt">${esc([clean(o.district), o.now].filter(Boolean).join(" · "))}${
                personal && o._fit != null
-                 ? ` <b class="fitb">夾你 ${o._fit}</b>` : ""}${
-               o._more ? `<br><span class="emore">${esc(o._grp)}　另有 ${
-                 o._more} 座，夾你分差不多</span>` : ""}</div></div>
+                 ? ` <b class="fitb">夾你 ${o._fit}</b>` : ""}</div></div>
         <div class="go">›</div>
       </li>`).join("")}</ul>
     ${list.length > MATCH_LIMIT
       ? `<p class="mmore">只顯示${personal ? "最夾你" : "分數最高"}嘅 ${MATCH_LIMIT} 棟，收窄地區或評分條件可以睇到更多。</p>` : ""}
+    `}
     <p class="note-foot" style="border-top:1px solid var(--line)">
       地理環境分屬「外巒頭」分析，唔包括單位樓層同室內佈局。僅供參考，不構成置業建議。
     </p>
@@ -3906,8 +4159,7 @@ function renderMatches(list){
   if(gb) gb.addEventListener("click", showBazi);
   if(hb) hb.addEventListener("change",()=>track("toggle_homes_only",{on:hb.checked}));
   if(hb) hb.addEventListener("change",()=>{ homesOnly = hb.checked; showOverview(); });
-  sheetBody.querySelectorAll(".mlist li").forEach(li=>li.addEventListener("click",()=>{
-    const o = shown[+li.dataset.i];
+  const jumpTo = o => {
     map.setView([o.lat,o.lon], 18);
     setTimeout(()=>{
       let best=null, bd=Infinity;
@@ -3918,13 +4170,38 @@ function renderMatches(list){
       });
       if(best && bd < 1e-7) best.fire("click");
     }, 900);
-  }));
+  };
+
+  sheetBody.querySelectorAll(".mlist li[data-g]").forEach(li =>
+    li.addEventListener("click", () => {
+      const g = groups[+li.dataset.g];
+      if(g.solo){                              // 得一座，唔使多撳一層
+        pushBack(districtFilter || "全港", () => showOverview());
+        jumpTo(g.best);
+        return;
+      }
+      pushBack(districtFilter || "全港", () => { groupSel = null; showOverview(); });
+      groupSel = g.key;
+      track("open_group", {group: g.name, n: g.n});
+      showOverview();
+    }));
+
+  sheetBody.querySelectorAll(".mlist li[data-i]").forEach(li =>
+    li.addEventListener("click", () => {
+      const o = shown[+li.dataset.i];
+      const label = groupSel
+        ? (groups ? "" : (sheetBody.querySelector(".bname")?.textContent || "清單"))
+        : (districtFilter || "清單");
+      pushBack(label || "清單", () => showOverview());
+      jumpTo(o);
+    }));
 }
 
 // --- filter chips ---
 document.querySelectorAll("#filters .chip[data-band]").forEach(c=>
   c.addEventListener("click",()=>{
     band = c.dataset.band;
+    groupSel = null; clearBack();
     track("filter_grade", {grade: band});
     document.querySelectorAll("#filters .chip[data-band]").forEach(x=>x.classList.toggle("on", x===c));
     // A filter that hides the selected building would leave a stranded panel.
