@@ -5588,6 +5588,7 @@ async function shareBuilding(o){
       const m = await cardBits();
       const blob = await (await m).buildingCard(o, {
         name, en: clean(o.en), district: clean(o.district),
+        estate: est, topPct: topPct(o.total),
         level: lvl, rank, mark: brandMark});
       const file = new File([blob], `${name}.png`, {type: "image/png"});
       if(navigator.canShare({files: [file]})){

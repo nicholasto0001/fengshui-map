@@ -53,7 +53,7 @@ function fitText(c, text, max, size, weight = "700"){
   return {text: t + "…", size: s};
 }
 
-export async function buildingCard(o, {name, en, district, level, rank, mark}){
+export async function buildingCard(o, {name, en, district, level, rank, mark, estate, topPct}) {
   await (document.fonts ? document.fonts.ready : Promise.resolve());
   const cv = document.createElement("canvas");
   cv.width = W; cv.height = H;
@@ -62,52 +62,61 @@ export async function buildingCard(o, {name, en, district, level, rank, mark}){
 
   c.fillStyle = IVORY; c.fillRect(0, 0, W, H);
 
-  /* 頂：品牌條 */
-  c.fillStyle = RED; c.fillRect(0, 0, W, 132);
+  /* 頂條 —— 之前個 logo 同個名細過下面嘅樓名，收到卡嘅人望唔到係邊度
+     出嘅。品牌要夠大先認得出。 */
+  c.fillStyle = RED; c.fillRect(0, 0, W, 168);
   if(mark){
-    c.save(); rr(c, 48, 26, 80, 80, 20); c.clip();
-    c.drawImage(mark, 48, 26, 80, 80); c.restore();
+    c.save(); rr(c, 52, 34, 100, 100, 26); c.clip();
+    c.drawImage(mark, 52, 34, 100, 100); c.restore();
   }
-  c.fillStyle = "#fff"; c.font = `700 40px ${FONT}`; c.textBaseline = "alphabetic";
-  c.fillText("香港風水地圖", 148, 62);
-  c.fillStyle = GOLD; c.font = `500 25px ${FONT}`;
-  c.fillText("三元九運 · 第九運 2024–2043", 148, 100);
+  c.fillStyle = "#fff"; c.font = `800 54px ${FONT}`; c.textBaseline = "alphabetic";
+  c.fillText("香港風水地圖", 176, 86);
+  c.fillStyle = GOLD; c.font = `600 28px ${FONT}`;
+  c.fillText("風水 × 大運 × 八字", 176, 128);
 
-  /* 主卡 */
+  /* 主卡。之前左右各留 48px，加埋卡入面再 padding，兩邊嘥咗成百幾 px,
+     所以入面乜都細。收窄到 36。 */
+  const M = 36;
   c.save();
-  c.shadowColor = "rgba(0,0,0,.09)"; c.shadowBlur = 34; c.shadowOffsetY = 10;
-  c.fillStyle = "#fff"; rr(c, 48, 186, W - 96, 706, 36); c.fill();
+  c.shadowColor = "rgba(0,0,0,.10)"; c.shadowBlur = 30; c.shadowOffsetY = 8;
+  c.fillStyle = "#fff"; rr(c, M, 208, W - M * 2, 600, 32); c.fill();
   c.restore();
 
-  /* 樓名 —— 張卡嘅主角，所以字最大、位最好 */
-  const nm = fitText(c, name, W - 200, 78);
-  c.fillStyle = INK; c.font = `700 ${nm.size}px ${FONT}`;
+  /* 樓名 —— 張卡嘅主角 */
   c.textAlign = "center";
+  const nm = fitText(c, name, W - M * 2 - 80, 86);
+  c.fillStyle = INK; c.font = `800 ${nm.size}px ${FONT}`;
   c.fillText(nm.text, W / 2, 300);
 
-  const sub = [en && en !== name ? en : null, district].filter(Boolean).join("   ·   ");
+  const sub = [estate && estate !== name ? estate : null,
+               en && en !== name ? en : null, district].filter(Boolean).join("   ·   ");
   if(sub){
-    const st = fitText(c, sub, W - 220, 32, "500");
+    const st = fitText(c, sub, W - M * 2 - 60, 30, "500");
     c.fillStyle = INK3; c.font = `500 ${st.size}px ${FONT}`;
-    c.fillText(st.text, W / 2, 348);
+    c.fillText(st.text, W / 2, 344);
   }
 
-  /* 分數環 */
-  const cx = W / 2, cy = 512, R = 108;
+  /* 百分位做主角，唔係 0–100 個分：64 分喺香港人眼中似「僅僅合格」,
+     但佢實際係全港頭一成。 */
+  const cx = W / 2, cy = 470, R = 100;
   c.beginPath(); c.arc(cx, cy, R, 0, Math.PI * 2);
   c.fillStyle = col; c.fill();
-  c.fillStyle = "#fff"; c.font = `700 104px ${FONT}`; c.textBaseline = "middle";
-  c.fillText(String(Math.round(o.total)), cx, cy + 4);
+  c.fillStyle = "#fff"; c.textBaseline = "middle";
+  if(topPct){
+    c.font = `600 30px ${FONT}`;
+    c.fillText(`全港${topPct.dir}`, cx, cy - 30);
+    c.font = `800 78px ${FONT}`;
+    c.fillText(`${topPct.n}%`, cx, cy + 30);
+  }else{
+    c.font = `800 104px ${FONT}`;
+    c.fillText(String(Math.round(o.total)), cx, cy + 4);
+  }
   c.textBaseline = "alphabetic";
 
-  c.fillStyle = col; c.font = `700 46px ${FONT}`;
-  c.fillText(level, cx, cy + R + 76);
-  if(rank){
-    c.fillStyle = INK2; c.font = `500 30px ${FONT}`;
-    c.fillText(rank, cx, cy + R + 122);
-  }
+  c.fillStyle = col; c.font = `800 50px ${FONT}`;
+  c.fillText(level, cx, cy + R + 56);
 
-  /* 山水 —— 逐幢樓真係計過嘅嘢 */
+  /* 山水 —— 逐幢樓真係計過嘅嘢。字大咗，四格攤到成張卡咁闊。 */
   c.textAlign = "left";
   const dir = d => DIR_TC[d] || d || "";
   const facts = [];
@@ -116,31 +125,48 @@ export async function buildingCard(o, {name, en, district, level, rank, mark}){
   if(o.sit_m && o.face_m) facts.push(["坐向", `坐${o.sit_m}向${o.face_m}`, ""]);
   if(o.now) facts.push(["九運", o.now, ""]);
 
-  const TOP = 762, PAD = 80;
-  c.strokeStyle = LINE; c.lineWidth = 1;
-  c.beginPath(); c.moveTo(PAD, TOP); c.lineTo(W - PAD, TOP); c.stroke();
+  const TOP = 660, PAD = M + 28;
+  if(facts.length){
+    c.strokeStyle = LINE; c.lineWidth = 1;
+    c.beginPath(); c.moveTo(PAD, TOP); c.lineTo(W - PAD, TOP); c.stroke();
 
-  const bw = (W - PAD * 2) / Math.max(facts.length, 1);
-  facts.forEach(([k, v, d], i) => {
-    const x = PAD + i * bw;
-    c.fillStyle = INK3; c.font = `500 24px ${FONT}`;
-    c.fillText(k, x, TOP + 46);
-    const val = fitText(c, v, bw - 26, 31, "650");
-    c.fillStyle = INK; c.font = `650 ${val.size}px ${FONT}`;
-    c.fillText(val.text, x, TOP + 88);
-    if(d){ c.fillStyle = INK2; c.font = `500 24px ${FONT}`; c.fillText(d, x, TOP + 124); }
-    if(i){ c.strokeStyle = LINE; c.lineWidth = 1;
-      c.beginPath(); c.moveTo(x - 22, TOP + 18); c.lineTo(x - 22, TOP + 134); c.stroke(); }
-  });
+    // 山水查唔到嘅樓得一兩格。攤晒成行就左邊擠右邊空，睇落似畫崩咗 ——
+    // 少過四格就每格窄啲、成組置中。
+    const full = (W - PAD * 2) / 4;
+    const bw = facts.length >= 4 ? full : Math.min(full, 232);
+    const x0 = (W - bw * facts.length) / 2;
+    c.textAlign = "center";
+    facts.forEach(([k, v, d], i) => {
+      const cxx = x0 + bw * i + bw / 2;
+      c.fillStyle = INK3; c.font = `500 26px ${FONT}`;
+      c.fillText(k, cxx, TOP + 46);
+      const val = fitText(c, v, bw - 20, 34, "700");
+      c.fillStyle = INK; c.font = `700 ${val.size}px ${FONT}`;
+      c.fillText(val.text, cxx, TOP + 90);
+      if(d){ c.fillStyle = INK2; c.font = `500 25px ${FONT}`; c.fillText(d, cxx, TOP + 126); }
+      if(i){ c.strokeStyle = LINE; c.lineWidth = 1;
+        c.beginPath(); c.moveTo(x0 + bw * i, TOP + 18); c.lineTo(x0 + bw * i, TOP + 136); c.stroke(); }
+    });
+  }
 
-  /* 底 */
+  /* 呢張卡會俾一個乜都唔知嘅人收到。之前得一句「撳入嚟睇飛星盤」——
+     對方根本唔知呢個係咩網站、做緊乜。用返呢度講一次。 */
+  const bx = M, by = 824, bh = 142;
+  c.fillStyle = "#f2efe7"; rr(c, bx, by, W - M * 2, bh, 26); c.fill();
   c.textAlign = "center";
-  c.fillStyle = INK; c.font = `650 34px ${FONT}`;
-  c.fillText("撳入嚟睇飛星盤、坐向同評分拆解", W / 2, 956);
-  c.fillStyle = INK3; c.font = `500 27px ${FONT}`;
-  c.fillText("hkfengshuimap.com   ·   政府公開數據   ·   免安裝免登記", W / 2, 1002);
-  c.fillStyle = "#a9a59c"; c.font = `500 22px ${FONT}`;
-  c.fillText("電腦計算，僅供參考。認真睇樓請搵專業風水師傅。", W / 2, 1042);
+  c.fillStyle = INK; c.font = `700 34px ${FONT}`;
+  c.fillText("住邊度最旺你？", W / 2, by + 50);
+  c.fillStyle = INK2; c.font = `500 27px ${FONT}`;
+  c.fillText("全港 84,720 幢樓，逐座計風水同大運；", W / 2, by + 92);
+  c.fillText("入埋你嘅出生日期，仲會計埋八字夾唔夾你。", W / 2, by + 126);
+
+  /* 底 —— 網址要大到一眼睇得清 */
+  c.fillStyle = INK; c.font = `800 38px ${FONT}`;
+  c.fillText("hkfengshuimap.com", W / 2, 1000);
+  c.fillStyle = INK3; c.font = `500 25px ${FONT}`;
+  c.fillText("免費　·　免登記　·　免裝 App　·　政府公開數據", W / 2, 1036);
+  c.fillStyle = "#a9a59c"; c.font = `500 21px ${FONT}`;
+  c.fillText("電腦計算，僅供參考。認真睇樓請搵專業風水師傅。", W / 2, 1066);
 
   return new Promise(res => cv.toBlob(res, "image/png"));
 }
