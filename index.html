@@ -833,18 +833,36 @@
      呢格要喺佢撳任何嘢之前，用人話講完：個分係乜、點解有兩個。 */
   .howto{background:var(--card); border:1px solid var(--line); border-radius:16px;
             padding:15px 16px; margin:16px 0 0}
-  .tlh{font-size:12px; font-weight:650; color:var(--ink3); letter-spacing:.04em;
-       margin:0 0 12px}
-  .tlrow{display:flex; gap:11px; margin:0 0 12px}
+  /* 條問題先係重點 —— 之前得 12px 灰字，比下面三段解釋細，
+     次序啱啱倒轉。 */
+  .tlh{font-size:21px; font-weight:800; color:var(--ink); letter-spacing:-.02em;
+       line-height:1.35; margin:0 0 6px}
+  /* 三樣嘢摺埋：summary 一行，解釋撳落去先出。一開就攤三段淺灰字，
+     人只會見到一牆嘢，結果乜都唔睇。 */
+  .tlrow{margin:0; border-top:1px solid var(--line)}
+  .tlrow > summary{list-style:none; cursor:pointer; display:flex; align-items:center;
+    gap:10px; padding:11px 0; min-height:46px}
+  .tlrow > summary::-webkit-details-marker{display:none}
   .tln{width:22px; height:22px; border-radius:50%; flex:none; display:grid;
        place-items:center; background:var(--ink); color:var(--card);
-       font-size:12px; font-weight:700; margin-top:1px}
-  .tlrow b{display:block; font-size:15px; font-weight:650; margin-bottom:2px}
-  .tlrow em{display:block; font-style:normal; font-size:12.5px; line-height:1.6;
-            color:var(--ink3)}
+       font-size:12px; font-weight:700}
+  .tlrow b{font-size:16px; font-weight:700; color:var(--ink)}
+  .tlrow .chev{margin-inline-start:auto; color:var(--ink3); font-size:12px;
+    transition:transform .2s}
+  .tlrow[open] > summary .chev{transform:rotate(180deg)}
+  .tlrow em{display:block; font-style:normal; font-size:13px; line-height:1.65;
+            color:var(--ink3); padding:0 0 12px 32px}
   .tlrow u{text-decoration:none; color:var(--ink2); font-weight:600}
+  .tlmore{margin-top:2px; border-top:1px solid var(--line)}
+  .tlmore > summary{list-style:none; cursor:pointer; display:flex;
+    justify-content:space-between; align-items:center; padding:12px 0;
+    min-height:46px; font-size:13.5px; font-weight:650; color:var(--brand)}
+  .tlmore > summary::-webkit-details-marker{display:none}
+  .tlmore .chev{color:var(--ink3); font-size:12px; transition:transform .2s}
+  .tlmore[open] > summary .chev{transform:rotate(180deg)}
+  .tlmore .tlnote:first-of-type{border-top:0; padding-top:0}
   .tlnote{font-size:12.5px; line-height:1.65; color:var(--ink3);
-          margin:0; padding-top:11px; border-top:1px solid var(--line)}
+          margin:0 0 11px; padding-top:11px; border-top:1px solid var(--line)}
   .tlnote b{color:var(--ink)}
   .tlwhat{margin-top:11px; border-top:1px solid var(--line); padding-top:10px}
   .tlwhat summary{display:flex; justify-content:space-between; align-items:center;
@@ -4512,27 +4530,30 @@ async function showOverview(){
       <p class="tlh">住邊度最旺你？</p>
       <p class="tlq">呢個網站淨係答呢一條問題，用三樣嘢答 ——
         <b>個地方本身點</b>、<b>而家行緊咩運</b>、<b>同你夾唔夾</b>。</p>
-      <div class="tlrow"><span class="tln">1</span>
-        <div><b>風水</b><i class="tlk">地方</i>
-          <em>山喺邊、水喺邊、周圍高定矮、有冇天橋電塔。
-            <u>呢啲幾十年都唔會變</u>，所以係個底。</em></div></div>
-      <div class="tlrow"><span class="tln">2</span>
-        <div><b>大運</b><i class="tlk">年代</i>
-          <em>同一個地方，唔同年代旺唔同方位，<u>二十年轉一次</u>。
-            而家行緊<b>九運（2024–2043）</b> —— 八運（2004–2023）當旺嗰啲樓，
-            今日未必當旺。</em></div></div>
-      <div class="tlrow"><span class="tln">3</span>
-        <div><b>八字</b><i class="tlk">你</i>
-          <em>入你嘅出生日期，用你自己嘅八字同命卦再計一次。
-            <u>同一幢樓，唔同人唔同分</u> —— 大部分人啱嘅樓，唔代表啱你。</em></div></div>
-      <p class="tlnote"><b>搵樓唔係重點，係手段。</b>
-        我哋有全港 84,720 幢樓、658 個屋苑逐座嘅數據，係為咗將上面三樣嘢
-        落到實 —— 答到<b>「你應該住邊一幢」</b>，唔係「而家有咩盤放緊」。</p>
-      <p class="tlnote">地產網話你知有咩樓，但冇風水冇大運；師傅有風水有八字，
-        但冇全港樓宇數據；排盤網得個八字，唔知你想住邊。
-        <u>三樣一齊做嘅，得呢度。</u></p>
-      <p class="tlnote">上面地圖啲顏色，係<b>風水 ＋ 大運</b>兩樣計出嚟嘅分（邊個睇都一樣）。
-        第三樣要你打個出生日期，出嚟係另一個分 —— 兩個分我哋分開俾你，唔溝埋做一個。</p>
+      <details class="tlrow"><summary><span class="tln">1</span>
+        <b>風水</b><i class="tlk">地方</i><span class="chev">▾</span></summary>
+        <em>山喺邊、水喺邊、周圍高定矮、有冇天橋電塔。
+          <u>呢啲幾十年都唔會變</u>，所以係個底。</em></details>
+      <details class="tlrow"><summary><span class="tln">2</span>
+        <b>大運</b><i class="tlk">年代</i><span class="chev">▾</span></summary>
+        <em>同一個地方，唔同年代旺唔同方位，<u>二十年轉一次</u>。
+          而家行緊<b>九運（2024–2043）</b> —— 八運（2004–2023）當旺嗰啲樓，
+          今日未必當旺。</em></details>
+      <details class="tlrow"><summary><span class="tln">3</span>
+        <b>八字</b><i class="tlk">你</i><span class="chev">▾</span></summary>
+        <em>入你嘅出生日期，用你自己嘅八字同命卦再計一次。
+          <u>同一幢樓，唔同人唔同分</u> —— 大部分人啱嘅樓，唔代表啱你。</em></details>
+      <details class="tlmore">
+        <summary><span>點解要三樣一齊睇？</span><span class="chev">▾</span></summary>
+        <p class="tlnote"><b>搵樓唔係重點，係手段。</b>
+          我哋有全港 84,720 幢樓、658 個屋苑逐座嘅數據，係為咗將上面三樣嘢
+          落到實 —— 答到<b>「你應該住邊一幢」</b>，唔係「而家有咩盤放緊」。</p>
+        <p class="tlnote">地產網話你知有咩樓，但冇風水冇大運；師傅有風水有八字，
+          但冇全港樓宇數據；排盤網得個八字，唔知你想住邊。
+          <u>三樣一齊做嘅，得呢度。</u></p>
+        <p class="tlnote">上面地圖啲顏色，係<b>風水 ＋ 大運</b>兩樣計出嚟嘅分（邊個睇都一樣）。
+          第三樣要你打個出生日期，出嚟係另一個分 —— 兩個分我哋分開俾你，唔溝埋做一個。</p>
+      </details>
 
       <details class="tlwhat">
         <summary><span>咩叫「九運」？</span><span class="chev">▾</span></summary>
