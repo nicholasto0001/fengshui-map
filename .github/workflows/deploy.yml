@@ -246,6 +246,13 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
+      # Bing、Yandex 唔使等佢哋自己爬過嚟。只喺上線先做 —— staging 係
+      # Disallow: /，叫人去爬一個叫人唔好爬嘅網站係自相矛盾。
+      # Ping 唔成功唔會拉冧 deploy：佢係加速，唔係必需品。
+      - name: Tell the other search engines
+        if: steps.target.outputs.env == '' || github.event.inputs.live == 'true'
+        run: python pipeline/ping_indexnow.py https://hkfengshuimap.com || true
+
       # Promoting from the button has to move the live branch too, or the
       # nightly refresh — which builds that branch — would quietly put the old
       # code back the next morning.

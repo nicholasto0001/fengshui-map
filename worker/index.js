@@ -227,6 +227,14 @@ async function handle(request, env, ctx) {
     const url = new URL(request.url);
     const live = url.hostname === LIVE_HOST;
 
+    // 同一個網站喺 http 同 https 都攞得到，等於兩個網站 —— Google 會
+    // 當成重複內容，而權重會分散喺兩邊。實測 http:// 之前係直接返
+    // 200，冇轉去 https。
+    if (url.protocol === "http:") {
+      url.protocol = "https:";
+      return Response.redirect(url.toString(), 301);
+    }
+
     // Cloudflare serves a managed robots.txt when a site has none of its own,
     // and that one says nothing about where the sitemap is. Ours does.
     if (url.pathname === "/robots.txt") {
