@@ -673,8 +673,7 @@
 
   .famlist{list-style:none; margin:14px 0 0; padding:0; display:flex;
            flex-direction:column; gap:8px}
-  .famlist li{display:flex; align-items:center; gap:11px; padding:11px 13px;
-              background:var(--card); border:1px solid var(--line); border-radius:13px}
+  .famlist li{background:var(--card); border:1px solid var(--line); border-radius:13px}
   .famlist .fi{width:34px; height:34px; border-radius:50%; flex:none; display:grid;
                place-items:center; background:var(--bg); border:1px solid var(--line);
                font-size:14px; font-weight:650; color:var(--ink2)}
@@ -764,6 +763,25 @@
            padding:12px 14px; margin:10px 0 2px; font-size:12.5px; line-height:1.65;
            color:var(--ink3)}
   .lockbar b{color:var(--ink)}
+
+  .famli{display:flex; align-items:stretch; gap:0; padding:0; overflow:hidden}
+  .famli.off{opacity:.45}
+  .famli.off .fnm b{text-decoration:line-through; text-decoration-thickness:1px}
+  .fopen{flex:1; display:flex; align-items:center; gap:11px; background:transparent;
+         border:0; font:inherit; text-align:start; color:var(--ink); cursor:pointer;
+         padding:11px 4px 11px 13px}
+  .fopen .go{color:var(--ink3); font-size:17px}
+  .fsw2{flex:none; width:48px; background:transparent; border:0; border-inline-start:1px solid var(--line);
+        font:inherit; font-size:15px; color:var(--good,#1d6b4f); cursor:pointer}
+  .fsw2[aria-pressed="false"]{color:var(--ink3)}
+  .famsum{background:var(--card); border:1px solid var(--line); border-radius:14px;
+          padding:14px 16px; margin:14px 0 4px}
+  .fsh{font-size:14px; font-weight:650; margin:0 0 9px}
+  .fsl{font-size:13px; line-height:1.7; color:var(--ink3); margin:0}
+  .fsl b:first-child{color:var(--ink3); display:inline-block; min-width:64px}
+  .fsn{font-size:12.5px; line-height:1.7; color:var(--ink3); margin:11px 0 0;
+       padding-top:11px; border-top:1px solid var(--line)}
+  .fsn b{color:var(--ink)}
 
   .tagline{font-size:13.5px; font-weight:600; color:var(--gold,#8a6d2f); margin:-2px 0 6px;
            letter-spacing:.01em}
@@ -4050,14 +4068,16 @@ function personChart(p){
       `<div class="pil"><u>${k}柱</u><b>${v}</b></div>`).join("")}</div>
     <div class="wxbox wx-${st.dayWx}">
       <div class="wxg">${st.dayWx}</div>
-      <div class="wxt">日主係<b>${c.day[0]}${st.dayWx}</b>　·　${
-        st.strong ? "身強" : "身弱"}（支持度 ${st.supportPct}%）</div>
+      <div class="wxt">${esc(p.name || relTC(p.relation))}嘅日主係
+        <b>${st.dayMaster}${st.dayWx}</b><br>
+        <b>${st.strong ? "身強" : "身弱"}</b>　同我同生我嘅力量佔 ${st.supportPct}%</div>
     </div>
+
+    <h3 class="bzh">五行分佈</h3>
     <div class="wxbars">${rows.map(w => `
-      <div class="wxr"><span class="wl wx-${w}">${w}</span>
-        <div class="wtk"><div class="wfl wx-${w}"
-          style="width:${Math.max(2, 100 * st.pct[w] / top)}%"></div></div>
-        <span class="wv">${st.pct[w].toFixed(1)}%</span></div>`).join("")}</div>
+      <div class="wxr"><u class="wx-${w}">${w}</u>
+        <span class="wtrack"><i class="wx-${w}" style="width:${100 * st.pct[w] / top}%"></i></span>
+        <em>${st.pct[w]}%<b>${st.phases[w]}</b></em></div>`).join("")}</div>
     <h3 class="bzh">喜用五行</h3>
     <p class="bznote" style="margin-top:-2px"><b>${hc.type}</b>　喜
       ${hc.like.map(w => `<b class="wx-${w}">${w}</b>`).join("、")}
@@ -4154,37 +4174,106 @@ async function showFamily(edit){
     return;
   }
 
-  const others = family.filter(x => !x.is_self);
+  const sum = familySummary();
+  const row = x => {
+    const on = famOn(x);
+    return `
+      <li class="famli${on ? "" : " off"}">
+        <button class="fopen" data-id="${x.id}">
+          <span class="fi">${x.is_self ? "我" : esc((x.name || relTC(x.relation)).slice(0, 1))}</span>
+          <span class="fnm"><b>${esc(x.name || relTC(x.relation))}</b>
+            <em>${x.is_self ? "自己" : relTC(x.relation)} · ${x.y} 年 ${x.m} 月 ${x.d} 日${
+              x.h == null ? " · 冇時辰" : ""}</em></span>
+          <span class="go">›</span>
+        </button>
+        <button class="fsw2" data-fid="${x.id}"
+          aria-pressed="${on}" title="${on ? "計緊佢" : "冇計佢"}">${on ? "✓" : ""}</button>
+      </li>`;
+  };
+
   sheetBody.innerHTML = `
     <p class="bname">屋企人</p>
-    <p class="mcount">搵樓好少係一個人嘅事。加咗屋企人，每一幢樓就會同時
-      計埋佢哋嘅八字，話你知<b>邊個夾、邊個唔夾</b>，唔係淨係報一個平均分。</p>
+    <p class="mcount">撳個名入去睇佢自己嗰個盤（四柱、五行、命卦）。
+      右邊個剔係「計唔計佢」—— 「我同老婆」同「全家」係兩條唔同嘅問題。</p>
+
+    ${sum ? `
+      <div class="famsum">
+        <p class="fsh">一屋人點睇</p>
+        <p class="fsl"><b>寒熱命</b>　${
+          [...new Set(sum.rows.map(r => r.hc.type))].map(t =>
+            `${t} ${sum.rows.filter(r => r.hc.type === t).length} 人`).join("、")}</p>
+        <p class="fsl"><b>合共想補</b>　${sum.rank.map(w =>
+          `<b class="wx-${w}">${w}</b>`).join("、")}</p>
+        <p class="fsl"><b>八宅分組</b>　東四 ${sum.east.length} 人 · 西四 ${sum.west.length} 人</p>
+        ${sum.split ? `
+          <p class="fsn"><b>你哋分咗兩組宅。</b>八宅將人分東四命同西四命，
+            兩組合嘅坐向係相反嘅 —— 即係<b>冇一間屋可以同時啱晒全家</b>。
+            呢個唔係我哋計唔到，係八宅本身就係咁。傳統做法係跟<b>家主</b>
+            （出錢嗰個、或者住得最耐嗰個）為準，其餘人靠房間同床位方位調整。
+            你可以撳熄其他人，淨係跟一個人睇。</p>`
+          : sum.shared.length ? `
+          <p class="fsn"><b>好彩，你哋同一組宅。</b>全家共同嘅吉方係
+            ${sum.shared.map(d => `<b>${d}</b>`).join("、")} ——
+            向呢幾個方位嘅樓，對每一個人都係四吉之一。</p>`
+          : `<p class="fsn">你哋同一組宅，但冇一個方位對每個人都係吉。
+            可以撳熄部分人，逐個睇。</p>`}
+      </div>` : ""}
+
     <ul class="famlist">
-      ${family.filter(x => x.is_self).map(x => `
-        <li><span class="fi">我</span>
-          <span class="fnm"><b>${esc(x.name || "自己")}</b>
-            <em>${x.y} 年 ${x.m} 月 ${x.d} 日${x.h == null ? " · 冇時辰" : ""}</em></span>
-          <button class="fedit" data-id="${x.id}" data-self="1">改</button></li>`).join("")}
-      ${others.map(x => `
-        <li><span class="fi">${esc((x.name || relTC(x.relation)).slice(0, 1))}</span>
-          <span class="fnm"><b>${esc(x.name || relTC(x.relation))}</b>
-            <em>${relTC(x.relation)} · ${x.y} 年 ${x.m} 月 ${x.d} 日${
-              x.h == null ? " · 冇時辰" : ""}</em></span>
-          <button class="fedit" data-id="${x.id}">改</button></li>`).join("")}
+      ${family.filter(x => x.is_self).map(row).join("")}
+      ${family.filter(x => !x.is_self).map(row).join("")}
     </ul>
     <button class="famadd" id="fmAdd">＋　加一個屋企人</button>
+
+    ${family.length > 1 ? `
+      <div class="sharebar" style="margin-top:16px">
+        <div><b>叫埋佢哋自己睇</b><span>一條連結，佢哋入自己個八字就睇到自己嗰份。</span></div>
+        <button id="fmShare">分享</button></div>` : ""}
+
     <p class="bznote">屋企人嘅出生日期係<b>佢哋自己嘅個人資料</b>。入落去即係
       你話你有權咁做。我哋淨係攞嚟計佢嗰份分析，唔會攞去做推廣，
-      你隨時撳「改」入去刪走佢。</p>`;
+      你隨時入去刪走佢。</p>`;
+
   sheetBody.querySelector("#fmAdd").addEventListener("click", () => {
     pushBack("屋企人", () => showFamily());
     showFamily(null);
   });
-  sheetBody.querySelectorAll(".fedit").forEach(b => b.addEventListener("click", () => {
-    if(b.dataset.self){ pushBack("屋企人", () => showFamily()); showBazi(); return; }
+  const fs = sheetBody.querySelector("#fmShare");
+  if(fs) fs.addEventListener("click", shareFamily);
+  sheetBody.querySelectorAll(".fopen").forEach(b => b.addEventListener("click", () => {
     pushBack("屋企人", () => showFamily());
-    showFamily(b.dataset.id);
+    showPerson(b.dataset.id);
   }));
+  sheetBody.querySelectorAll(".fsw2").forEach(b => b.addEventListener("click", () => {
+    toggleFam(b.dataset.fid);
+    showFamily();
+  }));
+}
+
+/* 一個家人自己嗰版。改資料喺呢度入 —— 名單嗰版係睇，唔係改。 */
+function showPerson(id){
+  const p = family.find(x => x.id === id);
+  if(!p){ showFamily(); return; }
+  gripText.textContent = esc(p.name || relTC(p.relation));
+  setView("family");
+  sheetBody.innerHTML = personChart(p);
+  sheetBody.querySelector("#pcEdit").addEventListener("click", () => {
+    pushBack(p.name || relTC(p.relation), () => showPerson(id));
+    if(p.is_self) showBazi(true); else showFamily(id);
+  });
+}
+
+/* 加完屋企人之後，人第一件想做嘅事就係叫佢哋自己睇 —— 所以個掣要喺
+   嗰一刻喺度。連結唔帶任何人嘅出生資料：佢哋入自己嗰個。 */
+function shareFamily(){
+  doShare("香港風水地圖",
+    ["我用緊香港風水地圖幫屋企搵樓。",
+     "",
+     "入咗我哋屋企人嘅八字，佢會逐幢樓計邊個夾、邊個唔夾 ——",
+     "唔係話你聽「呢幢樓好」，而係「呢幢樓啱唔啱我哋」。",
+     "",
+     "全港 84,720 幢樓，免費、免登記。"].join("\n"),
+    location.origin + "/", "family");
 }
 
 /* ---------------------------------------------------------- 八字同步 ---
