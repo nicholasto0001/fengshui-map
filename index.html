@@ -2643,10 +2643,20 @@ function personalPanel(o, layer){
           <span class="fsw" aria-hidden="true">${on ? "✓" : ""}</span>
         </li>`;}).join("")}</ul>
       <p class="plancap">撳一撳就計／唔計嗰個人 —— 「我同老婆」同「全家」係兩條問題。</p>
-      ${!fam ? "" : `<p class="ppnote">${fam.worst.fit < 55
-        ? `<b>${esc(fam.worst.name || relTC(fam.worst.relation))}</b>嗰度得 ${fam.worst.fit} 分
-           —— 平均分冚唔到呢件事，所以照講。`
-        : "一屋人都喺同一個水平，冇邊個特別唔夾。"}</p>`}
+      ${!fam ? "" : `<p class="ppnote">${(() => {
+        // 用差距，唔用一個絕對門檻。之前寫「低過 55 先算唔夾」，結果
+        // 一屋人 90 同 65 都會被講成「同一個水平」，但個 row 明明標住
+        // 「最唔夾」—— 自己駁自己。
+        const gap = fam.best.fit - fam.worst.fit;
+        const nm = x => esc(x.name || relTC(x.relation));
+        if(fam.rows.length < 2) return "淨係計緊一個人。";
+        if(gap >= 15) return `<b>${nm(fam.best)}</b> ${fam.best.fit} 分，
+          <b>${nm(fam.worst)}</b> ${fam.worst.fit} 分 —— 爭 ${gap} 分。
+          平均嗰個 ${fam.avg} 分冚住咗呢件事，所以照講出嚟。`;
+        if(fam.worst.fit < 55) return `一屋人都喺 ${fam.worst.fit}–${fam.best.fit} 分之間，
+          但成組都偏低。`;
+        return `一屋人都喺 ${fam.worst.fit}–${fam.best.fit} 分之間，冇邊個特別唔夾。`;
+      })()}</p>`}
     </div>` : "";
 
   const famCta = (me && family.length <= 1) ? `
