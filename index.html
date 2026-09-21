@@ -631,6 +631,45 @@
   .ppgh{font-size:15px; font-weight:650; margin:0 0 4px}
   .ppgs{font-size:12.5px; line-height:1.6; color:var(--ink3); margin:0 0 12px}
 
+  /* 成家嗰格。個人分上面再加一層，所以要企喺個人分下面但睇得出係另一件事。 */
+  .fam{border-top:1px solid var(--line); margin-top:14px; padding-top:13px}
+  .famh{display:flex; align-items:baseline; gap:6px; font-size:14px; font-weight:650;
+        margin:0 0 10px}
+  .famh b{font-size:19px} .famh span{font-size:11.5px; font-weight:500; color:var(--ink3)}
+  .faml{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:7px}
+  .faml li{display:flex; align-items:center; gap:10px}
+  .fn{width:34px; height:34px; border-radius:50%; flex:none; display:grid; place-items:center;
+      font-size:14px; font-weight:700}
+  .fnm{flex:1; font-size:14px; line-height:1.3}
+  .fnm em{display:block; font-style:normal; font-size:11.5px; color:var(--ink3)}
+  .ftag2{font-size:11px; color:#a01f1f; background:#fbeceb; border-radius:999px;
+         padding:2px 8px; white-space:nowrap}
+  .famadd{display:block; width:100%; margin-top:13px; padding:11px 14px; cursor:pointer;
+          background:var(--bg); border:1px dashed var(--line); border-radius:12px;
+          font:inherit; font-size:13px; color:var(--ink2); text-align:start}
+  .famadd:active{opacity:.6}
+
+  .famlist{list-style:none; margin:14px 0 0; padding:0; display:flex;
+           flex-direction:column; gap:8px}
+  .famlist li{display:flex; align-items:center; gap:11px; padding:11px 13px;
+              background:var(--card); border:1px solid var(--line); border-radius:13px}
+  .famlist .fi{width:34px; height:34px; border-radius:50%; flex:none; display:grid;
+               place-items:center; background:var(--bg); border:1px solid var(--line);
+               font-size:14px; font-weight:650; color:var(--ink2)}
+  .fedit{background:transparent; border:0; font:inherit; font-size:13px;
+         color:var(--ink3); cursor:pointer; padding:6px 2px}
+  .famform input[type=text]{width:100%; padding:11px 13px; font:inherit; font-size:16px;
+    border:1px solid var(--line); border-radius:11px; background:var(--card); color:var(--ink)}
+  .fmhint{font-size:11.5px; color:var(--ink3); margin:5px 0 0}
+
+  /* 改同刪擺埋一齊，但改要行先 —— 撳錯咗想改返嘅人多過想刪嘅人。 */
+  .bzfoot{display:flex; gap:10px; align-items:center; justify-content:center;
+          flex-wrap:wrap; margin-top:18px}
+  .bzedit{background:transparent; border:1px solid var(--line); border-radius:999px;
+          font:inherit; font-size:13px; color:var(--ink2); padding:9px 16px;
+          cursor:pointer; min-height:38px}
+  .bzedit:active{opacity:.6}
+
   .tagline{font-size:13.5px; font-weight:600; color:var(--gold,#8a6d2f); margin:-2px 0 6px;
            letter-spacing:.01em}
 
@@ -2091,6 +2130,94 @@ const NOW_NOTE = {
   "入囚":"向星當運入中宮，氣被困",
 };
 
+/* ---------- 一屋人 ----------
+
+   搵樓嘅人好少係一個人。一個爸爸幫成家搵，佢要知嘅唔係「呢層樓啱唔啱
+   我」，係「啱唔啱我哋」。所以八字唔係一個，係一份名單。
+
+   一定要有名：加到三四個之後，「配偶」「仔」「仔」根本分唔開邊個係邊個。
+
+   屋企人嘅出生日期係<b>第三者嘅個人資料</b>，嗰個人冇同意過 —— 所以
+   佢哋淨係攞嚟計自己嗰份分析，唔會做推廣對象，撳一下就刪得走。
+   見 docs/business.md。 */
+const REL = [
+  ["self",          "自己"],
+  ["spouse",        "配偶"],
+  ["child",         "子女"],
+  ["parent",        "父母"],
+  ["parent_in_law", "外父外母／老爺奶奶"],
+  ["sibling",       "兄弟姊妹"],
+  ["other",         "其他"],
+];
+const relTC = r => (REL.find(x => x[0] === r) || [, "其他"])[1];
+
+let family = [];          // [{id, name, relation, is_self, y, m, d, h, male}]
+
+function rowToPerson(r){
+  if(!r.birth_at) return null;
+  const hk = new Date(new Date(r.birth_at).getTime() + 8 * 3600000);
+  return {id: r.id, name: clean(r.name), relation: r.relation, is_self: !!r.is_self,
+          y: hk.getUTCFullYear(), m: hk.getUTCMonth() + 1, d: hk.getUTCDate(),
+          h: r.hour_known ? hk.getUTCHours() : null,
+          male: r.sex !== "f"};
+}
+
+function personToRow(p){
+  const h = p.h == null ? 12 : p.h;
+  return {
+    name: p.name || null,
+    relation: p.relation || "other",
+    is_self: !!p.is_self,
+    birth_at: new Date(Date.UTC(p.y, p.m - 1, p.d, h - 8, 0)).toISOString(),
+    birth_tz: "Asia/Hong_Kong", birth_lat: 22.3193, birth_lon: 114.1694,
+    sex: p.male ? "m" : "f", hour_known: p.h != null,
+  };
+}
+
+async function loadFamily(){
+  if(!sb || !me){ family = []; return family; }
+  try{
+    const {data} = await sb.from("persons")
+      .select("id,name,relation,is_self,birth_at,sex,hour_known")
+      .order("is_self", {ascending: false}).order("created_at");
+    family = (data || []).map(rowToPerson).filter(Boolean);
+  }catch{ family = []; }
+  return family;
+}
+
+async function savePerson(p){
+  if(!sb || !me) return null;
+  const row = {...personToRow(p), user_id: me.id};
+  const q = p.id
+    ? sb.from("persons").update(row).eq("id", p.id).select().single()
+    : sb.from("persons").insert(row).select().single();
+  const {data, error} = await q;
+  if(error){ toast("存唔到，試多次"); return null; }
+  await loadFamily();
+  return rowToPerson(data);
+}
+
+async function removePerson(id){
+  if(!sb || !me) return;
+  const {error} = await sb.from("persons").delete().eq("id", id);
+  if(error){ toast("刪唔到"); return; }
+  await loadFamily();
+}
+
+/* 一個單位對成屋人嘅分。唔取平均就算數 —— 平均會冚住「有一個人好唔夾」
+   呢件事，而嗰個先係人哋最想知道嘅。所以連最低嗰個一齊報。 */
+function familyFits(o){
+  const rows = [];
+  for(const p of family){
+    const f = fitOf(o, p);
+    if(f != null) rows.push({...p, fit: f});
+  }
+  if(!rows.length) return null;
+  rows.sort((a, b) => b.fit - a.fit);
+  const avg = Math.round(rows.reduce((t, r) => t + r.fit, 0) / rows.length);
+  return {rows, avg, best: rows[0], worst: rows[rows.length - 1]};
+}
+
 /* ---------- 逐幢樓嘅個人分析 ----------
 
    樓宇頁本來只答「呢幢樓格局好唔好」，即係人人見到同一個答案。呢一格答
@@ -2188,10 +2315,34 @@ function personalPanel(o, layer){
     <p class="ppnote">八宅同五行係兩套唔同嘅方法，都係師傅嘅講法；
       樓高、地基同離水距離係我哋自己量嘅。兩者分開睇。</p>`;
 
+  // 一個人嘅分上面，再加一層：成屋人。加咗家人先有，所以亦都係
+  // 開戶口之後最明顯嘅一個好處。
+  const fam = (me && family.length > 1) ? familyFits(o) : null;
+  const famBlock = fam ? `
+    <div class="fam">
+      <p class="famh">成家夾唔夾　<b>${fam.avg}</b><span>平均</span></p>
+      <ul class="faml">${fam.rows.map(r => `
+        <li>
+          <span class="fn" style="background:${colorFor(r.fit)};color:${inkOn(r.fit)}">${r.fit}</span>
+          <span class="fnm"><b>${esc(r.name || relTC(r.relation))}</b>${
+            r.name ? `<em>${esc(r.is_self ? "自己" : relTC(r.relation))}</em>` : ""}</span>
+          ${r.fit === fam.worst.fit && fam.rows.length > 1
+            ? '<span class="ftag2">最唔夾</span>' : ""}
+        </li>`).join("")}</ul>
+      <p class="ppnote">${fam.worst.fit < 55
+        ? `<b>${esc(fam.worst.name || relTC(fam.worst.relation))}</b>嗰度得 ${fam.worst.fit} 分
+           —— 平均分冚唔到呢件事，所以照講。`
+        : "一屋人都喺同一個水平，冇邊個特別唔夾。"}</p>
+    </div>` : "";
+
+  const famCta = (me && family.length <= 1) ? `
+    <button class="famadd" id="ppFam">＋　加埋屋企人，睇呢個單位啱唔啱全家</button>` : "";
+
   return `
     <div class="pp">
       <p class="fhd">呢幢樓啱唔啱你？<span>第二部分 · 睇你個八字</span></p>
       ${free}
+      ${famBlock}${famCta}
       ${locked ? `
         <div class="ppwrap">
           <div class="ppblur">${detail}</div>
@@ -2403,6 +2554,12 @@ function renderBuilding(o, layer){
   const sh = sheetBody.querySelector("#btnShare");
   if(sh) sh.addEventListener("click", () => shareBuilding(o));
 
+  const pf = sheetBody.querySelector("#ppFam");
+  if(pf) pf.addEventListener("click", () => {
+    track("family_cta", {from: "building"});
+    pushBack(clean(o.tc) || clean(o.en) || "樓宇", () => renderBuilding(o, layer));
+    showFamily();
+  });
   const pz = sheetBody.querySelector("#ppBz");
   if(pz) pz.addEventListener("click", () => { track("pp_bazi_cta", {}); showBazi(); });
   const pl = sheetBody.querySelector("#ppLogin");
@@ -2576,19 +2733,22 @@ function wxWeights(like, pct){
   return [[p1, a / t], [p2, b / t]];
 }
 
-/* 而家用緊嘅個人權重。出生資料改咗就要清返 —— myBirthKey 記住係邊個。 */
-let myW = null, myWKey = null;
-function myWeights(){
-  if(!(bzMod && birth)) return null;
-  const key = `${birth.y}/${birth.m}/${birth.d}/${birth.h}`;
-  if(myWKey === key) return myW;
-  const hh = birth.h == null ? 12 : birth.h;
-  const c = bzMod.chart(birth.y, birth.m, birth.d, hh, 0);
-  const hc = bzMod.hotCold(birth.y, birth.m, birth.d, hh, 0);
+/* 權重按出生資料計，逐個人一份 —— 一屋人唔會得一個八字。
+   同一個出生日期唔使計兩次，所以照 key 入 cache。 */
+const wCache = new Map();
+function weightsFor(b){
+  if(!(bzMod && b)) return null;
+  const key = `${b.y}/${b.m}/${b.d}/${b.h}`;
+  if(wCache.has(key)) return wCache.get(key);
+  const hh = b.h == null ? 12 : b.h;
+  const c = bzMod.chart(b.y, b.m, b.d, hh, 0);
+  const hc = bzMod.hotCold(b.y, b.m, b.d, hh, 0);
   if(!c || !hc) return null;
-  myWKey = key;
-  return (myW = wxWeights(hc.like, bzMod.strength(c).pct));
+  const w = wxWeights(hc.like, bzMod.strength(c).pct);
+  wCache.set(key, w);
+  return w;
 }
+function myWeights(){ return weightsFor(birth); }
 
 /* 一幢樓幾夾你。
 
@@ -2597,8 +2757,8 @@ function myWeights(){
    呢一幢樓自己嘅形，對唔對得上你缺嗰啲五行。
 
    同九運分數係兩件事：九運答「呢幢樓格局好唔好」，呢個答「啱唔啱你」。 */
-function fitOf(o){
-  const w = myWeights();
+function fitOf(o, who){
+  const w = weightsFor(who || birth);
   if(!w) return null;
   const dEl = elemData && elemData[o.district];
   let t = 0;
@@ -2685,13 +2845,21 @@ function myGua(){
   return c ? bzMod.mingGua(c.baziYear, birth.male) : null;
 }
 
-function bzForm(){
+function bzForm(edit){
   const now = new Date().getFullYear();
+  const sel = (edit && birth) || {};
   const yrs = [], mos = [], dys = [];
-  for(let y = now; y >= 1900; y--) yrs.push(`<option value="${y}">${y}</option>`);
-  for(let m = 1; m <= 12; m++) mos.push(`<option value="${m}">${m} 月</option>`);
-  for(let d = 1; d <= 31; d++) dys.push(`<option value="${d}">${d} 日</option>`);
-  const sel = birth || {};
+  // 改資料嗰陣要見返自己原本揀咗乜，唔係由 2026 年重新捹過。
+  for(let y = now; y >= 1900; y--)
+    yrs.push(`<option value="${y}"${sel.y === y ? " selected" : ""}>${y}</option>`);
+  for(let m = 1; m <= 12; m++)
+    mos.push(`<option value="${m}"${sel.m === m ? " selected" : ""}>${m} 月</option>`);
+  for(let d = 1; d <= 31; d++)
+    dys.push(`<option value="${d}"${sel.d === d ? " selected" : ""}>${d} 日</option>`);
+  if(edit) return `
+    <p class="bname">改返出生資料</p>
+    <p class="mcount">改咗之後，地區、樓宇同屋企人嗰邊會即刻重新計過。</p>
+    ${bzFields(yrs, mos, dys, sel, true)}`;
   return `
     <p class="bname">你嘅八字</p>
     <p class="mcount">點解要問你出生日期 —— 因為冇咗佢，我哋淨係答到
@@ -2708,6 +2876,11 @@ function bzForm(){
       <p class="wm2">同一日出世但五行分佈唔同嘅兩個人，出嚟嘅樓係唔同嘅。
         呢個分數得你一個人有。</p>
     </div>
+    ${bzFields(yrs, mos, dys, sel, false)}`;
+}
+
+function bzFields(yrs, mos, dys, sel, edit){
+  return `
     <div class="bzform">
       <label for="bzY">出生日期（公曆）</label>
       <div class="bzrow">
@@ -2718,14 +2891,16 @@ function bzForm(){
       <label for="bzH">出生時辰</label>
       <div class="bzrow"><select id="bzH" aria-label="時辰">
         <option value="">唔記得 —— 一樣計到本命卦</option>
-        ${SHICHEN.map(([z,t,h]) => `<option value="${h}">${z}時　${t}</option>`).join("")}
+        ${SHICHEN.map(([z,t,h]) =>
+          `<option value="${h}"${sel.h === h ? " selected" : ""}>${z}時　${t}</option>`).join("")}
       </select></div>
       <label>性別</label>
       <div class="bzsex">
-        <button type="button" data-sex="1">男</button>
-        <button type="button" data-sex="0">女</button>
+        <button type="button" data-sex="1"${sel.male === true ? ' class="on"' : ""}>男</button>
+        <button type="button" data-sex="0"${sel.male === false ? ' class="on"' : ""}>女</button>
       </div>
-      <button class="pbtn dark" id="bzGo" style="margin-top:18px">計我嘅八字</button>
+      <button class="pbtn dark" id="bzGo" style="margin-top:18px">${
+        edit ? "存返" : "計我嘅八字"}</button>
       <p class="bznote">出生資料<b>淨係存喺你部機</b>，唔會上我哋個伺服器 ——
         排盤全部喺你個瀏覽器度計。詳情見<a href="/privacy.html" target="_blank"
         rel="noopener">私隱政策</a>。<br>
@@ -2911,13 +3086,25 @@ function bzResult(){
       八宅只分東四、西四兩組宅，所以同組嘅人合嘅樓係同一批；
       因人而異嘅係邊個方位對你嚟講係邊個遊年星。</p>
 
+    <h3 class="bzh">屋企人</h3>
+    <p class="bznote" style="margin-top:-2px">搵樓好少係一個人嘅事。加咗屋企人，
+      每一幢樓會同時計埋佢哋嘅八字，話你知邊個夾、邊個唔夾。</p>
+    <button class="famadd" id="bzFam">${me
+      ? (family.length > 1
+          ? `＋　管理屋企人（而家有 ${family.length - 1} 個）`
+          : "＋　加一個屋企人")
+      : "＋　加屋企人（要先登入）"}</button>
+
     <button class="pbtn dark" id="bzSee" style="margin-top:20px">睇合我嘅樓</button>
     <p class="bznote" style="text-align:center">
       <a href="/bazi-guide" target="_blank" rel="noopener">每一步點計、根據邊個講法、做唔到啲咩 →</a></p>
-    <button class="bzdel" id="bzDel">刪除我嘅出生資料</button>`;
+    <div class="bzfoot">
+      <button class="bzedit" id="bzEdit">改返出生資料</button>
+      <button class="bzdel" id="bzDel">刪除我嘅出生資料</button>
+    </div>`;
 }
 
-async function showBazi(){
+async function showBazi(edit){
   await ensureBazi();
   // 地區清單要 district_stats（幢數、平均分）同 elements（每區量出嚟嘅形）
   // 兩份都齊先砌得出。八字面板可以喺佢哋載入之前就開咗，嗰陣清單會係空嘅
@@ -2925,10 +3112,10 @@ async function showBazi(){
   if(!districtData.length) await loadDistricts().catch(() => {});
   if(!elemData) await loadElements();
   gripText.textContent = "八字";
-  if(!birth){
-    sheetBody.innerHTML = bzForm();
+  if(!birth || edit){
+    sheetBody.innerHTML = bzForm(edit && birth ? true : false);
     const f = sheetBody;
-    let sex = null;
+    let sex = edit && birth ? birth.male : null;
     f.querySelectorAll(".bzsex button").forEach(b => b.addEventListener("click", () => {
       sex = b.dataset.sex === "1";
       f.querySelectorAll(".bzsex button").forEach(x => x.classList.toggle("on", x === b));
@@ -2939,13 +3126,26 @@ async function showBazi(){
       birth = {y: +f.querySelector("#bzY").value, m: +f.querySelector("#bzM").value,
                d: +f.querySelector("#bzD").value, h: h === "" ? null : +h, male: sex};
       try{ localStorage.setItem(BIRTH_KEY, JSON.stringify(birth)); }catch{}
-      myWKey = null;
-      track("bazi_saved", {has_hour: h !== ""});
+      wCache.clear();
+      if(me) syncBirth();                 // 改咗就推返上戶口，唔係淨係改咗部機
+      track("bazi_saved", {has_hour: h !== "", edit: !!edit});
       showBazi();
     });
     return;
   }
   sheetBody.innerHTML = bzResult();
+  const bf = sheetBody.querySelector("#bzFam");
+  if(bf) bf.addEventListener("click", () => {
+    track("family_cta", {from: "bazi"});
+    if(!me){ askSignIn(null); return; }
+    pushBack("八字", () => showBazi());
+    showFamily();
+  });
+  const be = sheetBody.querySelector("#bzEdit");
+  if(be) be.addEventListener("click", () => {
+    pushBack("八字", () => showBazi());
+    showBazi(true);
+  });
   const lg = sheetBody.querySelector("#bzLogin");
   if(lg) lg.addEventListener("click", () => {
     track("bazi_signin_prompt", {});
@@ -3411,11 +3611,123 @@ async function afterSignIn(){
   }
   await loadSaved();
   await syncBirth();
+  await loadFamily();
   // 佢係為咗睇解釋先去登入嘅，返到嚟就要見到解釋，唔係要佢自己撳返入去。
   if(birth && sheetBody.querySelector(".gate, .arealist")){
     refreshGuaDirs();
     showBazi();
   }
+}
+
+/* ---------- 屋企人 ----------
+
+   一個 profile 入面唔只一個八字。呢一版就係管理嗰份名單 —— 加、改、刪。
+   要登入先用得，因為呢啲嘢一定要跟住個人走，唔可以淨係留喺一部機。 */
+function famForm(p){
+  const now = new Date().getFullYear();
+  const yrs = [], mos = [], dys = [];
+  for(let y = now; y >= 1900; y--) yrs.push(`<option value="${y}"${p && p.y === y ? " selected" : ""}>${y}</option>`);
+  for(let m = 1; m <= 12; m++) mos.push(`<option value="${m}"${p && p.m === m ? " selected" : ""}>${m} 月</option>`);
+  for(let d = 1; d <= 31; d++) dys.push(`<option value="${d}"${p && p.d === d ? " selected" : ""}>${d} 日</option>`);
+  return `
+    <div class="bzform famform">
+      <label for="fmName">佢叫咩名</label>
+      <input id="fmName" type="text" maxlength="40" placeholder="例如：細女、阿明"
+             value="${esc(p && p.name || "")}">
+      <p class="fmhint">加到三四個人之後，冇名就分唔出邊個係邊個。</p>
+      <label for="fmRel">關係</label>
+      <div class="bzrow"><select id="fmRel">${REL.filter(r => r[0] !== "self")
+        .map(([k, v]) => `<option value="${k}"${p && p.relation === k ? " selected" : ""}>${v}</option>`).join("")}</select></div>
+      <label for="fmY">出生日期（公曆）</label>
+      <div class="bzrow">
+        <select id="fmY">${yrs.join("")}</select>
+        <select id="fmM">${mos.join("")}</select>
+        <select id="fmD">${dys.join("")}</select>
+      </div>
+      <label for="fmH">出生時辰</label>
+      <div class="bzrow"><select id="fmH">
+        <option value="">唔記得 —— 一樣計到</option>
+        ${SHICHEN.map(([z, t, h]) =>
+          `<option value="${h}"${p && p.h === h ? " selected" : ""}>${z}時　${t}</option>`).join("")}
+      </select></div>
+      <label>性別</label>
+      <div class="bzsex">
+        <button type="button" data-sex="1"${p && p.male ? ' class="on"' : ""}>男</button>
+        <button type="button" data-sex="0"${p && p.male === false ? ' class="on"' : ""}>女</button>
+      </div>
+      <button class="pbtn dark" id="fmSave" style="margin-top:18px">${p ? "存返" : "加入"}</button>
+      ${p ? `<button class="bzdel" id="fmDel">刪走${esc(p.name || relTC(p.relation))}</button>` : ""}
+    </div>`;
+}
+
+async function showFamily(edit){
+  gripText.textContent = "屋企人";
+  if(!me){ askSignIn(null); return; }
+  if(!family.length) await loadFamily();
+
+  if(edit !== undefined){
+    const p = edit === null ? null : family.find(x => x.id === edit);
+    sheetBody.innerHTML = `
+      <p class="bname">${p ? "改" + esc(p.name || relTC(p.relation)) : "加一個屋企人"}</p>
+      ${famForm(p)}`;
+    let sex = p ? p.male : null;
+    sheetBody.querySelectorAll(".bzsex button").forEach(b => b.addEventListener("click", () => {
+      sex = b.dataset.sex === "1";
+      sheetBody.querySelectorAll(".bzsex button").forEach(x => x.classList.toggle("on", x === b));
+    }));
+    sheetBody.querySelector("#fmSave").addEventListener("click", async () => {
+      if(sex === null){ toast("揀返男定女"); return; }
+      const g = id => sheetBody.querySelector(id);
+      const hv = g("#fmH").value;
+      const saved = await savePerson({
+        id: p && p.id, name: g("#fmName").value.trim(),
+        relation: g("#fmRel").value, is_self: false,
+        y: +g("#fmY").value, m: +g("#fmM").value, d: +g("#fmD").value,
+        h: hv === "" ? null : +hv, male: sex,
+      });
+      if(saved){ track("family_saved", {relation: saved.relation, edit: !!p}); showFamily(); }
+    });
+    const del = sheetBody.querySelector("#fmDel");
+    if(del) del.addEventListener("click", async () => {
+      if(!confirm(`刪走${p.name || relTC(p.relation)}？佢嘅出生資料會即刻喺我哋度消失。`)) return;
+      await removePerson(p.id);
+      track("family_removed", {});
+      showFamily();
+    });
+    return;
+  }
+
+  const others = family.filter(x => !x.is_self);
+  sheetBody.innerHTML = `
+    <p class="bname">屋企人</p>
+    <p class="mcount">搵樓好少係一個人嘅事。加咗屋企人，每一幢樓就會同時
+      計埋佢哋嘅八字，話你知<b>邊個夾、邊個唔夾</b>，唔係淨係報一個平均分。</p>
+    <ul class="famlist">
+      ${family.filter(x => x.is_self).map(x => `
+        <li><span class="fi">我</span>
+          <span class="fnm"><b>${esc(x.name || "自己")}</b>
+            <em>${x.y} 年 ${x.m} 月 ${x.d} 日${x.h == null ? " · 冇時辰" : ""}</em></span>
+          <button class="fedit" data-id="${x.id}" data-self="1">改</button></li>`).join("")}
+      ${others.map(x => `
+        <li><span class="fi">${esc((x.name || relTC(x.relation)).slice(0, 1))}</span>
+          <span class="fnm"><b>${esc(x.name || relTC(x.relation))}</b>
+            <em>${relTC(x.relation)} · ${x.y} 年 ${x.m} 月 ${x.d} 日${
+              x.h == null ? " · 冇時辰" : ""}</em></span>
+          <button class="fedit" data-id="${x.id}">改</button></li>`).join("")}
+    </ul>
+    <button class="famadd" id="fmAdd">＋　加一個屋企人</button>
+    <p class="bznote">屋企人嘅出生日期係<b>佢哋自己嘅個人資料</b>。入落去即係
+      你話你有權咁做。我哋淨係攞嚟計佢嗰份分析，唔會攞去做推廣，
+      你隨時撳「改」入去刪走佢。</p>`;
+  sheetBody.querySelector("#fmAdd").addEventListener("click", () => {
+    pushBack("屋企人", () => showFamily());
+    showFamily(null);
+  });
+  sheetBody.querySelectorAll(".fedit").forEach(b => b.addEventListener("click", () => {
+    if(b.dataset.self){ pushBack("屋企人", () => showFamily()); showBazi(); return; }
+    pushBack("屋企人", () => showFamily());
+    showFamily(b.dataset.id);
+  }));
 }
 
 /* ---------------------------------------------------------- 八字同步 ---
@@ -3450,7 +3762,7 @@ async function syncBirth(){
                h: row.hour_known ? hk.getUTCHours() : null,
                male: row.sex !== "f"};
       try{ localStorage.setItem(BIRTH_KEY, JSON.stringify(birth)); }catch{}
-      myWKey = null;
+      wCache.clear();
       track("bazi_synced", {dir: "down"});
     }
   }catch{ /* 同步唔到唔應該搞冧登入 */ }
