@@ -50,8 +50,20 @@ create table if not exists public.persons (
   birth_lat   double precision,     -- 真太陽時要用（香港 114.17°E 對 120°E
   birth_lon   double precision,     --   差約 23 分鐘，足以差一個時辰）
   birth_place text,
+  -- 命卦要性別先定得到（男女兩條唔同公式）。
+  sex         text check (sex in ('m','f')),
+  -- 好多人真係唔記得時辰。記低佢係唔記得，好過夾硬當中午 ——
+  -- 時辰影響時柱，亦都影響扶抑用神（差幾個鐘可以完全相反）。
+  hour_known  boolean not null default false,
   created_at  timestamptz not null default now()
 );
+
+-- 由本機升級上嚟嘅戶口：加返上面兩欄。
+alter table public.persons add column if not exists sex text;
+alter table public.persons add column if not exists hour_known boolean not null default false;
+do $$ begin
+  alter table public.persons add constraint persons_sex_chk check (sex in ('m','f'));
+exception when duplicate_object then null; end $$;
 create index if not exists persons_user_idx on public.persons(user_id, created_at);
 -- 一個戶口只可以有一個「自己」
 create unique index if not exists persons_one_self

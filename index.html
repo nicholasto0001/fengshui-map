@@ -518,6 +518,24 @@
   .backrow{background:transparent; border:0; font:inherit; font-size:14px; color:var(--ink2);
            padding:0 0 10px; cursor:pointer; min-height:36px}
 
+  /* 未登入：見到有邊幾個區，但入唔到去。唔係遮住晒 —— 要先見到有嘢
+     喺度，先會覺得值得登記。 */
+  .area.lock{opacity:.72}
+  .area.lock i{font-size:14px; opacity:.8}
+  .gate{background:linear-gradient(135deg,#3d2f18,#5a4622); color:#fff;
+        border-radius:16px; padding:18px 18px 16px; margin:12px 0 0}
+  .gate .gh{margin:0 0 8px; font-size:18px; font-weight:650}
+  .gate .gs{margin:0 0 8px; font-size:13.5px; line-height:1.65; opacity:.88}
+  .gate .gs b{color:#e3c489}
+  .gate .gf{margin:9px 0 0; font-size:12px; opacity:.7; text-align:center}
+  .gate .pbtn{background:#fff; color:#3d2f18}
+
+  .whywrap{margin:12px 0 0}
+  .why{margin:0 0 8px; font-size:13.5px; line-height:1.7; color:var(--ink2);
+       background:var(--card); border:1px solid var(--line); border-radius:12px;
+       padding:11px 13px}
+  .why b{font-weight:650}
+
   .arealist{display:flex; flex-direction:column; gap:8px}
   .area{
     display:flex; align-items:center; gap:12px; width:100%; padding:12px 14px;
@@ -2342,6 +2360,22 @@ function bzForm(){
     </div>`;
 }
 
+/* 點解呢個五行對你有利 —— 講返條鏈，唔好淨係掉個結論出嚟。 */
+const SHENG_ = {木:"火", 火:"土", 土:"金", 金:"水", 水:"木"};
+function whyLine(wx){
+  if(!bzMod || !birth) return "";
+  const hc = bzMod.hotCold(birth.y, birth.m, birth.d,
+                           birth.h == null ? 12 : birth.h, 0);
+  if(hc.like.includes(wx)){
+    const first = hc.like[0];
+    if(wx === first) return `你${hc.type}，喜${first} —— 呢個方位就係你要嗰個。`;
+    // 木生火，而火就係佢喜嗰個 —— 唔好寫成「火就係火」。
+    if(SHENG_[wx] === first) return `你${hc.type}，喜${first}；${wx}生${first}，所以${wx}都幫到你。`;
+    return `你${hc.type}，喜${first}；${wx}同${first}同氣，所以${wx}都幫到你。`;
+  }
+  return `扶抑用神入面有${wx}。`;
+}
+
 function bzResult(){
   const m = bzMod;
   const c = m.chart(birth.y, birth.m, birth.d, birth.h == null ? 12 : birth.h, 0);
@@ -2355,6 +2389,9 @@ function bzResult(){
                       {trueSolar: true});
   const altDiff = known && alt && alt.hour !== c.hour;
   const notes = c.notes.filter(n => n.startsWith("⚠"));
+  // 未登入嘅人見到有邊幾個區合，但入唔到去，亦都見唔到解釋。
+  // 唔係完全鎖死 —— 佢要先見到有嘢喺度，先會覺得值得登記。
+  const locked = !me;
   const hc = m.hotCold(birth.y, birth.m, birth.d,
                        birth.h == null ? 12 : birth.h, 0);
   // 寒熱命只需要日期，所以永遠有；扶抑用神要時辰，而且好敏感。
@@ -2419,11 +2456,30 @@ function bzResult(){
     <p class="bznote" style="margin-top:-2px">${want.map(w =>
       `<b class="wx-${w}">${w}</b> → ${WX_D[w]}方`).join("　")}</p>
     <div class="arealist">${areas.length ? areas.map(a => `
-      <button class="area" data-d="${esc(a.tc)}">
+      <button class="area${locked ? " lock" : ""}" data-d="${esc(a.tc)}">
         <span class="ab wx-${a.wx}">${a.wx}</span>
         <span class="an"><b>${esc(a.tc)}</b>${a.dir}方 · 平均 ${a.avg.toFixed(1)} 分</span>
-        <span class="ac">${a.n.toLocaleString()}<em>幢</em></span><i>›</i>
+        <span class="ac">${a.n.toLocaleString()}<em>幢</em></span>
+        <i>${locked ? "🔒" : "›"}</i>
       </button>`).join("") : '<p class="bznote">計唔到合適地區。</p>'}</div>
+
+    ${locked ? `
+      <div class="gate">
+        <p class="gh">點解呢幾個區啱你？</p>
+        <p class="gs">登入就睇到每個區嘅解釋 —— 由你嘅五行推到方位，
+          再推到點解呢個區合，同埋撳得入去睇入面逐個屋苑同逐座樓。</p>
+        <p class="gs">同時會幫你<b>存低呢個結果</b>，換部電話、用電腦開返都仲喺度
+          —— 唔使再打一次出生日期。</p>
+        <button class="pbtn dark" id="bzLogin" style="margin-top:14px">登入睇解釋</button>
+        <p class="gf">免費，用 Google 一撳就得。</p>
+      </div>` : `
+      <div class="whywrap">
+        <p class="fhd">點解呢幾個區啱你</p>
+        ${areas.slice(0, 6).map(a => `
+          <p class="why"><b class="wx-${a.wx}">${esc(a.tc)}</b>
+            喺${a.dir}方，${a.dir}方屬<b class="wx-${a.wx}">${a.wx}</b>。
+            ${whyLine(a.wx)}</p>`).join("")}
+      </div>`}
     <p class="bznote">⚠ 呢部分係<b>綜合網上師傅嘅講法</b>，唔係我哋自己計出嚟嘅數據。
       寒熱命出自蘇民峰《寒熱命論》；五行對方位同香港地理嘅分配，出自風水雜誌
       《新玄機》第 231 期區晉豪〈五行方向搵屋〉。逐區嘅方位由我哋按地理位置計，
@@ -2473,7 +2529,17 @@ async function showBazi(){
     return;
   }
   sheetBody.innerHTML = bzResult();
+  const lg = sheetBody.querySelector("#bzLogin");
+  if(lg) lg.addEventListener("click", () => {
+    track("bazi_signin_prompt", {});
+    askSignIn(null);
+  });
   sheetBody.querySelectorAll(".area").forEach(b => b.addEventListener("click", () => {
+    if(b.classList.contains("lock")){
+      track("bazi_signin_prompt", {from: "area"});
+      askSignIn(null);
+      return;
+    }
     // 揀咗區就即刻入到嗰區嘅樓宇清單，同時保留八宅篩選。
     districtFilter = b.dataset.d;
     guaOn = true;
@@ -2493,10 +2559,20 @@ async function showBazi(){
     track("bazi_filter", {on: true, gua: myGua()});
     loadBuildings(); drawDistricts(); showOverview();
   });
-  sheetBody.querySelector("#bzDel").addEventListener("click", () => {
-    if(!confirm("刪除你嘅出生資料？下次要再輸入一次。")) return;
+  sheetBody.querySelector("#bzDel").addEventListener("click", async () => {
+    if(!confirm(me ? "刪除你嘅出生資料？部機同戶口嗰份都會清走，下次要再輸入一次。"
+                   : "刪除你嘅出生資料？下次要再輸入一次。")) return;
     birth = null;
     try{ localStorage.removeItem(BIRTH_KEY); }catch{}
+    // 私隱政策寫明「部機同戶口都會清走」—— 所以真係要清埋戶口嗰份。
+    if(sb && me){
+      try{
+        await sb.from("persons")
+          .update({birth_at: null, birth_tz: null, birth_lat: null,
+                   birth_lon: null, sex: null, hour_known: false})
+          .eq("is_self", true);
+      }catch{ toast("戶口嗰份清唔到，請稍後再試"); }
+    }
     track("bazi_cleared", {});
     guaOn = false;
     document.getElementById("btnGua").classList.remove("on");
@@ -2900,6 +2976,49 @@ async function afterSignIn(){
     setTimeout(()=>toast(`已收藏「${clean(pend.tc)||clean(pend.en)||"呢棟樓"}」`), 900);
   }
   await loadSaved();
+  await syncBirth();
+  // 佢係為咗睇解釋先去登入嘅，返到嚟就要見到解釋，唔係要佢自己撳返入去。
+  if(birth && sheetBody.querySelector(".gate, .arealist")){
+    refreshGuaDirs();
+    showBazi();
+  }
+}
+
+/* ---------------------------------------------------------- 八字同步 ---
+   登入嗰陣我哋同人講「幫你存低呢個結果，換部電話都仲喺度」。要做得到
+   就真係要上伺服器 —— 所以呢度真係寫落 persons 表，唔係講講。
+
+   兩個方向都要：部機有嘅推上去（佢啱啱入完，跟住去登入）；部機冇但
+   戶口有嘅攞返落嚟（換咗部電話）。 */
+async function syncBirth(){
+  if(!sb || !me) return;
+  try{
+    const {data} = await sb.from("persons")
+      .select("id,birth_at,sex,hour_known").eq("is_self", true).limit(1);
+    const row = (data || [])[0];
+    if(!row) return;
+
+    if(birth){
+      // 香港時間轉 UTC 存。唔記得時辰嘅記低係唔記得，唔好夾硬當中午 ——
+      // 時辰影響時柱，亦都影響扶抑用神。
+      const h = birth.h == null ? 12 : birth.h;
+      const iso = new Date(Date.UTC(birth.y, birth.m - 1, birth.d, h - 8, 0)).toISOString();
+      await sb.from("persons").update({
+        birth_at: iso, birth_tz: "Asia/Hong_Kong",
+        birth_lat: 22.3193, birth_lon: 114.1694,
+        sex: birth.male ? "m" : "f", hour_known: birth.h != null,
+      }).eq("id", row.id);
+      track("bazi_synced", {dir: "up"});
+    } else if(row.birth_at){
+      const d = new Date(row.birth_at);
+      const hk = new Date(d.getTime() + 8 * 3600000);
+      birth = {y: hk.getUTCFullYear(), m: hk.getUTCMonth() + 1, d: hk.getUTCDate(),
+               h: row.hour_known ? hk.getUTCHours() : null,
+               male: row.sex !== "f"};
+      try{ localStorage.setItem(BIRTH_KEY, JSON.stringify(birth)); }catch{}
+      track("bazi_synced", {dir: "down"});
+    }
+  }catch{ /* 同步唔到唔應該搞冧登入 */ }
 }
 
 /* ------------------------------------------------------------ 清單 --- */
