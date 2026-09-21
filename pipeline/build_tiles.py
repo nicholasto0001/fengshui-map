@@ -44,6 +44,7 @@ COLUMNS = [
     "env",       # 6  environment component
     "traffic",   # 7
     "ancil",     # 8
+    "wind",      # 8b 風水分（離山、離水、避煞 —— 唔隨元運變嗰部分）
     "mt_d",      # 9  metres to nearest mountain
     "mt_dir",    # 10 8-point direction of it
     "wt_d",      # 11 metres to nearest water
@@ -182,6 +183,7 @@ def row_for(r: dict, districts: list) -> list:
         r.get("id"), r.get("tc"), r.get("en"),
         r.get("lon"), r.get("lat"),
         r.get("total"), r.get("env"), r.get("traffic"), r.get("ancil"),
+        r.get("wind"),
         r.get("mt_d"), r.get("mt_dir"), r.get("wt_d"), r.get("wt_dir"),
         r.get("mwds8"), r.get("h"), r.get("storeys"),
         r.get("op_year"), r.get("period"),

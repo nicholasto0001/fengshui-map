@@ -220,9 +220,24 @@ def main() -> None:
 
     out = []
     for i, r in enumerate(rows):
-        env = (W_DIR * (W_MWDS8 * p_s8[i] + W_MWDS4 * p_s4[i])
-               + W_MTDIS * p_md[i] + W_WTDIS * p_wd[i])
+        pair = W_MWDS8 * p_s8[i] + W_MWDS4 * p_s4[i]
+        env = W_DIR * pair + W_MTDIS * p_md[i] + W_WTDIS * p_wd[i]
         ancil = p_an[i] if fac_idx else 50.0
+
+        # 拆開「風水」同「大運」兩個分，等頁面講得出邊部分係邊樣。
+        #
+        # 攤開 total 就見到佢哋本來嘅比重：
+        #   total = 0.48·配對 + 0.16·離山 + 0.16·離水 + 0.15·避煞 + 2.5
+        #
+        # 配對嗰 0.48 係大運 —— MWDS_TABLE 嘅吉凶次序係第九運專用嘅
+        # （南山北水 = 9 分最高），換咗元運張表就唔同。
+        # 其餘 0.47（距離同避煞）係地形本身，幾十年唔變，屬風水。
+        # 剩返 0.05 係 traffic placeholder，全港一律 50，唔歸邊一樣。
+        #
+        # total 一個字都唔郁 —— 拆開淨係為咗講得明，唔係改評分。
+        luck = pair
+        wind = (W_ENV * (W_MTDIS * p_md[i] + W_WTDIS * p_wd[i])
+                + W_ANCIL * ancil) / (W_ENV * (W_MTDIS + W_WTDIS) + W_ANCIL)
         traffic = 50.0            # placeholder until the traffic census layer is wired
         b = r["b"]
         out.append({
@@ -234,6 +249,7 @@ def main() -> None:
             "wt_d": round(r["wd"]), "wt_dir": dir8(r["w16"]),
             "mwds8": r["s8"], "mwds4": r["s4"],
             "env": round(env, 2), "traffic": round(traffic, 2), "ancil": round(ancil, 2),
+            "wind": round(wind, 2), "luck": round(luck, 2),
             "total": round(W_ENV * env + W_TRAFFIC * traffic + W_ANCIL * ancil, 2),
             "facing": r["facing"], "conf": r["conf"],
             "op_year": r["op_year"], "period": r["period"],

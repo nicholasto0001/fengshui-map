@@ -1173,14 +1173,52 @@
   .liqi-none .liqi-hd{color:var(--ink3)}
 
   /* legend inside sheet */
+  .bigscore.pctbox{display:flex; flex-direction:column; align-items:center;
+    justify-content:center; line-height:1.05; gap:1px}
+  .bigscore.pctbox small{font-size:11px; font-weight:600; opacity:.85}
+  .bigscore.pctbox b{font-size:24px; font-weight:800; letter-spacing:-.02em}
+  .vsub .raw{color:var(--ink3); font-size:12px}
+  /* 三樣入面計咗幾多樣 —— 一眼睇到仲爭邊一樣。 */
+  .three{display:flex; flex-wrap:wrap; align-items:center; gap:6px;
+    margin:12px 0 0; padding:11px 13px; border-radius:13px;
+    background:var(--card); border:1px solid var(--line)}
+  .three .tc{font-size:13px; font-weight:700; color:var(--ink3);
+    background:var(--bg); border:1px solid var(--line);
+    border-radius:999px; padding:4px 11px}
+  .three .tc.on{color:#0f6354; background:#e8f2ef; border-color:#bcdcd4}
+  .three .tsep{color:var(--ink3); font-size:12px}
+  .three em{flex:1 1 100%; font-style:normal; font-size:12.5px; line-height:1.55;
+    color:var(--ink3); margin-top:3px}
+  .three.done em{color:#0f6354; font-weight:600}
+  .eight{font-size:12.5px; line-height:1.65; color:var(--ink3);
+    margin:10px 0 0; padding:9px 12px; border-radius:11px; background:var(--bg)}
+  .wxg small{display:block; font-size:9.5px; font-weight:600; opacity:.8;
+    letter-spacing:.06em; margin-bottom:-2px}
+  .why3{margin:12px 0 16px}
+  .w3r{display:flex; gap:11px; align-items:flex-start; padding:9px 0;
+    font-size:13.5px; line-height:1.65; color:var(--ink2)}
+  .w3r + .w3r{border-top:1px solid var(--line)}
+  .w3r b{color:var(--ink)}
+  .w3r u{text-decoration:none; color:var(--brand); font-weight:650}
+  .w3n{flex:0 0 24px; height:24px; border-radius:50%; display:grid;
+    place-items:center; font-size:12px; font-weight:700; margin-top:2px;
+    background:var(--bg); color:var(--ink3); border:1px solid var(--line)}
+  .w3n.on{background:#e8f2ef; color:#0f6354; border-color:#bcdcd4}
+  .acctbtn{display:flex; align-items:center; justify-content:center; gap:9px}
+  .acctsub{font-size:12px; color:var(--ink3); text-align:center; margin:7px 0 16px}
   .barcap{font-size:12px; line-height:1.6; color:var(--ink3); margin:9px 0 0}
   .barcap b{color:var(--ink2)}
   .barcap u{text-decoration:none; color:var(--bad); font-weight:600}
+  .area{position:relative}
+  .atag{position:absolute; top:-7px; inset-inline-start:14px; z-index:1;
+    font-size:10.5px; font-weight:700; letter-spacing:.04em;
+    background:var(--brand); color:#fff; border-radius:999px; padding:2px 9px}
   .liv{background:var(--card); border:1px solid var(--line); border-radius:14px;
     padding:12px 14px; margin:2px 0 20px}
   .liv > summary{list-style:none; cursor:pointer; font-size:13.5px; line-height:1.6;
     color:var(--ink2); display:flex; align-items:center; gap:6px; min-height:34px}
   .liv > summary::-webkit-details-marker{display:none}
+  .liv > summary .livtxt{flex:1 1 auto; min-width:0}
   .liv > summary b{color:var(--ink)}
   .liv > summary u{text-decoration:none; color:var(--brand); font-weight:650}
   .liv > summary .chev{margin-inline-start:auto; color:var(--ink3); font-size:12px;
@@ -3110,14 +3148,29 @@ function renderBuilding(o, layer){
   sheetBody.innerHTML=`
     <p class="bname">${esc(title)}</p>
     <p class="ben">${esc([clean(o.en)!==title?clean(o.en):null, clean(o.district)].filter(Boolean).join(" · "))}</p>
+${(() => {
+      const tp = home ? topPct(t) : null;
+      return `
     <div class="scorerow">
-      <div class="bigscore" style="background:${home?colorFor(t):NONRES};color:${home?inkOn(t):"#3a3833"}">${num(t,0)}</div>
+      <div class="bigscore${tp ? " pctbox" : ""}"
+           style="background:${home?colorFor(t):NONRES};color:${home?inkOn(t):"#3a3833"}">${
+        tp ? `<small>全港${tp.dir}</small><b>${tp.n}%</b>` : num(t,0)}</div>
       <div>
         <p class="verdict" style="background:${home?colorFor(t):"#e8e6e0"};color:${home?inkOn(t):"#55534e"}">${home?vd:"非住宅"}</p>
-        <p class="vsub">${home ? `${vs} · 地理環境 ${num(t,1)} / 100`
-                              : `唔係住宅樓宇 · 地理環境 ${num(t,1)} / 100`}</p>
+        <p class="vsub">${home
+          ? `喺全港 84,720 幢住宅入面嘅位置<br><span class="raw">原始分 ${num(t,1)} / 100</span>`
+          : `唔係住宅樓宇 · 地理環境 ${num(t,1)} / 100`}</p>
       </div>
     </div>
+    ${home ? `<div class="three${birth ? " done" : ""}" id="threeBar">
+      <span class="tc on">風水 ✓</span><span class="tsep">＋</span>
+      <span class="tc on">大運 ✓</span><span class="tsep">＋</span>
+      <span class="tc${birth ? " on" : ""}">八字 ${birth ? "✓" : "—"}</span>
+      <em>${birth
+        ? "三樣齊晒，下面有專屬你嘅分"
+        : "三樣計咗兩樣 —— 呢個分邊個睇都一樣。加埋你嘅八字先係你嘅分"}</em>
+    </div>` : ""}`;
+    })()}
     <!-- 冇「交通」條 bar：score.py 入面 traffic 係個 placeholder，全港
          84,720 幢都係 50。畫一條人人一樣嘅 bar，係當住人講緊一樣我哋
          根本冇量過嘅嘢。佢仲係佔總分 5%（即係人人加同一個 2.5 分,
@@ -3273,11 +3326,11 @@ let sharedList = null;          // a shortlist opened from someone else's link
    掣對佢哋嚟講只係阻頭阻勢。佢淨係出現喺收藏面板，即係佢真正有用嗰個位。 */
 function accountHTML(){
   if(!me) return `
-    <button class="acct acct-out" id="btnAcctIn">
-      <span class="ai">登入保存</span>
-      <span class="as">換部電話都仲喺度</span>
-      <span class="ag">›</span>
-    </button>`;
+    <button class="pbtn dark acctbtn" id="btnAcctIn">
+      <svg viewBox="0 0 18 18" width="17" height="17" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.9 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+      用 Google 登入，保存收藏同八字
+    </button>
+    <p class="acctsub">換部電話、用電腦開返都仲喺度。</p>`;
   const initial = (me.name || me.email || "?").trim().charAt(0);
   return `
     <div class="acct acct-in">
@@ -3800,11 +3853,23 @@ function bzForm(edit){
     ${bzFields(yrs, mos, dys, sel, true)}`;
   return `
     <p class="bname">你嘅八字</p>
-    <p class="mcount">點解要問你出生日期 —— 因為冇咗佢，我哋淨係答到
-      「呢幢樓格局好唔好」，而嗰條答案<b>邊個睇都一樣</b>，你喺邊個網站
-      都搵到。</p>
+    <p class="mcount">「住邊度最旺你」呢條問題，要三樣嘢先答到 ——
+      而<b>頭兩樣我哋已經計咗</b>：</p>
+    <div class="why3">
+      <div class="w3r"><span class="w3n on">✓</span>
+        <div><b>風水</b>　個地方本身 —— 山喺邊、水喺邊、周圍高定矮、有冇煞。
+          <u>幾十年唔變。</u></div></div>
+      <div class="w3r"><span class="w3n on">✓</span>
+        <div><b>大運</b>　而家行緊<b>九運（2024–2043）</b>，廿年轉一次。
+          八運當旺嗰啲樓，今日未必當旺。</div></div>
+      <div class="w3r"><span class="w3n">3</span>
+        <div><b>八字</b>　<u>就係爭呢樣。</u>前面兩樣<b>邊個睇都一樣</b> ——
+          你喺邊個網站都搵到同一個答案。<br>
+          八字係唯一一樣<b>屬於你自己</b>嘅，加咗佢先分得出
+          「呢幢樓好」同「呢幢樓旺你」。</div></div>
+    </div>
     <div class="whyme">
-      <p><b>有咗出生日期，我哋做到啲乜</b></p>
+      <p><b>打咗出生日期，我哋會做嘅嘢</b></p>
       <ol>
         <li>排出你嘅<b>四柱</b>，計出你缺邊幾樣五行（寒熱命，蘇民峰嗰套）</li>
         <li>喺全港 <b>53,634 幢住宅</b>度，逐幢量返佢幾高、地基幾闊、離水幾遠</li>
@@ -3896,24 +3961,24 @@ function bzResult(){
   // 主用神行七成，次用神三成 —— 寒命喜火，木生火，所以火先係要嗰個，
   // 木係幫手。兩個等量齊觀會令到「幫手」蓋過「要嗰個」。
   const [p1, p2] = want;
-  // 出咩俾佢睇，由佢做過乜決定 —— 唔係問佢。要喺 rankAreas 之前定,
-  // 因為排區、排樓同地圖圖層全部跟呢個範圍走。
-  const plan = baziPlan();
-  livAuto = (plan.mode === "focus" && plan.f.region)
-          ? new Set(REGIONS[plan.f.region]) : null;
-  const {cs, areas, all} = rankAreas();
+  // 之前會由「佢撳過邊幾幢樓」推斷佢住得去邊，然後淨係計嗰一頭。
+  // 拆咗：推斷錯嘅時候，用家見到一個縮窄咗嘅答案但唔知點解，而個
+  // 「改」掣又要佢理解一套睇唔見嘅邏輯。改成全部照計，再喺下面分
+  // 兩段出 —— 全港頭三個，同每個大區各一個最好嘅。
+  livAuto = null;
+  const {cs, areas, all} = rankAreas(18);
   // 留低畫分享卡要用嗰幾樣。唔喺 shareBazi 度重新計一次 —— 重計就有機會
   // 同螢幕上面見到嗰個唔同，而張卡係會俾第三者見到嘅嘢。
   bzSnapshot = {pillars: pil, type: hc.type, likes: hc.like.slice(), areas};
   // 預設揀返佢啱啱睇緊嗰個區 —— 搵完太古城嘅人，答案應該喺東區。
-  const seen = districtFilter || lastDistrictSeen
-            || (plan.f && plan.f.tc);          // hint 模式靠佢揀返個預設
-  const homeD = (seen && inLiv(seen) ? seen : null)
+  const homeD = districtFilter || lastDistrictSeen
               || (areas[0] && areas[0].tc) || (districtData[0] || {}).tc || "";
-  // 全港最夾嗰個唔喺佢住得去嘅範圍 —— 要照講，唔好扮咗冇呢回事。
-  const bestOut = livOn() && all.length && areas.length
-                  && all[0].tc !== areas[0].tc && !livable.has(all[0].tc)
-                  ? all[0] : null;
+  // 每個大區最夾嗰一個。唔理佢實際住得去邊 —— 四行入面總有一行啱。
+  const bestPer = Object.entries(AREA_GROUPS).map(([g, ds]) => {
+    const hit = areas.find(a => ds.includes(a.tc));
+    return hit ? [g, hit] : null;
+  }).filter(Boolean);
+  const top3 = areas.slice(0, 3);
   const wts = cs.length ? cs[0].w : wxWeights(want, st.pct);
   const nPeople = cs.length;
   const wxb = w => `<b class="wx-${w}">${w}</b>`;
@@ -3933,12 +3998,15 @@ function bzResult(){
     <p class="mcount">${known ? "" : "冇時辰，所以排唔到時柱 —— 但五行、用神同配樓一樣計到。"}</p>
     <div class="pillars">${pil.map(([k, v]) =>
       `<div class="pil"><u>${k}柱</u><b>${v}</b></div>`).join("")}</div>
+    <p class="eight">上面${known ? "八" : "六"}個中文字，就係你嘅「八字」——
+      年、月、日、時四柱，每柱兩個字，夾埋八個。${known ? "" : "（冇時辰就得六個。）"}
+      我哋分析嘅就係呢${known ? "八" : "幾"}個字之間嘅配搭。</p>
     ${notes.map(n => `<p class="bznote">${esc(n)}</p>`).join("")}
     ${altDiff ? `<p class="bznote">ⓘ 按真太陽時（香港同時區中線差 23 分鐘），
       時柱會係 <b>${alt.hour}</b>。我哋預設唔校正，跟返市面排盤工具嘅做法。</p>` : ""}
 
     <div class="wxbox wx-${st.dayWx}">
-      <div class="wxg">${st.dayWx}</div>
+      <div class="wxg"><small>五行屬</small>${st.dayWx}</div>
       <div class="wxt">你嘅日主係 <b>${st.dayMaster}${st.dayWx}</b>
         （「日主」＝ 出世嗰日嘅天干，代表你自己）<br>
         <b>${st.strong ? "身強" : "身弱"}</b>（你本身呢個五行${
@@ -3988,30 +4056,12 @@ function bzResult(){
         : "你自己一個住？"}</p>
       <p class="fcs">${me && family.length > 1
         ? "每一幢樓都會逐個人計，話你知邊個夾、邊個唔夾。撳入去睇每個人自己嘅盤。"
-        : "大部分人都唔係。加埋老婆、仔女嘅八字，每一幢樓就會逐個人計 —— "
+        : "大部分人都唔係。加埋伴侶、仔女嘅八字，每一幢樓就會逐個人計 —— "
           + "一間屋啱你，唔代表啱佢哋。"}</p>
       <button class="pbtn dark" id="bzFam">${me
         ? (family.length > 1 ? "睇／管理屋企人" : "加第一個屋企人")
         : "加屋企人（要先登入）"}</button>
     </div>
-
-    <details class="liv">
-      <summary>${livable.size
-        ? `計緊 <b>${[...livable].map(t => esc(t.replace(/區$/, ""))).join("、")}</b>
-           　<u>改</u>`
-        : livAuto
-          ? `你一直喺<b>${esc(plan.f.region)}</b>度揾，所以下面<b>淨係計${
-             esc(plan.f.region)}</b>　<u>改</u>`
-          : `計緊<b>全港十八區</b>　<u>縮窄範圍</u>`}<span class="chev">▾</span></summary>
-      <p class="livl">返工、返學、屋企人 —— 總有啲地方你根本唔會搬過去。
-        揀咗之後，下面排區同排樓全部只計呢個範圍。</p>
-      <div class="livchips">${Object.keys(REGIONS).map(r => {
-        const cur = livSet();
-        const on = cur && REGIONS[r].every(d => cur.has(d));
-        return `<button type="button" data-r="${esc(r)}"${on ? ' class="on"' : ""}>${esc(r)}</button>`;
-      }).join("")}</div>
-      ${livOn() ? `<button type="button" class="livclear" id="livClear">全港都可以</button>` : ""}
-    </details>
 
     <h3 class="bzh">邊幾幢樓最夾你</h3>
     <div class="pickd">
@@ -4035,19 +4085,14 @@ function bzResult(){
         最夾你，區入面一樣有夾你嘅樓。</p>
     </div>
 
-    <h3 class="bzh">${!livOn() ? "全港邊個區最夾你"
-      : livable.size ? "你揀嘅範圍入面，邊個區最夾你"
-      : "你睇緊嗰邊，邊個區最夾你"}</h3>
-    ${areas.length && areas[0].fit < 50 ? `<p class="offrec">
-      <b>喺呢個範圍入面，最夾你嗰個區都只係 ${areas[0].fit} 分。</b>
-      即係<u>成個範圍本身就唔多夾你個命</u> —— 下面個次序照有用（邊個冇咁差），
-      但唔好當第一名就等於夾。區入面逐幢樓計出嚟仲可以高好多，
-      因為嗰層仲夾埋你嘅本命卦同樓宇個向。</p>` : ""}
-    ${bestOut ? `<p class="offrec"><b>全港最夾你嘅係${esc(bestOut.tc)}（${bestOut.fit} 分），
-      但${livable.size ? "佢唔喺你揀嘅範圍" : "你一直冇睇過嗰頭"}。</b>
-      下面係<u>${livable.size ? "你揀咗嗰個範圍" : "你睇緊嗰邊"}入面</u>最夾你嘅幾個區
-      —— ${esc(areas[0].tc)}排第一（${areas[0].fit} 分）。
-      ${livable.size ? "" : "想睇埋全港就撳上面嗰個「改」。"}</p>` : ""}
+    <p class="bznote" style="margin-top:-2px">${
+      [`你<b>${hc.type}</b>，喜${wxb(p1)}，其次${wxb(p2)}。`,
+       `而你盤入面${wxb(p1)}佔 ${st.pct[p1].toFixed(0)}%、`,
+       `${wxb(p2)}佔 ${st.pct[p2].toFixed(0)}%，`,
+       `所以呢次${wxb(lead)}行得重啲`,
+       `（${wts.map(([w, k]) => `${w} ${(k * 100).toFixed(0)}%`).join("、")}）。`,
+      ].join("")}<br>
+      下面唔係「邊個區風水好」—— 係全港十八區量返出嚟之後，<b>最夾你呢個命</b>嗰啲。</p>
     ${nPeople > 1 ? `<p class="famnote"><b>計緊 ${nPeople} 個人。</b>
       下面每個區嘅分，係${cs.map(c => esc(c.p.name || relTC(c.p.relation))).join("、")}
       逐個計完取平均。${
@@ -4055,31 +4100,31 @@ function bzResult(){
           ? `佢哋唔同命（${[...new Set(cs.map(c => c.hc.type))].join("、")}），
              所以冇一個區係人人滿分 —— 想淨係睇一個人，去屋企人嗰度撳熄其他。`
           : "佢哋同命，所以次序同一個人睇差唔多。"}</p>` : ""}
-    <p class="bznote" style="margin-top:-2px">${
-      // 一句中文中間唔應該有空隙，所以呢兩段用駁字串砌，唔用換行 ——
-      // 模板字串一換行就會喺句子中間留低一個空格。
-      [`你<b>${hc.type}</b>，喜${wxb(p1)}，其次${wxb(p2)}。`,
-       `而你盤入面${wxb(p1)}佔 ${st.pct[p1].toFixed(0)}%、`,
-       `${wxb(p2)}佔 ${st.pct[p2].toFixed(0)}%，`,
-       `所以呢次${wxb(lead)}行得重啲`,
-       `（${wts.map(([w, k]) => `${w} ${(k * 100).toFixed(0)}%`).join("、")}）。`,
-      ].join("")}<br>${
-      [`下面唔係「邊個區風水好」—— 係全港十八區量返出嚟之後，`,
-       `<b>最夾你呢個命</b>嗰六個。`].join("")}<br>
-      <b>呢個排名係按命格分嘅</b> —— 同你一樣${hc.type}、五行分佈又接近嘅人，
-      見到嘅次序會同你差唔多。再細一層（邊一幢）先真係逐個人唔同。</p>
-    ${locked ? `<p class="lockbar"><b>🔓　下面六個區、夾你幾多分、
-      量到嘅數字，而家已經睇到，唔使登記。</b>
-      <br>每行右邊嗰個「逐座睇」要登入先撳得入去 —— 入面係嗰個區逐個屋苑
-      逐座樓、每一項點解夾你、同埋加埋屋企人一齊計。</p>` : ""}
-    <div class="arealist">${areas.length ? areas.map(a => `
-      <button class="area${locked ? " lock" : ""}" data-d="${esc(a.tc)}">
-        <span class="ab wx-${a.wx}">${a.wx}</span>
-        <span class="an"><b>${esc(a.tc)}</b>${REASON[p1](a.e)}<br>
-          <span class="asub">九運平均 ${a.avg.toFixed(1)} 分</span></span>
-        <span class="ac">${a.fit}<em>夾你</em></span>
-        <i>${locked ? `<span class="lockpill">逐座睇</span>` : "›"}</i>
-      </button>`).join("") : '<p class="bznote">計唔到合適地區。</p>'}</div>
+    ${locked ? `<p class="lockbar"><b>🔓　下面啲區同分數，而家已經睇到，唔使登記。</b>
+      <br>撳右邊「<b>點解？</b>」就要登入 —— 入面係<b>點解呢個區夾你</b>
+      （由你嘅五行推到要乜嘢形，再到嗰個區實際量到嘅數字）、
+      嗰個區逐個屋苑逐座樓、同埋加埋屋企人一齊計。</p>` : ""}
+
+    ${(() => {
+      const arow = (a, tag) => `
+        <button class="area${locked ? " lock" : ""}" data-d="${esc(a.tc)}">
+          ${tag ? `<span class="atag">${esc(tag)}</span>` : ""}
+          <span class="ab wx-${a.wx}">${a.wx}</span>
+          <span class="an"><b>${esc(a.tc)}</b>${REASON[p1](a.e)}<br>
+            <span class="asub">九運平均 ${a.avg.toFixed(1)} 分</span></span>
+          <span class="ac">${a.fit}<em>夾你</em></span>
+          <i>${locked ? `<span class="lockpill">點解？</span>` : "›"}</i>
+        </button>`;
+      if(!areas.length) return '<p class="bznote">計唔到合適地區。</p>';
+      return `
+        <h3 class="bzh">全港最夾你嘅三個區</h3>
+        <div class="arealist">${top3.map(a => arow(a, null)).join("")}</div>
+
+        <h3 class="bzh">每個大區入面，最夾你嗰個</h3>
+        <p class="bznote" style="margin-top:-6px">上面三個可能都唔喺你返得到工嘅範圍。
+          呢度四個大區各揀一個 —— <b>總有一個你去得到</b>。</p>
+        <div class="arealist">${bestPer.map(([g, a]) => arow(a, g)).join("")}</div>`;
+    })()}
     ${clash ? `
       <details class="clash"><summary><b>呢張單唔係全港排名</b>
         —— 佢答緊「邊個區嘅形夾你個命」<span class="chev">▾</span></summary>
@@ -5431,6 +5476,15 @@ addEventListener("keydown", e => {
    「贏全港 100% 住宅」即係連自己都贏埋，講唔通；「贏全港 0%」一樣咁
    荒謬。兩頭都改成講範圍 —— 呢句係會傳去 WhatsApp 俾陌生人睇嘅，
    一句講唔通嘅嘢就夠拉低成個分數嘅可信度。 */
+/* 由「贏幾多 %」換成「頭／尾幾多 %」。高分嗰邊講「頭」，低分嗰邊講
+   「尾」—— 一幢贏 15% 嘅樓，講「頭 85%」係誤導，佢實際喺尾嗰 15%。 */
+const topPct = v => {
+  const p = buildInfo && buildInfo.pct && buildInfo.pct[Math.round(v)];
+  if(p == null) return null;
+  return p >= 50 ? {dir: "頭", n: Math.max(1, 100 - p)}
+                 : {dir: "尾", n: Math.max(1, p)};
+};
+
 const beats = score => {
   const p = buildInfo && buildInfo.pct && buildInfo.pct[Math.round(score)];
   if(p == null) return "";
