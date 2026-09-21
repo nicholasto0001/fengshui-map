@@ -2281,19 +2281,71 @@ function loadEstates(){
 
    所以唔改 zoom，淨係平移：度返上面條 filter 同下面個 sheet 各自冚咗
    幾多，將地圖推返落可見嗰個窗嘅正中。 */
+/* 個 sheet（電話喺下面、電腦喺左邊）同上面條 filter 冚住幅地圖幾多。
+   框視角同飛去一個範圍都要用，所以抽咗出嚟。 */
+function sheetPad(){
+  const el = document.getElementById("sheet");
+  const f = document.getElementById("filters");
+  const top = f ? Math.round(f.getBoundingClientRect().bottom) : 0;
+  if(!el) return {railed: false, top, bottom: 0, left: 0};
+  const r = el.getBoundingClientRect();
+  return matchMedia("(min-width:1024px)").matches
+    ? {railed: true, top, bottom: 0, left: Math.round(r.right)}
+    : {railed: false, top, bottom: Math.round(Math.max(0, innerHeight - r.top)), left: 0};
+}
+
 function frameTerritory(){
+  if(!document.getElementById("sheet")) return;
+  map.setView([22.355, 114.135], 11, {animate: false});
+  const p = sheetPad();
+  if(p.railed) map.panBy([-Math.round(p.left / 2), 0], {animate: false});
+  else map.panBy([0, Math.round((p.bottom - p.top) / 2)], {animate: false});
+}
+
+/* 個面板話「淨係計港島」，但幅地圖仲望住全港 —— 兩邊各講各嘅。
+   範圍一定咗就飛過去，等睇到嘅同計緊嘅係同一忽地方。 */
+let framedLiv = "";
+/* 面板收返落嚟望地圖嗰陣，幅地圖要同面板講緊嗰個範圍一致 —— 唔好
+   面板寫住「淨係計港島」但幅地圖仲望住全港。一定要等郁完先度。 */
+(function watchSheetForFraming(){
   const el = document.getElementById("sheet");
   if(!el) return;
-  map.setView([22.355, 114.135], 11, {animate: false});
-  const r = el.getBoundingClientRect();
-  if(matchMedia("(min-width:1024px)").matches){
-    map.panBy([-Math.round(r.right / 2), 0], {animate: false});
+  el.addEventListener("transitionend", e => {
+    if(e.propertyName !== "transform" || el.dataset.state === "full") return;
+    frameLivable();
+    setTimeout(frameLivable, 420);       // 上面嗰下度到嘅位置仲未停低就補多次
+  });
+})();
+
+function frameLivable(){
+  const lv = livSet();
+  if(!districtData.length) return;
+  if(!lv || !lv.size){                       // 放返全港
+    if(framedLiv){ framedLiv = ""; frameTerritory(); }
     return;
   }
-  const f = document.getElementById("filters");
-  const top = f ? f.getBoundingClientRect().bottom : 0;      // chips 冚住上面
-  const bottom = Math.max(0, innerHeight - r.top);           // sheet 冚住下面
-  map.panBy([0, Math.round((bottom - top) / 2)], {animate: false});
+  const key = [...lv].sort().join(",");
+  const pts = districtData.filter(d => lv.has(d.tc)).map(d => [d.lat, d.lon]);
+  if(!pts.length) return;
+  const p = sheetPad();
+  // 個 sheet 攤到全屏嗰陣，幅地圖一個 px 都見唔到，padding 仲大過成個
+  // container —— fitBounds 落去只會計出負數。等佢收返上去先做。
+  if(innerHeight - p.top - p.bottom < 160 || innerWidth - p.left < 200) return;
+
+  // 單靠「框過一次」做記號唔夠：transitionend 有時喺動畫仲未停低就到,
+  // 嗰陣度到嘅 padding 係舊嘅，框出嚟會鬆幾格。所以問返 Leaflet 呢個
+  // 範圍應該去到第幾級，未到就再框一次；到咗就唔好再扯佢（佢可能
+  // 自己放大咗入去睇緊一幢樓）。
+  const bb = L.latLngBounds(pts);
+  const padPt = L.point(68 + p.left, 60 + p.top + p.bottom);
+  const want = Math.min(13, map.getBoundsZoom(bb, false, padPt));
+  if(key === framedLiv && map.getZoom() >= want) return;
+  map.fitBounds(bb, {
+    paddingTopLeft:     [p.left + 34, p.top + 30],
+    paddingBottomRight: [34, p.bottom + 30],
+    maxZoom: 13, animate: true, duration: .7,
+  });
+  framedLiv = key;          // 真係飛咗先當數，唔係就下次再試
 }
 
 function drawDistricts(){
@@ -3464,17 +3516,41 @@ function houseFit(o){
    敏感。 */
 const INT_KEY = "fs_interest";
 const INT_W = {fav: 6, pick: 4, open: 3, search: 3, browse: 1};
+
+/* 啲分要識退。半年前掃過屯門唔代表今日仲喺度睇緊屯門 —— 冇衰減嘅話,
+   一個人搬完屋之後成世都會見到舊嗰頭嘅答案。
+
+   三十日半衰期：每次載入按上次存檔之後過咗幾耐，將全部分數乘
+   0.5^(日數/30)，跟住今次 session 嘅新動作先以全分加落去。咁樣
+   每一個動作嘅實際權重就係 w·0.5^(過咗幾耐/30)，即係一個標準嘅
+   指數衰減，唔使逐件事記時間。 */
+const INT_HALF_LIFE_D = 30;
 let interest = (() => {
   try{
-    const v = JSON.parse(localStorage.getItem(INT_KEY) || "{}");
-    return (v && typeof v === "object" && !Array.isArray(v)) ? v : {};
+    const raw = JSON.parse(localStorage.getItem(INT_KEY) || "null");
+    if(!raw || typeof raw !== "object") return {};
+    // 舊格式係淨係得 {區: 分}。當佢啱啱先發生 —— 唔好一次過清走人哋嘅紀錄。
+    const scores = (raw.scores && typeof raw.scores === "object") ? raw.scores : raw;
+    const days = Math.max(0, (Date.now() - (+raw.at || Date.now())) / 864e5);
+    const k = Math.pow(0.5, days / INT_HALF_LIFE_D);
+    const out = {};
+    for(const [t, v] of Object.entries(scores)){
+      const nv = (+v || 0) * k;
+      if(nv >= 0.5) out[t] = Math.round(nv * 100) / 100;   // 退到冇聲氣就唔好留
+    }
+    return out;
   }catch{ return {}; }
 })();
+function saveInterest(){
+  try{
+    localStorage.setItem(INT_KEY, JSON.stringify({scores: interest, at: Date.now()}));
+  }catch{}
+}
 function noteInterest(tc, kind){
   const t = clean(tc);
   if(!t) return;
   interest[t] = (interest[t] || 0) + (INT_W[kind] || 1);
-  try{ localStorage.setItem(INT_KEY, JSON.stringify(interest)); }catch{}
+  saveInterest();
 }
 
 /* 由積分推返佢關心邊一頭。返 null 即係未夠料講得出任何嘢 —— 嗰陣寧願
@@ -4015,6 +4091,14 @@ async function showBazi(edit){
     return;
   }
   sheetBody.innerHTML = bzResult();
+  // 電腦版個側欄唔係用 transform 郁，所以永遠唔會 fire transitionend ——
+  // 嗰邊要喺呢度直接叫。frameLivable 自己會睇幅地圖見唔見到，電話版
+  // 面板攤到全屏嗰陣佢會自己跳過。
+  // 一個 rAF 唔夠：側欄嘅版面（--rail-top 由 ResizeObserver 度）嗰陣仲未
+  // 定，sheetPad() 會當幅地圖俾冚住而跳過。frameLivable 係冪等嘅，
+  // 叫多次冇代價。
+  requestAnimationFrame(() => requestAnimationFrame(frameLivable));
+  setTimeout(frameLivable, 300);
   const bf = sheetBody.querySelector("#bzFam");
   if(bf) bf.addEventListener("click", () => {
     track("family_cta", {from: "bazi"});
