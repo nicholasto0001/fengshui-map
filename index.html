@@ -4951,12 +4951,14 @@ function showPerson(id){
    嗰一刻喺度。連結唔帶任何人嘅出生資料：佢哋入自己嗰個。 */
 function shareFamily(){
   doShare("香港風水地圖",
-    ["我用緊香港風水地圖幫屋企搵樓。",
+    ["我喺「香港風水地圖」幫屋企搵緊樓。",
      "",
      "入咗我哋屋企人嘅八字，佢會逐幢樓計邊個夾、邊個唔夾 ——",
      "唔係話你聽「呢幢樓好」，而係「呢幢樓啱唔啱我哋」。",
      "",
-     "全港 84,720 幢樓，免費、免登記。"].join("\n"),
+     "全港 84,720 幢樓，免費、免登記、免裝 App。",
+     "",
+     "撳條 link 入你屋企人嘅八字，一樣計到："].join("\n"),
     location.origin + "/", "family");
 }
 
@@ -5308,9 +5310,16 @@ addEventListener("keydown", e => {
    呢個分數。每段都用同一個結構：講緊乜 → 撳入去會見到乜 → 呢個係乜嚟。 */
 
 
+/* 個百分位表 round 咗做整數，所以 83–89 分全部變 100%、21 分變 0%。
+   「贏全港 100% 住宅」即係連自己都贏埋，講唔通；「贏全港 0%」一樣咁
+   荒謬。兩頭都改成講範圍 —— 呢句係會傳去 WhatsApp 俾陌生人睇嘅，
+   一句講唔通嘅嘢就夠拉低成個分數嘅可信度。 */
 const beats = score => {
   const p = buildInfo && buildInfo.pct && buildInfo.pct[Math.round(score)];
-  return p == null ? "" : `贏全港 ${p}% 住宅`;
+  if(p == null) return "";
+  if(p >= 100) return "喺全港最高嗰 1% 之內";
+  if(p <= 0)   return "喺全港最低嗰 1% 之內";
+  return `贏全港 ${p}% 住宅`;
 };
 
 /* 畫張卡出嚟，分享張圖本身。
@@ -5322,6 +5331,20 @@ const beats = score => {
    逐幢樓喺伺服器即場畫要成套中文字體，Worker 放唔落。但瀏覽器本身
    就有中文字體，所以喺部機度畫。唔支援分享檔案就跌返落連結分享,
    OG 卡照樣做後備。 */
+/* 幾時應該分享張圖，幾時應該分享條 link。
+
+   電話：收到嘅人喺 WhatsApp／IG 度，一張大圖即刻睇到，唔使撳。張卡贏。
+
+   電腦：收到嘅人喺 Mail、Slack、WhatsApp Web 度，佢要嘅係撳得入去嘅
+   嘢。而且更麻煩 —— navigator.share 帶住 files 嘅時候，好多平台會直接
+   掉咗 text，於是對方淨係收到一個 PNG：冇網站名、冇解釋、冇連結，
+   撳都冇得撳。
+
+   所以電腦行返 text ＋ url 嗰條路：條 link 經 Worker 會換成對應分數嘅
+   OG 卡，unfurl 出嚟一樣有圖，但撳得入去。 */
+const cardBeatsLink = () =>
+  matchMedia("(pointer: coarse)").matches && innerWidth < 1024;
+
 let brandMark = null, cardMod = null;
 async function cardBits(){
   if(!cardMod) cardMod = import("./card.js?v=" + BUILD_ID);
@@ -5345,13 +5368,22 @@ async function shareBuilding(o){
      喺 WhatsApp 度摺埋變一嚿 —— 收到嘅人要讀先知講乜。
      而家：樓名自己一行（佢先係主角），分數一行，空一行，一句原因,
      空一行，連結。而且張卡已經帶住所有數據，段字唔使再講多次。 */
-  const text = [`${name}`,
-                `風水 ${num(o.total,0)} 分（${lvl}）${rank ? " · " + rank : ""}`,
-                ``,
-                `撳入嚟睇點解 —— 山水方位、坐向、玄空飛星盤`].join("\n");
+  const est = clean(o.est);
+  /* 收到嘅人多數乜都唔知。三件事要齊：我做咗乜、呢個係咩網站、撳條
+     link 會見到咩。舊嗰段淨係報個分同「撳入嚟睇點解」—— 對方連邊個
+     網站都唔知，亦都唔知撳完見到啲乜。 */
+  const text = [
+    `我喺「香港風水地圖」查咗${est && est !== name ? est + "・" : ""}${name}`,
+    `風水 ${num(o.total,0)} 分 — ${lvl}${rank ? "，" + rank : ""}`,
+    ``,
+    `全港 84,720 幢樓逐幢計咗九運風水分，仲可以入自己出生日期，`,
+    `睇同一幢樓夾唔夾你。免費、免登記、免裝 App。`,
+    ``,
+    `撳條 link 就見到呢幢樓嘅山水方位、坐向同玄空飛星盤：`,
+  ].join("\n");
   const url = shareUrl({b: pack([o])});
 
-  if(o.res !== 0 && navigator.canShare){
+  if(o.res !== 0 && cardBeatsLink() && navigator.canShare){
     try{
       const m = await cardBits();
       const blob = await (await m).buildingCard(o, {
@@ -5363,7 +5395,9 @@ async function shareBuilding(o){
         track("share", {what: "building_card", url});
         nudgeSave({...nudgeState(), done: true});
         hideNudge();
-        try{ await navigator.share({files: [file], text: `${text}\n\n${url}`}); }
+        // url 要自己一個欄位：黐咗入 text 度，平台一掉 text，
+        // 條 link 就一齊冇埋，對方收到一張撳唔到嘅圖。
+        try{ await navigator.share({files: [file], text, url}); }
         catch{}
         return;
       }
@@ -5384,15 +5418,17 @@ async function shareBazi(){
   const top = areas.slice(0, 3);
   const text = [
     `我嘅八字：${type}，喜${likes.join("、")}`,
-    top.length ? `全港十八區入面最夾我嘅：${
+    top.length ? `最夾我嘅地區：${
       top.map(a => `${a.tc} ${a.fit}分`).join("、")}` : "",
     "",
-    "呢個唔係「邊區風水好」—— 同一幢樓，唔同人唔同分。",
-    "打你自己個出生日期，出嚟係另一張。",
+    "呢個唔係「邊區風水好」—— 全港 84,720 幢樓逐幢計，",
+    "同一幢樓，唔同人唔同分。免費、免登記、免裝 App。",
+    "",
+    "撳條 link 打你自己個出生日期，出嚟係另一張：",
   ].filter(x => x !== null).join("\n");
   const url = location.origin + "/";
 
-  if(navigator.canShare){
+  if(cardBeatsLink() && navigator.canShare){
     try{
       const m = await cardBits();
       const blob = await (await m).baziCard({...bzSnapshot, mark: brandMark});
@@ -5400,7 +5436,9 @@ async function shareBazi(){
       if(navigator.canShare({files: [file]})){
         trip.shared = true;
         track("share", {what: "bazi_card"});
-        try{ await navigator.share({files: [file], text: `${text}\n\n${url}`}); }
+        // url 要自己一個欄位：黐咗入 text 度，平台一掉 text，
+        // 條 link 就一齊冇埋，對方收到一張撳唔到嘅圖。
+        try{ await navigator.share({files: [file], text, url}); }
         catch{}
         return;
       }
@@ -5412,9 +5450,12 @@ async function shareBazi(){
 function shareList(){
   if(!favs.length) return;
   const top = favs.slice(0,3).map(f => clean(f.tc)||clean(f.en)).filter(Boolean).join("、");
-  const lines = [`我揀咗 ${favs.length} 個樓盤`];
+  const lines = [`我喺「香港風水地圖」揀咗 ${favs.length} 個樓盤`];
   if(top) lines.push(`${top}${favs.length > 3 ? " 等" : ""}`);
-  lines.push("", "一次過睇晒每個嘅風水評分、坐向同飛星盤");
+  lines.push("",
+    "全港 84,720 幢樓逐幢計咗九運風水分。免費、免登記、免裝 App。",
+    "",
+    "撳條 link 一次過睇晒佢哋嘅評分、坐向同飛星盤：");
   doShare("我揀咗嘅樓盤", lines.join("\n"), shareUrl({list: pack(favs)}), "list");
 }
 
@@ -5431,7 +5472,9 @@ function shareApp(){
      "地產網淨係話你知有咩樓，師傅淨係睇風水同八字 ——",
      "三樣夾埋，先答到「我應該住邊度」。",
      "",
-     "免費、免登記、免裝 App。"].join("\n"),
+     "免費、免登記、免裝 App。",
+     "",
+     "撳條 link 打個屋苑名，即刻見到你嗰幢幾多分："].join("\n"),
     location.origin + "/", "app");
 }
 
