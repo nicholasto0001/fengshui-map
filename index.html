@@ -633,6 +633,28 @@
   /* 八字嘅入口。之前得篩選列上面一個細細嘅「✦ 八字」掣，同另外七個掣
      排埋一齊 —— 用家開咗個 app 都唔知有呢個功能。所以總覽度擺一張
      講得清楚嘅卡，寫明入面係咩，唔係淨係得兩個字。 */
+  /* 人話解釋 —— 唔用術語，任何人讀得明。 */
+  /* 試食：第一段照睇，跟住嗰啲矇咗 —— 佢見到入面係咩質地，
+     先至決定值唔值得解鎖。一隻字都唔俾睇嘅話，冇人會撳。 */
+  .blurwrap{position:relative; max-height:132px; overflow:hidden;
+    filter:blur(4px); opacity:.55; user-select:none; pointer-events:none;
+    -webkit-mask-image:linear-gradient(#000 35%, transparent);
+    mask-image:linear-gradient(#000 35%, transparent)}
+  .gate-tight{margin-top:-14px}
+  .bzplain{font-size:14.5px; line-height:1.75; color:var(--ink2); margin:0 0 10px}
+  .bzplain b{color:var(--ink); font-weight:700}
+  /* 術語同出處全部收埋喺最尾：大部分人唔會睇，想睇嘅撳開就有。 */
+  .bzdeep{margin:26px 0 0; border:1px solid var(--line); border-radius:14px;
+    background:var(--card); overflow:hidden}
+  .bzdeep > summary{list-style:none; cursor:pointer; display:flex;
+    justify-content:space-between; align-items:center; gap:10px;
+    padding:14px 15px; min-height:52px; font-size:15px; font-weight:700; color:var(--ink)}
+  .bzdeep > summary::-webkit-details-marker{display:none}
+  .bzdeep > summary .chev{color:var(--ink3); font-size:12px; transition:transform .2s}
+  .bzdeep[open] > summary{border-bottom:1px solid var(--line)}
+  .bzdeep[open] > summary .chev{transform:rotate(180deg)}
+  .bzdeep > :not(summary){padding-inline:15px}
+  .bzdeep > .bzh:first-of-type{margin-top:14px}
   .bznow{background:#3d2f18; color:#f3ece0; border-radius:16px;
     padding:16px 15px 15px; margin:0 0 14px}
   .bznow .bnh{font-size:18px; font-weight:800; color:#fff; margin:0 0 6px}
@@ -4135,7 +4157,10 @@ function bzResult(){
   const homeD = districtFilter || lastDistrictSeen
               || (areas[0] && areas[0].tc) || (districtData[0] || {}).tc || "";
   // 每個大區最夾嗰一個。唔理佢實際住得去邊 —— 四行入面總有一行啱。
-  const bestPer = Object.entries(AREA_GROUPS).map(([g, ds]) => {
+  // 第二張單唔出離島：真係會搬去離島嘅人好少，出咗等於嘥一行。
+  // 離島喺上面「全港三個」度照出得到 —— 如果佢真係排到頭三。
+  const bestPer = Object.entries(AREA_GROUPS).filter(([g]) => g !== "離島")
+    .map(([g, ds]) => {
     const hit = areas.find(a => ds.includes(a.tc));
     return hit ? [g, hit] : null;
   }).filter(Boolean);
@@ -4157,94 +4182,11 @@ function bzResult(){
   return `
     <p class="bname">${birth.y} 年 ${birth.m} 月 ${birth.d} 日　${birth.male ? "男" : "女"}</p>
     <p class="mcount">${known ? "" : "冇時辰，所以排唔到時柱 —— 但五行、用神同配樓一樣計到。"}</p>
-    <div class="pillars">${pil.map(([k, v]) =>
-      `<div class="pil"><u>${k}柱</u><b>${v}</b></div>`).join("")}</div>
-    <p class="eight">上面${known ? "八" : "六"}個中文字，就係你嘅「八字」——
-      年、月、日、時四柱，每柱兩個字，夾埋八個。${known ? "" : "（冇時辰就得六個。）"}
-      我哋分析嘅就係呢${known ? "八" : "幾"}個字之間嘅配搭。</p>
-    ${notes.map(n => `<p class="bznote">${esc(n)}</p>`).join("")}
-    ${altDiff ? `<p class="bznote">ⓘ 按真太陽時（香港同時區中線差 23 分鐘），
-      時柱會係 <b>${alt.hour}</b>。我哋預設唔校正，跟返市面排盤工具嘅做法。</p>` : ""}
 
-    <div class="wxbox wx-${st.dayWx}">
-      <div class="wxgw"><span class="wxgl">五行屬</span>
-        <div class="wxg">${st.dayWx}</div></div>
-      <div class="wxt">你嘅日主係 <b>${st.dayMaster}${st.dayWx}</b>
-        （「日主」＝ 出世嗰日嘅天干，代表你自己）<br>
-        <b>${st.strong ? "身強" : "身弱"}</b>（你本身呢個五行${
-          st.strong ? "夠力，唔使再補" : "偏弱，要幫返佢"}）　——
-        幫到你嘅五行佔咗 ${st.supportPct}%</div>
-    </div>
-
-    <h3 class="bzh">五行分佈</h3>
-    <div class="wxbars">${rows.map(w => `
-      <div class="wxr"><u class="wx-${w}">${w}</u>
-        <span class="wtrack"><i class="wx-${w}" style="width:${100 * st.pct[w] / top}%"></i></span>
-        <em>${st.pct[w]}%<b>${st.phases[w]}</b></em></div>`).join("")}</div>
-    <p class="bznote"><b>旺</b>（最強）· <b>相</b>（次強）· <b>休</b>（開始弱）·
-      <b>囚</b>（受制）· <b>死</b>（最弱）—— 呢五個字係風水術語，
-      <u>講緊強弱，唔係講好壞</u>。「死」唔代表出事，淨係話呢個五行喺你個盤
-      入面最弱。<br>
-      你出世嗰個月嘅地支係<b>${st.monthZhi}</b>（術語叫「月令」），同一個五行
-      喺唔同月份力量唔同，所以上面五個強弱係按佢計。日主本身唔計入分數。</p>
-
-    <h3 class="bzh">你嘅喜用五行</h3>
+    <h3 class="bzh">你係咩命</h3>
     <div class="srcbox">
       <p class="sl"><b>${hc.type}</b>　喜 ${hc.like.map(w=>`<b class="wx-${w}">${w}</b>`).join("、")}</p>
       <p class="ss">${esc(hc.note)}　—— 蘇民峰《寒熱命論》，由出生日期定，同時辰無關</p>
-    </div>
-    ${known ? `
-      <div class="srcbox">
-        <p class="sl">扶抑用神　${st.useful.map(w=>`<b class="wx-${w}">${w}</b>`).join("、")}
-          ${agree ? '<span class="tag ok">同上面一致</span>'
-                  : '<span class="tag no">同上面唔同</span>'}</p>
-        ${agree ? "" : `<p class="ss"><b>兩套唔同答案。</b>下面嘅地區按寒熱命行
-          —— 因為佢淨係要出生日期，唔使判斷。扶抑用神喺呢度只係一個對照,
-          唔會影響下面揀邊幾個區。</p>`}
-        <p class="ss">傳統扶抑法：${st.strong ? "身強" : "身弱"}（支持度 ${st.supportPct}%）。
-          ⚠ 呢一步係判斷唔係算術，而且<b>好睇時辰</b> —— 同一個人早四個鐘出世，
-          答案可以完全相反。蘇民峰本人亦都唔用呢套。</p>
-      </div>` : `
-      <p class="bznote">冇時辰，所以計唔到扶抑用神 —— 呢套方法對時辰好敏感，
-        同一個人早幾個鐘出世可以得出完全相反嘅用神。上面寒熱命只需要日期，
-        所以照計得到。</p>`}
-
-    <!-- 屋企人擺喺睇完自己個盤之後、揀地區之前。擺喺最尾冇人 scroll 到,
-         而香港冇乜人係一個人住 —— 呢一步應該喺佢啱啱明白咗「原來我個盤
-         係咁」嗰一刻就問。 -->
-    <div class="famcta${me && family.length > 1 ? " has" : ""}">
-      <p class="fch">${me && family.length > 1
-        ? `你屋企有 ${family.length} 個人`
-        : "你自己一個住？"}</p>
-      <p class="fcs">${me && family.length > 1
-        ? "每一幢樓都會逐個人計，話你知邊個夾、邊個唔夾。撳入去睇每個人自己嘅盤。"
-        : "大部分人都唔係。加埋伴侶、仔女嘅八字，每一幢樓就會逐個人計 —— "
-          + "一間屋啱你，唔代表啱佢哋。"}</p>
-      <button class="pbtn dark" id="bzFam">${me
-        ? (family.length > 1 ? "睇／管理屋企人" : "加第一個屋企人")
-        : "加屋企人（要先登入）"}</button>
-    </div>
-
-    <h3 class="bzh">邊幾幢樓最夾你</h3>
-    <div class="pickd">
-      <p class="pdl">喺邊個區揀？</p>
-      <select id="bzPickD" aria-label="揀一個區">
-        ${(() => {
-          const opt = a => `<option value="${esc(a.tc)}"${
-            a.tc === homeD ? " selected" : ""}>${esc(a.tc)}</option>`;
-          const sorted = [...districtData].sort((a,b)=>a.tc.localeCompare(b.tc,"zh-HK"));
-          if(!livOn()) return sorted.map(opt).join("");
-          // 範圍外嘅區唔收埋 —— 佢隨時想睇一睇，淨係唔好擺喺前面。
-          const inn = sorted.filter(a => livable.has(a.tc));
-          const out = sorted.filter(a => !livable.has(a.tc));
-          return `<optgroup label="你揀嘅範圍">${inn.map(opt).join("")}</optgroup>`
-               + `<optgroup label="其他區">${out.map(opt).join("")}</optgroup>`;
-        })()}
-      </select>
-      <button class="pbtn dark" id="bzGoList">睇呢個區邊幾幢最夾我</button>
-      <p class="bznote"><b>同一幢樓，唔同人計出嚟可以爭成七十分</b>
-        —— 除咗個區嘅形，仲夾埋你個本命卦同樓宇個向。所以就算成個區唔算
-        最夾你，區入面一樣有夾你嘅樓。</p>
     </div>
 
     <p class="bznote" style="margin-top:-2px">${
@@ -4287,6 +4229,157 @@ function bzResult(){
           呢度四個大區各揀一個 —— <b>總有一個你去得到</b>。</p>
         <div class="arealist">${bestPer.map(([g, a]) => arow(a, g)).join("")}</div>`;
     })()}
+
+    <h3 class="bzh">點解呢幾個區啱你</h3>
+    <p class="bzplain">你係<b>${hc.type}</b>。用人話講 —— 你個八字入面
+      <b class="wx-${p1}">${p1}</b>唔夠，所以住喺${
+        p1 === "水" ? "近水、望得開揚" : p1 === "火" ? "旺場、樓又密又高" :
+        p1 === "木" ? "樓高而瘦、樹多" : p1 === "土" ? "樓矮而闊、地勢平" :
+        "全港西面"}嘅地方，會夾你多啲。</p>
+    <p class="bzplain">${esc(areas[0].tc)}就係全港十八區入面呢一類最明顯嗰幾個之一
+      —— ${REASON[p1](areas[0].e)}。</p>
+    <p class="bzplain">另外，你出世嗰年定咗一樣叫<b>本命卦</b>嘅嘢，你係<b>${gua}</b>。
+      簡單講：<b>大門向${dirs.slice(0, 2).join("、向")}</b>嗰啲樓對你好啲。
+      同一個屋苑，唔同座向，分數可以爭好遠。</p>
+
+    ${(() => {
+      const whyOf = a => `<b class="wx-${p1}">${esc(a.tc)}</b>
+        ${MEASURED(p1)
+          ? `${REASON[p1](a.e)} —— <b class="wx-${p1}">${p1}</b>形喺全港十八區排
+             ${a.f1}／100。`
+          : `${REASON[p1](a.e)}（${a.e.zone}方）。`}
+        ${p2 && a.f2 >= 50
+          ? `同時${REASON[p2](a.e)}，<b class="wx-${p2}">${p2}</b> ${a.f2}／100。` : ""}
+        ${whyLine(p1)}`;
+      if(!locked) return `
+      <div class="whywrap">
+        <p class="fhd">逐個區嘅數字</p>
+        ${areas.map(a => `<p class="why">${whyOf(a)}</p>`).join("")}
+      </div>`;
+      const shown = areas.slice(0, 1), hidden = areas.slice(1, 4);
+      return `
+      <div class="whywrap teaser">
+        <p class="fhd">逐個區嘅數字</p>
+        ${shown.map(a => `<p class="why">${whyOf(a)}</p>`).join("")}
+        <div class="blurwrap" aria-hidden="true">
+          ${hidden.map(a => `<p class="why">${whyOf(a)}</p>`).join("")}
+        </div>
+        <div class="gate gate-tight">
+          <p class="gh">仲有 ${Math.max(areas.length - 1, 0)} 個區嘅解釋</p>
+          <p class="gs">同上面一樣，逐個區寫明<b>量到幾多、點解夾你</b>，
+            仲有嗰個區逐個屋苑逐座樓。</p>
+          <p class="gs">順便幫你<b>存低呢個結果</b> —— 換部電話、用電腦開返都仲喺度，
+            唔使再打一次出生日期。</p>
+          <button class="pbtn dark" id="bzLogin" style="margin-top:12px">登入睇晒</button>
+          <p class="gf">免費，用 Google 一撳就得。</p>
+        </div>
+      </div>`;
+    })()}
+
+    <h3 class="bzh">邊幾幢樓最夾你</h3>
+    <div class="pickd">
+      <p class="pdl">喺邊個區揀？</p>
+      <select id="bzPickD" aria-label="揀一個區">
+        ${(() => {
+          const opt = a => `<option value="${esc(a.tc)}"${
+            a.tc === homeD ? " selected" : ""}>${esc(a.tc)}</option>`;
+          const sorted = [...districtData].sort((a,b)=>a.tc.localeCompare(b.tc,"zh-HK"));
+          if(!livOn()) return sorted.map(opt).join("");
+          // 範圍外嘅區唔收埋 —— 佢隨時想睇一睇，淨係唔好擺喺前面。
+          const inn = sorted.filter(a => livable.has(a.tc));
+          const out = sorted.filter(a => !livable.has(a.tc));
+          return `<optgroup label="你揀嘅範圍">${inn.map(opt).join("")}</optgroup>`
+               + `<optgroup label="其他區">${out.map(opt).join("")}</optgroup>`;
+        })()}
+      </select>
+      <button class="pbtn dark" id="bzGoList">睇呢個區邊幾幢最夾我</button>
+      <p class="bznote"><b>同一幢樓，唔同人計出嚟可以爭成七十分</b>
+        —— 除咗個區嘅形，仲夾埋你個本命卦同樓宇個向。所以就算成個區唔算
+        最夾你，區入面一樣有夾你嘅樓。</p>
+    </div>
+
+
+    <button class="pbtn dark" id="bzSee" style="margin-top:22px">喺地圖睇晒合我嘅樓</button>
+    <button class="pbtn ghost" id="bzShare" style="margin-top:10px">分享我嘅八字揀樓卡</button>
+
+    <!-- 屋企人擺喺睇完自己個盤之後、揀地區之前。擺喺最尾冇人 scroll 到,
+         而香港冇乜人係一個人住 —— 呢一步應該喺佢啱啱明白咗「原來我個盤
+         係咁」嗰一刻就問。 -->
+    <div class="famcta${me && family.length > 1 ? " has" : ""}">
+      <p class="fch">${me && family.length > 1
+        ? `你屋企有 ${family.length} 個人`
+        : "你自己一個住？"}</p>
+      <p class="fcs">${me && family.length > 1
+        ? "每一幢樓都會逐個人計，話你知邊個夾、邊個唔夾。撳入去睇每個人自己嘅盤。"
+        : "大部分人都唔係。加埋伴侶、仔女嘅八字，每一幢樓就會逐個人計 —— "
+          + "一間屋啱你，唔代表啱佢哋。"}</p>
+      <button class="pbtn dark" id="bzFam">${me
+        ? (family.length > 1 ? "睇／管理屋企人" : "加第一個屋企人")
+        : "加屋企人（要先登入）"}</button>
+    </div>
+
+    <details class="bzdeep">
+      <summary><span>八字詳情、術語解釋同出處</span><span class="chev">▾</span></summary>
+    <div class="pillars">${pil.map(([k, v]) =>
+      `<div class="pil"><u>${k}柱</u><b>${v}</b></div>`).join("")}</div>
+    <p class="eight">上面${known ? "八" : "六"}個中文字，就係你嘅「八字」——
+      年、月、日、時四柱，每柱兩個字，夾埋八個。${known ? "" : "（冇時辰就得六個。）"}
+      我哋分析嘅就係呢${known ? "八" : "幾"}個字之間嘅配搭。</p>
+    ${notes.map(n => `<p class="bznote">${esc(n)}</p>`).join("")}
+    ${altDiff ? `<p class="bznote">ⓘ 按真太陽時（香港同時區中線差 23 分鐘），
+      時柱會係 <b>${alt.hour}</b>。我哋預設唔校正，跟返市面排盤工具嘅做法。</p>` : ""}
+
+
+    <div class="wxbox wx-${st.dayWx}">
+      <div class="wxgw"><span class="wxgl">五行屬</span>
+        <div class="wxg">${st.dayWx}</div></div>
+      <div class="wxt">你嘅日主係 <b>${st.dayMaster}${st.dayWx}</b>
+        （「日主」＝ 出世嗰日嘅天干，代表你自己）<br>
+        <b>${st.strong ? "身強" : "身弱"}</b>（你本身呢個五行${
+          st.strong ? "夠力，唔使再補" : "偏弱，要幫返佢"}）　——
+        幫到你嘅五行佔咗 ${st.supportPct}%</div>
+    </div>
+
+
+    <h3 class="bzh">五行分佈</h3>
+    <div class="wxbars">${rows.map(w => `
+      <div class="wxr"><u class="wx-${w}">${w}</u>
+        <span class="wtrack"><i class="wx-${w}" style="width:${100 * st.pct[w] / top}%"></i></span>
+        <em>${st.pct[w]}%<b>${st.phases[w]}</b></em></div>`).join("")}</div>
+    <p class="bznote"><b>旺</b>（最強）· <b>相</b>（次強）· <b>休</b>（開始弱）·
+      <b>囚</b>（受制）· <b>死</b>（最弱）—— 呢五個字係風水術語，
+      <u>講緊強弱，唔係講好壞</u>。「死」唔代表出事，淨係話呢個五行喺你個盤
+      入面最弱。<br>
+      你出世嗰個月嘅地支係<b>${st.monthZhi}</b>（術語叫「月令」），同一個五行
+      喺唔同月份力量唔同，所以上面五個強弱係按佢計。日主本身唔計入分數。</p>
+
+
+    ${known ? `
+      <div class="srcbox">
+        <p class="sl">扶抑用神　${st.useful.map(w=>`<b class="wx-${w}">${w}</b>`).join("、")}
+          ${agree ? '<span class="tag ok">同上面一致</span>'
+                  : '<span class="tag no">同上面唔同</span>'}</p>
+        ${agree ? "" : `<p class="ss"><b>兩套唔同答案。</b>下面嘅地區按寒熱命行
+          —— 因為佢淨係要出生日期，唔使判斷。扶抑用神喺呢度只係一個對照,
+          唔會影響下面揀邊幾個區。</p>`}
+        <p class="ss">傳統扶抑法：${st.strong ? "身強" : "身弱"}（支持度 ${st.supportPct}%）。
+          ⚠ 呢一步係判斷唔係算術，而且<b>好睇時辰</b> —— 同一個人早四個鐘出世，
+          答案可以完全相反。蘇民峰本人亦都唔用呢套。</p>
+      </div>` : `
+      <p class="bznote">冇時辰，所以計唔到扶抑用神 —— 呢套方法對時辰好敏感，
+        同一個人早幾個鐘出世可以得出完全相反嘅用神。上面寒熱命只需要日期，
+        所以照計得到。</p>`}
+
+    <h3 class="bzh">本命卦</h3>
+    <div class="guabox"><div class="gg">${gua}</div>
+      <div class="gt">你係<b>${gua}命</b>，屬<b>${m.guaGroup(gua)}命</b>。<br>
+        最旺嘅方位係<b>正${dirs[0]}</b>（${m.LUCK[gua][dirs[0]]}）。</div></div>
+    <div class="dirs">${dirs.map((d, i) =>
+      `<span class="${i === 0 ? "best" : ""}"><b>向${d}</b> ${m.LUCK[gua][d]}</span>`).join("")}</div>
+    <p class="bznote">八宅以<b>向</b>論 —— 配嘅係樓宇向邊，唔係坐邊。
+      八宅只分東四、西四兩組宅，所以同組嘅人合嘅樓係同一批；
+      因人而異嘅係邊個方位對你嚟講係邊個遊年星。</p>
+
     ${clash ? `
       <details class="clash"><summary><b>呢張單唔係全港排名</b>
         —— 佢答緊「邊個區嘅形夾你個命」<span class="chev">▾</span></summary>
@@ -4297,28 +4390,6 @@ function bzResult(){
         但佢嘅形屬<b class="wx-${p1}">${p1}</b>，而你要<b class="wx-${p1}">${p1}</b>。</p>
       </details>` : ""}
 
-    ${locked ? `
-      <div class="gate">
-        <p class="gh">點解呢幾個區啱你？</p>
-        <p class="gs">登入就睇到每個區嘅解釋 —— 由你嘅五行推到要乜嘢形,
-          再到嗰個區實際量到嘅數字，同埋撳得入去睇入面逐個屋苑同逐座樓。</p>
-        <p class="gs">同時會幫你<b>存低呢個結果</b>，換部電話、用電腦開返都仲喺度
-          —— 唔使再打一次出生日期。</p>
-        <button class="pbtn dark" id="bzLogin" style="margin-top:14px">登入睇解釋</button>
-        <p class="gf">免費，用 Google 一撳就得。</p>
-      </div>` : `
-      <div class="whywrap">
-        <p class="fhd">點解呢幾個區啱你</p>
-        ${areas.map(a => `
-          <p class="why"><b class="wx-${p1}">${esc(a.tc)}</b>
-            ${MEASURED(p1)
-              ? `${REASON[p1](a.e)} —— <b class="wx-${p1}">${p1}</b>形喺全港十八區排
-                 ${a.f1}／100。`
-              : `${REASON[p1](a.e)}（${a.e.zone}方）。`}
-            ${p2 && a.f2 >= 50
-              ? `同時${REASON[p2](a.e)}，<b class="wx-${p2}">${p2}</b> ${a.f2}／100。` : ""}
-            ${whyLine(p1)}</p>`).join("")}
-      </div>`}
 
     <p class="bznote"><b>邊部分係我哋自己量嘅：</b>每個區嘅形。
       ${MEASURED(p1) ? `${p1}` : "木、火、土、水"}
@@ -4331,19 +4402,7 @@ function bzResult(){
       五行對方位（木東火南金西水北土中）出自《新玄機》第 231 期區晉豪
       〈五行方向搵屋〉。<br>
       呢個係電腦計算，唔係師傅睇。認真揀樓請搵專業風水師傅。</p>
-
-    <button class="pbtn dark" id="bzSee" style="margin-top:22px">喺地圖睇晒合我嘅樓</button>
-    <button class="pbtn ghost" id="bzShare" style="margin-top:10px">分享我嘅八字揀樓卡</button>
-
-    <h3 class="bzh">本命卦</h3>
-    <div class="guabox"><div class="gg">${gua}</div>
-      <div class="gt">你係<b>${gua}命</b>，屬<b>${m.guaGroup(gua)}命</b>。<br>
-        最旺嘅方位係<b>正${dirs[0]}</b>（${m.LUCK[gua][dirs[0]]}）。</div></div>
-    <div class="dirs">${dirs.map((d, i) =>
-      `<span class="${i === 0 ? "best" : ""}"><b>向${d}</b> ${m.LUCK[gua][d]}</span>`).join("")}</div>
-    <p class="bznote">八宅以<b>向</b>論 —— 配嘅係樓宇向邊，唔係坐邊。
-      八宅只分東四、西四兩組宅，所以同組嘅人合嘅樓係同一批；
-      因人而異嘅係邊個方位對你嚟講係邊個遊年星。</p>
+    </details>
 
     <p class="bznote" style="text-align:center">
       <a href="/bazi-guide" target="_blank" rel="noopener">每一步點計、根據邊個講法、做唔到啲咩 →</a></p>
