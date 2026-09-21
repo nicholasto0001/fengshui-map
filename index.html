@@ -1210,6 +1210,8 @@
   .barcap b{color:var(--ink2)}
   .barcap u{text-decoration:none; color:var(--bad); font-weight:600}
   .area{position:relative}
+  .dpick .dsub{display:block; font-style:normal; font-size:12px;
+    color:var(--ink3); font-weight:500; margin-top:2px}
   .atag{position:absolute; top:-7px; inset-inline-start:14px; z-index:1;
     font-size:10.5px; font-weight:700; letter-spacing:.04em;
     background:var(--brand); color:#fff; border-radius:999px; padding:2px 9px}
@@ -2391,15 +2393,26 @@ function frameTerritory(){
 /* 個面板話「淨係計港島」，但幅地圖仲望住全港 —— 兩邊各講各嘅。
    範圍一定咗就飛過去，等睇到嘅同計緊嘅係同一忽地方。 */
 let framedLiv = "";
-/* 面板收返落嚟望地圖嗰陣，幅地圖要同面板講緊嗰個範圍一致 —— 唔好
-   面板寫住「淨係計港島」但幅地圖仲望住全港。一定要等郁完先度。 */
-(function watchSheetForFraming(){
+/* 個 sheet 郁完先做。郁緊嗰陣度佢冚咗幾多，度到嘅係舊數，計出嚟嘅
+   視角就會差幾級 —— 同一個問題撞咗三次先抽出嚟。 */
+const sheetSettleJobs = [];
+function afterSheetSettles(fn){
+  sheetSettleJobs.push(fn);
+  setTimeout(runSheetSettleJobs, 700);   // transitionend 唔一定 fire
+}
+function runSheetSettleJobs(){
+  while(sheetSettleJobs.length) sheetSettleJobs.shift()();
+}
+(function watchSheet(){
   const el = document.getElementById("sheet");
   if(!el) return;
   el.addEventListener("transitionend", e => {
-    if(e.propertyName !== "transform" || el.dataset.state === "full") return;
-    frameLivable();
-    setTimeout(frameLivable, 420);       // 上面嗰下度到嘅位置仲未停低就補多次
+    if(e.propertyName !== "transform") return;
+    runSheetSettleJobs();
+    if(el.dataset.state !== "full"){
+      frameLivable();
+      setTimeout(frameLivable, 420);
+    }
   });
 })();
 
@@ -2541,13 +2554,28 @@ function fallbackBack(){
       c.classList.remove("on");
       drawDistricts(); showOverview();
     }];
-    return null;                       // 全港清單 —— 熄返個 chip 就得
+    // 全港清單一定係經某個 chip 入嚟嘅。之前當佢會自己熄返個 chip，
+    // 但冇人會咁做 —— 撳咗一個 chip 入到一版新嘢，佢就會揾返回。
+    if(band !== "all") return ["地圖", () => {
+      band = "all";
+      document.querySelectorAll("#filters .chip[data-band]").forEach(x =>
+        x.classList.toggle("on", x.dataset.band === "all"));
+      loadBuildings(); drawDistricts(); showOverview();
+    }];
+    if(guaOn) return ["地圖", () => {
+      guaOn = false;
+      document.getElementById("btnGua").classList.remove("on");
+      loadBuildings(); drawDistricts(); showOverview();
+    }];
+    return null;
   }
   if(curView === "family") return ["八字", () => showBazi()];
   if(curView === "root") return null;
   // showOverview 會睇住呢幾個 flag 彈返去原本嗰版 —— 唔清返，撳返回就
   // 返返同一版，變咗死胡同。揀地區就係咁。
-  if(curView === "dpicker") return ["地圖", () => { pickingDistrict = false; showOverview(); }];
+  if(curView === "dpicker") return pickGroup
+    ? ["揀地區", () => { pickGroup = null; showDistrictPicker(); }]
+    : ["地圖", () => { pickingDistrict = false; showOverview(); }];
   if(curView === "lpicker") return ["收藏", () => showFavs()];
   if(curView === "favs") return ["地圖", () => {
     favView = false; sharedList = null;
@@ -5668,31 +5696,91 @@ function setDistrict(tc){
   drawDistricts(); showOverview();
 }
 
+let pickGroup = null;          // 揀緊邊個大區；null = 仲喺大區嗰層
+
+/* 地圖飛去一個大區嗰一帶。同 frameLivable 一樣攞返個 sheet 冚咗幾多。 */
+function flyToGroup(g){
+  const ds = AREA_GROUPS[g] || [];
+  const pts = districtData.filter(d => ds.includes(d.tc)).map(d => [d.lat, d.lon]);
+  if(!pts.length) return;
+  const pad = sheetPad();
+  if(innerHeight - pad.top - pad.bottom < 160) return;
+  map.fitBounds(L.latLngBounds(pts), {
+    paddingTopLeft:     [pad.left + 34, pad.top + 30],
+    paddingBottomRight: [34, pad.bottom + 30],
+    maxZoom: 13, animate: true, duration: .6,
+  });
+}
+
 function showDistrictPicker(){
-  const rows = [...districtData].sort((a,b)=>bandCount(b)-bandCount(a));
-  const all = rows.reduce((n,a)=>n+bandCount(a),0);
-  gripText.textContent = "揀地區";
+  gripText.textContent = pickGroup ? pickGroup : "揀地區";
   setView("dpicker");
+  const unit = band === "all" ? "樓宇" : `「${chipLabel()}」樓宇`;
+
+  if(!pickGroup){
+    // 第一層：四個大區。每行帶住個大區有幾多幢，同埋入面最高分嗰個區。
+    const all = districtData.reduce((n, a) => n + bandCount(a), 0);
+    const groups = Object.entries(AREA_GROUPS).map(([g, ds]) => {
+      const mine = districtData.filter(a => ds.includes(a.tc));
+      const cnt  = mine.reduce((t, a) => t + bandCount(a), 0);
+      const top  = mine.slice().sort((x, y) => y.avg - x.avg)[0];
+      return {g, n: mine.length, cnt, top};
+    }).filter(x => x.n);
+    sheetBody.innerHTML = `
+      <p class="bname">揀地區</p>
+      <p class="mcount">先揀一邊。撳咗之後地圖會飛過去，再揀入面邊一個區。</p>
+      <ul class="dpick">
+        <li data-g="" class="${!districtFilter ? "sel" : ""}">
+          <span class="dn">全港</span><span class="dc">${all.toLocaleString()}</span>
+          <span class="chev2">›</span></li>
+        ${groups.map(x => `<li data-g="${esc(x.g)}">
+          <span class="dn">${esc(x.g)}
+            <em class="dsub">${x.n} 個區${x.top ? ` · 最高 ${esc(x.top.tc)} ${x.top.avg.toFixed(0)} 分` : ""}</em></span>
+          <span class="dc">${x.cnt.toLocaleString()}</span>
+          <span class="chev2">›</span></li>`).join("")}
+      </ul>
+      <p class="build" id="buildStamp">${APP_VERSION}</p>`;
+    fillBuildStamp();
+    sheetBody.querySelectorAll(".dpick li").forEach(li =>
+      li.addEventListener("click", () => {
+        const g = li.dataset.g;
+        if(!g){ setDistrict(""); return; }
+        pickGroup = g;
+        showDistrictPicker();
+        setSheet("half");                 // 收返落嚟，先至見到幅地圖飛
+        afterSheetSettles(() => flyToGroup(g));
+      }));
+    return;
+  }
+
+  // 第二層：嗰個大區入面嘅區。
+  const ds = AREA_GROUPS[pickGroup] || [];
+  const rows = districtData.filter(a => ds.includes(a.tc))
+                           .sort((a, b) => bandCount(b) - bandCount(a));
   sheetBody.innerHTML = `
-    <p class="bname">揀地區</p>
-    <p class="mcount">${band==="all" ? "括號內係該區樓宇數量" : `括號內係該區「${chipLabel()}」樓宇數量`}，按數量排序。</p>
+    <p class="bname">${esc(pickGroup)}</p>
+    <p class="mcount">括號內係該區${unit}數量。撳一個區，地圖即刻放大同時列出嗰區嘅樓宇。</p>
     <ul class="dpick">
-      <li data-d="" class="${!districtFilter?"sel":""}">
-        <span class="dn">全港</span><span class="dc">${all.toLocaleString()}</span><span class="chev2">›</span></li>
-      ${rows.map(a=>`<li data-d="${esc(a.tc)}" class="${districtFilter===a.tc?"sel":""}">
-        <span class="dn">${esc(a.tc)}</span>
+      <li data-back="1"><span class="dn">‹　返去揀其他大區</span></li>
+      ${rows.map(a => `<li data-d="${esc(a.tc)}" class="${districtFilter === a.tc ? "sel" : ""}">
+        <span class="dn">${esc(a.tc)}
+          <em class="dsub">九運平均 ${a.avg.toFixed(0)} 分</em></span>
         <span class="dc">${bandCount(a).toLocaleString()}</span>
         <span class="chev2">›</span></li>`).join("")}
     </ul>
     <p class="build" id="buildStamp">${APP_VERSION}</p>`;
   fillBuildStamp();
-  sheetBody.querySelectorAll(".dpick li").forEach(li=>
-    li.addEventListener("click",()=>setDistrict(li.dataset.d)));
+  sheetBody.querySelectorAll(".dpick li").forEach(li =>
+    li.addEventListener("click", () => {
+      if(li.dataset.back){ pickGroup = null; showDistrictPicker(); return; }
+      setDistrict(li.dataset.d);
+    }));
 }
 
 document.getElementById("btnDistrict").addEventListener("click",()=>{
   pickingDistrict = !pickingDistrict;
   if(pickingDistrict){
+    pickGroup = null;
     favView = false; sharedList = null;
     showDistrictPicker();
     setSheet("full");
