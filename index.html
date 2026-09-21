@@ -341,7 +341,19 @@
     background:transparent; color:rgba(255,255,255,.7); font-size:17px;
     padding:4px 6px; font-weight:400;
   }
-  @media (min-width:560px){ #sharenudge{left:50%; right:auto; transform:translateX(-50%); max-width:480px} }
+  /* 平板：一欄版面，置中係啱嘅。 */
+  @media (min-width:560px) and (max-width:1023px){
+    #sharenudge{left:50%; right:auto; transform:translateX(-50%); max-width:480px}
+  }
+  /* 電腦：有咗側欄之後，「視窗中間」就係地圖中間 —— 一條藍色橫額浮喺
+     地圖正中，遮住人哋睇緊嘅嘢。跟返側欄擺，地圖就乾淨。 */
+  @media (min-width:1024px){
+    #sharenudge{
+      left:14px; right:auto; transform:none;
+      width:var(--rail); max-width:var(--rail);
+      top:calc(112px + env(safe-area-inset-top, 0px));
+    }
+  }
 
 
   /* 開場卡入面嘅說明。字細過主要指示，但係真真正正俾人睇嘅內容 —— 唔係
@@ -840,11 +852,16 @@
     box-shadow:0 1px 2px rgba(0,0,0,.06);
   }
   .gbtn:active{background:#f4f4f4}
+  /* 呢個剔本來淨係一個淨色空方格，貼住段字 —— 有人睇成係一張載唔到嘅圖,
+     亦都睇唔出成行撳得。所以整成一格卡，有底有邊，撳落去成格有反應。 */
   .si-opt{
     display:flex; gap:12px; align-items:flex-start;
-    margin:22px 0 0; padding:12px 2px; min-height:44px; cursor:pointer;
+    margin:22px 0 0; padding:13px 14px; min-height:44px; cursor:pointer;
+    background:var(--card); border:1px solid var(--line); border-radius:13px;
   }
-  .si-opt input{width:22px; height:22px; margin:0; flex:none; accent-color:#1b4f8f}
+  .si-opt:active{background:var(--bg)}
+  .si-opt:has(input:checked){border-color:#1b4f8f; background:#f3f7fd}
+  .si-opt input{width:22px; height:22px; margin:1px 0 0; flex:none; accent-color:#1b4f8f}
   .si-opt span{font-size:16px; color:var(--ink); line-height:1.45}
   .si-opt i{display:block; font-style:normal; font-size:13.5px; color:var(--ink3); margin-top:2px}
   .si-legal{font-size:13.5px; color:var(--ink3); line-height:1.6; margin:18px 0 0}
@@ -1389,13 +1406,16 @@
             <rect x="88" y="98" width="60" height="8" rx="4" fill="var(--line)"/>
           </g>
         </svg>
-        <h1>下次返嚟，清單仲喺度</h1>
-        <p>而家收藏係淨係記喺呢一部機。<b>開個戶口</b>就跟住你走 ——
-           換部電話、喺公司用電腦，一開就見返同一張清單。</p>
+        <h1>做會員先睇到嘅嘢</h1>
+        <p>睇地圖、睇分數、排八字 —— 全部唔使登記。但有幾樣嘢一定要有個
+           戶口先做得到：</p>
         <ul class="joinwhy">
-          <li>收藏唔會唔見，唔使再由頭搵過</li>
-          <li>分開幾張清單：自住、收租、畀屋企人睇</li>
-          <li>記得你睇過邊幾棟，睇樓嗰陣唔會撞返</li>
+          <li><b>逐幢樓點解夾你</b> —— 樓高、離水、區嘅形、八宅遊年星，
+            逐項拆開連數字</li>
+          <li><b>加埋屋企人</b> —— 老婆、仔女各自嘅八字，一齊計，話你知
+            邊個夾邊個唔夾</li>
+          <li><b>存低你嘅八字同結果</b> —— 換部電話、用電腦開返都仲喺度</li>
+          <li><b>收藏唔會唔見</b>，仲可以分開幾張清單：自住、收租、畀屋企人睇</li>
         </ul>
       </section>
 
@@ -2069,10 +2089,46 @@ function popBack(){
   return !!t;
 }
 function clearBack(){ backStack.length = 0; syncBack(); }
+
+/* 保險。
+
+   逐個入口擺返回掣係啱，但漏一個就係一個死胡同 —— 實測由「八字」個掣
+   入去就係咁，撳完之後乜路都冇。所以除咗堆疊之外，每一個唔係首頁嘅
+   畫面都有一個預設出路：堆疊空咗就用佢。咁就冇得漏。 */
+let curView = "root";
+function setView(v){ curView = v; syncBack(); }
+
+function fallbackBack(){
+  if(curView === "list"){
+    if(groupSel) return ["上一層", () => { groupSel = null; showOverview(); }];
+    if(districtFilter) return ["全港", () => {
+      districtFilter = null; groupSel = null;
+      const c = document.getElementById("btnDistrict");
+      c.innerHTML = '<b>地區</b>全港 <span class="caret">▾</span>';
+      c.classList.remove("on");
+      drawDistricts(); showOverview();
+    }];
+    return null;                       // 全港清單 —— 熄返個 chip 就得
+  }
+  if(curView === "family") return ["八字", () => showBazi()];
+  if(curView === "root") return null;
+  // showOverview 會睇住呢幾個 flag 彈返去原本嗰版 —— 唔清返，撳返回就
+  // 返返同一版，變咗死胡同。揀地區就係咁。
+  if(curView === "dpicker") return ["地圖", () => { pickingDistrict = false; showOverview(); }];
+  if(curView === "lpicker") return ["收藏", () => showFavs()];
+  if(curView === "favs") return ["地圖", () => {
+    favView = false; sharedList = null;
+    document.getElementById("btnFav").classList.remove("on");
+    showOverview();
+  }];
+  return ["地圖", () => showOverview()];
+}
+
 function syncBack(){
   const b = document.getElementById("gripback");
   if(!b) return;
-  const t = backStack[backStack.length - 1];
+  const t = backStack[backStack.length - 1]
+         || (() => { const f = fallbackBack(); return f && {label: f[0], run: f[1]}; })();
   b.hidden = !t;
   if(t) b.querySelector("span").textContent = t.label;
 }
@@ -2083,9 +2139,13 @@ addEventListener("popstate", () => {
 
 document.getElementById("gripback").addEventListener("click", e => {
   e.stopPropagation();             // 唔好順便開關咗個面板
-  if(!backStack.length) return;
-  if(backPushed > 0) history.back();   // popstate 會做嘢，兩邊唔會失散
-  else popBack();
+  if(backStack.length){
+    if(backPushed > 0) history.back();  // popstate 會做嘢，兩邊唔會失散
+    else popBack();
+    return;
+  }
+  const f = fallbackBack();
+  if(f) f[1]();
 });
 
 document.getElementById("grip").addEventListener("click", e=>{
@@ -2558,6 +2618,7 @@ function renderBuilding(o, layer){
   const t = o.total, [vd,vs] = verdict(t);
   const home = o.res !== 0;
   gripText.textContent = `${title} · ${num(t,1)} 分`;
+  setView("building");
 
   // Each component is coloured on the same scale as the headline, so a weak
   // 配套 is visibly red next to a healthy 環境 without reading any numbers.
@@ -2827,6 +2888,7 @@ function showFavs(){
   const mine = !sharedList;
   const title = mine ? (me ? curListName() : "我的收藏") : "朋友分享嘅清單";
   gripText.textContent = mine ? `${title} · ${favs.length} 個` : `${title} · ${list.length} 個`;
+  setView("favs");
   if(!list.length){
     sheetBody.innerHTML = `
       ${mine ? accountHTML() + listTabsHTML() : ""}
@@ -3371,6 +3433,7 @@ async function showBazi(edit){
   if(!districtData.length) await loadDistricts().catch(() => {});
   if(!elemData) await loadElements();
   gripText.textContent = "八字";
+  setView("bazi");
   if(!birth || edit){
     sheetBody.innerHTML = bzForm(edit && birth ? true : false);
     const f = sheetBody;
@@ -3511,6 +3574,7 @@ async function showOverview(){
   const filtered = false;
   renderSide(null);                 // 冇揀樓 —— 右欄行返主頁嗰版
   gripText.textContent = "揀一區開始 · 撳我";
+  setView("root");
   const rows = filtered
     ? [...districtData].map(a=>({...a, metric:bandCount(a)})).sort((x,y)=>y.metric-x.metric)
     : [...districtData].map(a=>({...a, metric:a.avg}));
@@ -3884,6 +3948,83 @@ async function afterSignIn(){
   }
 }
 
+/* 全家點睇。
+
+   加完人之後，最有用嗰條結論唔係「平均幾多分」，係八宅本身就會問嘅嗰條：
+   一屋人係咪同一組宅。八宅將人分東四命同西四命，兩組合嘅屋係相反嘅
+   —— 一家人分咗兩邊，就冇一間屋可以同時啱晒，傳統做法係跟家主。
+
+   呢個唔係我哋發明，係八宅本來就要面對嘅情況，所以講得出口。 */
+function familySummary(){
+  if(!bzMod || !family.length) return null;
+  const rows = family.filter(famOn).map(p => {
+    const hh = p.h == null ? 12 : p.h;
+    const c = bzMod.chart(p.y, p.m, p.d, hh, 0);
+    const hc = bzMod.hotCold(p.y, p.m, p.d, hh, 0);
+    const g = guaOf(p);
+    return {...p, hc, gua: g, group: g ? bzMod.guaGroup(g) : null,
+            dirs: g ? bzMod.goodDirs(g) : []};
+  }).filter(r => r.hc && r.gua);
+  if(!rows.length) return null;
+
+  const east = rows.filter(r => r.group === "東四");
+  const west = rows.filter(r => r.group === "西四");
+  const want = {};
+  for(const r of rows) r.hc.like.forEach((w, i) => want[w] = (want[w] || 0) + (i ? 1 : 2));
+  const rank = Object.keys(want).sort((a, b) => want[b] - want[a]);
+
+  // 一家人共同嘅吉方：每個人都當吉嗰幾個。冇交集就係冇，唔砌一個出嚟。
+  const shared = rows[0].dirs.filter(d => rows.every(r => r.dirs.includes(d)));
+  return {rows, east, west, rank, shared, split: east.length > 0 && west.length > 0};
+}
+
+/* 一個人自己嗰版盤。屋企人唔應該淨係得個分 —— 佢哋各自有自己嘅四柱、
+   五行、寒熱命同命卦，要睇得到，先信得過個分。 */
+function personChart(p){
+  const m = bzMod, hh = p.h == null ? 12 : p.h;
+  const c = m.chart(p.y, p.m, p.d, hh, 0);
+  const st = m.strength(c);
+  const hc = m.hotCold(p.y, p.m, p.d, hh, 0);
+  const g = guaOf(p);
+  const dirs = m.goodDirs(g);
+  const known = p.h != null;
+  const pil = [["年", c.year], ["月", c.month], ["日", c.day], ["時", known ? c.hour : "—"]];
+  const rows = m.WUXING.slice().sort((a, b) => st.pct[b] - st.pct[a]);
+  const top = st.pct[rows[0]] || 1;
+  return `
+    <p class="bname">${esc(p.name || relTC(p.relation))}</p>
+    <p class="mcount">${esc(p.is_self ? "自己" : relTC(p.relation))}　·　
+      ${p.y} 年 ${p.m} 月 ${p.d} 日　${p.male ? "男" : "女"}${
+      known ? "" : "　·　冇時辰"}</p>
+    <div class="pillars">${pil.map(([k, v]) =>
+      `<div class="pil"><u>${k}柱</u><b>${v}</b></div>`).join("")}</div>
+    <div class="wxbox wx-${st.dayWx}">
+      <div class="wxg">${st.dayWx}</div>
+      <div class="wxt">日主係<b>${c.day[0]}${st.dayWx}</b>　·　${
+        st.strong ? "身強" : "身弱"}（支持度 ${st.supportPct}%）</div>
+    </div>
+    <div class="wxbars">${rows.map(w => `
+      <div class="wxr"><span class="wl wx-${w}">${w}</span>
+        <div class="wtk"><div class="wfl wx-${w}"
+          style="width:${Math.max(2, 100 * st.pct[w] / top)}%"></div></div>
+        <span class="wv">${st.pct[w].toFixed(1)}%</span></div>`).join("")}</div>
+    <h3 class="bzh">喜用五行</h3>
+    <p class="bznote" style="margin-top:-2px"><b>${hc.type}</b>　喜
+      ${hc.like.map(w => `<b class="wx-${w}">${w}</b>`).join("、")}
+      —— ${esc(hc.note)}</p>
+    <h3 class="bzh">本命卦</h3>
+    <div class="guabox"><div class="gg">${g}</div>
+      <div class="gt">${esc(p.name || relTC(p.relation))}係<b>${g}命</b>，屬<b>${
+        m.guaGroup(g)}命</b>。<br>最旺嘅方位係<b>正${dirs[0]}</b>（${m.LUCK[g][dirs[0]]}）。</div></div>
+    <div class="dirs">${dirs.map((d, i) =>
+      `<span class="${i === 0 ? "best" : ""}"><b>向${d}</b> ${m.LUCK[g][d]}</span>`).join("")}</div>
+    <p class="bznote">呢一版係${esc(p.name || relTC(p.relation))}自己嘅盤，
+      同你自己嗰版用完全一樣嘅算法計。樓宇嗰度「夾你」嘅分，就係逐個人
+      用各自呢一套計出嚟再合埋。</p>
+    <button class="pbtn dark" id="pcEdit" style="margin-top:18px">改${
+      esc(p.name || relTC(p.relation))}嘅資料</button>`;
+}
+
 /* ---------- 屋企人 ----------
 
    一個 profile 入面唔只一個八字。呢一版就係管理嗰份名單 —— 加、改、刪。
@@ -3927,6 +4068,7 @@ function famForm(p){
 
 async function showFamily(edit){
   gripText.textContent = "屋企人";
+  setView("family");
   if(!me){ askSignIn(null); return; }
   if(!family.length) await loadFamily();
 
@@ -4183,6 +4325,7 @@ function askSignIn(o){
   openSheet(); setSheet("full");
   sheetBody.innerHTML = signInHTML(o);
   gripText.textContent = "登入";
+  setView("signin");
   wireSignIn();
 }
 
@@ -4220,6 +4363,7 @@ async function pickListFor(o){
   if(!me) return;
   openSheet(); setSheet("full");
   gripText.textContent = "揀清單";
+  setView("lpicker");
   sheetBody.innerHTML = `
     <p class="bname">放入邊張清單？</p>
     <ul class="picklist">
@@ -4446,6 +4590,7 @@ function showDistrictPicker(){
   const rows = [...districtData].sort((a,b)=>bandCount(b)-bandCount(a));
   const all = rows.reduce((n,a)=>n+bandCount(a),0);
   gripText.textContent = "揀地區";
+  setView("dpicker");
   sheetBody.innerHTML = `
     <p class="bname">揀地區</p>
     <p class="mcount">${band==="all" ? "括號內係該區樓宇數量" : `括號內係該區「${chipLabel()}」樓宇數量`}，按數量排序。</p>
@@ -4525,6 +4670,7 @@ async function showEstate(name){
   ].filter(Boolean).join(" · ");
 
   gripText.textContent = name;
+  setView("estate");
   openSheet(); setSheet("full");
   sheetBody.innerHTML = `
     <button class="backrow" id="estBack">‹　返${esc(districtFilter || "上一頁")}</button>
@@ -4649,6 +4795,7 @@ function renderMatches(list){
     : districtData.reduce((n,d)=>n+bandCount(d), 0);
   const unnamed = Math.max(0, mapped - list.length);
   gripText.textContent = `${where} · ${what} · ${list.length.toLocaleString()} 棟`;
+  setView("list");
   // 開咗八字篩選嘅時候，清單上面要講返「點解係呢批樓」——
   // 冇呢句，用戶淨係見到個清單縮咗，唔知發生咩事。
   // 電腦版唔使喺「睇個盤」同「睇清單」之間揀 —— 側欄夠位兩樣一齊擺,
