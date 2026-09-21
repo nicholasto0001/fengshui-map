@@ -355,6 +355,7 @@
   }
   .pg h1{font-size:23px; line-height:1.3; letter-spacing:-.02em; margin:0 0 8px; color:var(--ink)}
   .pg p{font-size:15px; line-height:1.65; margin:0; color:var(--ink2)}
+  .pg p + p{margin-top:11px}
   .pg p b{color:var(--ink); font-weight:650}
   /* 六版教學逐版教一個功能，行完之後用家識咗六個掣，但唔知件嘢係乜。
      第一版補一句講清楚成個產品 —— 之後五版先至讀得成一件事而唔係一張
@@ -1339,26 +1340,9 @@
          而唔係「呢個掣叫咩」——	app 有十幾個功能，教晒等於乜都冇教。
          用 CSS scroll-snap 做橫掃，所以係原生手感，唔使自己寫手勢。 -->
     <div class="pager" id="pager">
-
-      <section class="pg">
-        <svg class="ill" viewBox="0 0 220 132" aria-hidden="true">
-          <rect x="6" y="6" width="208" height="120" rx="12" fill="var(--bg)" stroke="var(--line)"/>
-          <rect x="24" y="74" width="26" height="36" rx="3" fill="#d76f6f"/>
-          <rect x="58" y="58" width="26" height="52" rx="3" fill="#e6e4de"/>
-          <rect x="92" y="40" width="26" height="70" rx="3" fill="#4da79a"/>
-          <rect x="126" y="64" width="26" height="46" rx="3" fill="#a01f1f"/>
-          <rect x="160" y="30" width="26" height="80" rx="3" fill="#0f6354"/>
-          <circle cx="173" cy="26" r="17" fill="#0f6354"/>
-          <text x="173" y="32" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">81</text>
-        </svg>
-        <h1>你屋企幾多分？</h1>
-        <p>全港 <b>84,720</b> 棟樓宇，每一棟都計咗一個風水評分。
-           顏色越深綠分越高，越深紅分越低。</p>
-        <p class="what">呢度做緊三樣嘢：<b>搵樓</b>、<b>睇風水</b>、<b>夾你八字</b>。<br>
-           地產網得第一樣，風水師傅同排盤網得後面兩樣 ——
-           <u>三樣一齊做嘅，得呢度。</u></p>
-      </section>
-
+      <!-- ① 搵樓。用返「你屋企幾多分？」做標題 —— 呢句係全程最強嘅鈎，
+           但個動作其實係搵樓，所以配搵樓嗰張圖。成個產品係乜要喺第一版
+           講，唔係等人行完先知。 -->
       <section class="pg">
         <svg class="ill" viewBox="0 0 220 132" aria-hidden="true">
           <g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
@@ -1371,58 +1355,42 @@
             <path d="M40 98v3M40 117v3M29 109h3M48 109h3"/>
           </g>
           <text x="62" y="34" font-size="13" fill="currentColor">打屋苑或者大廈名</text>
-          <text x="62" y="74" font-size="13" fill="currentColor">放大地圖慢慢揾</text>
+          <text x="62" y="74" font-size="13" fill="currentColor">放大地圖慢慢搵</text>
           <text x="62" y="114" font-size="13" fill="currentColor">撳一下，跳去你而家度</text>
         </svg>
-        <h1>三個方法搵到你幢樓</h1>
-        <p>唔記得個屋苑全名都唔怕，打兩個字就出到。或者直接撳右上角
-           <b>◉</b>，佢會即刻跳去你而家企緊嗰度。</p>
+        <h1>你屋企幾多分？</h1>
+        <p>全港 <b>84,720</b> 幢樓、<b>658</b> 個屋苑，逐座都計咗分。
+           唔記得個屋苑全名都唔怕，打兩個字就出到；或者放大地圖慢慢搵，
+           又或者撳右上角 <b>◉</b>，佢會即刻跳去你而家企緊嗰度。</p>
+        <p class="what">呢度做緊三樣嘢：<b>搵樓</b>、<b>睇風水</b>、<b>夾你八字</b>。<br>
+           地產網得第一樣，風水師傅同排盤網得後面兩樣 ——
+           <u>三樣一齊做嘅，得呢度。</u></p>
       </section>
 
+      <!-- ② 睇風水。顏色點解讀 ＋ 個分拆得開，兩樣本來分咗兩版，但其實
+           係同一件事嘅兩面。收藏同分享縮成一句擺喺尾，唔值得獨立一版。 -->
       <section class="pg">
         <svg class="ill" viewBox="0 0 220 132" aria-hidden="true">
-          <rect x="14" y="10" width="192" height="112" rx="14" fill="var(--bg)" stroke="var(--line)"/>
-          <circle cx="48" cy="44" r="20" fill="#0f6354"/>
-          <text x="48" y="51" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">81</text>
-          <rect x="78" y="32" width="46" height="18" rx="9" fill="#0f6354"/>
-          <text x="101" y="45" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">大吉</text>
-          <text x="132" y="45" font-size="11" fill="var(--ink3)">九運旺財</text>
-          <g font-size="10" fill="var(--ink3)">
-            <text x="30" y="82">環境</text><text x="30" y="98">交通</text><text x="30" y="114">配套</text>
-          </g>
-          <g rx="3">
-            <rect x="60" y="74" width="120" height="7" rx="3.5" fill="var(--line)"/>
-            <rect x="60" y="74" width="98" height="7" rx="3.5" fill="#0f6354"/>
-            <rect x="60" y="90" width="120" height="7" rx="3.5" fill="var(--line)"/>
-            <rect x="60" y="90" width="52" height="7" rx="3.5" fill="#e6b45a"/>
-            <rect x="60" y="106" width="120" height="7" rx="3.5" fill="var(--line)"/>
-            <rect x="60" y="106" width="86" height="7" rx="3.5" fill="#4da79a"/>
-          </g>
+          <rect x="6" y="6" width="208" height="120" rx="12" fill="var(--bg)" stroke="var(--line)"/>
+          <rect x="24" y="74" width="26" height="36" rx="3" fill="#d76f6f"/>
+          <rect x="58" y="58" width="26" height="52" rx="3" fill="#e6e4de"/>
+          <rect x="92" y="40" width="26" height="70" rx="3" fill="#4da79a"/>
+          <rect x="126" y="64" width="26" height="46" rx="3" fill="#a01f1f"/>
+          <rect x="160" y="30" width="26" height="80" rx="3" fill="#0f6354"/>
+          <circle cx="173" cy="26" r="17" fill="#0f6354"/>
+          <text x="173" y="32" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">81</text>
         </svg>
-        <h1>撳一撳，就知點解</h1>
-        <p>分數會拆開俾你睇：山喺邊、水喺邊、周邊配套點。
-           查到入伙年份嘅，仲會排埋<b>玄空飛星盤</b>。</p>
+        <h1>個分係點嚟嘅</h1>
+        <p>顏色<b>越深綠分越高，越深紅分越低</b>。撳落去會拆開俾你睇：
+           山喺邊、水喺邊、周邊配套點。查到入伙年份嘅，仲會排埋
+           <b>玄空飛星盤</b>。</p>
+        <p>呢個分答嘅係「呢幢樓格局好唔好」—— <b>邊個住都一樣</b>。
+           睇中嘅撳 <b>♡ 收藏</b> 就記低，或者傳條 link 俾屋企人，
+           對方撳開就見到同一幢樓同個分。</p>
       </section>
 
-      <section class="pg">
-        <svg class="ill" viewBox="0 0 220 132" aria-hidden="true">
-          <rect x="14" y="16" width="192" height="30" rx="10" fill="var(--bg)" stroke="var(--line)"/>
-          <path d="M34 31c0-4 3-7 6.5-7 2.3 0 3.9 1.2 4.5 2.6.6-1.4 2.2-2.6 4.5-2.6 3.5 0 6.5 3 6.5 7 0 5-7.5 10-11 12.5C41.5 41 34 36 34 31z" fill="#c8102e"/>
-          <rect x="70" y="26" width="76" height="9" rx="4.5" fill="var(--line)"/>
-          <rect x="14" y="54" width="192" height="30" rx="10" fill="var(--bg)" stroke="var(--line)"/>
-          <rect x="34" y="64" width="16" height="10" rx="2" fill="#4da79a"/>
-          <rect x="70" y="64" width="92" height="9" rx="4.5" fill="var(--line)"/>
-          <rect x="14" y="92" width="192" height="30" rx="10" fill="#1b4f8f"/>
-          <g fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M40 112V99M34 105l6-6 6 6"/>
-          </g>
-          <text x="58" y="112" font-size="12" font-weight="700" fill="#fff">分享俾朋友</text>
-        </svg>
-        <h1>儲起，share 俾屋企人</h1>
-        <p>睇中嘅樓撳<b>收藏</b>就記低，第二日開返一樣喺度。
-           一條 link 傳出去，對方撳開就見到同一棟樓同個分數。</p>
-      </section>
-
+      <!-- ③ 夾八字。而家係最後一版，所以開戶口嘅掣落喺呢度 —— 啱晒，
+           因為要登記先睇到嘅嘢，全部都係八字嗰層。 -->
       <section class="pg">
         <svg class="ill" viewBox="0 0 220 132" aria-hidden="true">
           <g font-size="11" fill="var(--ink3)" text-anchor="middle">
@@ -1448,50 +1416,18 @@
                   text-anchor="middle">呢幢樓夾你 85</text>
           </g>
         </svg>
-        <h1>呢一步先係度身訂造</h1>
-        <p>上面嗰個分數，答嘅係「呢幢樓格局好唔好」—— <b>邊個住都一樣</b>。
-           九運嘅好樓對大部分人好，唔代表對你好。</p>
-        <p>打個出生日期落去，就會排出<b>四柱</b>、計出你缺邊幾樣<b>五行</b>同<b>本命卦</b>，
-           再喺五萬幾幢住宅度，<b>逐幢</b>量返佢嘅高矮、闊窄、離水幾遠，睇夾唔夾你。
-           出生資料淨係留喺你部機。</p>
-      </section>
-
-      <section class="pg">
-        <svg class="ill" viewBox="0 0 220 132" aria-hidden="true">
-          <rect x="30" y="10" width="160" height="112" rx="14" fill="var(--bg)" stroke="var(--line)"/>
-          <g>
-            <rect x="44" y="26" width="132" height="26" rx="8" fill="var(--card)" stroke="var(--line)"/>
-            <path d="M60 39c0-3.2 2.4-5.6 5.2-5.6 1.8 0 3.1 1 3.6 2.1.5-1.1 1.8-2.1 3.6-2.1 2.8 0 5.2 2.4 5.2 5.6 0 4-6 8-8.8 10-2.8-2-8.8-6-8.8-10z" fill="#c8102e"/>
-            <rect x="88" y="34" width="52" height="8" rx="4" fill="var(--line)"/>
-            <circle cx="158" cy="39" r="9" fill="#0f6354"/>
-            <text x="158" y="43" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">81</text>
-          </g>
-          <g>
-            <rect x="44" y="58" width="132" height="26" rx="8" fill="var(--card)" stroke="var(--line)"/>
-            <path d="M60 71c0-3.2 2.4-5.6 5.2-5.6 1.8 0 3.1 1 3.6 2.1.5-1.1 1.8-2.1 3.6-2.1 2.8 0 5.2 2.4 5.2 5.6 0 4-6 8-8.8 10-2.8-2-8.8-6-8.8-10z" fill="#c8102e"/>
-            <rect x="88" y="66" width="38" height="8" rx="4" fill="var(--line)"/>
-            <circle cx="158" cy="71" r="9" fill="#4da79a"/>
-            <text x="158" y="75" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">64</text>
-          </g>
-          <g>
-            <rect x="44" y="90" width="132" height="26" rx="8" fill="var(--card)" stroke="var(--line)"/>
-            <path d="M60 103c0-3.2 2.4-5.6 5.2-5.6 1.8 0 3.1 1 3.6 2.1.5-1.1 1.8-2.1 3.6-2.1 2.8 0 5.2 2.4 5.2 5.6 0 4-6 8-8.8 10-2.8-2-8.8-6-8.8-10z" fill="#c8102e"/>
-            <rect x="88" y="98" width="60" height="8" rx="4" fill="var(--line)"/>
-          </g>
-        </svg>
-        <h1>做會員先睇到嘅嘢</h1>
-        <p>睇地圖、睇分數、排八字 —— 全部唔使登記。但有幾樣嘢一定要有個
-           戶口先做得到：</p>
+        <h1>再睇啱唔啱你</h1>
+        <p>九運嘅好樓對大部分人好，<b>唔代表對你好</b>。打個出生日期落去，
+           就會排出<b>四柱</b>、計出你缺邊幾樣<b>五行</b>同<b>本命卦</b>，
+           再喺五萬幾幢住宅度<b>逐幢</b>量返佢嘅高矮、闊窄、離水幾遠，
+           睇夾唔夾你。出生資料淨係留喺你部機。</p>
+        <p>睇地圖、睇分數、排八字 —— 全部唔使登記。有戶口先做得到嘅係：</p>
         <ul class="joinwhy">
-          <li><b>逐幢樓點解夾你</b> —— 樓高、離水、區嘅形、八宅遊年星，
-            逐項拆開連數字</li>
-          <li><b>加埋屋企人</b> —— 老婆、仔女各自嘅八字，一齊計，話你知
-            邊個夾邊個唔夾</li>
-          <li><b>存低你嘅八字同結果</b> —— 換部電話、用電腦開返都仲喺度</li>
-          <li><b>收藏唔會唔見</b>，仲可以分開幾張清單：自住、收租、畀屋企人睇</li>
+          <li><b>逐幢樓點解夾你</b> —— 樓高、離水、區嘅形、八宅遊年星，逐項連數字</li>
+          <li><b>加埋屋企人</b> —— 各自嘅八字一齊計，話你知邊個夾邊個唔夾</li>
+          <li><b>換部機都仲喺度</b> —— 八字、結果同收藏都存得低</li>
         </ul>
       </section>
-
     </div>
 
     <button class="xbtn" id="introX" type="button" aria-label="唔使住，直接睇地圖" hidden>×</button>
@@ -5422,11 +5358,15 @@ document.getElementById("btnReload").addEventListener("click", ()=>{
   location.replace(location.pathname + "?u=" + Date.now() + location.hash);
 });
 
-/* 五頁介紹。頭四頁教嘢，個掣係「繼續」；最後一頁問開唔開戶口。
+/* 三頁介紹，一頁一個支柱：搵樓、睇風水、夾八字。
 
-   開戶口擺喺最尾，唔擺喺最頭：呢一刻佢啱啱睇完「收藏」做到乜，係全程
-   最容易明白開戶口有咩著數嘅一刻。擺喺最頭就變咗未講清楚係咩嚟就要人
-   交電郵 —— 嗰個係最易嚇走人嘅位。
+   本來六頁，一頁一個功能。行完之後人識咗六個掣，但仲未掂過個地圖 ——
+   而呢個 app 嘅價值要喺地圖度先感受到。收藏／分享同會員好處唔值得各佔
+   一版，縮咗做句子塞返入相關嗰版。
+
+   開戶口擺喺最後一版，唔擺喺最頭：最後一版講八字，而要登記先睇到嘅嘢
+   全部都喺八字嗰層，嗰一刻係最容易明白開戶口有咩著數。擺喺最頭就變咗
+   未講清楚係咩嚟就要人交電郵 —— 嗰個係最易嚇走人嘅位。
 
    唔肯開就撳交叉或者下面條字，一樣入得去。呢個唔係收費牆。 */
 (function introPager(){
@@ -5453,8 +5393,8 @@ document.getElementById("btnReload").addEventListener("click", ()=>{
     [...dots.children].forEach((d, i) => d.classList.toggle("on", i === at));
     const join_page = at === last;
     go.hidden = join_page;
-    // 交叉同「唔使住」得最後一頁先出 —— 頭四頁行落去係應該嘅，唔想喺
-    // 度擺個出口引人中途走。
+    // 交叉同「唔使住」得最後一頁先出 —— 前面兩頁行落去係應該嘅，唔想
+    // 喺度擺個出口引人中途走。
     [join, skip, x].forEach(b => { if(b) b.hidden = !join_page; });
   };
   // 撳掣即刻記低去咗第幾頁，唔等 scroll 事件。CSS scroll-behavior:smooth
