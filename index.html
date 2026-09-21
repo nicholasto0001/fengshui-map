@@ -589,6 +589,16 @@
   .bzcta i{font-style:normal; font-size:20px; opacity:.55; flex:none}
   .bzcta:active{opacity:.9}
 
+  /* 要人哋交出生日期之前，要講得出交咗之後我哋實際做啲乜。
+     唔係一句「我哋會幫你計」，係逐步寫出嚟，連幢數都寫埋。 */
+  .whyme{background:var(--card); border:1px solid var(--line); border-radius:14px;
+         padding:14px 16px; margin:14px 0 4px}
+  .whyme>p:first-child{font-size:14px; font-weight:650; color:var(--ink); margin:0 0 8px}
+  .whyme ol{margin:0; padding-inline-start:20px; font-size:13px; line-height:1.7;
+            color:var(--ink3)}
+  .whyme ol b{color:var(--ink)}
+  .whyme .wm2{font-size:12.5px; color:var(--ink3); margin:10px 0 0; line-height:1.6}
+
   .bzform{margin:6px 0 0}
   .bzform label{display:block; font-size:13.5px; color:var(--ink3); margin:14px 0 6px}
   .bzrow{display:flex; gap:8px}
@@ -1190,12 +1200,15 @@
                   text-anchor="middle">寒命 · 喜火</text>
             <rect x="110" y="86" width="94" height="30" rx="9" fill="var(--bg)" stroke="var(--line)"/>
             <text x="157" y="105" font-size="12" fill="var(--ink2)"
-                  text-anchor="middle">南方 3 個區</text>
+                  text-anchor="middle">呢幢樓夾你 85</text>
           </g>
         </svg>
-        <h1>用你嘅八字揀樓</h1>
-        <p>打個出生日期落去，就會排出<b>四柱</b>、計出你嘅<b>五行</b>同<b>本命卦</b>，
-           再話返你聽香港邊幾個區、邊個坐向啱你。出生資料淨係留喺你部機。</p>
+        <h1>呢一步先係度身訂造</h1>
+        <p>上面嗰個分數，答嘅係「呢幢樓格局好唔好」—— <b>邊個住都一樣</b>。
+           九運嘅好樓對大部分人好，唔代表對你好。</p>
+        <p>打個出生日期落去，就會排出<b>四柱</b>、計出你缺邊幾樣<b>五行</b>同<b>本命卦</b>，
+           再喺五萬幾幢住宅度，<b>逐幢</b>量返佢嘅高矮、闊窄、離水幾遠，睇夾唔夾你。
+           出生資料淨係留喺你部機。</p>
       </section>
 
       <section class="pg">
@@ -2466,8 +2479,20 @@ function bzForm(){
   const sel = birth || {};
   return `
     <p class="bname">你嘅八字</p>
-    <p class="mcount">入咗出生資料，就會計出你嘅四柱同本命卦，
-      再喺全港樓宇入面揀出合你嗰批。</p>
+    <p class="mcount">點解要問你出生日期 —— 因為冇咗佢，我哋淨係答到
+      「呢幢樓格局好唔好」，而嗰條答案<b>邊個睇都一樣</b>，你喺邊個網站
+      都搵到。</p>
+    <div class="whyme">
+      <p><b>有咗出生日期，我哋做到啲乜</b></p>
+      <ol>
+        <li>排出你嘅<b>四柱</b>，計出你缺邊幾樣五行（寒熱命，蘇民峰嗰套）</li>
+        <li>喺全港 <b>53,634 幢住宅</b>度，逐幢量返佢幾高、地基幾闊、離水幾遠</li>
+        <li>用你自己盤入面嘅五行比例，度出<b>每一幢樓夾你幾多分</b></li>
+        <li>再用你嘅<b>本命卦</b>篩埋坐向（八宅以向論）</li>
+      </ol>
+      <p class="wm2">同一日出世但五行分佈唔同嘅兩個人，出嚟嘅樓係唔同嘅。
+        呢個分數得你一個人有。</p>
+    </div>
     <div class="bzform">
       <label for="bzY">出生日期（公曆）</label>
       <div class="bzrow">
@@ -2813,8 +2838,8 @@ async function showOverview(){
       <span class="bzi">✦</span>
       <span class="bzx"><b>${birth ? "睇返我嘅八字揀樓" : "用你嘅八字揀樓"}</b>
         ${birth
-          ? "四柱、五行、本命卦，同埋合你嗰批樓"
-          : "入咗出生日期，就會計出你嘅五行同本命卦，再喺全港樓宇入面揀出合你嗰批"}</span>
+          ? "四柱、五行、本命卦，同埋逐幢樓夾你幾多"
+          : "上面個分數邊個睇都一樣。入咗出生日期，就會逐幢樓度返啱唔啱你 —— 呢個分數得你先有"}</span>
       <i>›</i>
     </button>
 
