@@ -186,3 +186,103 @@ export function goodDirs(gua){
   return Object.keys(LUCK[gua]).filter(d => GOOD.includes(LUCK[gua][d]))
               .sort((a, b) => order[LUCK[gua][a]] - order[LUCK[gua][b]]);
 }
+
+/* ---------------------------------------------------------------- 五行 --- */
+
+const HIDDEN = {
+  子:["癸"], 丑:["己","癸","辛"], 寅:["甲","丙","戊"], 卯:["乙"],
+  辰:["戊","乙","癸"], 巳:["丙","庚","戊"], 午:["丁","己"], 未:["己","丁","乙"],
+  申:["庚","壬","戊"], 酉:["辛"], 戌:["戊","辛","丁"], 亥:["壬","甲"],
+};
+const HIDDEN_W = {1:[1], 2:[.7,.3], 3:[.6,.3,.1]};
+export const WUXING = ["木","火","土","金","水"];
+const GAN_WX = Object.fromEntries([..."甲乙丙丁戊己庚辛壬癸"].map((g,i)=>[g,"木木火火土土金金水水"[i]]));
+const SEASON = {寅:"木",卯:"木",巳:"火",午:"火",申:"金",酉:"金",亥:"水",子:"水",
+                辰:"土",未:"土",戌:"土",丑:"土"};
+const SHENG = {木:"火",火:"土",土:"金",金:"水",水:"木"};
+const KE = {木:"土",土:"水",水:"火",火:"金",金:"木"};
+const MULT = {旺:1.4, 相:1.2, 休:.9, 囚:.7, 死:.5};
+const REV = o => Object.fromEntries(Object.entries(o).map(([k,v])=>[v,k]));
+const SHENG_R = REV(SHENG), KE_R = REV(KE);
+
+function phaseOf(w, monthZhi){
+  const r = SEASON[monthZhi] || "土";
+  if(w === r) return "旺";
+  if(w === SHENG[r]) return "相";
+  if(SHENG[w] === r) return "休";
+  if(KE[w] === r) return "死";
+  return "囚";
+}
+
+/**
+ * 五行分數，同埋每一分由邊個字嚟。
+ *
+ * 冇一個「正確」嘅算法 —— 各家軟件嘅藏干比重同月令倍數都唔同，出嚟嘅
+ * 數自然唔同。所以唔淨係出總數，仲出埋每個字貢獻咗幾多，等人自己睇
+ * 得到條數點嚟。日主本身唔計（佢係被衡量嗰個）。
+ */
+export function fiveElements(c){
+  const mz = c.month[1];
+  const score = Object.fromEntries(WUXING.map(w=>[w,0]));
+  const detail = [];
+  for(const [label, gz_] of [["年",c.year],["月",c.month],["日",c.day],["時",c.hour]]){
+    const gan = gz_[0], zhi = gz_[1];
+    if(label !== "日"){
+      const w = GAN_WX[gan], m = MULT[phaseOf(w, mz)];
+      score[w] += m; detail.push([`${label}干 ${gan}`, w, +m.toFixed(2)]);
+    }
+    const hid = HIDDEN[zhi] || [];
+    hid.forEach((h, i) => {
+      const w = GAN_WX[h], m = MULT[phaseOf(w, mz)] * HIDDEN_W[hid.length][i];
+      score[w] += m; detail.push([`${label}支 ${zhi}藏${h}`, w, +m.toFixed(2)]);
+    });
+  }
+  const total = Object.values(score).reduce((a,b)=>a+b,0) || 1;
+  return {
+    score: Object.fromEntries(Object.entries(score).map(([k,v])=>[k,+v.toFixed(2)])),
+    pct: Object.fromEntries(Object.entries(score).map(([k,v])=>[k,+(100*v/total).toFixed(1)])),
+    detail, dayMaster: c.day[0], dayWx: GAN_WX[c.day[0]], monthZhi: mz,
+    phases: Object.fromEntries(WUXING.map(w=>[w, phaseOf(w, mz)])),
+  };
+}
+
+/**
+ * 身強／身弱同參考用神。
+ *
+ * ⚠️ 呢一步唔係算術，係判斷。師傅仲會睇調候、通關、病藥，唔淨係扶抑,
+ * 所以坊間軟件自己都寫「參考用神」。呢度用最通行嘅扶抑法，而且將支持
+ * 度攤出嚟。
+ */
+export function strength(c){
+  const fe = fiveElements(c);
+  const me = fe.dayWx;
+  const helper = new Set([me, SHENG_R[me]]);          // 同我 + 生我
+  const total = Object.values(fe.score).reduce((a,b)=>a+b,0) || 1;
+  const support = WUXING.filter(w=>helper.has(w)).reduce((a,w)=>a+fe.score[w],0);
+  const ratio = support/total, strong = ratio >= .5;
+  const useful = strong ? [SHENG[me], KE[me], KE_R[me]]
+                        : [me, SHENG_R[me]];
+  return {...fe, supportPct:+(100*ratio).toFixed(1), strong, useful,
+          avoid: WUXING.filter(w=>!useful.includes(w))};
+}
+
+/* 五行 -> 方位 -> 香港邊一忽。
+   出處：風水雜誌《新玄機》第 231 期，區晉豪〈五行方向搵屋〉——
+   「木代表東方。火代表南方。金代表西方。水代表北方。」
+   「新界屬北，香港島屬南，九龍屬中部，西貢及將軍澳屬東，大嶼山屬西。」
+   呢個唔係我哋發明，亦都唔係唯一講法，所以介面會寫明出處。 */
+export const WX_DIR = {木:"東", 火:"南", 土:"中", 金:"西", 水:"北"};
+export const HK_REGION_WX = [
+  {wx:"南", label:"香港島", districts:["中西區","灣仔區","東區","南區"]},
+  {wx:"北", label:"新界",   districts:["北區","元朗區","屯門區","大埔區","沙田區","荃灣區","葵青區"]},
+  {wx:"中", label:"九龍",   districts:["油尖旺區","深水埗區","九龍城區","黃大仙區","觀塘區"]},
+  {wx:"東", label:"西貢／將軍澳", districts:["西貢區"]},
+  {wx:"西", label:"大嶼山／離島", districts:["離島區"]},
+];
+
+/** 用神對應邊幾個區。回傳 [{wx, dir, label, districts}]。 */
+export function regionsFor(useful){
+  const want = new Set(useful.map(w => WX_DIR[w]));
+  return HK_REGION_WX.filter(r => want.has(r.wx))
+    .map(r => ({...r, wx: Object.keys(WX_DIR).find(k => WX_DIR[k] === r.wx), dir: r.wx}));
+}

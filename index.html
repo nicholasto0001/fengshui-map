@@ -456,6 +456,43 @@
     45deg, transparent, transparent 4px, rgba(255,255,255,.35) 4px, rgba(255,255,255,.35) 8px)}
   .pend{font-size:12px; color:var(--ink3); line-height:1.65; margin:8px 0 0}
 
+  /* 五行。顏色係傳統對應：木青、火赤、土黃、金白（用灰金）、水黑（用深藍）。
+     唔用彩虹 —— 呢五隻色本身就係五行嘅意思，唔係裝飾。 */
+  .wx-木{--wx:#2f7d4f} .wx-火{--wx:#b3352c} .wx-土{--wx:#a07a2c}
+  .wx-金{--wx:#7d7a6e} .wx-水{--wx:#2b4a7a}
+
+  .bzh{font-size:15px; font-weight:650; color:var(--ink); margin:24px 0 10px;
+       letter-spacing:-.01em}
+  .wxbox{display:flex; align-items:center; gap:14px; margin:18px 0 0;
+         background:var(--card2,#f3f1ec); border:1px solid var(--line);
+         border-radius:16px; padding:14px 16px}
+  .wxbox .wxg{
+    width:52px; height:52px; border-radius:50%; flex:none; display:grid;
+    place-items:center; font-size:26px; font-weight:700; color:#fff;
+    background:var(--wx,#57544d);
+  }
+  .wxbox .wxt{font-size:14px; line-height:1.65; color:var(--ink2)}
+  .wxbox .wxt b{color:var(--ink); font-weight:650}
+
+  .wxbars{background:var(--card); border:1px solid var(--line);
+          border-radius:14px; padding:13px 15px}
+  .wxr{display:grid; grid-template-columns:22px 1fr 76px; align-items:center;
+       gap:10px; margin:0 0 9px}
+  .wxr:last-child{margin:0}
+  .wxr u{text-decoration:none; font-size:15px; font-weight:650; color:var(--wx,var(--ink2))}
+  .wtrack{background:var(--line); border-radius:5px; height:10px; overflow:hidden}
+  .wtrack i{display:block; height:100%; border-radius:5px; background:var(--wx,#999)}
+  .wxr em{font-style:normal; font-size:13px; color:var(--ink3); text-align:end;
+          font-variant-numeric:tabular-nums}
+  .wxr em b{display:inline-block; min-width:18px; margin-inline-start:6px;
+            color:var(--ink2); font-weight:600}
+
+  .regs{display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px}
+  .reg{background:var(--card); border:1px solid var(--line); border-radius:14px;
+       padding:12px 14px}
+  .reg b{display:block; font-size:16px; font-weight:650; color:var(--wx,var(--ink))}
+  .reg span{font-size:12.5px; color:var(--ink3)}
+
   .bzform{margin:6px 0 0}
   .bzform label{display:block; font-size:13.5px; color:var(--ink3); margin:14px 0 6px}
   .bzrow{display:flex; gap:8px}
@@ -818,11 +855,16 @@
   .card ol{margin:0 0 18px; padding-left:20px; font-size:14.5px; line-height:1.85; color:var(--ink2)}
   .card ol b{color:var(--ink)}
   .card .warn{font-size:11.5px; color:var(--ink3); line-height:1.5; margin:0 0 16px}
-  .card button{
+  /* 主要掣。之前呢個樣式淨係綁死喺 .card 入面，所以 sheet 度嘅掣（八字
+     嗰兩個）出返個瀏覽器預設灰掣，同成個 app 格格不入。抽咗做一個
+     class，.card button 照樣沿用。 */
+  .card button, .pbtn{
     width:100%; border:0; background:var(--brand); color:#fff; font:inherit; font-size:16px;
     font-weight:600; padding:14px; border-radius:13px; cursor:pointer;
+    min-height:52px;
   }
-  .card button:active{opacity:.85}
+  .card button:active, .pbtn:active{opacity:.85}
+  .pbtn.dark{background:#3d2f18}
 
   .leaflet-container{font:inherit}
   .leaflet-control-attribution{font-size:10px; padding:0 5px}
@@ -1424,20 +1466,32 @@ const passesFilter = v => {
 const SHAN_D8 = {};
 ["壬子癸","丑艮寅","甲卯乙","辰巽巳","丙午丁","未坤申","庚酉辛","戌乾亥"]
   .forEach((g, i) => [...g].forEach(ch => SHAN_D8[ch] = i));
-let guaDirSet = null;           // 由 btnGua / showBazi 更新
+let guaDirSet = null;           // 合命卦嘅向首八方
+let guaRegions = null;          // 合用神嘅地區（區議會分區名）
 
+/* 兩重篩選，兩個唔同傳統：
+     八宅 —— 睇樓宇向邊（本命卦 → 四個吉方）
+     五行 —— 睇喺香港邊一忽（用神 → 方位 → 地區）
+   兩樣一齊用先剩返 2,630 幢，夠揀，所以唔使逼人二揀一。 */
 function passesGua(o){
-  if(!guaOn || !guaDirSet) return true;
+  if(!guaOn) return true;
+  if(guaRegions && !guaRegions.has(o.district)) return false;
+  if(!guaDirSet) return true;
   if((o.conf ?? 0) < 0.6) return false;
   const d = SHAN_D8[o.face_m];
   return d != null && guaDirSet.has(d);
 }
 
 function refreshGuaDirs(){
-  guaDirSet = null;
-  if(guaOn && bzMod && birth){
-    const g = myGua();
-    if(g) guaDirSet = new Set(bzMod.goodDirs(g).map(d => DIR8.indexOf(d)));
+  guaDirSet = guaRegions = null;
+  if(!(guaOn && bzMod && birth)) return;
+  const g = myGua();
+  if(g) guaDirSet = new Set(bzMod.goodDirs(g).map(d => DIR8.indexOf(d)));
+  const c = bzMod.chart(birth.y, birth.m, birth.d,
+                        birth.h == null ? 12 : birth.h, 0);
+  if(c){
+    const regs = bzMod.regionsFor(bzMod.strength(c).useful);
+    if(regs.length) guaRegions = new Set(regs.flatMap(r => r.districts));
   }
 }
 
@@ -2169,7 +2223,7 @@ function bzForm(){
         <button type="button" data-sex="1">男</button>
         <button type="button" data-sex="0">女</button>
       </div>
-      <button id="bzGo" style="margin-top:18px">計我嘅八字</button>
+      <button class="pbtn dark" id="bzGo" style="margin-top:18px">計我嘅八字</button>
       <p class="bznote">出生資料<b>淨係存喺你部機</b>，唔會上我哋個伺服器 ——
         排盤全部喺你個瀏覽器度計。詳情見<a href="/privacy.html" target="_blank"
         rel="noopener">私隱政策</a>。<br>
@@ -2180,8 +2234,8 @@ function bzForm(){
 function bzResult(){
   const m = bzMod;
   const c = m.chart(birth.y, birth.m, birth.d, birth.h == null ? 12 : birth.h, 0);
+  const st = m.strength(c);
   const gua = m.mingGua(c.baziYear, birth.male);
-  const grp = m.guaGroup(gua);
   const dirs = m.goodDirs(gua);
   const known = birth.h != null;
   const pil = [["年", c.year], ["月", c.month], ["日", c.day],
@@ -2190,27 +2244,64 @@ function bzResult(){
                       {trueSolar: true});
   const altDiff = known && alt && alt.hour !== c.hour;
   const notes = c.notes.filter(n => n.startsWith("⚠"));
+  const regions = m.regionsFor(st.useful);
+
+  // 五行分佈由多至少排。最多嗰個做基準，長短先睇得出分別。
+  const rows = m.WUXING.slice().sort((a, b) => st.pct[b] - st.pct[a]);
+  const top = st.pct[rows[0]] || 1;
 
   return `
     <p class="bname">${birth.y} 年 ${birth.m} 月 ${birth.d} 日　${birth.male ? "男" : "女"}</p>
-    <p class="mcount">${known ? "" : "冇時辰，所以排唔到時柱 —— 但本命卦同配樓一樣計到。"}</p>
+    <p class="mcount">${known ? "" : "冇時辰，所以排唔到時柱 —— 但五行、用神同配樓一樣計到。"}</p>
     <div class="pillars">${pil.map(([k, v]) =>
       `<div class="pil"><u>${k}柱</u><b>${v}</b></div>`).join("")}</div>
     ${notes.map(n => `<p class="bznote">${esc(n)}</p>`).join("")}
     ${altDiff ? `<p class="bznote">ⓘ 按真太陽時（香港同時區中線差 23 分鐘），
       時柱會係 <b>${alt.hour}</b>。我哋預設唔校正，跟返市面排盤工具嘅做法。</p>` : ""}
 
-    <div class="guabox">
-      <div class="gg">${gua}</div>
-      <div class="gt">你係<b>${gua}命</b>，屬<b>${grp}命</b>。<br>
-        最旺嘅方位係<b>正${dirs[0]}</b>（${m.LUCK[gua][dirs[0]]}）。</div>
+    <div class="wxbox wx-${st.dayWx}">
+      <div class="wxg">${st.dayWx}</div>
+      <div class="wxt">你嘅日主係 <b>${st.dayMaster}${st.dayWx}</b><br>
+        <b>${st.strong ? "身強" : "身弱"}</b>　同我同生我嘅力量佔 ${st.supportPct}%</div>
     </div>
+
+    <h3 class="bzh">五行分佈</h3>
+    <div class="wxbars">${rows.map(w => `
+      <div class="wxr"><u class="wx-${w}">${w}</u>
+        <span class="wtrack"><i class="wx-${w}" style="width:${100 * st.pct[w] / top}%"></i></span>
+        <em>${st.pct[w]}%<b>${st.phases[w]}</b></em></div>`).join("")}</div>
+    <p class="bznote">月令係<b>${st.monthZhi}</b>，所以同一個五行喺呢個盤入面力量唔同
+      —— 旺、相、休、囚、死係按月令計嘅。日主本身唔計入分數。</p>
+
+    <h3 class="bzh">參考用神</h3>
+    <div class="dirs">
+      ${st.useful.map(w => `<span class="best"><b>${w}</b> 宜</span>`).join("")}
+      ${st.avoid.map(w => `<span><b>${w}</b> 忌</span>`).join("")}
+    </div>
+    <p class="bznote">⚠ 用神<b>唔係純算術</b>，係判斷。呢度用最通行嘅扶抑法，
+      但師傅仲會睇調候、通關、病藥，所以坊間軟件出嚟嘅用神都唔一定一樣 ——
+      佢哋自己都寫「參考用神」。認真睇樓請搵師傅確認。</p>
+
+    <h3 class="bzh">宜住邊區</h3>
+    <div class="regs">${regions.map(r => `
+      <div class="reg"><b class="wx-${r.wx}">${r.label}</b>
+        <span>${r.wx} · ${r.dir}方</span></div>`).join("")}</div>
+    <p class="bznote">五行對應方位（木東、火南、金西、水北、土中），再對應香港
+      地理。出處：風水雜誌《新玄機》第 231 期，區晉豪〈五行方向搵屋〉——
+      「新界屬北，香港島屬南，九龍屬中部，西貢及將軍澳屬東，大嶼山屬西」。
+      呢個唔係唯一講法，唔同師傅分法可以唔同。</p>
+
+    <h3 class="bzh">本命卦</h3>
+    <div class="guabox"><div class="gg">${gua}</div>
+      <div class="gt">你係<b>${gua}命</b>，屬<b>${m.guaGroup(gua)}命</b>。<br>
+        最旺嘅方位係<b>正${dirs[0]}</b>（${m.LUCK[gua][dirs[0]]}）。</div></div>
     <div class="dirs">${dirs.map((d, i) =>
       `<span class="${i === 0 ? "best" : ""}"><b>向${d}</b> ${m.LUCK[gua][d]}</span>`).join("")}</div>
     <p class="bznote">八宅以<b>向</b>論 —— 配嘅係樓宇向邊，唔係坐邊。
       八宅只分東四、西四兩組宅，所以同組嘅人合嘅樓係同一批；
       因人而異嘅係邊個方位對你嚟講係邊個遊年星。</p>
-    <button id="bzSee" style="margin-top:18px">睇合我嘅樓（全港）</button>
+
+    <button class="pbtn dark" id="bzSee" style="margin-top:20px">睇合我嘅樓</button>
     <button class="bzdel" id="bzDel">刪除我嘅出生資料</button>`;
 }
 
@@ -3085,10 +3176,12 @@ function matches(){
   // 命卦篩選：八宅以向論，所以睇嘅係向首八方。d8 係 null 嘅樓唔係冇
   // 坐向，係我哋推唔準佢長軸（conf < 0.6）—— 唔應該攞嚟同人講「合你」。
   const okDir = guaOn ? guaDirSet : null;
+  const okReg = guaOn ? guaRegions : null;
   return searchIndex.filter(o =>
     (!districtFilter || o.district === districtFilter) &&
     passesFilter(o.total) &&
     (!homesOnly || o.res !== 0) &&
+    (!okReg || okReg.has(o.district)) &&
     (!okDir || (o.d8 != null && okDir.has(o.d8))));
 }
 
@@ -3133,10 +3226,16 @@ function renderMatches(list){
           <button class="bzmore" id="guaBand">睇埋真太陽時、門派分歧同刪除資料　›</button>
           <div class="guahr"></div>`;
       } else {
+        const rl = guaRegions
+          ? [...new Set(bzMod.regionsFor(bzMod.strength(bzMod.chart(
+              birth.y, birth.m, birth.d, birth.h == null ? 12 : birth.h, 0
+            )).useful).map(r => r.label))].join("、")
+          : "";
         guaTop = `<button class="guaband" id="guaBand">
           <span class="gg2">${g}</span>
           <span><b>${g}命 · ${bzMod.guaGroup(g)}命</b>
-          只顯示向${d.join("、向")}嘅樓宇　·　撳我睇成個盤</span><i>›</i></button>`;
+          ${rl ? rl + "　·　" : ""}向${d.join("、向")}　·　撳我睇成個盤</span>
+          <i>›</i></button>`;
       }
     }
   }

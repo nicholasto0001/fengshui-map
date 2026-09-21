@@ -219,3 +219,111 @@ def alt_hour(y: int, m: int, d: int, hh: int, mm: int = 0, *,
         return None
     mins = next((n for n in b.notes if "真太陽時校正" in n), "")
     return b, mins
+
+
+# --------------------------------------------------------------- 五行 ---
+# 地支藏干。標準表，唔係算出嚟 —— 呢個係定義。
+HIDDEN = {
+    "子": ["癸"], "丑": ["己", "癸", "辛"], "寅": ["甲", "丙", "戊"],
+    "卯": ["乙"], "辰": ["戊", "乙", "癸"], "巳": ["丙", "庚", "戊"],
+    "午": ["丁", "己"], "未": ["己", "丁", "乙"], "申": ["庚", "壬", "戊"],
+    "酉": ["辛"], "戌": ["戊", "辛", "丁"], "亥": ["壬", "甲"],
+}
+# 本氣 / 中氣 / 餘氣 嘅比重。
+HIDDEN_W = {1: [1.0], 2: [0.7, 0.3], 3: [0.6, 0.3, 0.1]}
+
+WUXING = "木火土金水"
+GAN_WX = dict(zip(GAN, "木木火火土土金金水水"))
+ZHI_WX = dict(zip(ZHI, "水土木木土火火土金金土水"))
+
+# 月令定旺衰。呢個係傳統嘅旺相休囚死 —— 同一個五行，喺唔同月份力量差好遠。
+# 春木旺、夏火旺、秋金旺、冬水旺，四季月（辰未戌丑）土旺。
+SEASON = {
+    "寅": "木", "卯": "木", "巳": "火", "午": "火",
+    "申": "金", "酉": "金", "亥": "水", "子": "水",
+    "辰": "土", "未": "土", "戌": "土", "丑": "土",
+}
+# 旺 相 休 囚 死 嘅倍數。當令最強，其次相（我生者），跟住休（生我者）,
+# 囚（剋我者），死（我剋者）。
+SHENG = {"木": "火", "火": "土", "土": "金", "金": "水", "水": "木"}
+KE = {"木": "土", "土": "水", "水": "火", "火": "金", "金": "木"}
+PHASE_MULT = {"旺": 1.4, "相": 1.2, "休": 0.9, "囚": 0.7, "死": 0.5}
+
+
+def phase_of(element: str, month_zhi: str) -> str:
+    """呢個五行喺呢個月令係旺相休囚死邊一個。"""
+    ruler = SEASON.get(month_zhi, "土")
+    if element == ruler:
+        return "旺"
+    if element == SHENG[ruler]:
+        return "相"
+    if SHENG[element] == ruler:
+        return "休"
+    if KE[element] == ruler:
+        return "死"
+    return "囚"
+
+
+def five_elements(c: Chart) -> dict:
+    """五行分數，同埋每一分由邊個字嚟。
+
+    冇一個「正確」嘅算法 —— 各家軟件出嚟嘅數都唔同，因為藏干比重同月令
+    倍數各有各定。所以呢度唔淨係出個總數，仲要出埋每個字貢獻咗幾多,
+    等人自己睇得到條數點嚟。
+
+    日主本身唔計入分數（佢係被衡量嗰個，唔係砝碼）。
+    """
+    month_zhi = c.month[1]
+    score = {w: 0.0 for w in WUXING}
+    detail = []
+
+    pillars = [("年", c.year), ("月", c.month), ("日", c.day), ("時", c.hour)]
+    for label, gz_ in pillars:
+        gan, zhi = gz_[0], gz_[1]
+        if label != "日":                     # 日干係日主，唔計
+            w = GAN_WX[gan]
+            m = PHASE_MULT[phase_of(w, month_zhi)]
+            score[w] += 1.0 * m
+            detail.append((f"{label}干 {gan}", w, round(1.0 * m, 2)))
+        hid = HIDDEN[zhi]
+        for h, weight in zip(hid, HIDDEN_W[len(hid)]):
+            w = GAN_WX[h]
+            m = PHASE_MULT[phase_of(w, month_zhi)]
+            score[w] += weight * m
+            detail.append((f"{label}支 {zhi}藏{h}", w, round(weight * m, 2)))
+
+    total = sum(score.values()) or 1.0
+    return {
+        "score": {k: round(v, 2) for k, v in score.items()},
+        "pct": {k: round(100 * v / total, 1) for k, v in score.items()},
+        "detail": detail,
+        "day_master": c.day[0],
+        "day_wx": GAN_WX[c.day[0]],
+        "month_zhi": month_zhi,
+        "phases": {w: phase_of(w, month_zhi) for w in WUXING},
+    }
+
+
+def strength(c: Chart) -> dict:
+    """身強定身弱，同埋參考用神。
+
+    ⚠️ 呢一步唔係算術，係判斷。師傅仲會睇調候、通關、病藥，唔淨係扶抑;
+    所以坊間軟件出嚟嘅用神都唔一定一樣，佢哋自己都寫「參考用神」。
+    呢度用最通行嘅扶抑法，而且將支持度攤出嚟俾人自己睇。
+    """
+    fe = five_elements(c)
+    me = fe["day_wx"]
+    helper = {me, [k for k, v in SHENG.items() if v == me][0]}   # 同我 + 生我
+    support = sum(v for k, v in fe["score"].items() if k in helper)
+    total = sum(fe["score"].values()) or 1.0
+    ratio = support / total
+
+    strong = ratio >= 0.5
+    if strong:
+        useful = [SHENG[me], KE[me], [k for k, v in KE.items() if v == me][0]]
+    else:
+        useful = sorted(helper, key=lambda x: x != me)
+    avoid = [w for w in WUXING if w not in useful]
+
+    return {**fe, "support_pct": round(100 * ratio, 1),
+            "strong": strong, "useful": useful, "avoid": avoid}
