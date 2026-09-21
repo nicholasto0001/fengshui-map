@@ -381,14 +381,14 @@
   /* 44px = #intro 嘅 padding 上下；46px = .card 嘅 padding 上下（26+20） */
   .introtop{
     display:flex; flex-direction:column;
-    height:min(calc(100dvh - 44px - 46px), 560px); min-height:330px;
+    height:min(calc(100dvh - 44px - 46px), 620px); min-height:330px;
   }
   .pg .ill{
     display:block; width:100%; max-width:300px; height:auto; margin:0 auto 18px;
     color:var(--ink2);
     /* 矮機度張圖會食晒啲位，逼到文字同掣落 fold 下面。封個頂，
        SVG 有 viewBox，縮細唔會變形。 */
-    max-height:20dvh;
+    max-height:20dvh; flex:0 1 auto; min-height:118px;
   }
   .pg h1{font-size:23px; line-height:1.3; letter-spacing:-.02em; margin:0 0 8px; color:var(--ink)}
   .pg p{font-size:15px; line-height:1.65; margin:0; color:var(--ink2)}
@@ -5912,7 +5912,7 @@ async function showEstate(name){
       <li data-i="${i}">
         <div class="sc" style="background:${colorFor(o.total)};color:${inkOn(o.total)}">${num(o.total,0)}</div>
         <div><div class="nm">${esc(clean(o.tc) || clean(o.en))}</div>
-             <div class="mt">${esc(o.now || "")}</div></div>
+             <div class="mt">${esc(nowPlain(o.now))}</div></div>
         <div class="go">›</div></li>`).join("")}</ul>
     <a class="deep" href="/estate/${encodeURIComponent(name)}">
       <span><b>${esc(name)}　詳細資料</b>
@@ -6107,7 +6107,7 @@ function renderMatches(list){
       <li data-i="${i}">
         <div class="sc" style="background:${colorFor(o.total)};color:${inkOn(o.total)}">${num(o.total,0)}</div>
         <div><div class="nm">${esc(clean(o.tc)||clean(o.en)||"未命名樓宇")}</div>
-             <div class="mt">${esc([clean(o.district), o.now].filter(Boolean).join(" · "))}${
+             <div class="mt">${esc([clean(o.district), nowPlain(o.now)].filter(Boolean).join(" · "))}${
                personal && o._fit != null
                  ? ` <b class="fitb">夾你 ${o._fit}</b>` : ""}</div></div>
         <div class="go">›</div>
