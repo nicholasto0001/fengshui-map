@@ -1369,6 +1369,10 @@
   .lowhint .lhs{font-size:13px; line-height:1.7; color:var(--ink2); margin:0}
   .lowhint .lhs b{color:var(--ink)}
   .lowhint .pbtn{width:100%; margin-top:12px}
+  /* 高分唔可以用同一隻暖黃 —— 嗰隻色喺呢個 app 入面一路都係「唔緊要嚟」
+     嘅意思。高分要綠，一眼就分得出係兩件事。 */
+  .lowhint.good{background:#eaf3ef; border-color:#c7ded4}
+  .lowhint.good .lhh{color:#0f6354}
   .three{display:flex; flex-wrap:wrap; align-items:center; gap:6px;
     margin:12px 0 0; padding:11px 13px; border-radius:13px;
     background:var(--card); border:1px solid var(--line)}
@@ -3416,16 +3420,52 @@ ${(() => {
     ${(() => {
       if(!home) return "";
       const pc = buildInfo && buildInfo.pct && buildInfo.pct[Math.round(t)];
-      if(pc == null || pc >= 50) return "";        // 中位以上唔使安慰
-      return `<div class="lowhint">
+      if(pc == null) return "";
+
+      // 「南方見山、北方見水」—— 九運（離卦）嘅理想格局。
+      // 出處：白鶴鳴風水專業學院，匡正師傅／白如雪博士，2025 年 5 月。
+      // 我哋逐幢量過，全港 53,637 幢住宅得 18.7% 做得到。
+      const S = ["S","SE","SW"], N = ["N","NE","NW"];
+      const fit9 = S.includes(o.mt_dir) && N.includes(o.wt_dir);
+
+      // ── 低分：唔好安慰，攞個數出嚟 ────────────────────────────────
+      // 「唔好灰心」講一百次都係空話。講「合格嗰批全港得 18.7%」就唔同,
+      // 因為佢查得返，而且啱。
+      if(pc < 50) return `<div class="lowhint">
         <p class="lhh">分低，唔代表唔啱你</p>
         <p class="lhs">呢個分淨係計咗<b>風水</b>同<b>大運</b> —— 邊個住都一樣，
           你改變唔到。<b>第三樣（你嘅八字）未計。</b>
           同一幢樓，唔同人計出嚟可以爭成七十分 ——
           九運唔當旺嘅樓，一樣可以好夾你。</p>
-        ${birth ? "" :
-          `<button class="pbtn dark" id="lowBz">打個出生日期，睇下夾唔夾你</button>`}
+        <p class="lhs" style="margin-top:8px">而且低分係常態：九運要「南方見山、
+          北方見水」，我哋量過全港每一幢住宅，<b>得 18.7% 做得到</b>，
+          仲有 22.9% 啱啱相反。<b>唔係你特別衰</b>，係合格嗰批本來就係少數。</p>
+        ${birth ? `<button class="pbtn dark" id="lowBz">睇我應該點揀樓</button>`
+                : `<button class="pbtn dark" id="lowBz">打個出生日期，睇下夾唔夾你</button>`}
       </div>`;
+
+      // ── 高分：先俾佢食一啖，再講差咩 ──────────────────────────────
+      // 唔係淨係讚。讚完要講返「呢個分邊個睇都一樣」，否則佢冇理由再行落去。
+      if(pc >= 80){
+        const parts = [["環境", o.env, "山水方位同開揚度好"],
+                       ["避煞", o.ancil, "四圍冇醫院、油站、橋樑呢啲煞"],
+                       ["大運", o.luck, "山水配對啱九運"]]
+          .filter(x => x[1] != null).sort((a, b) => b[1] - a[1]);
+        const best = parts[0];
+        return `<div class="lowhint good">
+          <p class="lhh">全港頭 ${Math.max(1, 100 - pc)}%</p>
+          <p class="lhs">${fit9
+            ? `呢幢樓<b>山喺南、水喺北</b> —— 正正係九運（離卦）要嗰個格局。
+               我哋量過全港每一幢住宅，<b>得 18.7% 做得到</b>。`
+            : best ? `最強嗰項係<b>${best[0]}</b>（${num(best[1], 0)} 分）——
+                      ${best[2]}。` : ""}</p>
+          <p class="lhs" style="margin-top:8px"><b>但呢個分邊個睇都一樣。</b>
+            格局好嘅樓唔一定啱你住 —— 加埋你嘅八字，先知係咪你嗰杯茶。</p>
+          ${birth ? `<button class="pbtn dark" id="lowBz">睇下啱唔啱我住</button>`
+                  : `<button class="pbtn dark" id="lowBz">打個出生日期，睇埋第三樣</button>`}
+        </div>`;
+      }
+      return "";
     })()}
     ${home ? `<h3 class="pt" style="margin-top:18px"><span class="ptn">1</span>綜合評分<em>三樣入面計咗邊幾樣</em></h3>
     <div class="three${birth ? " done" : ""}" id="threeBar">
@@ -3601,9 +3641,17 @@ ${(() => {
     showFamily();
   });
   const lz = sheetBody.querySelector("#lowBz");
-  if(lz) lz.addEventListener("click", () => { track("low_bazi_cta", {}); showBazi(); });
+  if(lz) lz.addEventListener("click", () => {
+    track("low_bazi_cta", {});
+    pushBack(clean(o.tc) || clean(o.en) || "樓宇", () => renderBuilding(o, layer));
+    goBazi("3");                      // 佢想知「咁我應該點揀」，唔係「我係咩命」
+  });
   const pz = sheetBody.querySelector("#ppBz");
-  if(pz) pz.addEventListener("click", () => { track("pp_bazi_cta", {}); showBazi(); });
+  if(pz) pz.addEventListener("click", () => {
+    track("pp_bazi_cta", {});
+    pushBack(clean(o.tc) || clean(o.en) || "樓宇", () => renderBuilding(o, layer));
+    goBazi("3");
+  });
   const pl = sheetBody.querySelector("#ppLogin");
   if(pl) pl.addEventListener("click", () => {
     track("pp_signin_prompt", {});
@@ -4222,6 +4270,11 @@ function whyLine(wx){
 }
 
 let bzSnapshot = null;
+/* 由邊度撳入嚟，就應該落喺邊一版。由低分樓撳「睇下夾唔夾你」入嚟嘅人,
+   佢想知嘅係「咁我應該點揀」，唔係「我係咩命」—— 所以落第三版。
+   自己撳「八字」入嚟嗰啲就由第一版開始。 */
+let bzTab = "1";
+function goBazi(tab){ bzTab = tab || "1"; showBazi(); }
 let lastDistrictSeen = "";      // 最後撳過嘅樓／揀過嘅區，做揀區嘅預設
 
 /* ============================================ 會員解鎖：完整分析 ========
@@ -4299,13 +4352,13 @@ function memberDeep(ctx){
   return `
   <div class="mwrap">
     <div class="mtabs" role="tablist">
-      <button class="mtab on" data-mp="1" role="tab">你係咩命</button>
-      <button class="mtab" data-mp="2" role="tab">住嘅時候</button>
-      <button class="mtab" data-mp="3" role="tab">揀樓嘅時候</button>
+      ${[["1","你係咩命"],["2","住嘅時候"],["3","揀樓嘅時候"]].map(([k,t]) =>
+        `<button class="mtab${bzTab === k ? " on" : ""}" data-mp="${k}" role="tab">${t}</button>`
+      ).join("")}
     </div>
 
     <!-- ① 你係咩命 ------------------------------------------------ -->
-    <div class="mpane on" data-mp="1">
+    <div class="mpane${bzTab === "1" ? " on" : ""}" data-mp="1">
       <div class="wxbox wx-${st.dayWx}" style="margin-top:0">
         <div class="wxgw"><span class="wxgl">你屬</span>
           <div class="wxg">${st.dayWx}</div></div>
@@ -4332,7 +4385,7 @@ function memberDeep(ctx){
     </div>
 
     <!-- ② 住嘅時候 ------------------------------------------------ -->
-    <div class="mpane" data-mp="2">
+    <div class="mpane${bzTab === "2" ? " on" : ""}" data-mp="2">
       <p class="mp1">你係<b>${esc(gua)}命</b>（${esc(m.guaGroup(gua))}命）。
         同一間屋，八個方位對你唔同意思 —— 綠色嗰四格對你好，紅色嗰四格唔好。</p>
       <div class="g9">${D9.map(cell).join("")}</div>
@@ -4351,7 +4404,7 @@ function memberDeep(ctx){
     </div>
 
     <!-- ③ 揀樓嘅時候 ---------------------------------------------- -->
-    <div class="mpane" data-mp="3">
+    <div class="mpane${bzTab === "3" ? " on" : ""}" data-mp="3">
       <p class="mp1"><b>一、個向。</b>大門向<b>${
         dirs.slice(0, 2).map(esc).join("、向")}</b>嗰啲樓夾你。
         同一個屋苑唔同座，分可以爭好遠。</p>
@@ -4797,6 +4850,7 @@ async function showBazi(edit){
       const w = t.closest(".mwrap"), k = t.dataset.mp;
       w.querySelectorAll(".mtab").forEach(x => x.classList.toggle("on", x === t));
       w.querySelectorAll(".mpane").forEach(x => x.classList.toggle("on", x.dataset.mp === k));
+      bzTab = k;
       track("bazi_tab", {tab: k});
     }));
 
