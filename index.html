@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <meta name="theme-color" content="#0f6354">
-<title>香港風水地圖 · 九運</title>
-<meta name="description" content="全港 213,328 棟樓宇嘅九運風水評分。睇下你屋企幾多分。">
+<title>香港風水地圖｜八字搵樓・全港樓宇風水評分</title>
+<meta name="description" content="打個八字入去，就知全港邊幾幢樓夾你自己。84,720 幢樓宇逐幢九運風水評分、玄空飛星盤、坐向，數據全部嚟自政府公開資料，每日更新。">
 
 <!-- A link pasted into a Facebook group or WhatsApp is judged entirely on its
      preview card. og:image MUST be an absolute URL — crawlers do not resolve
@@ -58,14 +58,14 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="香港風水地圖">
 <meta property="og:url" content="https://hkfengshuimap.com/">
-<meta property="og:title" content="香港風水地圖 · 九運">
-<meta property="og:description" content="全港 213,328 棟樓宇嘅九運風水評分。睇下你屋企幾多分。">
+<meta property="og:title" content="香港風水地圖｜八字搵樓">
+<meta property="og:description" content="打個八字入去，就知全港邊幾幢樓夾你自己。84,720 幢樓宇逐幢九運風水評分。">
 <meta property="og:image" content="https://hkfengshuimap.com/og.png">
 <meta property="og:image:secure_url" content="https://hkfengshuimap.com/og.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="香港風水地圖 — 九運逐棟樓宇評分">
+<meta property="og:image:alt" content="香港風水地圖 — 八字搵樓，全港逐幢評分">
 <meta property="og:locale" content="zh_HK">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="香港風水地圖 · 九運">
@@ -630,6 +630,9 @@
           background:linear-gradient(to bottom, transparent, var(--card) 38%)}
   .ppgh{font-size:15px; font-weight:650; margin:0 0 4px}
   .ppgs{font-size:12.5px; line-height:1.6; color:var(--ink3); margin:0 0 12px}
+
+  .tagline{font-size:13.5px; font-weight:600; color:var(--gold,#8a6d2f); margin:-2px 0 6px;
+           letter-spacing:.01em}
 
   .bzform{margin:6px 0 0}
   .bzform label{display:block; font-size:13.5px; color:var(--ink3); margin:14px 0 6px}
@@ -3048,7 +3051,11 @@ async function showOverview(){
     : [...districtData].map(a=>({...a, metric:a.avg}));
   const lo=Math.min(...rows.map(a=>a.metric)), hi=Math.max(...rows.map(a=>a.metric));
   sheetBody.innerHTML=`
-    <p class="bname">香港九運風水地圖</p>
+    <p class="bname">香港風水地圖</p>
+    <!-- 個名淨係講咗「係咩」，講唔到「做到乜」。香港人搵樓打嘅係「搵樓」
+         （中原搵樓、美聯搵樓、搵樓街），唔係「風水地圖」—— 所以 tagline
+         擺實質功能，順便講埋我哋同人哋唔同嗰樣：份 advice 係跟你個人嘅。 -->
+    <p class="tagline">八字搵樓 · 全港逐幢評分</p>
     <p class="ben">${filtered
       ? `全港 ${rows.reduce((s,a)=>s+a.metric,0).toLocaleString()} 棟評為「${chipLabel()}」`
       : "全港 213,328 棟樓宇 · 平均 48.5 分 · 每日更新"}</p>
