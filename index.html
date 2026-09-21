@@ -59,6 +59,14 @@
     --bg:#f4f3f0; --card:#ffffff; --line:#e3e2dd;
     --ink:#0b0b0b; --ink2:#55534e; --ink3:#86847d;
     --brand:#1b4f8f;
+    /* 三個 element 各自嘅顏色。首頁卡、樓宇頁四個 part、八字表格嘅
+       三行，全部共用呢三隻 —— 顏色一致，人就唔使每次重新讀字。
+         風水 = 地（深綠，同「大吉」同一隻）
+         大運 = 時（金啡，同飛星／元運嗰邊呼應）
+         八字 = 人（品牌紅） */
+    --e1:#0f6354; --e1b:#e6f0ed;
+    --e2:#9a6f1f; --e2b:#f6efdf;
+    --e3:#a7161e; --e3b:#fbe9e9;
     /* diverging: red = below average, neutral hinge, teal = above */
     --s1:#a01f1f; --s2:#d76f6f; --s3:#e6e4de; --s4:#4da79a; --s5:#0f6354;
     --shadow: 0 2px 10px rgba(0,0,0,.10), 0 1px 3px rgba(0,0,0,.06);
@@ -517,8 +525,11 @@
   .wxbox{display:flex; align-items:center; gap:14px; margin:18px 0 0;
          background:var(--card2,#f3f1ec); border:1px solid var(--line);
          border-radius:16px; padding:14px 16px}
+  /* 個標籤本來塞咗入個圈度，擠到隻字冇位。移咗出嚟擺喺圈上面。 */
+  .wxbox .wxgw{flex:none; display:flex; flex-direction:column; align-items:center; gap:4px}
+  .wxbox .wxgl{font-size:11px; font-weight:600; color:var(--ink3); letter-spacing:.04em}
   .wxbox .wxg{
-    width:52px; height:52px; border-radius:50%; flex:none; display:grid;
+    width:52px; height:52px; border-radius:50%; display:grid;
     place-items:center; font-size:26px; font-weight:700; color:#fff;
     background:var(--wx,#57544d);
   }
@@ -622,6 +633,22 @@
   /* 八字嘅入口。之前得篩選列上面一個細細嘅「✦ 八字」掣，同另外七個掣
      排埋一齊 —— 用家開咗個 app 都唔知有呢個功能。所以總覽度擺一張
      講得清楚嘅卡，寫明入面係咩，唔係淨係得兩個字。 */
+  .bznow{background:#3d2f18; color:#f3ece0; border-radius:16px;
+    padding:16px 15px 15px; margin:0 0 14px}
+  .bznow .bnh{font-size:18px; font-weight:800; color:#fff; margin:0 0 6px}
+  .bznow .bns{font-size:13px; line-height:1.6; color:#d8cdb8; margin:0 0 13px}
+  .bznow .bns b{color:#e3c489}
+  .bnrow{display:flex; gap:7px; margin:0 0 10px}
+  .bnrow select{flex:1 1 0; min-width:0; font:inherit; font-size:16px;
+    padding:11px 9px; border-radius:11px; border:0; background:#fffdf8;
+    color:var(--ink)}
+  .bnsex{display:flex; gap:7px; margin:0 0 12px}
+  .bnsex button{flex:1 1 0; font:inherit; font-size:15px; font-weight:650;
+    min-height:46px; border-radius:11px; border:1.5px solid rgba(255,255,255,.35);
+    background:transparent; color:#f3ece0; cursor:pointer}
+  .bnsex button.on{background:#fffdf8; color:#3d2f18; border-color:#fffdf8}
+  .bznow .pbtn{width:100%}
+  .bznow .bnf{font-size:11.5px; color:#b6a98f; margin:9px 0 0; text-align:center}
   .bzcta{
     display:flex; align-items:center; gap:13px; width:100%; margin:16px 0 0;
     padding:15px 16px; border:0; border-radius:16px; cursor:pointer;
@@ -844,8 +871,20 @@
     gap:10px; padding:11px 0; min-height:46px}
   .tlrow > summary::-webkit-details-marker{display:none}
   .tln{width:22px; height:22px; border-radius:50%; flex:none; display:grid;
-       place-items:center; background:var(--ink); color:var(--card);
+       place-items:center; background:var(--ink); color:#fff;
        font-size:12px; font-weight:700}
+  .tlrow:nth-of-type(1) .tln{background:var(--e1)}
+  .tlrow:nth-of-type(2) .tln{background:var(--e2)}
+  .tlrow:nth-of-type(3) .tln{background:var(--e3)}
+  .tlrow:nth-of-type(1) .tlk{color:var(--e1); background:var(--e1b)}
+  .tlrow:nth-of-type(2) .tlk{color:var(--e2); background:var(--e2b)}
+  .tlrow:nth-of-type(3) .tlk{color:var(--e3); background:var(--e3b)}
+  /* 標題下面一條三色 bar —— 一眼就知「呢度有三樣嘢」，唔使讀先明。 */
+  .tlbar{display:flex; gap:3px; margin:0 0 12px}
+  .tlbar i{flex:1 1 0; height:5px; border-radius:3px}
+  .tlbar i:nth-child(1){background:var(--e1)}
+  .tlbar i:nth-child(2){background:var(--e2)}
+  .tlbar i:nth-child(3){background:var(--e3)}
   .tlrow b{font-size:16px; font-weight:700; color:var(--ink)}
   .tlrow .chev{margin-inline-start:auto; color:var(--ink3); font-size:12px;
     transition:transform .2s}
@@ -1212,6 +1251,9 @@
     color:var(--ink); margin:26px 0 4px}
   .pt .ptn{flex:0 0 26px; height:26px; border-radius:50%; display:grid;
     place-items:center; background:var(--ink); color:#fff; font-size:13px; font-weight:700}
+  .pt.p2 .ptn{background:var(--e1)}
+  .pt.p3 .ptn{background:var(--e2)}
+  .pt.p4 .ptn{background:var(--e3)}
   .pt em{font-style:normal; font-size:13px; font-weight:500; color:var(--ink3)}
   .ptq{font-size:13px; line-height:1.65; color:var(--ink3); margin:0 0 12px}
   .ptq b{color:var(--ink2)}
@@ -1230,14 +1272,15 @@
     background:var(--bg); border:1px solid var(--line);
     border-radius:999px; padding:4px 11px}
   .three .tc.on{color:#0f6354; background:#e8f2ef; border-color:#bcdcd4}
+  .three .tc:nth-of-type(1).on{color:var(--e1); background:var(--e1b); border-color:var(--e1)}
+  .three .tc:nth-of-type(2).on{color:var(--e2); background:var(--e2b); border-color:var(--e2)}
+  .three .tc:nth-of-type(3).on{color:var(--e3); background:var(--e3b); border-color:var(--e3)}
   .three .tsep{color:var(--ink3); font-size:12px}
   .three em{flex:1 1 100%; font-style:normal; font-size:12.5px; line-height:1.55;
     color:var(--ink3); margin-top:3px}
   .three.done em{color:#0f6354; font-weight:600}
   .eight{font-size:12.5px; line-height:1.65; color:var(--ink3);
     margin:10px 0 0; padding:9px 12px; border-radius:11px; background:var(--bg)}
-  .wxg small{display:block; font-size:9.5px; font-weight:600; opacity:.8;
-    letter-spacing:.06em; margin-bottom:-2px}
   .why3{margin:12px 0 16px}
   .w3r{display:flex; gap:11px; align-items:flex-start; padding:9px 0;
     font-size:13.5px; line-height:1.65; color:var(--ink2)}
@@ -1248,6 +1291,9 @@
     place-items:center; font-size:12px; font-weight:700; margin-top:2px;
     background:var(--bg); color:var(--ink3); border:1px solid var(--line)}
   .w3n.on{background:#e8f2ef; color:#0f6354; border-color:#bcdcd4}
+  .w3r:nth-of-type(1) .w3n{background:var(--e1b); color:var(--e1); border-color:var(--e1)}
+  .w3r:nth-of-type(2) .w3n{background:var(--e2b); color:var(--e2); border-color:var(--e2)}
+  .w3r:nth-of-type(3) .w3n{background:var(--e3); color:#fff; border-color:var(--e3)}
   .acctbtn{display:flex; align-items:center; justify-content:center; gap:9px}
   .acctsub{font-size:12px; color:var(--ink3); text-align:center; margin:7px 0 16px}
   .barcap{font-size:12px; line-height:1.6; color:var(--ink3); margin:9px 0 0}
@@ -1375,6 +1421,8 @@
   .card .tag{font-size:13px; color:var(--ink3); margin:0 0 18px}
   .card ol{margin:0 0 18px; padding-left:20px; font-size:14.5px; line-height:1.85; color:var(--ink2)}
   .card ol b{color:var(--ink)}
+  .bnsex.need button{border-color:#ffb4b4; color:#ffd7d7}
+  .bnsex.need{animation:sexShake .4s}
   .bzsex.need button{border-color:var(--bad); color:var(--bad)}
   .bzsex.need{animation:sexShake .4s}
   @keyframes sexShake{0%,100%{transform:translateX(0)}
@@ -3037,7 +3085,7 @@ function personalPanel(o, layer){
 
   if(!birth) return `
     <div class="pp">
-      <h3 class="pt" style="margin-top:0"><span class="ptn">4</span>八字<em>你自己</em></h3>
+      <h3 class="pt p4" style="margin-top:0"><span class="ptn">4</span>八字<em>你自己</em></h3>
       <p class="ptq">上面三樣，<b>邊個睇都一樣</b> —— 你喺邊個網站都搵到同一個答案。
         八字係唯一一樣屬於你自己嘅。</p>
       <p class="ppq">打個出生日期落去，我哋會用你嘅四柱、喜用五行同本命卦，
@@ -3263,7 +3311,7 @@ ${(() => {
          84,720 幢都係 50。畫一條人人一樣嘅 bar，係當住人講緊一樣我哋
          根本冇量過嘅嘢。佢仲係佔總分 5%（即係人人加同一個 2.5 分,
          唔影響任何排名），所以分數唔郁，只係唔再扮量過。 -->
-    ${home ? `<h3 class="pt"><span class="ptn">2</span>風水<em>個地方本身</em></h3>
+    ${home ? `<h3 class="pt p2"><span class="ptn">2</span>風水<em>個地方本身</em></h3>
     <p class="ptq">山喺邊、水喺邊、離得幾遠、周圍有冇煞。
       <b>呢啲幾十年都唔會變</b>，所以係個底。</p>` : ""}
     <div class="bars">${bar("環境",o.env)}${bar("避煞",o.ancil)}</div>
@@ -3273,7 +3321,7 @@ ${(() => {
     ${home && o.luck != null ? (() => {
       const pb = periodBand(o.period);
       return `
-      <h3 class="pt"><span class="ptn">3</span>大運<em>而家行緊咩運</em></h3>
+      <h3 class="pt p3"><span class="ptn">3</span>大運<em>而家行緊咩運</em></h3>
       <p class="ptq">同一個地方，唔同年代旺唔同方位，<b>二十年轉一次</b>。
         而家行緊<b>九運（2024–2043）</b>。</p>
       <div class="luckrow">
@@ -4119,7 +4167,8 @@ function bzResult(){
       時柱會係 <b>${alt.hour}</b>。我哋預設唔校正，跟返市面排盤工具嘅做法。</p>` : ""}
 
     <div class="wxbox wx-${st.dayWx}">
-      <div class="wxg"><small>五行屬</small>${st.dayWx}</div>
+      <div class="wxgw"><span class="wxgl">五行屬</span>
+        <div class="wxg">${st.dayWx}</div></div>
       <div class="wxt">你嘅日主係 <b>${st.dayMaster}${st.dayWx}</b>
         （「日主」＝ 出世嗰日嘅天干，代表你自己）<br>
         <b>${st.strong ? "身強" : "身弱"}</b>（你本身呢個五行${
@@ -4528,6 +4577,7 @@ async function showOverview(){
          用人話解釋個分係乜，同埋講清楚我哋係兩層唔係一層。 -->
     <div class="howto">
       <p class="tlh">住邊度最旺你？</p>
+      <div class="tlbar" aria-hidden="true"><i></i><i></i><i></i></div>
       <p class="tlq">呢個網站淨係答呢一條問題，用三樣嘢答 ——
         <b>個地方本身點</b>、<b>而家行緊咩運</b>、<b>同你夾唔夾</b>。</p>
       <details class="tlrow"><summary><span class="tln">1</span>
@@ -4565,14 +4615,38 @@ async function showOverview(){
       </details>
     </div>
 
+${birth ? `
     <button class="bzcta" id="bzCta">
       <span class="bzi">✦</span>
-      <span class="bzx"><b>${birth ? "睇返我嘅八字揀樓" : "用你嘅八字揀樓"}</b>
-        ${birth
-          ? "四柱、五行、本命卦，同埋逐幢樓夾你幾多"
-          : "上面個分數邊個睇都一樣。入咗出生日期，就會逐幢樓度返啱唔啱你 —— 呢個分數得你先有"}</span>
+      <span class="bzx"><b>睇返我嘅八字揀樓</b>
+        四柱、五行、本命卦，同埋逐幢樓夾你幾多</span>
       <i>›</i>
-    </button>
+    </button>` : (() => {
+      // 即場入，唔使跳版。年份由 1990 起 —— 由 2026 捹落去嘅話，
+      // 大部分人要捹三十幾下。
+      const yr = [];
+      for(let y = new Date().getFullYear(); y >= 1900; y--)
+        yr.push(`<option value="${y}"${y === 1990 ? " selected" : ""}>${y}</option>`);
+      const mo = Array.from({length: 12}, (_, i) => `<option value="${i+1}">${i+1} 月</option>`);
+      const dy = Array.from({length: 31}, (_, i) => `<option value="${i+1}">${i+1} 日</option>`);
+      return `
+    <div class="bznow">
+      <p class="bnh">第三樣，而家就入得</p>
+      <p class="bns">頭兩樣邊個睇都一樣，你改變唔到。<b>八字係唯一屬於你嗰樣</b> ——
+        打個出生日期，全港 84,720 幢樓即刻逐幢重新度過。</p>
+      <div class="bnrow">
+        <select id="hY" aria-label="年">${yr.join("")}</select>
+        <select id="hM" aria-label="月">${mo.join("")}</select>
+        <select id="hD" aria-label="日">${dy.join("")}</select>
+      </div>
+      <div class="bnsex">
+        <button type="button" data-sex="1">男</button>
+        <button type="button" data-sex="0">女</button>
+      </div>
+      <button class="pbtn dark" id="hGo">計我嘅八字</button>
+      <p class="bnf">出生資料淨係留喺你部機。唔使登記。</p>
+    </div>`;
+    })()}
 
     <div class="prompt">
       <b>👆 撳一撳</b>
@@ -4632,6 +4706,34 @@ ${(() => {
     </p>
     <p class="build" id="buildStamp">${APP_VERSION}</p>`;
   fillBuildStamp();
+  // 首頁即場入八字 —— 同八字面板嗰個表格行同一條路（同樣存部機、
+  // 同樣清 cache、同樣同步上戶口），唔好各寫一套。
+  let hSex = null;
+  sheetBody.querySelectorAll(".bnsex button").forEach(b =>
+    b.addEventListener("click", () => {
+      hSex = b.dataset.sex === "1";
+      sheetBody.querySelectorAll(".bnsex button").forEach(x =>
+        x.classList.toggle("on", x === b));
+    }));
+  const hg = sheetBody.querySelector("#hGo");
+  if(hg) hg.addEventListener("click", async () => {
+    if(hSex === null){
+      const sx = sheetBody.querySelector(".bnsex");
+      sx.classList.add("need");
+      sx.scrollIntoView({block: "center", behavior: "smooth"});
+      setTimeout(() => sx.classList.remove("need"), 2000);
+      toast("仲爭揀男定女");
+      return;
+    }
+    const g = id => +sheetBody.querySelector(id).value;
+    birth = {y: g("#hY"), m: g("#hM"), d: g("#hD"), h: null, male: hSex};
+    try{ localStorage.setItem(BIRTH_KEY, JSON.stringify(birth)); }catch{}
+    wCache.clear();
+    if(me) syncBirth();
+    track("bazi_saved", {has_hour: false, from: "home"});
+    await showBazi();                 // 直接出結果，唔使再撳多一次
+  });
+
   const bc = sheetBody.querySelector("#bzCta");
   if(bc) bc.addEventListener("click", async () => {
     await ensureBazi();
