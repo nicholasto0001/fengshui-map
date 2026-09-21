@@ -2395,12 +2395,16 @@ function bzResult(){
   const hc = m.hotCold(birth.y, birth.m, birth.d,
                        birth.h == null ? 12 : birth.h, 0);
   // 寒熱命只需要日期，所以永遠有；扶抑用神要時辰，而且好敏感。
-  const want = known
-    ? [...new Set([...hc.like, ...st.useful])]
-    : hc.like.slice();
+  // 地區只跟寒熱命行。
+  //
+  // 之前係兩套合併（union），但兩套經常唔同答案 —— 實測 400 個盤，
+  // 37% 會覆蓋到四個或五個方位，即係差唔多全香港都「啱你」，等於乜
+  // 都冇講。而寒熱命先係確定性嗰個（淨係要日期），扶抑用神要時辰而且
+  // 係判斷，所以佢做印證，唔做擴充。
+  const want = hc.like.slice();
   const agree = known && hc.like.some(w => st.useful.includes(w));
   const WX_D = {木:"東", 火:"南", 土:"中", 金:"西", 水:"北"};
-  const dirs2 = new Set(hc.like.concat(known ? st.useful : []).map(w => WX_D[w]));
+  const dirs2 = new Set(want.map(w => WX_D[w]));
   const dd = districtDirs() || {};
   const areas = districtData
     .filter(d => dd[d.tc] && dirs2.has(dd[d.tc].dir))
@@ -2444,6 +2448,9 @@ function bzResult(){
         <p class="sl">扶抑用神　${st.useful.map(w=>`<b class="wx-${w}">${w}</b>`).join("、")}
           ${agree ? '<span class="tag ok">同上面一致</span>'
                   : '<span class="tag no">同上面唔同</span>'}</p>
+        ${agree ? "" : `<p class="ss"><b>兩套唔同答案。</b>下面嘅地區按寒熱命行
+          —— 因為佢淨係要出生日期，唔使判斷。扶抑用神喺呢度只係一個對照,
+          唔會影響下面揀邊幾個區。</p>`}
         <p class="ss">傳統扶抑法：${st.strong ? "身強" : "身弱"}（支持度 ${st.supportPct}%）。
           ⚠ 呢一步係判斷唔係算術，而且<b>好睇時辰</b> —— 同一個人早四個鐘出世，
           答案可以完全相反。蘇民峰本人亦都唔用呢套。</p>
