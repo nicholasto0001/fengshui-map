@@ -595,6 +595,75 @@
      底上面，成個掣隱形。個掣仲撳得，但冇人知佢喺度。 */
   .gate .pbtn, .gate .pbtn.dark{background:#fff; color:#3d2f18}
 
+  /* ---- 會員解鎖：三個 tab ------------------------------------------
+     人唔會睇一大幅字。呢度嘅規矩係：每一 pane 一個主視覺 + 三幾句,
+     術語一律用完先喺括號入面標返個正名。 */
+  .mwrap{margin:20px 0 0; border:1px solid var(--line); border-radius:16px;
+         background:var(--card); overflow:hidden}
+  .mtabs{display:flex; border-bottom:1px solid var(--line); background:var(--card2,#f3f1ec)}
+  .mtab{flex:1; min-height:46px; border:0; background:transparent; cursor:pointer;
+        font:inherit; font-size:13.5px; font-weight:600; color:var(--ink3);
+        padding:0 4px; border-bottom:2px solid transparent}
+  .mtab.on{color:var(--ink); background:var(--card); border-bottom-color:var(--e1)}
+  .mpane{display:none; padding:15px 15px 17px}
+  .mpane.on{display:block}
+  .mp1{margin:0 0 10px; font-size:14px; line-height:1.7; color:var(--ink2)}
+  .mp1 b{color:var(--ink); font-weight:650}
+  .msub{font-size:11.5px; color:var(--ink3); line-height:1.6; margin:8px 0 0}
+
+  /* 九宮格 —— 八宅本身就係咁畫，唔使我哋發明一個新圖。 */
+  .g9{display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin:2px 0 10px}
+  .g9 div{border-radius:10px; padding:8px 4px; text-align:center; min-height:62px;
+          display:flex; flex-direction:column; justify-content:center; gap:1px}
+  .g9 u{text-decoration:none; font-size:13px; font-weight:700; color:var(--ink)}
+  .g9 b{font-size:12px; font-weight:650}
+  .g9 i{font-style:normal; font-size:10.5px; color:var(--ink3); line-height:1.35}
+  .g9 .ok{background:#e9f2ee; border:1px solid #c7ded4}
+  .g9 .ok b{color:#0f6354}
+  .g9 .no{background:#faeeee; border:1px solid #e8cccc}
+  .g9 .no b{color:#a01f1f}
+  .g9 .me{background:#3d2f18; border:1px solid #3d2f18}
+  .g9 .me u,.g9 .me b{color:#fff}
+  .g9 .me i{color:#d9c9a8}
+  .g9 .best{outline:2px solid var(--e1); outline-offset:-2px}
+
+  /* 一句一行嘅建議。唔用 bullet point 符號 —— 用個五行色點。 */
+  .tips{list-style:none; margin:10px 0 0; padding:0}
+  .tips li{display:flex; gap:9px; align-items:flex-start; padding:7px 0;
+           border-top:1px solid var(--line); font-size:13.5px; line-height:1.65;
+           color:var(--ink2)}
+  .tips li:first-child{border-top:0}
+  .tips li s{text-decoration:none; flex:none; width:7px; height:7px; border-radius:50%;
+             background:var(--wx,var(--ink3)); margin-top:7px}
+  .tips li b{color:var(--ink); font-weight:650}
+
+  /* 樓層：兩派並列。重點唔係邊派啱，係邊幾層兩派都話好。 */
+  .flr{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:10px 0 0}
+  .flr > div{background:var(--card2,#f3f1ec); border:1px solid var(--line);
+             border-radius:12px; padding:10px 11px}
+  .flr .fn2{font-size:12px; font-weight:700; color:var(--ink2); margin:0 0 5px}
+  .flr .fv{font-size:15px; font-weight:650; color:var(--ink); line-height:1.5;
+           font-variant-numeric:tabular-nums}
+  .flr .fs2{font-size:10.5px; color:var(--ink3); margin:4px 0 0; line-height:1.45}
+  /* 電話度兩欄迫到串樓層斷三行。層數先係重點，寧願佔多啲高度都要佢
+     一行讀得晒。 */
+  @media (max-width:430px){ .flr{grid-template-columns:1fr} }
+  .agree{margin:9px 0 0; background:#e9f2ee; border:1px solid #c7ded4;
+         border-radius:12px; padding:11px 12px}
+  .agree p{margin:0; font-size:13px; line-height:1.6; color:#0f6354}
+  .agree p b{font-size:16px; font-weight:700; font-variant-numeric:tabular-nums}
+
+  /* 一個數字擺大啲，跟住一句解釋。比一段字有效好多。 */
+  .bignum{display:flex; align-items:baseline; gap:10px; margin:10px 0 0;
+          padding:11px 13px; background:var(--card2,#f3f1ec);
+          border:1px solid var(--line); border-radius:12px}
+  /* 只放大最外層嗰個數。入面段字都有 <b>，唔寫 > 就連佢哋一齊變 28px,
+     搞到第二個數字同主角打架。 */
+  .bignum > b{font-size:28px; font-weight:750; letter-spacing:-.03em; color:var(--ink);
+            line-height:1; font-variant-numeric:tabular-nums}
+  .bignum span b{color:var(--ink); font-weight:700}
+  .bignum span{font-size:12.5px; line-height:1.6; color:var(--ink2)}
+
   .whywrap{margin:12px 0 0}
   .why{margin:0 0 8px; font-size:13.5px; line-height:1.7; color:var(--ink2);
        background:var(--card); border:1px solid var(--line); border-radius:12px;
@@ -4155,6 +4224,182 @@ function whyLine(wx){
 let bzSnapshot = null;
 let lastDistrictSeen = "";      // 最後撳過嘅樓／揀過嘅區，做揀區嘅預設
 
+/* ============================================ 會員解鎖：完整分析 ========
+   解鎖之前得三句。解鎖之後要對得住人 —— 但「對得住」唔等於堆字。
+   呢度全部由佢自己盤數計出嚟，冇一句係通用範本。
+
+   研究出處同分歧記喺 docs/district-research.md。 */
+
+/* 八宅八個遊年星嘅通俗講法。呢啲係各家一致嘅基本盤（同 GOOD 嗰四個
+   對得上），唔係邊一位師傅獨有嘅講法，所以照出；有分歧嗰啲（樓層）
+   就兩派並列，見下面。 */
+const STAR_PLAIN = {
+  生氣: ["最旺", "事業、精神、人緣"],
+  天醫: ["健康", "少病、有貴人"],
+  延年: ["感情", "人際、長久"],
+  伏位: ["穩陣", "守得住，唔大上大落"],
+  絕命: ["最忌", "健康、破財"],
+  五鬼: ["是非", "口舌、官非"],
+  六煞: ["爛桃花", "感情、口舌"],
+  禍害: ["小病痛", "爭拗、唔順"],
+};
+
+/* 樓層五行：兩派，答案唔同。
+   A 九星配樓層 —— 白鶴鳴風水專業學院，匡正師傅（2019-03-23）。
+   B 河圖數 —— 坊間通用。
+   A 篇作者自己第一句就寫「不同風水派別…有不同的推算樓層五行方法」,
+   所以我哋唔揀邊派，兩派一齊出，再標返兩派都話好嗰幾層。 */
+const FLR_9STAR = {1:"水",2:"土",3:"木",4:"木",5:"土",6:"金",7:"金",8:"土",9:"火"};
+const FLR_HETU  = {1:"水",6:"水",2:"火",7:"火",3:"木",8:"木",4:"金",9:"金",5:"土",0:"土"};
+const flr9 = f => FLR_9STAR[((f - 1) % 9) + 1];
+const flrHT = f => FLR_HETU[f % 10];
+
+/* 喜用五行 → 屋企點擺、揀樓睇乜。兩句起三句止，一句一個動作。 */
+const HOME_TIP = {
+  水: ["北面留返空曠，或者擺魚缸、水種植物", "深藍、黑、灰做主色", "唔好成屋暖黃燈"],
+  火: ["南面採光要夠，窗唔好長期遮住", "紅、橙、紫做點綴色", "屋企唔好太陰暗潮濕"],
+  木: ["東面擺高身植物，唔好擺假花", "青綠、木色，多用實木傢俬", "唔好太多金屬同鏡"],
+  金: ["西面擺金屬、白色嘅嘢", "白、米、金屬色做主色", "唔好成屋紅色同尖角裝飾"],
+  土: ["中間同西南擺穩重嘅嘢，例如石、陶", "黃、啡、米色做主色", "唔好成屋玻璃同吊櫃"],
+};
+const PICK_TIP = {
+  水: ["近水、望得開揚", "唔好正對一幅密實嘅山牆"],
+  火: ["旺場、人流多、樓密而高", "唔好揀成日唔見光嗰啲低層"],
+  木: ["樓高而瘦、周邊樹多", "唔好揀四面都係石屎嘅"],
+  金: ["樓身方正、線條硬淨", "唔好揀尖角對正你嗰啲"],
+  土: ["樓矮而闊、地勢平穩", "唔好揀起喺斜坡半腰、下面掏空嗰啲"],
+};
+
+function memberDeep(ctx){
+  const {m, st, hc, gua, dirs, p1, p2, areas} = ctx;
+  const L = m.LUCK[gua];
+  const D9 = ["西北","北","東北","西","","東","西南","南","東南"];
+  const best = dirs[0];
+
+  // ---- 九宮格：八個方位，吉綠凶紅，中間係佢個卦 ----
+  const cell = d => {
+    if(!d) return `<div class="me"><u>${esc(gua)}命</u>
+      <b>${esc(m.guaGroup(gua))}</b><i>你嘅本命卦</i></div>`;
+    const star = L[d], g = m.GOOD.includes(star), [tag, why] = STAR_PLAIN[star];
+    return `<div class="${g ? "ok" : "no"}${d === best ? " best" : ""}">
+      <u>${esc(d)}</u><b>${esc(tag)}</b><i>${esc(why)}<br>（${esc(star)}）</i></div>`;
+  };
+
+  // ---- 樓層：兩派各自邊幾層，再標返重疊嗰啲 ----
+  const want = new Set([p1, p2].filter(Boolean));
+  const upto = 40;
+  const a9 = [], aHT = [];
+  for(let f = 1; f <= upto; f++){
+    if(want.has(flr9(f)))  a9.push(f);
+    if(want.has(flrHT(f))) aHT.push(f);
+  }
+  const both = a9.filter(f => aHT.includes(f));
+  const cut = a => a.slice(0, 8).join("、") + (a.length > 8 ? "…" : "");
+
+  return `
+  <div class="mwrap">
+    <div class="mtabs" role="tablist">
+      <button class="mtab on" data-mp="1" role="tab">你係咩命</button>
+      <button class="mtab" data-mp="2" role="tab">住嘅時候</button>
+      <button class="mtab" data-mp="3" role="tab">揀樓嘅時候</button>
+    </div>
+
+    <!-- ① 你係咩命 ------------------------------------------------ -->
+    <div class="mpane on" data-mp="1">
+      <div class="wxbox wx-${st.dayWx}" style="margin-top:0">
+        <div class="wxgw"><span class="wxgl">你屬</span>
+          <div class="wxg">${st.dayWx}</div></div>
+        <div class="wxt">出世嗰日係<b>${esc(st.dayMaster + st.dayWx)}</b>，
+          所以你本人屬<b>${st.dayWx}</b>。<br>
+          你呢個${st.dayWx}<b>${st.strong ? "夠力" : "偏弱"}</b>
+          （幫到你嘅五行佔 ${st.supportPct}%）—— 術語叫「${st.strong ? "身強" : "身弱"}」。</div>
+      </div>
+
+      <p class="mp1" style="margin-top:12px">你係<b>${esc(hc.type)}</b>，
+        所以要補<b class="wx-${p1}">${p1}</b>，其次<b class="wx-${p2}">${p2}</b>。
+        下面兩版嘅建議，全部由呢兩個字推出嚟。</p>
+
+      <div class="wxbars">${m.WUXING.slice()
+        .sort((a, b) => st.pct[b] - st.pct[a])
+        .map((w, i, arr) => `
+        <div class="wxr"><u class="wx-${w}">${w}</u>
+          <span class="wtrack"><i class="wx-${w}"
+            style="width:${100 * st.pct[w] / (st.pct[arr[0]] || 1)}%"></i></span>
+          <em>${st.pct[w]}%<b>${st.phases[w]}</b></em></div>`).join("")}</div>
+      <p class="msub">五條棒係你八個字入面各個五行嘅份量。
+        <b>唔係越長越好</b> —— 太長嗰個要洩，太短嗰個要補。
+        「旺相休囚死」講緊強弱，唔係好壞，詳細解釋喺最底。</p>
+    </div>
+
+    <!-- ② 住嘅時候 ------------------------------------------------ -->
+    <div class="mpane" data-mp="2">
+      <p class="mp1">你係<b>${esc(gua)}命</b>（${esc(m.guaGroup(gua))}命）。
+        同一間屋，八個方位對你唔同意思 —— 綠色嗰四格對你好，紅色嗰四格唔好。</p>
+      <div class="g9">${D9.map(cell).join("")}</div>
+      <p class="msub">呢個叫「八宅遊年」。
+        我哋唔係打表抄返嚟，係由你個卦逐爻推出嚟嘅（64 對關係全部驗過）。</p>
+
+      <ul class="tips">
+        <li class="wx-${p1}"><s></s><span><b>床頭同書枱擺喺${esc(best)}邊</b>
+          —— 你四個吉方入面最旺嗰個（${esc(L[best])}）。</span></li>
+        <li class="wx-${p1}"><s></s><span><b>廁所、廚房擺喺紅色嗰幾格最好</b>
+          —— 傳統講法係用佢哋「壓住」凶方，唔好嘥咗吉方。</span></li>
+        ${HOME_TIP[p1].map(t => `<li class="wx-${p1}"><s></s><span>${esc(t)}</span></li>`).join("")}
+      </ul>
+      <p class="msub">⚠ 呢啲係方位上嘅通則。真正睇門口、爐灶、床位要師傅入屋度,
+        我哋量唔到你屋入面。</p>
+    </div>
+
+    <!-- ③ 揀樓嘅時候 ---------------------------------------------- -->
+    <div class="mpane" data-mp="3">
+      <p class="mp1"><b>一、個向。</b>大門向<b>${
+        dirs.slice(0, 2).map(esc).join("、向")}</b>嗰啲樓夾你。
+        同一個屋苑唔同座，分可以爭好遠。</p>
+
+      <p class="mp1" style="margin-top:14px"><b>二、樓層。</b>
+        呢一項<b>兩派師傅計法唔同</b>，所以兩派一齊出：</p>
+      <div class="flr">
+        <div><p class="fn2">九星派</p>
+          <p class="fv">${cut(a9) || "—"}</p>
+          <p class="fs2">白鶴鳴學院匡正師傅<br>1 水 2 土 3 木 4 木 5 土 6 金 7 金 8 土 9 火，九層一轉</p></div>
+        <div><p class="fn2">河圖派</p>
+          <p class="fv">${cut(aHT) || "—"}</p>
+          <p class="fs2">坊間通用<br>尾數 1、6 水 · 2、7 火 · 3、8 木 · 4、9 金 · 5、0 土</p></div>
+      </div>
+      ${both.length ? `<div class="agree"><p>
+        <b>${cut(both)}</b> 層 —— <b style="font-size:13px">兩派都話夾你</b>。
+        兩套計法打架嗰陣，重疊嗰幾層先係最穩陣。</p></div>` : `
+        <p class="msub">兩派今次冇重疊 —— 即係樓層呢一項對你嚟講唔明確，
+          唔好當佢係重點，睇返上面個向同下面個格局。</p>`}
+      <p class="msub">提出九星嗰位師傅自己第一句就寫
+        「不同風水派別…有不同的推算樓層五行方法」。
+        亦有講法認為樓層五行相對外形同室內格局只係次要。
+        所以我哋唔幫你揀派，只話你知邊度重疊。</p>
+
+      <p class="mp1" style="margin-top:14px"><b>三、個格局。</b>
+        而家行九運（2024–2043），屬離卦 —— <b>南方見山、北方見水</b>為之合。
+        我哋量咗全港每一幢住宅最近嘅山同水喺邊個方位：</p>
+      <div class="bignum"><b>18.7%</b>
+        <span>全港住宅先做得到「南山北水」。另有 <b>22.9%</b> 啱啱相反（北山南水，
+          九運大忌），其餘 58% 兩樣都唔係。<br>
+          <b>分數低唔代表你衰</b> —— 合格嗰批本來就係少數。</span></div>
+
+      <p class="mp1" style="margin-top:14px"><b>四、個區。</b>
+        你要補<b class="wx-${p1}">${p1}</b>，所以應該搵
+        ${esc(PICK_TIP[p1][0])}嘅地方${areas.length ? `——
+        ${esc(areas[0].tc)}就係全港十八區入面呢一類最明顯嗰幾個之一` : ""}。</p>
+      <ul class="tips">
+        <li class="wx-${p1}"><s></s><span>${esc(PICK_TIP[p1][1])}。</span></li>
+        <li class="wx-${p2}"><s></s><span>次選補<b class="wx-${p2}">${p2}</b>：
+          ${esc(PICK_TIP[p2][0])}。</span></li>
+      </ul>
+      <p class="msub">出處：九運山水格局同十八區實測見
+        <a href="/method" target="_blank" rel="noopener">評分方法</a>；
+        八字同八宅點計見 <a href="/bazi-guide" target="_blank" rel="noopener">八字揀樓</a>。</p>
+    </div>
+  </div>`;
+}
+
 function bzResult(){
   const m = bzMod;
   const c = m.chart(birth.y, birth.m, birth.d, birth.h == null ? 12 : birth.h, 0);
@@ -4309,6 +4554,10 @@ function bzResult(){
           <p class="gh">仲有 ${Math.max(areas.length - 1, 0)} 個區嘅解釋</p>
           <p class="gs">同上面一樣，逐個區寫明<b>量到幾多、點解夾你</b>，
             仲有嗰個區逐個屋苑逐座樓。</p>
+          <p class="gs">仲有一份<b>你自己嘅完整分析</b>：你係咩命、
+            <b>屋企八個方位邊四個旺你</b>、床同書枱擺邊、
+            <b>你夾邊幾層樓</b>（兩派師傅計法唔同，兩派一齊出）、
+            同埋揀樓睇乜。</p>
           <p class="gs">順便幫你<b>存低呢個結果</b> —— 換部電話、用電腦開返都仲喺度，
             唔使再打一次出生日期。</p>
           <button class="pbtn dark" id="bzLogin" style="margin-top:12px">登入睇晒</button>
@@ -4316,6 +4565,10 @@ function bzResult(){
         </div>
       </div>`;
     })()}
+
+    ${locked ? "" : `
+      <h3 class="bzh">你嘅完整分析</h3>
+      ${memberDeep({m, st, hc, gua, dirs, p1, p2, areas})}`}
 
     <h3 class="bzh">邊幾幢樓最夾你</h3>
     <div class="pickd">
@@ -4382,11 +4635,13 @@ function bzResult(){
     </div>
 
 
+    ${locked ? `
     <h3 class="bzh">五行分佈</h3>
     <div class="wxbars">${rows.map(w => `
       <div class="wxr"><u class="wx-${w}">${w}</u>
         <span class="wtrack"><i class="wx-${w}" style="width:${100 * st.pct[w] / top}%"></i></span>
-        <em>${st.pct[w]}%<b>${st.phases[w]}</b></em></div>`).join("")}</div>
+        <em>${st.pct[w]}%<b>${st.phases[w]}</b></em></div>`).join("")}</div>` : ""}
+    <h3 class="bzh">旺相休囚死係咩意思</h3>
     <p class="bznote"><b>旺</b>（最強）· <b>相</b>（次強）· <b>休</b>（開始弱）·
       <b>囚</b>（受制）· <b>死</b>（最弱）—— 呢五個字係風水術語，
       <u>講緊強弱，唔係講好壞</u>。「死」唔代表出事，淨係話呢個五行喺你個盤
@@ -4535,6 +4790,16 @@ async function showBazi(edit){
     pushBack("八字", () => showBazi());   // 睇完有得返返嚟
     loadBuildings(); drawDistricts(); showOverview();
   });
+  // 三個 tab。唔用 URL、唔記 state —— 每次開返個八字版都由第一版開始,
+  // 因為第一版係「你係咩命」，永遠係最應該先睇嗰版。
+  sheetBody.querySelectorAll(".mtab").forEach(t =>
+    t.addEventListener("click", () => {
+      const w = t.closest(".mwrap"), k = t.dataset.mp;
+      w.querySelectorAll(".mtab").forEach(x => x.classList.toggle("on", x === t));
+      w.querySelectorAll(".mpane").forEach(x => x.classList.toggle("on", x.dataset.mp === k));
+      track("bazi_tab", {tab: k});
+    }));
+
   const bs = sheetBody.querySelector("#bzShare");
   if(bs) bs.addEventListener("click", shareBazi);
   const be = sheetBody.querySelector("#bzEdit");
