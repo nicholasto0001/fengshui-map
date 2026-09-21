@@ -1165,6 +1165,18 @@
   .barcap{font-size:12px; line-height:1.6; color:var(--ink3); margin:9px 0 0}
   .barcap b{color:var(--ink2)}
   .barcap u{text-decoration:none; color:var(--bad); font-weight:600}
+  .offrec{background:#fdf6e8; border:1px solid #e8d9b4; border-radius:12px;
+    padding:11px 13px; margin:0 0 12px; font-size:13px; line-height:1.6;
+    color:var(--ink2)}
+  .offrec b{color:var(--ink)}
+  .offrec u{text-decoration:none; color:var(--brand); font-weight:650}
+  .pickd{background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:14px; margin:10px 0 22px}
+  .pickd .pdl{font-size:13px; color:var(--ink3); margin:0 0 7px}
+  .pickd select{width:100%; font:inherit; font-size:16px; padding:11px 12px;
+    border:1px solid var(--line); border-radius:11px; background:var(--bg);
+    color:var(--ink); margin:0 0 10px}
+  .pickd .bznote{margin-top:10px}
   .pbtn.ghost{background:transparent; color:var(--brand);
     border:1.5px solid var(--brand); font-weight:650}
   .dsub{font-size:12px; line-height:1.5; color:var(--ink3)}
@@ -1880,7 +1892,9 @@ let guaRegions = null;          // 合用神嘅地區（區議會分區名）
    兩樣一齊用先剩返 2,630 幢，夠揀，所以唔使逼人二揀一。 */
 function passesGua(o){
   if(!guaOn) return true;
-  if(guaRegions && !guaRegions.has(o.district)) return false;
+  // 自己揀咗區就唔再用「建議地區」—— 佢問緊「呢個區入面邊幢夾我」,
+  // 唔係問「我應唔應該住呢個區」。
+  if(!districtFilter && guaRegions && !guaRegions.has(o.district)) return false;
   if(!guaDirSet) return true;
   if((o.conf ?? 0) < 0.6) return false;
   const d = SHAN_D8[o.face_m];
@@ -2872,6 +2886,7 @@ function personalPanel(o, layer){
 }
 
 function renderBuilding(o, layer){
+  if(clean(o.district)) lastDistrictSeen = clean(o.district);
   nudgeFor = o;
   armNudge(o);
   const title = clean(o.tc) || clean(o.en) || "未命名樓宇";
@@ -3568,6 +3583,7 @@ function whyLine(wx){
 }
 
 let bzSnapshot = null;
+let lastDistrictSeen = "";      // 最後撳過嘅樓／揀過嘅區，做揀區嘅預設
 
 function bzResult(){
   const m = bzMod;
@@ -3603,6 +3619,9 @@ function bzResult(){
   // 留低畫分享卡要用嗰幾樣。唔喺 shareBazi 度重新計一次 —— 重計就有機會
   // 同螢幕上面見到嗰個唔同，而張卡係會俾第三者見到嘅嘢。
   bzSnapshot = {pillars: pil, type: hc.type, likes: hc.like.slice(), areas};
+  // 預設揀返佢啱啱睇緊嗰個區 —— 搵完太古城嘅人，答案應該喺東區。
+  const homeD = districtFilter || lastDistrictSeen
+              || (areas[0] && areas[0].tc) || (districtData[0] || {}).tc || "";
   const wts = cs.length ? cs[0].w : wxWeights(want, st.pct);
   const nPeople = cs.length;
   const wxb = w => `<b class="wx-${w}">${w}</b>`;
@@ -3684,7 +3703,21 @@ function bzResult(){
         : "加屋企人（要先登入）"}</button>
     </div>
 
-    <h3 class="bzh">宜住邊區</h3>
+    <h3 class="bzh">邊幾幢樓最夾你</h3>
+    <div class="pickd">
+      <p class="pdl">喺邊個區揀？</p>
+      <select id="bzPickD" aria-label="揀一個區">
+        ${[...districtData].sort((a,b)=>a.tc.localeCompare(b.tc,"zh-HK"))
+          .map(a=>`<option value="${esc(a.tc)}"${a.tc===homeD?" selected":""}>${esc(a.tc)}</option>`)
+          .join("")}
+      </select>
+      <button class="pbtn dark" id="bzGoList">睇呢個區邊幾幢最夾我</button>
+      <p class="bznote"><b>呢一層先係真係得你先有。</b>同一幢樓，
+        唔同人計出嚟可以爭成七十分 —— 因為除咗個區嘅形，仲夾埋你個本命卦
+        同樓宇個向。下面「你個命夾咩形」係講緊成個區，粗好多。</p>
+    </div>
+
+    <h3 class="bzh">你個命夾咩形</h3>
     ${nPeople > 1 ? `<p class="famnote"><b>計緊 ${nPeople} 個人。</b>
       下面每個區嘅分，係${cs.map(c => esc(c.p.name || relTC(c.p.relation))).join("、")}
       逐個計完取平均。${
@@ -3702,8 +3735,10 @@ function bzResult(){
        `（${wts.map(([w, k]) => `${w} ${(k * 100).toFixed(0)}%`).join("、")}）。`,
       ].join("")}<br>${
       [`下面唔係「邊個區風水好」—— 係全港十八區量返出嚟之後，`,
-       `<b>最夾你呢個命</b>嗰六個。同樣${hc.type}但五行分佈唔同嘅人，`,
-       `出嚟嘅次序會唔一樣。`].join("")}</p>
+       `<b>最夾你呢個命</b>嗰六個。`].join("")}<br>
+      <b>講明先：呢六個區係按命格分嘅，粗嘅。</b>同你一樣${hc.type}、
+      五行分佈又接近嘅人，見到嘅名單會同你差唔多 ——
+      真正逐個人唔同嗰層係上面嘅逐幢樓。</p>
     ${locked ? `<p class="lockbar"><b>🔓　下面六個區、夾你幾多分、
       量到嘅數字，而家已經睇到，唔使登記。</b>
       <br>每行右邊嗰個「逐座睇」要登入先撳得入去 —— 入面係嗰個區逐個屋苑
@@ -3717,12 +3752,14 @@ function bzResult(){
         <i>${locked ? `<span class="lockpill">逐座睇</span>` : "›"}</i>
       </button>`).join("") : '<p class="bznote">計唔到合適地區。</p>'}</div>
     ${clash ? `
-      <div class="clash"><b>留意：呢張單同全港排名唔同，係正常嘅。</b><br>
-        全港排名答嘅係「邊幢樓九運格局好」—— 同邊個住冇關,
-        大部分人見到嘅都係同一個答案。呢張單答嘅係「邊個區嘅形夾你個命」。
-        ${esc(areas[0].tc)}九運平均 ${areas[0].avg.toFixed(1)} 分,
-        低過全港嘅 ${terr.toFixed(1)} 分，但佢嘅形屬<b class="wx-${p1}">${p1}</b>,
-        而你要<b class="wx-${p1}">${p1}</b>。兩件事唔矛盾 —— 你要自己揀行邊一套。</div>` : ""}
+      <details class="clash"><summary><b>呢張單唔係全港排名</b>
+        —— 佢答緊「邊個區嘅形夾你個命」<span class="chev">▾</span></summary>
+        <p>全港排名答嘅係「邊幢樓九運格局好」，同邊個住冇關，
+        大部分人見到嘅都係同一個答案。</p>
+        <p>所以${esc(areas[0].tc)}可以兩樣都啱：佢九運平均
+        ${areas[0].avg.toFixed(1)} 分，低過全港嘅 ${terr.toFixed(1)} 分，
+        但佢嘅形屬<b class="wx-${p1}">${p1}</b>，而你要<b class="wx-${p1}">${p1}</b>。</p>
+      </details>` : ""}
 
     ${locked ? `
       <div class="gate">
@@ -3817,6 +3854,18 @@ async function showBazi(edit){
     if(!me){ askSignIn(null); return; }
     pushBack("八字", () => showBazi());
     showFamily();
+  });
+  const bl = sheetBody.querySelector("#bzGoList");
+  if(bl) bl.addEventListener("click", () => {
+    const d = sheetBody.querySelector("#bzPickD").value;
+    guaOn = true;
+    favView = false; sharedList = null; pickingDistrict = false; groupSel = null;
+    document.getElementById("btnGua").classList.add("on");
+    refreshGuaDirs();
+    setDistrict(d);                       // 更新 chip、飛過去嗰區
+    track("bazi_to_list", {district: d});
+    pushBack("八字", () => showBazi());   // 睇完有得返返嚟
+    loadBuildings(); drawDistricts(); showOverview();
   });
   const bs = sheetBody.querySelector("#bzShare");
   if(bs) bs.addEventListener("click", shareBazi);
@@ -5115,6 +5164,7 @@ let pickingDistrict = false;
 
 function setDistrict(tc){
   districtFilter = tc || "";
+  if(tc) lastDistrictSeen = tc;
   track("filter_district", {district: districtFilter || "all", from: "picker"});
   const chip = document.getElementById("btnDistrict");
   chip.innerHTML = '<b>地區</b>' + (districtFilter || "全港") + ' <span class="caret">▾</span>';
@@ -5167,7 +5217,7 @@ function matches(){
   // 命卦篩選：八宅以向論，所以睇嘅係向首八方。d8 係 null 嘅樓唔係冇
   // 坐向，係我哋推唔準佢長軸（conf < 0.6）—— 唔應該攞嚟同人講「合你」。
   const okDir = guaOn ? guaDirSet : null;
-  const okReg = guaOn ? guaRegions : null;
+  const okReg = (guaOn && !districtFilter) ? guaRegions : null;
   return searchIndex.filter(o =>
     (!districtFilter || o.district === districtFilter) &&
     passesFilter(o.total) &&
@@ -5367,7 +5417,8 @@ function renderMatches(list){
           <div class="guahr"></div>`;
       } else {
         // 橫額寫返而家實際篩緊邊幾個區，唔好另外叫一套名。
-        const rl = guaRegions
+        // 揀咗區之後，橫額再列「建議地區」就同螢幕上面嗰個區打交。
+        const rl = (!districtFilter && guaRegions)
           ? [...guaRegions].map(t => t.replace(/區$/, "")).join("、")
           : "";
         guaTop = `<button class="guaband" id="guaBand">
@@ -5380,6 +5431,11 @@ function renderMatches(list){
   }
   sheetBody.innerHTML = `
     ${guaTop}
+    ${personal && districtFilter && guaRegions && !guaRegions.has(districtFilter)
+      ? `<p class="offrec"><b>${esc(districtFilter)}唔喺最夾你嗰六個區入面。</b>
+         你要睇呢個區就照睇 —— 下面係<u>喺呢個區入面</u>最夾你嗰幾幢。
+         區嘅形係粗嘅一層，逐幢樓先係細嗰層，兩者唔一定同一個方向。</p>`
+      : ""}
     <p class="bname">${esc(where)} · ${esc(what)}</p>
     <p class="mcount">${
       groups
