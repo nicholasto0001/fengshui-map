@@ -251,6 +251,8 @@
   .mlist .mt{font-size:13.5px; color:var(--ink3); margin-top:2px}
   /* 左邊個大數係九運格局分，呢個係「啱唔啱你」。兩個一定要分得開,
      唔係人哋以為我哋改咗個評分。 */
+  .mlist .emore{display:inline-block; margin-top:2px; font-size:12px; color:var(--ink3);
+                opacity:.8}
   .mlist .fitb{display:inline-block; margin-inline-start:4px; padding:1px 7px;
     border-radius:999px; background:var(--card2,#f3f1ec); border:1px solid var(--line);
     font-size:12px; font-weight:600; color:var(--ink); vertical-align:1px}
@@ -3740,14 +3742,67 @@ async function showEstate(name){
     }));
 }
 
+/* 同一個屋苑啲樓形一樣，夾你分就一樣，於是排成一串 —— 愉景灣蔚陽一口氣
+   出十幾座，佔晒個清單頭。每組留最夾嗰兩座，其餘摺埋，數目寫喺第二行度,
+   撳入去個屋苑一樣睇得晒。
+
+   只喺個人清單度摺：全港清單按分數排，同屋苑各座分數唔同，本來就會散開。 */
+const EST_KEEP = 2;
+
+/* 分組用屋苑名，冇屋苑名就用樓名減走座數 —— 房委會個登記冊得公營房屋,
+   84,720 幢入面得 13,578 幢有屋苑名，剩返嘅私樓（龍珠島花園、Paloma Cove
+   嗰啲）淨係得個樓名。減唔走座數就唔分組，即係當佢自己一幢。 */
+const BLOCK_TAIL = new RegExp(
+  "(?:\\s*第?[0-9０-９A-ZＡ-Ｚa-zａ-ｚ一二三四五六七八九十百]{1,8}[－–—-]?" +
+  "[0-9０-９A-ZＡ-Ｚ一二三四五六七八九十百]{0,8}座" +
+  "|\\s*(?:Block|Tower|Blk|Phase)\\s*[0-9０-９A-Za-z]{1,4}" +
+  "|\\s+[0-9０-９]{1,3})$", "i");
+
+function groupOf(o){
+  if(o.est) return {key: "e:" + o.est, name: o.est};
+  const n = clean(o.tc) || clean(o.en);
+  if(!n) return null;
+  const base = n.replace(BLOCK_TAIL, "").trim();
+  return base && base !== n ? {key: "n:" + base, name: base} : null;
+}
+
+function foldEstates(list){
+  const total = new Map(), grp = new Map();
+  for(const o of list){
+    const g = groupOf(o);
+    if(!g) continue;
+    grp.set(o, g);
+    total.set(g.key, (total.get(g.key) || 0) + 1);
+  }
+
+  const seen = new Map(), kept = [], last = new Map();
+  for(const o of list){
+    const g = grp.get(o);
+    if(!g){ kept.push(o); continue; }
+    const n = (seen.get(g.key) || 0) + 1;
+    seen.set(g.key, n);
+    if(n > EST_KEEP) continue;
+    kept.push(o);
+    last.set(g.key, o);            // 記住每組最後留低嗰座
+  }
+  for(const [key, o] of last){
+    const more = total.get(key) - EST_KEEP;
+    if(more > 0){ o._more = more; o._grp = grp.get(o).name; }
+  }
+  return kept;
+}
+
 function renderMatches(list){
   // 開咗八字就按「夾你」排，唔係按九運分排 —— 兩個答唔同問題，而開咗
   // 八字嘅人問嘅係嗰個。冇形嘅數據（例如冇高度）就跌返去九運分。
   const personal = guaOn && myWeights() && elemData;
+  let folded = 0;
   if(personal){
     for(const o of list) o._fit = fitOf(o);
     list = [...list].sort((a, b) =>
       (b._fit ?? -1) - (a._fit ?? -1) || (b.total || 0) - (a.total || 0));
+    list = foldEstates(list);
+    folded = list.reduce((t, o) => t + (o._more || 0), 0);
   }
   const shown = list.slice(0, MATCH_LIMIT);
   const ests = districtFilter ? estatesIn(list) : [];
@@ -3815,8 +3870,10 @@ function renderMatches(list){
   sheetBody.innerHTML = `
     ${guaTop}
     <p class="bname">${esc(where)} · ${esc(what)}</p>
-    <p class="mcount">${list.length.toLocaleString()} 棟符合，${
+    <p class="mcount">${(list.length + folded).toLocaleString()} 棟符合，${
       personal ? "按同你夾唔夾由高至低排列" : "按分數由高至低排列"}。撳一下跳去該幢樓。${
+      folded ? `<br>同一個屋苑啲樓形一樣，夾你分就一樣 —— 每個屋苑只列最夾嘅
+        ${EST_KEEP} 座，另外 ${folded.toLocaleString()} 座摺埋咗。` : ""}${
       unnamed ? `<br>另有未命名樓宇未計在內，可以直接喺地圖撳。` : ""}</p>
     <label class="homes"><input type="checkbox" id="homesOnly" ${homesOnly?"checked":""}>
       <span>只顯示住宅樓宇</span></label>
@@ -3830,7 +3887,9 @@ function renderMatches(list){
         <div><div class="nm">${esc(clean(o.tc)||clean(o.en)||"未命名樓宇")}</div>
              <div class="mt">${esc([clean(o.district), o.now].filter(Boolean).join(" · "))}${
                personal && o._fit != null
-                 ? ` <b class="fitb">夾你 ${o._fit}</b>` : ""}</div></div>
+                 ? ` <b class="fitb">夾你 ${o._fit}</b>` : ""}${
+               o._more ? `<br><span class="emore">${esc(o._grp)}　另有 ${
+                 o._more} 座，夾你分差不多</span>` : ""}</div></div>
         <div class="go">›</div>
       </li>`).join("")}</ul>
     ${list.length > MATCH_LIMIT
