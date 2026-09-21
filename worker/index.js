@@ -230,8 +230,27 @@ async function handle(request, env, ctx) {
     // Cloudflare serves a managed robots.txt when a site has none of its own,
     // and that one says nothing about where the sitemap is. Ours does.
     if (url.pathname === "/robots.txt") {
+      // 分開兩種 AI bot。
+      //
+      // 「回答型」（OAI-SearchBot、Claude-SearchBot、PerplexityBot,
+      // ChatGPT-User、Claude-User）係人問問題嗰陣去攞內容返嚟引用嘅 ——
+      // 擋咗佢哋，我哋就完全唔會出現喺 AI 答案入面。呢啲一定要放行。
+      //
+      // 「訓練型」（GPTBot、ClaudeBot、Google-Extended）係攞去訓練模型。
+      // 我哋都放行：內容本身係政府公開數據加我哋嘅計算，畀模型見到多啲,
+      // 被提及嘅機會就多啲。
+      //
+      // 寫出嚟唔係因為 `*` 唔夠 —— 係因為呢個係一個決定，要寫低。
+      const AI_BOTS = [
+        "OAI-SearchBot", "ChatGPT-User", "GPTBot",
+        "Claude-SearchBot", "Claude-User", "ClaudeBot",
+        "PerplexityBot", "Perplexity-User",
+        "Google-Extended", "Applebot-Extended", "CCBot", "Bytespider",
+      ];
       const body = live
-        ? `User-agent: *\nAllow: /\n\nSitemap: https://${LIVE_HOST}/sitemap.xml\n`
+        ? ["User-agent: *", "Allow: /", "",
+           ...AI_BOTS.flatMap(b => [`User-agent: ${b}`, "Allow: /", ""]),
+           `Sitemap: https://${LIVE_HOST}/sitemap.xml`, ""].join("\n")
         : "User-agent: *\nDisallow: /\n";
       return new Response(body, {
         headers: {"content-type": "text/plain; charset=utf-8",

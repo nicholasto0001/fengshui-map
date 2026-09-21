@@ -23,7 +23,6 @@ PAGES = [
     ("/",             "daily",   "1.0"),
     ("/method",       "monthly", "0.8"),
     ("/bazi-guide",   "monthly", "0.8"),
-    ("/privacy.html", "yearly",  "0.3"),
     ("/district/",    "weekly",  "0.8"),
     ("/estate/",      "weekly",  "0.8"),
 ]
@@ -39,6 +38,10 @@ def generated() -> list:
         if not d.exists():
             continue
         for f in sorted(d.glob("*.html")):
+            # index.html 已經係 /district/ 嗰條，唔好再出一條 /district/index
+            # —— 同一版兩條 URL，係自己整重複內容出嚟。
+            if f.stem == "index":
+                continue
             out.append((f"/{kind}/{urllib.parse.quote(f.stem)}", freq, pri))
     return out
 

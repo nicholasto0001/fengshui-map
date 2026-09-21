@@ -26,6 +26,7 @@ else
   rm -f public/vendor/supabase.js
 fi
 cp og.png favicon.ico apple-touch-icon.png icon-192.png icon-512.png public/
+cp llms.txt public/            # 冇乜 bot 會讀，但平；見 docs/seo.md
 cp -R og public/og          # one preview card per score, chosen by the Worker
 # An allowlist, not a delete list. Every new pipeline stage drops another
 # intermediate into data/, and a delete list publishes each one until someone

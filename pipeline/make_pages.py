@@ -17,6 +17,7 @@ from __future__ import annotations
 import collections
 import html
 import json
+import urllib.parse
 import pathlib
 import sys
 
@@ -27,6 +28,16 @@ from build_tiles import is_dwelling, keep        # noqa: E402
 
 OUT = ROOT / "pages"
 SITE = "https://hkfengshuimap.com"
+
+
+def url(kind: str, name: str) -> str:
+    """頁面嘅 URL。一定要同 make_sitemap 嗰邊編碼方式一樣。
+
+    之前 canonical 直接塞原文，出嚟係 /estate/Grand YOHO —— 入面有個真
+    空格，本身就唔係一條有效 URL；而 sitemap 嗰邊又編碼咗做 %20。兩邊
+    唔同字串，Google 會當成兩條 URL，等於自己拆散自己個 canonical。
+    """
+    return f"/{kind}/{urllib.parse.quote(name, safe='')}"
 
 
 def side(path, default):
@@ -157,6 +168,12 @@ table.kvt td{white-space:normal;font-weight:550}
 footer{margin:40px 0 0;padding:20px 0 0;border-top:1px solid var(--line);
  font-size:13px;color:var(--ink3);line-height:1.7}
 footer a{color:var(--ink2)}
+.bzbox{background:linear-gradient(135deg,#3d2f18,#5a4622);color:#fff;border-radius:16px;
+ padding:20px 22px;margin:34px 0 0;line-height:1.7}
+.bzbox p{margin:0 0 10px;font-size:14.5px;opacity:.9}
+.bzbox .bzh2{font-size:18px;font-weight:650;opacity:1;margin-bottom:12px}
+.bzbox b{color:#e3c489}
+.bzlink{color:#fff;font-weight:650;text-decoration:underline;text-underline-offset:3px}
 .warn{background:#fff8ec;border:1px solid #f0dfbe;border-radius:14px;
  padding:14px 16px;font-size:14px;color:#6b5626;line-height:1.65;margin:26px 0 0}
 @media(max-width:560px){h1{font-size:25px}.big{font-size:38px}.wrap{padding:0 14px 48px}}
@@ -199,8 +216,18 @@ def shell(title, desc, canon, crumbs, body):
 <div class="wrap">
 <nav class="crumb">{trail}</nav>
 {body}
+<div class="bzbox">
+  <p class="bzh2">呢個分係「呢幢樓點起」，唔係「啱唔啱你」</p>
+  <p>上面每個分都係九運格局分 —— <b>邊個睇都一樣</b>。九運嘅好樓對大部分人好，
+     唔代表對你好。</p>
+  <p>打個出生日期落去，就會排出你嘅四柱、計出你缺邊幾樣五行，再用八宅睇你個
+     命卦配唔配呢幢樓個向，逐幢計返一個<b>得你一個人有</b>嘅分。屋企人都加得埋，
+     一齊計。</p>
+  <p><a class="bzlink" href="/bazi-guide">八字揀樓點計？逐步寫明 →</a></p>
+</div>
 <footer>
   <p>評分由電腦計算，數據嚟自政府公開資料。<a href="/method">計算方法同數據限制</a> ·
+     <a href="/bazi-guide">八字揀樓</a> ·
      <a href="/privacy.html">私隱政策</a> · <a href="/">返地圖</a></p>
   <p>人口統計數字：政府統計處《2021 年人口普查》，經「空間數據共享平台」發佈。
      樓宇資料：地政總署、屋宇署、香港房屋委員會。以上數據版權歸香港特別行政區政府所有。</p>
@@ -447,7 +474,7 @@ def estate_page(es, rank, total_est, siblings, extra):
             + "，另附 2021 年人口普查資料。")
 
     sib = "".join(
-        f'<li><a href="/estate/{e(s["name"])}">{e(s["name"])}<b>{s["avg"]:.1f}</b></a></li>'
+        f'<li><a href="{url("estate", s["name"])}">{e(s["name"])}<b>{s["avg"]:.1f}</b></a></li>'
         for s in siblings)
 
     body = f"""
@@ -480,8 +507,8 @@ def estate_page(es, rank, total_est, siblings, extra):
 {DISCLAIM}
 """
     crumbs = [("香港風水地圖", "/"), ("屋苑", "/estate/"),
-              (es["district"], f"/district/{es['district']}"), (nm, None)]
-    return shell(title, desc, f"/estate/{nm}", crumbs, body)
+              (es["district"], url("district", es["district"])), (nm, None)]
+    return shell(title, desc, url("estate", nm), crumbs, body)
 
 
 def market_panel(dname, mk):
@@ -519,7 +546,7 @@ def district_page(d, rank, rows, estates, n_est, mk):
     top = rows[:20]
     pat = sorted(d["patterns"].items(), key=lambda x: -x[1])
     est = "".join(
-        f'<li><a href="/estate/{e(s["name"])}">{e(s["name"])}<b>{s["avg"]:.1f}</b></a></li>'
+        f'<li><a href="{url("estate", s["name"])}">{e(s["name"])}<b>{s["avg"]:.1f}</b></a></li>'
         for s in estates)
 
     title = f"{d['tc']}風水評分 — {n(d['n'])} 幢樓宇排名｜香港風水地圖"
@@ -562,7 +589,7 @@ def district_page(d, rank, rows, estates, n_est, mk):
 {DISCLAIM}
 """
     crumbs = [("香港風水地圖", "/"), ("地區", "/district/"), (d["tc"], None)]
-    return shell(title, desc, f"/district/{d['tc']}", crumbs, body)
+    return shell(title, desc, url("district", d["tc"]), crumbs, body)
 
 
 def hub_estates(ranked):
@@ -574,9 +601,9 @@ def hub_estates(ranked):
     secs = []
     for d in sorted(by, key=lambda k: -len(by[k])):
         li = "".join(
-            f'<li><a href="/estate/{e(x["name"])}">{e(x["name"])}'
+            f'<li><a href="{url("estate", x["name"])}">{e(x["name"])}'
             f'<b>{x["avg"]:.1f}</b></a></li>' for x in by[d])
-        secs.append(f'<h2><a href="/district/{e(d)}">{e(d)}</a></h2>'
+        secs.append(f'<h2><a href="{url("district", d)}">{e(d)}</a></h2>'
                     f'<p class="note">{len(by[d])} 個屋苑</p>'
                     f'<ul class="links">{li}</ul>')
     body = (f'<h1>香港屋苑風水評分</h1>'
