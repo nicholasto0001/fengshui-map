@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <meta name="theme-color" content="#0f6354">
 <title>香港風水地圖｜八字揀樓・全港 84,720 幢逐幢計</title>
-<meta name="description" content="全港唯一將樓盤數據、風水評分同八字配對夾埋一齊嘅網站。84,720 幢樓、658 個屋苑逐座計九運風水分，再入你出生日期，睇邊幢真係啱你。數據嚟自政府公開資料，每日更新。">
+<meta name="description" content="搵樓、睇風水、夾八字三樣夾埋，答「我應該住邊度」。全港 84,720 幢樓、658 個屋苑逐座計九運風水分，再入你出生日期，睇邊幢真係啱你住。數據嚟自政府公開資料，每日更新。">
 
 <!-- A link pasted into a Facebook group or WhatsApp is judged entirely on its
      preview card. og:image MUST be an absolute URL — crawlers do not resolve
@@ -22,7 +22,7 @@
 <meta property="og:site_name" content="香港風水地圖">
 <meta property="og:url" content="https://hkfengshuimap.com/">
 <meta property="og:title" content="邊幢樓啱你八字？香港風水地圖">
-<meta property="og:description" content="一個網站做齊三樣：全港 84,720 幢樓任你搵、每幢計九運風水分、再用你嘅八字睇邊幢啱你。地產網得樓盤，師傅得風水八字 —— 呢度三樣夾埋。">
+<meta property="og:description" content="搵樓、睇風水、夾八字三樣夾埋，答一條問題：我應該住邊度？全港 84,720 幢樓逐幢計九運風水分，再用你嘅八字睇邊幢真係啱你住。">
 <meta property="og:image" content="https://hkfengshuimap.com/og.png">
 <meta property="og:image:secure_url" content="https://hkfengshuimap.com/og.png">
 <meta property="og:image:type" content="image/png">
@@ -32,7 +32,7 @@
 <meta property="og:locale" content="zh_HK">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="香港風水地圖 · 九運">
-<meta name="twitter:description" content="搵樓、睇風水、夾八字，三樣一齊。全港 84,720 幢樓逐幢計九運風水分，再用你嘅八字睇邊幢啱你。">
+<meta name="twitter:description" content="搵樓、睇風水、夾八字三樣夾埋，幫你搵一個啱你住嘅地方。全港 84,720 幢樓逐幢計九運風水分。">
 <meta name="twitter:image" content="https://hkfengshuimap.com/og.png">
 <!-- Browsers hold on to a favicon far longer than any other asset, and this
      one changed from a placeholder to the real mark. The version suffix is
@@ -343,15 +343,30 @@
     scroll-behavior:smooth; -webkit-overflow-scrolling:touch;
     overscroll-behavior-x:contain; scrollbar-width:none;
     margin:0 -22px;
+    flex:1 1 auto; min-height:0;
   }
   .pager::-webkit-scrollbar{display:none}
   .pg{
     flex:0 0 100%; scroll-snap-align:center; scroll-snap-stop:always;
     padding:0 22px; box-sizing:border-box; color:var(--ink2);
+    /* 矮機（SE 667）萬一仲係唔夠位，捲嘅係呢一版嘅文字，唔係成張卡 */
+    overflow-y:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+    display:flex; flex-direction:column; justify-content:safe center;
+  }
+  .pg::-webkit-scrollbar{display:none}
+  .introfoot{flex:none}
+  .introact{display:flex; flex-direction:column; min-height:104px}
+  /* 44px = #intro 嘅 padding 上下；46px = .card 嘅 padding 上下（26+20） */
+  .introtop{
+    display:flex; flex-direction:column;
+    height:min(calc(100dvh - 44px - 46px), 560px); min-height:330px;
   }
   .pg .ill{
-    display:block; width:100%; max-width:300px; height:auto; margin:0 auto 20px;
+    display:block; width:100%; max-width:300px; height:auto; margin:0 auto 18px;
     color:var(--ink2);
+    /* 矮機度張圖會食晒啲位，逼到文字同掣落 fold 下面。封個頂，
+       SVG 有 viewBox，縮細唔會變形。 */
+    max-height:20dvh;
   }
   .pg h1{font-size:23px; line-height:1.3; letter-spacing:-.02em; margin:0 0 8px; color:var(--ink)}
   .pg p{font-size:15px; line-height:1.65; margin:0; color:var(--ink2)}
@@ -366,7 +381,7 @@
   .pg .what b{color:var(--ink)}
   .pg .what u{text-decoration:none; color:var(--brand); font-weight:650}
 
-  .dots{display:flex; justify-content:center; gap:8px; margin:20px 0 16px}
+  .dots{display:flex; justify-content:center; gap:8px; margin:16px 0 14px}
   /* .card button 係全寬藍色大掣，同樣 specificity 但排喺後面，所以會贏。
      加多一層 .card 令呢個規則贏返。 */
   .card .dots button{
@@ -405,7 +420,7 @@
   .card .gbtn{margin-top:0}
 
   /* 「戴頭盔」收埋，撳咗先展開 —— 唔可以冇，但亦唔應該喺第一眼就擋住個人。 */
-  .fine{margin:14px 0 0}
+  .fine{margin:6px 0 0}
   .fine summary{
     list-style:none; cursor:pointer; font-size:12.5px; color:var(--ink3);
     display:flex; align-items:center; justify-content:center; gap:5px;
@@ -1179,8 +1194,10 @@
   .card{
     background:var(--card); border-radius:20px; padding:26px 22px 20px; max-width:380px; width:100%;
     box-shadow:0 10px 40px rgba(0,0,0,.3);
-    /* 有咗下面段說明之後，張卡喺 667 高嘅電話會超出屏幕。俾佢捲得郁 ——
-       喺 HTML 入面有、但用家永遠掂唔到嘅文字，Google 當係隱藏文字。 */
+    /* 唔可以成張卡一齊捲：咁樣「繼續」會跌落 fold 下面，而且每版跌嘅
+       距離唔同，隻手指冇固定落點。改做 flex 直排 —— .pager 做可伸縮
+       嘅中段（文字太長時自己捲），.introfoot 釘死喺底，所以三版嘅掣
+       永遠喺同一個位。overflow:hidden 係俾 min-height:0 生效。 */
     max-height:calc(100dvh - 44px); overflow-y:auto; -webkit-overflow-scrolling:touch;
     overscroll-behavior:contain;
   }
@@ -1188,7 +1205,7 @@
   .card .tag{font-size:13px; color:var(--ink3); margin:0 0 18px}
   .card ol{margin:0 0 18px; padding-left:20px; font-size:14.5px; line-height:1.85; color:var(--ink2)}
   .card ol b{color:var(--ink)}
-  .card .warn{font-size:11.5px; color:var(--ink3); line-height:1.5; margin:0 0 16px}
+  .card .warn{font-size:11.5px; color:var(--ink3); line-height:1.5; margin:0 0 10px}
   /* 主要掣。之前呢個樣式淨係綁死喺 .card 入面，所以 sheet 度嘅掣（八字
      嗰兩個）出返個瀏覽器預設灰掣，同成個 app 格格不入。抽咗做一個
      class，.card button 照樣沿用。 */
@@ -1339,6 +1356,7 @@
     <!-- 第一次入嚟嘅人乜都唔識。四頁，一頁講一件事，揀嘅係「你可以做到乜」
          而唔係「呢個掣叫咩」——	app 有十幾個功能，教晒等於乜都冇教。
          用 CSS scroll-snap 做橫掃，所以係原生手感，唔使自己寫手勢。 -->
+    <div class="introtop">
     <div class="pager" id="pager">
       <!-- ① 搵樓。用返「你屋企幾多分？」做標題 —— 呢句係全程最強嘅鈎，
            但個動作其實係搵樓，所以配搵樓嗰張圖。成個產品係乜要喺第一版
@@ -1360,11 +1378,9 @@
         </svg>
         <h1>你屋企幾多分？</h1>
         <p>全港 <b>84,720</b> 幢樓、<b>658</b> 個屋苑，逐座都計咗分。
-           唔記得個屋苑全名都唔怕，打兩個字就出到；或者放大地圖慢慢搵，
-           又或者撳右上角 <b>◉</b>，佢會即刻跳去你而家企緊嗰度。</p>
-        <p class="what">呢度做緊三樣嘢：<b>搵樓</b>、<b>睇風水</b>、<b>夾你八字</b>。<br>
-           地產網得第一樣，風水師傅同排盤網得後面兩樣 ——
-           <u>三樣一齊做嘅，得呢度。</u></p>
+           打兩個字、放大地圖，或者撳 <b>◉</b> 跳去你而家嗰度。</p>
+        <p class="what"><b>搵樓</b> ＋ <b>睇風水</b> ＋ <b>夾你八字</b>，
+           夾埋答一條問題：<u>我應該住邊度？</u></p>
       </section>
 
       <!-- ② 睇風水。顏色點解讀 ＋ 個分拆得開，兩樣本來分咗兩版，但其實
@@ -1381,12 +1397,10 @@
           <text x="173" y="32" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">81</text>
         </svg>
         <h1>個分係點嚟嘅</h1>
-        <p>顏色<b>越深綠分越高，越深紅分越低</b>。撳落去會拆開俾你睇：
-           山喺邊、水喺邊、周邊配套點。查到入伙年份嘅，仲會排埋
-           <b>玄空飛星盤</b>。</p>
-        <p>呢個分答嘅係「呢幢樓格局好唔好」—— <b>邊個住都一樣</b>。
-           睇中嘅撳 <b>♡ 收藏</b> 就記低，或者傳條 link 俾屋企人，
-           對方撳開就見到同一幢樓同個分。</p>
+        <p>顏色<b>越深綠分越高，越深紅分越低</b>。撳落去會拆開：山喺邊、
+           水喺邊、周邊點，仲有<b>玄空飛星盤</b>。</p>
+        <p>呢個分答「格局好唔好」—— <b>邊個住都一樣</b>。
+           睇中撳 <b>♡</b> 收藏，或者傳條 link 俾屋企人。</p>
       </section>
 
       <!-- ③ 夾八字。而家係最後一版，所以開戶口嘅掣落喺呢度 —— 啱晒，
@@ -1417,22 +1431,18 @@
           </g>
         </svg>
         <h1>再睇啱唔啱你</h1>
-        <p>九運嘅好樓對大部分人好，<b>唔代表對你好</b>。打個出生日期落去，
-           就會排出<b>四柱</b>、計出你缺邊幾樣<b>五行</b>同<b>本命卦</b>，
-           再喺五萬幾幢住宅度<b>逐幢</b>量返佢嘅高矮、闊窄、離水幾遠，
-           睇夾唔夾你。出生資料淨係留喺你部機。</p>
-        <p>睇地圖、睇分數、排八字 —— 全部唔使登記。有戶口先做得到嘅係：</p>
-        <ul class="joinwhy">
-          <li><b>逐幢樓點解夾你</b> —— 樓高、離水、區嘅形、八宅遊年星，逐項連數字</li>
-          <li><b>加埋屋企人</b> —— 各自嘅八字一齊計，話你知邊個夾邊個唔夾</li>
-          <li><b>換部機都仲喺度</b> —— 八字、結果同收藏都存得低</li>
-        </ul>
+        <p>九運嘅好樓對大部分人好，<b>唔代表對你好</b>。入個出生日期，排
+           <b>四柱</b>、計<b>五行</b>同<b>本命卦</b>，逐幢睇夾唔夾你。</p>
+        <p>出生資料淨係留喺你部機。有戶口先睇到：<b>逐幢解釋點解夾你</b>、
+           <b>加埋屋企人一齊計</b>。</p>
       </section>
     </div>
 
     <button class="xbtn" id="introX" type="button" aria-label="唔使住，直接睇地圖" hidden>×</button>
 
+    <div class="introfoot">
     <div class="dots" id="dots" role="tablist" aria-label="介紹"></div>
+    <div class="introact">
     <button id="introGo">繼續</button>
 
     <button class="gbtn" id="introJoin" type="button" hidden>
@@ -1440,7 +1450,8 @@
       <span>用 Google 開戶口 · 免費</span>
     </button>
     <button class="linkbtn" id="introSkip" type="button" hidden>唔使住，直接睇地圖</button>
-    <p class="warn">呢個係一個好簡單嘅參考工具，<b>唔可以作準</b>。認真睇樓請搵專業風水師傅。</p>
+    </div><!-- /.introact -->
+    <p class="warn">呢個係參考工具，<b>唔可以作準</b>。認真睇樓請搵專業風水師傅。</p>
 
     <details class="fine">
       <summary>詳細聲明　<span class="cv">▾</span></summary>
@@ -1464,6 +1475,8 @@
         <p><a href="/method" target="_blank" rel="noopener">睇完整評分方法同數據來源 →</a></p>
       </div>
     </details>
+    </div><!-- /.introfoot -->
+    </div><!-- /.introtop -->
 
     <!-- 呢段唔係為咗 SEO 而塞落嚟嘅關鍵字：佢係每個新用戶第一眼就見到嘅嘢，
          亦都係成個網站嘅內容喺原始 HTML 入面唯一存在嘅地方。之前成版得 270
@@ -3804,7 +3817,7 @@ async function showOverview(){
          再睇啱唔啱你」講齊咗兩層分析，但係兩層都係分析 —— 漏咗最實淨
          嗰樣：真係有 84,720 幢樓喺度俾你搵。嗰個數字之前淨係當個威水
          數字擺喺 .ben 度，冇人知原來自己幢樓查得到。三樣要平排講。 -->
-    <p class="tagline">睇樓、睇風水、睇你八字 — 一個網站做齊</p>
+    <p class="tagline">睇樓、睇風水、睇你八字 — 搵個啱你住嘅地方</p>
     <p class="ben">${filtered
       ? `全港 ${rows.reduce((s,a)=>s+a.metric,0).toLocaleString()} 棟評為「${chipLabel()}」`
       : "全港 84,720 幢樓宇 · 658 個屋苑逐座 · 政府數據每日更新"}</p>
@@ -3821,8 +3834,8 @@ async function showOverview(){
       <div class="tlrow"><span class="tln">1</span>
         <div><b>搵樓</b>
           <em><u>全港 84,720 幢樓、658 個屋苑，逐座分開。</u>打個屋苑名，
-            或者喺地圖撳落去，就搵到你自己幢樓 —— 連樓齡、發展商、
-            最近成交都有。</em></div></div>
+            或者喺地圖撳落去，就搵到你想住嗰幢 —— 連樓齡、發展商、
+            坐向都有。</em></div></div>
       <div class="tlrow"><span class="tln">2</span>
         <div><b>睇風水</b>
           <em>每幢計九運格局分：山水方位、周邊環境、樓宇坐向。
@@ -3831,9 +3844,9 @@ async function showOverview(){
         <div><b>夾八字</b>
           <em>入你嘅出生日期，用你自己嘅八字同命卦再計一次。
             <u>同一幢樓，唔同人唔同分</u>。</em></div></div>
-      <p class="tlnote"><b>三樣夾埋先係重點。</b>地產網得樓盤，冇風水；
-        師傅有風水有八字，但冇全港樓宇數據；排盤網得個八字，唔知你想住邊。
-        <u>三樣一齊做嘅，得呢度。</u></p>
+      <p class="tlnote"><b>三樣夾埋，先答到「我應該住邊度」。</b>
+        地產網話你知有咩樓，但冇風水；師傅有風水有八字，但冇全港樓宇數據；
+        排盤網得個八字，唔知你想住邊。<u>三樣一齊做嘅，得呢度。</u></p>
       <p class="tlnote">格局好嘅樓唔一定啱你，啱你嘅樓格局又未必最好 ——
         所以第 2、3 樣我哋兩個分都俾你，唔溝埋做一個。</p>
 
@@ -4904,13 +4917,14 @@ function shareList(){
    睇緊嗰幢樓，而嗰幢樓同佢完全無關。 */
 function shareApp(){
   doShare("香港風水地圖",
-    ["香港風水地圖 —— 搵樓、風水、八字，三樣一齊",
+    ["香港風水地圖 —— 搵樓、風水、八字三樣夾埋，搵個啱你住嘅地方",
      "",
-     "1. 搵樓：全港 84,720 幢、658 個屋苑逐座分開，連樓齡同成交價",
+     "1. 搵樓：全港 84,720 幢樓、658 個屋苑逐座分開，打個名就搵到",
      "2. 睇風水：每幢計九運格局分，山水方位、坐向、周邊",
      "3. 夾八字：入你出生日期，同一幢樓唔同人唔同分",
      "",
-     "地產網得樓盤，師傅得風水同八字 —— 三樣夾埋嘅得呢度。",
+     "地產網淨係話你知有咩樓，師傅淨係睇風水同八字 ——",
+     "三樣夾埋，先答到「我應該住邊度」。",
      "",
      "免費、免登記、免裝 App。"].join("\n"),
     location.origin + "/", "app");

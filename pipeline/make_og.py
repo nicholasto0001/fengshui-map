@@ -39,7 +39,7 @@ y = 96
 
 d.text((PAD, y), "香港風水地圖", font=f_title, fill=INK)
 y += 108
-d.text((PAD, y), "睇樓、睇風水、睇你八字 — 一個網站做齊", font=f_sub, fill=INK2)
+d.text((PAD, y), "睇樓、睇風水、睇你八字 — 搵個啱你住嘅地方", font=f_sub, fill=INK2)
 y += 86
 
 # 卡上面嗰句要講返我哋同人唔同嗰樣 —— 分數邊個睇都一樣，啱唔啱你先係
