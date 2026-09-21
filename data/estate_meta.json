@@ -1,0 +1,2699 @@
+{
+ "帝峰皇殿": {
+  "name": "帝峰皇殿",
+  "en": "THE HERMITAGE",
+  "addr": "海泓道1號",
+  "year": null,
+  "year_to": null,
+  "blocks": 6,
+  "flats": 964,
+  "dev": [
+   "信和集團"
+  ],
+  "src": [
+   "28Hse 香港屋網"
+  ]
+ },
+ "賽西湖大廈": {
+  "name": "賽西湖大廈",
+  "en": "Braemar Hill Mansions",
+  "addr": "寶馬山道15-43號",
+  "year": 1978,
+  "year_to": null,
+  "blocks": 15,
+  "flats": 925,
+  "dev": [
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "名城": {
+  "name": "名城",
+  "en": "Festival City",
+  "addr": "美田路1號",
+  "year": 2010,
+  "year_to": 2011,
+  "blocks": 12,
+  "flats": 4264,
+  "dev": [
+   "港鐵",
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "海濱花園": {
+  "name": "海濱花園",
+  "en": "Riviera Gardens",
+  "addr": "怡樂街2-12號",
+  "year": 1988,
+  "year_to": 1989,
+  "blocks": 20,
+  "flats": 5636,
+  "dev": [
+   "新世界"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "黃埔花園": {
+  "name": "黃埔花園",
+  "en": "Whampoa Garden",
+  "addr": "必嘉街121號",
+  "year": 1985,
+  "year_to": 1991,
+  "blocks": 88,
+  "flats": 10285,
+  "dev": [
+   "和記黃埔"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "港景峰": {
+  "name": "港景峰",
+  "en": "The Victoria Towers",
+  "addr": "廣東道188號",
+  "year": 2002,
+  "year_to": null,
+  "blocks": 3,
+  "flats": 987,
+  "dev": [
+   "長實"
+  ],
+  "dev_alt": [
+   "中信泰富"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "維景灣畔": {
+  "name": "維景灣畔",
+  "en": "Ocean Shores",
+  "addr": "澳景路88號",
+  "year": 2000,
+  "year_to": 2003,
+  "blocks": 15,
+  "flats": 5726,
+  "dev": [
+   "太古",
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "薈朗": {
+  "name": "薈朗",
+  "en": "The Met. Blossom",
+  "addr": "馬錦街9號",
+  "year": 2017,
+  "year_to": null,
+  "blocks": 2,
+  "flats": null,
+  "dev": [
+   "宏安集團"
+  ],
+  "src": [
+   "中原地產"
+  ]
+ },
+ "南灣": {
+  "name": "南灣",
+  "en": "LARVOTTO",
+  "addr": "鴨脷洲海旁道8號",
+  "year": 2010,
+  "year_to": null,
+  "blocks": 9,
+  "flats": 715,
+  "dev": [
+   "百利保",
+   "新鴻基",
+   "嘉里建設"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "駿景園": {
+  "name": "駿景園",
+  "en": "Royal Ascot",
+  "addr": "駿景路1號",
+  "year": 1995,
+  "year_to": 1996,
+  "blocks": 10,
+  "flats": 2504,
+  "dev": [
+   "港鐵",
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "嘉薈軒": {
+  "name": "嘉薈軒",
+  "en": "J Residence",
+  "addr": "莊士敦道60號",
+  "year": 2007,
+  "year_to": null,
+  "blocks": 1,
+  "flats": 381,
+  "dev": [
+   "市建局",
+   "嘉華"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "太湖花園": {
+  "name": "太湖花園",
+  "en": "Serenity Park",
+  "addr": "大埔頭路18號",
+  "year": 1992,
+  "year_to": 1994,
+  "blocks": 15,
+  "flats": 2476,
+  "dev": [
+   "中國海外",
+   "信置"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "綠楊新邨": {
+  "name": "綠楊新邨",
+  "en": "Luk Yeung Sun Chuen",
+  "addr": "蕙荃路22-66號",
+  "year": 1983,
+  "year_to": 1984,
+  "blocks": 17,
+  "flats": 4000,
+  "dev": [
+   "置地",
+   "港鐵",
+   "僑光置業",
+   "怡和洋行"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "杏花邨": {
+  "name": "杏花邨",
+  "en": "Heng Fa Chuen",
+  "addr": "盛泰道100號",
+  "year": 1986,
+  "year_to": 1989,
+  "blocks": 48,
+  "flats": 6504,
+  "dev": [
+   "杏花發展",
+   "港鐵"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "嘉湖山莊": {
+  "name": "嘉湖山莊",
+  "en": "Kingswood Villas",
+  "addr": "天湖路1號",
+  "year": 1991,
+  "year_to": 1997,
+  "blocks": 58,
+  "flats": 15855,
+  "dev": [
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "縉城峰": {
+  "name": "縉城峰",
+  "en": "Island Crest",
+  "addr": "第一街8號",
+  "year": 2009,
+  "year_to": null,
+  "blocks": 2,
+  "flats": 488,
+  "dev": [
+   "市建局",
+   "嘉里建設"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "嘉雲臺": {
+  "name": "嘉雲臺",
+  "en": "Cavendish Heights",
+  "addr": "白建時道33號",
+  "year": 1986,
+  "year_to": 1988,
+  "blocks": 8,
+  "flats": 440,
+  "dev": [
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "海典灣": {
+  "name": "海典灣",
+  "en": "Ocean View",
+  "addr": "保泰街1號",
+  "year": 2003,
+  "year_to": null,
+  "blocks": 5,
+  "flats": 911,
+  "dev": [
+   "信置"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "翠擁華庭": {
+  "name": "翠擁華庭",
+  "en": "Monte Vista",
+  "addr": "沙安街9號",
+  "year": 2000,
+  "year_to": null,
+  "blocks": 12,
+  "flats": 1606,
+  "dev": [
+   "長實"
+  ],
+  "dev_alt": [
+   "和記黃埔"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "沙田中心": {
+  "name": "沙田中心",
+  "en": "Shatin Centre",
+  "addr": "橫壆街2-16號",
+  "year": 1981,
+  "year_to": null,
+  "blocks": 8,
+  "flats": 1480,
+  "dev": [
+   "恒基兆業"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "美景花園": {
+  "name": "美景花園",
+  "en": "Mayfair Gardens",
+  "addr": "細山路2-16號",
+  "year": 1982,
+  "year_to": 1984,
+  "blocks": 8,
+  "flats": 1912,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "豫豐花園": {
+  "name": "豫豐花園",
+  "en": "The Sherwood",
+  "addr": "福亨村路8號",
+  "year": 2005,
+  "year_to": null,
+  "blocks": 12,
+  "flats": 1576,
+  "dev": [
+   "恒基兆業"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "華景山莊": {
+  "name": "華景山莊",
+  "en": "Wonderland Villas",
+  "addr": "華景山路9號",
+  "year": 1984,
+  "year_to": 1987,
+  "blocks": 22,
+  "flats": 1501,
+  "dev": [
+   "恒基兆業",
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "麗都花園": {
+  "name": "麗都花園",
+  "en": "Lido Garden",
+  "addr": "青山公路深井段41-63號",
+  "year": 1989,
+  "year_to": null,
+  "blocks": 5,
+  "flats": 1392,
+  "dev": [
+   "長實",
+   "熊谷組"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "維港灣": {
+  "name": "維港灣",
+  "en": "Island Harbourview",
+  "addr": "海輝道11號",
+  "year": 2000,
+  "year_to": null,
+  "blocks": 9,
+  "flats": 2314,
+  "dev": [
+   "中國海外",
+   "信置",
+   "港鐵",
+   "嘉里建設",
+   "嘉德",
+   "中銀"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "得寶花園": {
+  "name": "得寶花園",
+  "en": "Tak Bo Garden",
+  "addr": "牛頭角道3號",
+  "year": 1984,
+  "year_to": null,
+  "blocks": 8,
+  "flats": 2016,
+  "dev": [
+   "恒基兆業"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "蝶翠峰": {
+  "name": "蝶翠峰",
+  "en": "Sereno Verde",
+  "addr": "大棠路99號",
+  "year": 2001,
+  "year_to": 2020,
+  "blocks": 18,
+  "flats": 2178,
+  "dev": [
+   "恒基兆業",
+   "新世界"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "尚翹峰": {
+  "name": "尚翹峰",
+  "en": "The Zenith",
+  "addr": "皇后大道東258號",
+  "year": 2006,
+  "year_to": null,
+  "blocks": 3,
+  "flats": 652,
+  "dev": [
+   "市建局",
+   "華置"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "YOHO MIDTOWN": {
+  "name": "YOHO MIDTOWN",
+  "en": "YOHO MIDTOWN",
+  "addr": "元龍街9號",
+  "year": 2010,
+  "year_to": null,
+  "blocks": 8,
+  "flats": 1890,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "大興花園": {
+  "name": "大興花園",
+  "en": "Tai Hing Gardens",
+  "addr": "震寰路11號",
+  "year": 1989,
+  "year_to": 1994,
+  "blocks": 15,
+  "flats": 3647,
+  "dev": [
+   "大興紡織發展",
+   "恒隆"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "粉嶺中心": {
+  "name": "粉嶺中心",
+  "en": "Fanling Centre",
+  "addr": "新運路33號",
+  "year": 1990,
+  "year_to": 1991,
+  "blocks": 11,
+  "flats": 2200,
+  "dev": [
+   "恒基兆業"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "聚賢居": {
+  "name": "聚賢居",
+  "en": "Centre Stage",
+  "addr": "荷李活道108號",
+  "year": 2006,
+  "year_to": null,
+  "blocks": 2,
+  "flats": 388,
+  "dev": [
+   "恒基兆業"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "譽‧港灣": {
+  "name": "譽‧港灣",
+  "en": "The Latitude",
+  "addr": "太子道東638號",
+  "year": 2010,
+  "year_to": null,
+  "blocks": 7,
+  "flats": null,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產"
+  ]
+ },
+ "港灣豪庭": {
+  "name": "港灣豪庭",
+  "en": "Metro Harbour View",
+  "addr": "福利街8號",
+  "year": 2002,
+  "year_to": 2003,
+  "blocks": 10,
+  "flats": 3520,
+  "dev": [
+   "恒基兆業",
+   "香港小輪"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "映灣園": {
+  "name": "映灣園",
+  "en": "Caribbean Coast",
+  "addr": "健東路",
+  "year": 2002,
+  "year_to": 2011,
+  "blocks": 69,
+  "flats": 5328,
+  "dev": [
+   "和記黃埔",
+   "港鐵",
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "御龍山": {
+  "name": "御龍山",
+  "en": "The Palazzo",
+  "addr": "樂景街28號",
+  "year": 2008,
+  "year_to": null,
+  "blocks": 10,
+  "flats": 1375,
+  "dev": [
+   "信置",
+   "港鐵"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "叠茵庭": {
+  "name": "叠茵庭",
+  "en": "PARKLAND VILLAS",
+  "addr": "屯安里1號",
+  "year": null,
+  "year_to": null,
+  "blocks": 9,
+  "flats": 1728,
+  "dev": [
+   "恒基地產"
+  ],
+  "src": [
+   "28Hse 香港屋網"
+  ]
+ },
+ "泓都": {
+  "name": "泓都",
+  "en": "The Merton",
+  "addr": "堅彌地城新海旁38號",
+  "year": 2004,
+  "year_to": null,
+  "blocks": 3,
+  "flats": 1182,
+  "dev": [
+   "市建局",
+   "新世界"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "海柏花園": {
+  "name": "海柏花園",
+  "en": "Bayshore Towers",
+  "addr": "西沙路608號",
+  "year": 1994,
+  "year_to": null,
+  "blocks": 6,
+  "flats": 1102,
+  "dev": [
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "地利根德閣": {
+  "name": "地利根德閣",
+  "en": "Tregunter",
+  "addr": "地利根德里14號",
+  "year": 1981,
+  "year_to": 1993,
+  "blocks": 3,
+  "flats": 317,
+  "dev": [
+   "嘉里建設"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "雅典居": {
+  "name": "雅典居",
+  "en": "Villa Athena",
+  "addr": "西沙路600號",
+  "year": 1994,
+  "year_to": null,
+  "blocks": 10,
+  "flats": 1064,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "峻弦": {
+  "name": "峻弦",
+  "en": "Aria Kowloon Peak",
+  "addr": "豐盛街51號",
+  "year": 2010,
+  "year_to": null,
+  "blocks": 5,
+  "flats": null,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產"
+  ]
+ },
+ "尚悅": {
+  "name": "尚悅",
+  "en": "The Reach",
+  "addr": "十八鄉路11號",
+  "year": 2013,
+  "year_to": null,
+  "blocks": 12,
+  "flats": 2580,
+  "dev": [
+   "恒基兆業",
+   "新世界"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "瓏門": {
+  "name": "瓏門",
+  "en": "Century Gateway",
+  "addr": "屯門鄉事會路83號",
+  "year": 2012,
+  "year_to": 2014,
+  "blocks": 7,
+  "flats": 1991,
+  "dev": [
+   "港鐵",
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "君匯港": {
+  "name": "君匯港",
+  "en": "Harbour Green",
+  "addr": "深旺道8號",
+  "year": 2006,
+  "year_to": null,
+  "blocks": 5,
+  "flats": 1514,
+  "dev": [
+   "港鐵",
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "浪澄灣": {
+  "name": "浪澄灣",
+  "en": "The Long Beach",
+  "addr": "海輝道8號",
+  "year": 2004,
+  "year_to": null,
+  "blocks": 8,
+  "flats": 1829,
+  "dev": [
+   "恒隆"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "康怡花園": {
+  "name": "康怡花園",
+  "en": "Kornhill",
+  "addr": "康愉街31-45號",
+  "year": 1985,
+  "year_to": 1987,
+  "blocks": 32,
+  "flats": 6648,
+  "dev": [
+   "恒隆",
+   "港鐵",
+   "新世界"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "陽明山莊": {
+  "name": "陽明山莊",
+  "en": "Hong Kong Parkview",
+  "addr": "大潭水塘道88號",
+  "year": 1988,
+  "year_to": 1989,
+  "blocks": 18,
+  "flats": 976,
+  "dev": [
+   "僑福集團"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "日出康城 2期": {
+  "name": "日出康城 2期",
+  "en": "LOHAS PARK II",
+  "addr": "康城路1號",
+  "year": 2010,
+  "year_to": 2012,
+  "blocks": 17,
+  "flats": null,
+  "dev": [
+   "南豐",
+   "港鐵",
+   "長實"
+  ],
+  "src": [
+   "中原地產"
+  ]
+ },
+ "和富中心": {
+  "name": "和富中心",
+  "en": "Provident Centre",
+  "addr": "和富道21-53號",
+  "year": 1982,
+  "year_to": 1984,
+  "blocks": 17,
+  "flats": 1450,
+  "dev": [
+   "和記黃埔"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "帝庭軒": {
+  "name": "帝庭軒",
+  "en": "Regentville",
+  "addr": "和滿街8-9號",
+  "year": 2000,
+  "year_to": 2002,
+  "blocks": 7,
+  "flats": 1662,
+  "dev": [
+   "信置"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "藍灣半島": {
+  "name": "藍灣半島",
+  "en": "Island Resort",
+  "addr": "小西灣道28號",
+  "year": 2001,
+  "year_to": null,
+  "blocks": 8,
+  "flats": 3098,
+  "dev": [
+   "中國光大",
+   "信置",
+   "新中地產",
+   "維德集團"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "皇府山": {
+  "name": "皇府山",
+  "en": "Noble Hill",
+  "addr": "馬適路38號",
+  "year": 2006,
+  "year_to": null,
+  "blocks": 7,
+  "flats": 762,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "譽港灣": {
+  "name": "譽港灣",
+  "en": "THE LATITUDE",
+  "addr": "太子道東638號",
+  "year": null,
+  "year_to": null,
+  "blocks": 7,
+  "flats": 1159,
+  "dev": [
+   "新鴻基地產"
+  ],
+  "src": [
+   "28Hse 香港屋網"
+  ]
+ },
+ "禮頓山": {
+  "name": "禮頓山",
+  "en": "The Leighton Hill",
+  "addr": "樂活道2B號",
+  "year": 2002,
+  "year_to": null,
+  "blocks": 8,
+  "flats": 543,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "栢慧豪園": {
+  "name": "栢慧豪園",
+  "en": "Central Park Towers",
+  "addr": "天恩路2號",
+  "year": 2007,
+  "year_to": 2010,
+  "blocks": 8,
+  "flats": 2960,
+  "dev": [
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "君頤峰": {
+  "name": "君頤峰",
+  "en": "Parc Palais",
+  "addr": "京士柏衛理道18號",
+  "year": 2004,
+  "year_to": null,
+  "blocks": 8,
+  "flats": 700,
+  "dev": [
+   "九倉",
+   "信置",
+   "華置",
+   "新世界",
+   "萬泰製衣"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "星河明居": {
+  "name": "星河明居",
+  "en": "Galaxia",
+  "addr": "龍蟠街3號",
+  "year": 1998,
+  "year_to": null,
+  "blocks": 5,
+  "flats": 1684,
+  "dev": [
+   "九倉",
+   "新亞置業",
+   "會德豐"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "逸濤灣": {
+  "name": "逸濤灣",
+  "en": "Les Saisons",
+  "addr": "太安街28號",
+  "year": 2001,
+  "year_to": null,
+  "blocks": 4,
+  "flats": 864,
+  "dev": [
+   "中巴",
+   "太古",
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "河畔花園": {
+  "name": "河畔花園",
+  "en": "Garden Rivera",
+  "addr": "大涌橋路20-30號",
+  "year": 1984,
+  "year_to": null,
+  "blocks": 6,
+  "flats": 1584,
+  "dev": [
+   "恒基兆業"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "形薈": {
+  "name": "形薈",
+  "en": "Lime Gala",
+  "addr": "筲箕灣道393號",
+  "year": 2018,
+  "year_to": null,
+  "blocks": 3,
+  "flats": null,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產"
+  ]
+ },
+ "擎天半島": {
+  "name": "擎天半島",
+  "en": "Sorrento",
+  "addr": "柯士甸道西1號",
+  "year": 2002,
+  "year_to": 2003,
+  "blocks": 5,
+  "flats": 2126,
+  "dev": [
+   "九倉",
+   "港鐵"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "愉景新城": {
+  "name": "愉景新城",
+  "en": "Discovery Park",
+  "addr": "青山公路荃灣段398號",
+  "year": 1997,
+  "year_to": 1998,
+  "blocks": 12,
+  "flats": 3360,
+  "dev": [
+   "香港興業",
+   "新世界"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "大埔中心": {
+  "name": "大埔中心",
+  "en": "Tai Po Centre",
+  "addr": "安邦路9號",
+  "year": 1985,
+  "year_to": 1987,
+  "blocks": 22,
+  "flats": 4080,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "東環": {
+  "name": "東環",
+  "en": "Century Link",
+  "addr": "迎康街6號",
+  "year": 2016,
+  "year_to": null,
+  "blocks": 13,
+  "flats": null,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產"
+  ]
+ },
+ "囍滙": {
+  "name": "囍滙",
+  "en": "THE AVENUE",
+  "addr": "皇后大道東200號",
+  "year": null,
+  "year_to": null,
+  "blocks": 4,
+  "flats": 299,
+  "dev": [
+   "信和集團"
+  ],
+  "src": [
+   "28Hse 香港屋網"
+  ]
+ },
+ "宇晴軒": {
+  "name": "宇晴軒",
+  "en": "The Pacifica",
+  "addr": "深盛路9號",
+  "year": 2004,
+  "year_to": 2005,
+  "blocks": 6,
+  "flats": 2245,
+  "dev": [
+   "新鴻基",
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "翰林軒": {
+  "name": "翰林軒",
+  "en": "University Heights",
+  "addr": "蒲飛路23號",
+  "year": 1996,
+  "year_to": null,
+  "blocks": 2,
+  "flats": 444,
+  "dev": [
+   "長實",
+   "匯豐銀行"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "將軍澳中心": {
+  "name": "將軍澳中心",
+  "en": "Park Central",
+  "addr": "唐德街",
+  "year": 2002,
+  "year_to": 2005,
+  "blocks": 12,
+  "flats": 4542,
+  "dev": [
+   "南豐",
+   "恒基兆業",
+   "港鐵",
+   "華懋",
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "帝堡城": {
+  "name": "帝堡城",
+  "en": "Castello",
+  "addr": "小瀝源路69號",
+  "year": 1999,
+  "year_to": null,
+  "blocks": 7,
+  "flats": 1744,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "珀麗灣": {
+  "name": "珀麗灣",
+  "en": "Park Island",
+  "addr": "珀麗路8號",
+  "year": 2002,
+  "year_to": 2009,
+  "blocks": 31,
+  "flats": 5290,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "海濱南岸": {
+  "name": "海濱南岸",
+  "en": "Harbour Place",
+  "addr": "愛景街8號",
+  "year": 2002,
+  "year_to": null,
+  "blocks": 7,
+  "flats": 2470,
+  "dev": [
+   "新世界",
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "新峰花園": {
+  "name": "新峰花園",
+  "en": "Classical Gardens",
+  "addr": "馬窩路10號",
+  "year": 1994,
+  "year_to": 1997,
+  "blocks": 27,
+  "flats": 1430,
+  "dev": [
+   "信置"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "沙田第一城": {
+  "name": "沙田第一城",
+  "en": "City One Shatin",
+  "addr": "得利街4號",
+  "year": 1980,
+  "year_to": 1987,
+  "blocks": 52,
+  "flats": 10642,
+  "dev": [
+   "恒基兆業",
+   "新世界",
+   "新鴻基",
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "德福花園": {
+  "name": "德福花園",
+  "en": "Telford Gardens",
+  "addr": "偉業街33號",
+  "year": 1980,
+  "year_to": 1982,
+  "blocks": 21,
+  "flats": 4991,
+  "dev": [
+   "合和",
+   "恒隆",
+   "港鐵"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "碧瑤灣": {
+  "name": "碧瑤灣",
+  "en": "Baguio Villa",
+  "addr": "域多利道550號",
+  "year": 1975,
+  "year_to": 1979,
+  "blocks": 33,
+  "flats": 1515,
+  "dev": [
+   "新世界"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "比華利山": {
+  "name": "比華利山",
+  "en": "Beverly Hill",
+  "addr": "樂活道6號",
+  "year": 1988,
+  "year_to": null,
+  "blocks": 10,
+  "flats": 698,
+  "dev": [
+   "恒基兆業"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "畢架山一號": {
+  "name": "畢架山一號",
+  "en": "One Beacon Hill",
+  "addr": "筆架山道1號",
+  "year": 2004,
+  "year_to": null,
+  "blocks": 16,
+  "flats": 601,
+  "dev": [
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "半山壹號": {
+  "name": "半山壹號",
+  "en": "Celestial Heights",
+  "addr": "常盛街80號",
+  "year": 2009,
+  "year_to": null,
+  "blocks": 33,
+  "flats": 939,
+  "dev": [
+   "南豐",
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "會景閣": {
+  "name": "會景閣",
+  "en": "CONVENTION PLAZA",
+  "addr": "港灣道1號",
+  "year": null,
+  "year_to": null,
+  "blocks": 1,
+  "flats": 602,
+  "dev": [
+   "新世界發展"
+  ],
+  "src": [
+   "28Hse 香港屋網"
+  ]
+ },
+ "疊茵庭": {
+  "name": "疊茵庭",
+  "en": "Parkland Villas",
+  "addr": "屯安里1號",
+  "year": 2000,
+  "year_to": null,
+  "blocks": 9,
+  "flats": null,
+  "dev": [
+   "恒基兆業"
+  ],
+  "src": [
+   "中原地產"
+  ]
+ },
+ "帝峰‧皇殿": {
+  "name": "帝峰‧皇殿",
+  "en": "The Hermitage",
+  "addr": "海泓道1號",
+  "year": 2010,
+  "year_to": null,
+  "blocks": 6,
+  "flats": null,
+  "dev": [
+   "信置",
+   "南豐",
+   "華置"
+  ],
+  "src": [
+   "中原地產"
+  ]
+ },
+ "匯景花園": {
+  "name": "匯景花園",
+  "en": "Sceneway Garden",
+  "addr": "匯景道8號",
+  "year": 1991,
+  "year_to": 1992,
+  "blocks": 17,
+  "flats": 4110,
+  "dev": [
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "香港黃金海岸": {
+  "name": "香港黃金海岸",
+  "en": "Hong Kong Gold Coast",
+  "addr": "青山公路青山灣段1號",
+  "year": 1990,
+  "year_to": 1995,
+  "blocks": 30,
+  "flats": 2052,
+  "dev": [
+   "信置"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "泓景臺": {
+  "name": "泓景臺",
+  "en": "Banyan Garden",
+  "addr": "荔枝角道863號",
+  "year": 2003,
+  "year_to": 2004,
+  "blocks": 7,
+  "flats": 2528,
+  "dev": [
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "YOHO TOWN": {
+  "name": "YOHO TOWN",
+  "en": "Yoho Town",
+  "addr": "元龍街8號",
+  "year": 2004,
+  "year_to": null,
+  "blocks": 8,
+  "flats": 4090,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "現崇山": {
+  "name": "現崇山",
+  "en": "Lions Rise",
+  "addr": "睦鄰街8號",
+  "year": 2012,
+  "year_to": null,
+  "blocks": 8,
+  "flats": 968,
+  "dev": [
+   "嘉里建設"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "曼克頓山": {
+  "name": "曼克頓山",
+  "en": "Manhattan Hill",
+  "addr": "寶輪街1號",
+  "year": 2006,
+  "year_to": null,
+  "blocks": 5,
+  "flats": 1114,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "新寶城": {
+  "name": "新寶城",
+  "en": "La Cite Noble",
+  "addr": "銀澳路1號",
+  "year": 1999,
+  "year_to": null,
+  "blocks": 6,
+  "flats": 2184,
+  "dev": [
+   "恒基兆業"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "聽濤雅苑": {
+  "name": "聽濤雅苑",
+  "en": "Vista Paradiso",
+  "addr": "恆明街2號",
+  "year": 1998,
+  "year_to": 1999,
+  "blocks": 11,
+  "flats": 2032,
+  "dev": [
+   "協和建設",
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "盈翠半島": {
+  "name": "盈翠半島",
+  "en": "Tierra Verde",
+  "addr": "青敬路33號",
+  "year": 1999,
+  "year_to": null,
+  "blocks": 12,
+  "flats": 3500,
+  "dev": [
+   "中信泰富",
+   "和記黃埔",
+   "港鐵",
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "花都廣場": {
+  "name": "花都廣場",
+  "en": "Flora Plaza",
+  "addr": "百和路88號",
+  "year": 1995,
+  "year_to": null,
+  "blocks": 10,
+  "flats": 2710,
+  "dev": [
+   "恒基兆業",
+   "華懋"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "海之戀": {
+  "name": "海之戀",
+  "en": "Ocean Pride",
+  "addr": "大河道100號",
+  "year": 2018,
+  "year_to": null,
+  "blocks": 14,
+  "flats": null,
+  "dev": [
+   "港鐵",
+   "長實"
+  ],
+  "src": [
+   "中原地產"
+  ]
+ },
+ "麗城花園": {
+  "name": "麗城花園",
+  "en": "Belvedere Garden",
+  "addr": "青山公路荃灣段530-625號",
+  "year": 1987,
+  "year_to": 1991,
+  "blocks": 19,
+  "flats": 6016,
+  "dev": [
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "日出康城 1期": {
+  "name": "日出康城 1期",
+  "en": "LOHAS PARK I",
+  "addr": "康城路1號",
+  "year": 2008,
+  "year_to": null,
+  "blocks": 10,
+  "flats": null,
+  "dev": [
+   "南豐",
+   "港鐵",
+   "長實"
+  ],
+  "src": [
+   "中原地產"
+  ]
+ },
+ "學士臺": {
+  "name": "學士臺",
+  "en": "Academic Terrace",
+  "addr": "薄扶林道101號",
+  "year": 1989,
+  "year_to": null,
+  "blocks": 3,
+  "flats": 632,
+  "dev": [
+   "新世界"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "新元朗中心": {
+  "name": "新元朗中心",
+  "en": "Sun Yuen Long Centre",
+  "addr": "朗日路8號",
+  "year": 1993,
+  "year_to": null,
+  "blocks": 5,
+  "flats": 1072,
+  "dev": [
+   "港鐵",
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "凱旋門": {
+  "name": "凱旋門",
+  "en": "The Arch",
+  "addr": "柯士甸道西1號",
+  "year": 2005,
+  "year_to": null,
+  "blocks": 4,
+  "flats": 1050,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "屯門市廣場": {
+  "name": "屯門市廣場",
+  "en": "Tuen Mun Town Plaza",
+  "addr": "屯順街1號",
+  "year": 1987,
+  "year_to": 1992,
+  "blocks": 8,
+  "flats": 1968,
+  "dev": [
+   "信置"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "爵悅庭": {
+  "name": "爵悅庭",
+  "en": "Chelsea Court",
+  "addr": "楊屋道90-114號",
+  "year": 2005,
+  "year_to": null,
+  "blocks": 4,
+  "flats": 1624,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "新港城": {
+  "name": "新港城",
+  "en": "Sunshine City",
+  "addr": "鞍誠街18號",
+  "year": 1993,
+  "year_to": 1996,
+  "blocks": 20,
+  "flats": 4759,
+  "dev": [
+   "恒基兆業"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "鯉景灣": {
+  "name": "鯉景灣",
+  "en": "Lei King Wan",
+  "addr": "太康街31-59號",
+  "year": 1988,
+  "year_to": 1989,
+  "blocks": 17,
+  "flats": 2295,
+  "dev": [
+   "太古"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "囍匯": {
+  "name": "囍匯",
+  "en": "The Avenue",
+  "addr": "利東街",
+  "year": 2014,
+  "year_to": 2015,
+  "blocks": 4,
+  "flats": null,
+  "dev": [
+   "市建局",
+   "合和",
+   "信置"
+  ],
+  "src": [
+   "中原地產"
+  ]
+ },
+ "御皇庭": {
+  "name": "御皇庭",
+  "en": "Royal Green",
+  "addr": "清曉路18號",
+  "year": 2006,
+  "year_to": null,
+  "blocks": 3,
+  "flats": 922,
+  "dev": [
+   "爪哇集團",
+   "恒基兆業"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "柏景灣": {
+  "name": "柏景灣",
+  "en": "Park Avenue",
+  "addr": "海庭道18號",
+  "year": 2001,
+  "year_to": null,
+  "blocks": 9,
+  "flats": 2935,
+  "dev": [
+   "中國海外",
+   "信置",
+   "港鐵",
+   "新中地產",
+   "嘉里建設"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "碧堤半島": {
+  "name": "碧堤半島",
+  "en": "Bellagio",
+  "addr": "青山公路深井段33號",
+  "year": 2003,
+  "year_to": 2006,
+  "blocks": 8,
+  "flats": 33345,
+  "dev": [
+   "九倉",
+   "會德豐"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "領都": {
+  "name": "領都",
+  "en": "LE PRESTIGE",
+  "addr": "康城路1號",
+  "year": null,
+  "year_to": null,
+  "blocks": 4,
+  "flats": 1688,
+  "dev": [
+   "長江實業"
+  ],
+  "src": [
+   "28Hse 香港屋網"
+  ]
+ },
+ "南豐新邨": {
+  "name": "南豐新邨",
+  "en": "Nan Fung Sun Chuen",
+  "addr": "基利坊15-27號",
+  "year": 1977,
+  "year_to": 1978,
+  "blocks": 12,
+  "flats": 2826,
+  "dev": [
+   "南豐"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "光明臺": {
+  "name": "光明臺",
+  "en": "Illumination Terrace",
+  "addr": "大坑道5-7號",
+  "year": 1993,
+  "year_to": null,
+  "blocks": 2,
+  "flats": 704,
+  "dev": [
+   "新世界"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "黃埔新村": {
+  "name": "黃埔新村",
+  "en": "WHAMPOA ESTATE",
+  "addr": "民泰街39號",
+  "year": null,
+  "year_to": null,
+  "blocks": 25,
+  "flats": 2730,
+  "dev": [
+   "成都物業"
+  ],
+  "src": [
+   "28Hse 香港屋網"
+  ]
+ },
+ "東港城": {
+  "name": "東港城",
+  "en": "East Point City",
+  "addr": "重華路8號",
+  "year": 1997,
+  "year_to": null,
+  "blocks": 7,
+  "flats": 2184,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "嘉輝花園": {
+  "name": "嘉輝花園",
+  "en": "Smithfield Terrace",
+  "addr": "士美非路71-77號",
+  "year": 1986,
+  "year_to": null,
+  "blocks": 4,
+  "flats": 912,
+  "dev": [
+   "恒基兆業"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "首都": {
+  "name": "首都",
+  "en": "THE CAPITOL",
+  "addr": "康城路1號",
+  "year": null,
+  "year_to": null,
+  "blocks": 10,
+  "flats": 2096,
+  "dev": [
+   "長江實業"
+  ],
+  "src": [
+   "28Hse 香港屋網"
+  ]
+ },
+ "富豪花園": {
+  "name": "富豪花園",
+  "en": "Belair Gardens",
+  "addr": "大涌橋路52號",
+  "year": 1982,
+  "year_to": 1987,
+  "blocks": 14,
+  "flats": 1940,
+  "dev": [
+   "華懋"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "會展中心 會景閣": {
+  "name": "會展中心 會景閣",
+  "en": "Convention Plaza Apartments",
+  "addr": "港灣道1號",
+  "year": 1989,
+  "year_to": null,
+  "blocks": 1,
+  "flats": null,
+  "dev": [
+   "新世界"
+  ],
+  "src": [
+   "中原地產"
+  ]
+ },
+ "黃埔新邨": {
+  "name": "黃埔新邨",
+  "en": "Whampoa Estate",
+  "addr": "民泰街39號",
+  "year": 1976,
+  "year_to": 1978,
+  "blocks": 25,
+  "flats": null,
+  "dev": [
+   "成都物業"
+  ],
+  "src": [
+   "中原地產"
+  ]
+ },
+ "淘大花園": {
+  "name": "淘大花園",
+  "en": "Amoy Gardens",
+  "addr": "牛頭角道77號",
+  "year": 1981,
+  "year_to": 1987,
+  "blocks": 19,
+  "flats": 4896,
+  "dev": [
+   "恒隆"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "港運城": {
+  "name": "港運城",
+  "en": "Island Place",
+  "addr": "丹拿道51-61號",
+  "year": 1996,
+  "year_to": null,
+  "blocks": 3,
+  "flats": 784,
+  "dev": [
+   "太古",
+   "中華巴士"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "牽晴間": {
+  "name": "牽晴間",
+  "en": "Dawning Views",
+  "addr": "一鳴路23號",
+  "year": 1999,
+  "year_to": null,
+  "blocks": 12,
+  "flats": 2688,
+  "dev": [
+   "恒基兆業"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "深灣軒": {
+  "name": "深灣軒",
+  "en": "Sham Wan Towers",
+  "addr": "鴨脷洲徑",
+  "year": 2004,
+  "year_to": null,
+  "blocks": 3,
+  "flats": 1040,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "御庭軒": {
+  "name": "御庭軒",
+  "en": "GRAND REGENTVILLE",
+  "addr": "和滿街9號",
+  "year": null,
+  "year_to": null,
+  "blocks": 3,
+  "flats": 662,
+  "dev": [
+   "信和集團"
+  ],
+  "src": [
+   "28Hse 香港屋網"
+  ]
+ },
+ "城市花園": {
+  "name": "城市花園",
+  "en": "City Garden",
+  "addr": "電氣道233號",
+  "year": 1982,
+  "year_to": 1986,
+  "blocks": 14,
+  "flats": 2393,
+  "dev": [
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "香港仔中心": {
+  "name": "香港仔中心",
+  "en": "Aberdeen Centre",
+  "addr": "南寧街11號",
+  "year": 1979,
+  "year_to": 1982,
+  "blocks": 20,
+  "flats": 2788,
+  "dev": [
+   "和記黃埔"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "翔龍灣": {
+  "name": "翔龍灣",
+  "en": "Grand Waterfront",
+  "addr": "新碼頭街38號",
+  "year": 2006,
+  "year_to": null,
+  "blocks": 5,
+  "flats": 1782,
+  "dev": [
+   "中華煤氣",
+   "恒基兆業"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "美孚新邨": {
+  "name": "美孚新邨",
+  "en": "Mei Foo Sun Chuen",
+  "addr": "百老匯街22-24號",
+  "year": 1968,
+  "year_to": 1978,
+  "blocks": 99,
+  "flats": 13115,
+  "dev": [
+   "美孚企業",
+   "新世界"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "漾日居": {
+  "name": "漾日居",
+  "en": "The Waterfront",
+  "addr": "柯士甸道西1號",
+  "year": 2000,
+  "year_to": null,
+  "blocks": 6,
+  "flats": 1288,
+  "dev": [
+   "永泰",
+   "港鐵"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "嵐山": {
+  "name": "嵐山",
+  "en": "Mont Vert",
+  "addr": "鳳園路9號",
+  "year": 2014,
+  "year_to": 2015,
+  "blocks": 8,
+  "flats": 1071,
+  "dev": [
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "天賦海灣": {
+  "name": "天賦海灣",
+  "en": "PROVIDENCE BAY",
+  "addr": "科進路5號",
+  "year": 2012,
+  "year_to": null,
+  "blocks": 66,
+  "flats": 482,
+  "dev": [
+   "永泰",
+   "信置",
+   "南豐"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "寶翠園": {
+  "name": "寶翠園",
+  "en": "The Belcher's",
+  "addr": "薄扶林道89號",
+  "year": 2000,
+  "year_to": 2001,
+  "blocks": 6,
+  "flats": 2213,
+  "dev": [
+   "信德",
+   "新世界",
+   "新鴻基",
+   "廖創興"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "翰林峰": {
+  "name": "翰林峰",
+  "en": "Novum West",
+  "addr": "皇后大道西460號",
+  "year": 2019,
+  "year_to": null,
+  "blocks": 4,
+  "flats": null,
+  "dev": [
+   "恒基兆業"
+  ],
+  "src": [
+   "中原地產"
+  ]
+ },
+ "傲雲峰": {
+  "name": "傲雲峰",
+  "en": "Sky Tower",
+  "addr": "宋皇臺道38號",
+  "year": 2004,
+  "year_to": null,
+  "blocks": 6,
+  "flats": 2208,
+  "dev": [
+   "新世界",
+   "上海實業",
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "浪翠園": {
+  "name": "浪翠園",
+  "en": "Sea Crest Villa",
+  "addr": "青山公路青龍頭段18號",
+  "year": 1992,
+  "year_to": 1997,
+  "blocks": 15,
+  "flats": 2389,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "藍天海岸": {
+  "name": "藍天海岸",
+  "en": "Coastal Skyline",
+  "addr": "東涌海濱路12號",
+  "year": 2002,
+  "year_to": 2007,
+  "blocks": 54,
+  "flats": 3370,
+  "dev": [
+   "香港興業",
+   "港鐵",
+   "樂高東涌",
+   "豐隆實業"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "海逸豪園": {
+  "name": "海逸豪園",
+  "en": "Laguna Verde",
+  "addr": "海逸道8號",
+  "year": 1998,
+  "year_to": 2001,
+  "blocks": 25,
+  "flats": 4727,
+  "dev": [
+   "中電",
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "迎海": {
+  "name": "迎海",
+  "en": "Double Cove",
+  "addr": "烏溪沙路8號",
+  "year": 2013,
+  "year_to": 2016,
+  "blocks": 21,
+  "flats": 3535,
+  "dev": [
+   "恒基兆業",
+   "培新集團",
+   "新世界"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "嘉富麗苑": {
+  "name": "嘉富麗苑",
+  "en": "Clovelly Court",
+  "addr": "梅道12號",
+  "year": 1994,
+  "year_to": null,
+  "blocks": 2,
+  "flats": 240,
+  "dev": [
+   "新世界"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "又一居": {
+  "name": "又一居",
+  "en": "Parc Oasis",
+  "addr": "瑰麗路21號",
+  "year": 1992,
+  "year_to": 1995,
+  "blocks": 32,
+  "flats": 1816,
+  "dev": [
+   "信置",
+   "會德豐"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "馬鞍山中心": {
+  "name": "馬鞍山中心",
+  "en": "Ma On Shan Centre",
+  "addr": "鞍駿街1號",
+  "year": 1994,
+  "year_to": null,
+  "blocks": 4,
+  "flats": 1048,
+  "dev": [
+   "南豐"
+  ],
+  "dev_alt": [
+   "和記黃埔"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "采葉庭": {
+  "name": "采葉庭",
+  "en": "The Parcville",
+  "addr": "元朗舊墟路33號",
+  "year": 2002,
+  "year_to": null,
+  "blocks": 14,
+  "flats": 1618,
+  "dev": [
+   "新世界",
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "天晉": {
+  "name": "天晉",
+  "en": "The Wings",
+  "addr": "唐賢街9號",
+  "year": 2011,
+  "year_to": null,
+  "blocks": 6,
+  "flats": null,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產"
+  ]
+ },
+ "雍景臺": {
+  "name": "雍景臺",
+  "en": "Robinson Place",
+  "addr": "羅便臣道70號",
+  "year": 1994,
+  "year_to": null,
+  "blocks": 2,
+  "flats": 651,
+  "dev": [
+   "太古"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "新都城": {
+  "name": "新都城",
+  "en": "The Metro City",
+  "addr": "貿業路8號",
+  "year": 1996,
+  "year_to": 2000,
+  "blocks": 21,
+  "flats": 6768,
+  "dev": [
+   "恒基兆業"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "荃威花園": {
+  "name": "荃威花園",
+  "en": "Allway Garden",
+  "addr": "荃景圍187-195號",
+  "year": 1978,
+  "year_to": 1981,
+  "blocks": 16,
+  "flats": 3422,
+  "dev": [
+   "合和"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "銀禧花園": {
+  "name": "銀禧花園",
+  "en": "Jubilee Garden",
+  "addr": "樂景街2-18號",
+  "year": 1985,
+  "year_to": 1986,
+  "blocks": 9,
+  "flats": 2259,
+  "dev": [
+   "港鐵",
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "海怡半島": {
+  "name": "海怡半島",
+  "en": "South Horizons",
+  "addr": "海怡路6號",
+  "year": 1991,
+  "year_to": 1995,
+  "blocks": 34,
+  "flats": 9812,
+  "dev": [
+   "和記黃埔",
+   "香港電燈",
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "上水中心": {
+  "name": "上水中心",
+  "en": "Sheung Shui Centre",
+  "addr": "智昌路3號",
+  "year": 1993,
+  "year_to": null,
+  "blocks": 6,
+  "flats": 1128,
+  "dev": [
+   "恒基兆業"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "置富花園": {
+  "name": "置富花園",
+  "en": "Chi Fu Fa Yuen",
+  "addr": "置富道9號",
+  "year": 1978,
+  "year_to": 1981,
+  "blocks": 27,
+  "flats": 4328,
+  "dev": [
+   "置地"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "海鑽天賦海灣": {
+  "name": "海鑽天賦海灣",
+  "en": "THE GRACES PROVIDENCE BAY",
+  "addr": "科進路9號",
+  "year": null,
+  "year_to": null,
+  "blocks": 17,
+  "flats": 193,
+  "dev": [
+   "信和集團"
+  ],
+  "src": [
+   "28Hse 香港屋網"
+  ]
+ },
+ "貝沙灣": {
+  "name": "貝沙灣",
+  "en": "Residence Bel-Air",
+  "addr": "數碼港道",
+  "year": 2004,
+  "year_to": 2008,
+  "blocks": 77,
+  "flats": 2755,
+  "dev": [
+   "盈科大衍地產"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "翠怡花園": {
+  "name": "翠怡花園",
+  "en": "Greenfield Garden",
+  "addr": "楓樹窩路1號",
+  "year": 1989,
+  "year_to": 1990,
+  "blocks": 11,
+  "flats": 3216,
+  "dev": [
+   "捷和集團",
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "帝景園": {
+  "name": "帝景園",
+  "en": "Dynasty Court",
+  "addr": "舊山頂道17-23號",
+  "year": 1991,
+  "year_to": null,
+  "blocks": 5,
+  "flats": 409,
+  "dev": [
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "海翠花園": {
+  "name": "海翠花園",
+  "en": "Pierhead Garden",
+  "addr": "湖翠路168-236號",
+  "year": 1988,
+  "year_to": null,
+  "blocks": 6,
+  "flats": 1432,
+  "dev": [
+   "港鐵",
+   "新世界"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "青怡花園": {
+  "name": "青怡花園",
+  "en": "Tsing Yi Garden",
+  "addr": "青綠街7-19號",
+  "year": 1986,
+  "year_to": null,
+  "blocks": 7,
+  "flats": 1520,
+  "dev": [
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "太古城": {
+  "name": "太古城",
+  "en": "Taikoo Shing",
+  "addr": "太古灣道",
+  "year": 1976,
+  "year_to": 1987,
+  "blocks": 61,
+  "flats": 12696,
+  "dev": [
+   "太古"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "嘉亨灣": {
+  "name": "嘉亨灣",
+  "en": "Grand Promenade",
+  "addr": "太康街38號",
+  "year": 2005,
+  "year_to": null,
+  "blocks": 5,
+  "flats": 2020,
+  "dev": [
+   "中華煤氣",
+   "恒基兆業"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "昇悅居": {
+  "name": "昇悅居",
+  "en": "Liberte",
+  "addr": "荔枝角道833號",
+  "year": 2003,
+  "year_to": null,
+  "blocks": 7,
+  "flats": 2434,
+  "dev": [
+   "信德",
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "溋玥天賦海灣": {
+  "name": "溋玥天賦海灣",
+  "en": "PROVIDENCE PEAK",
+  "addr": "科進路8號",
+  "year": null,
+  "year_to": null,
+  "blocks": 24,
+  "flats": 548,
+  "dev": [
+   "信和集團"
+  ],
+  "src": [
+   "28Hse 香港屋網"
+  ]
+ },
+ "領峰": {
+  "name": "領峰",
+  "en": "LE PRIME OF LE PRESTIGE",
+  "addr": "康城路1號",
+  "year": null,
+  "year_to": null,
+  "blocks": 3,
+  "flats": 1416,
+  "dev": [
+   "長江實業"
+  ],
+  "src": [
+   "28Hse 香港屋網"
+  ]
+ },
+ "麗港城": {
+  "name": "麗港城",
+  "en": "Laguna City",
+  "addr": "麗港街1號",
+  "year": 1990,
+  "year_to": 1994,
+  "blocks": 38,
+  "flats": 8069,
+  "dev": [
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "帝后華庭": {
+  "name": "帝后華庭",
+  "en": "Queen's Terrace",
+  "addr": "皇后街1號",
+  "year": 2003,
+  "year_to": null,
+  "blocks": 3,
+  "flats": 1148,
+  "dev": [
+   "市建局",
+   "新世界",
+   "長實"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "邁亞美海灣": {
+  "name": "邁亞美海灣",
+  "en": "Miami Beach Towers",
+  "addr": "湖翠路268號",
+  "year": 1991,
+  "year_to": null,
+  "blocks": 6,
+  "flats": 1272,
+  "dev": [
+   "信置"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ },
+ "領凱": {
+  "name": "領凱",
+  "en": "LA SPLENDEUR OF LE PRESTIGE",
+  "addr": "康城路1號",
+  "year": null,
+  "year_to": null,
+  "blocks": 3,
+  "flats": 1168,
+  "dev": [
+   "長江實業"
+  ],
+  "src": [
+   "28Hse 香港屋網"
+  ]
+ },
+ "新屯門中心": {
+  "name": "新屯門中心",
+  "en": "Sun Tuen Mun Centre",
+  "addr": "龍門路55-65號",
+  "year": 1990,
+  "year_to": null,
+  "blocks": 10,
+  "flats": 3500,
+  "dev": [
+   "港鐵",
+   "新鴻基"
+  ],
+  "src": [
+   "中原地產",
+   "28Hse 香港屋網"
+  ]
+ }
+}

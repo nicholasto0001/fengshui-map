@@ -37,6 +37,12 @@ An element score is a rank among the 18 districts, because "this district is
 wood" only ever means "compared with the rest of Hong Kong". The raw figures
 travel with it so the app can say why.
 
+Alongside the 18 district records the file carries `ref`: where every
+residential building in Hong Kong sits on each measure, as 5% steps. The page
+needs that to place ONE building -- "22 metres tall" only means something
+against the rest of the stock -- and shipping the ladder costs a few hundred
+bytes where shipping 53,634 precomputed scores would cost a megabyte.
+
 Output: data/elements.json
 Self-test: `python3 pipeline/make_elements.py`
 """
@@ -224,12 +230,36 @@ def build() -> list[dict]:
         out.append(dict(tc=name, zone=zone, dir_wx=DIR_WX[zone], form=form, **v))
 
     out.sort(key=lambda r: -r["n"])
-    return out
+
+    # The ladder the page measures a single building against. 火 is missing on
+    # purpose: standing out is relative to the neighbours, so it is a property
+    # of the block, not of the building, and the page reads it off the district.
+    allh, allsl, allwt = [], [], []
+    for r in homes:
+        h = r.get("h") or 0.0
+        if h > 0:
+            allh.append(h)
+            ring = r.get("ring")
+            if ring and len(ring) >= 4:
+                area, _ = ring_area_perimeter(ring)
+                if area > 0:
+                    allsl.append(h / math.sqrt(area))
+        if r.get("wt_d") is not None:
+            allwt.append(r["wt_d"])
+
+    def ladder(vals: list[float]) -> list[float]:
+        v = sorted(vals)
+        return [round(v[min(len(v) - 1, int(len(v) * i / 20))], 3) for i in range(21)]
+
+    return {"districts": out,
+            "ref": {"h": ladder(allh), "slender": ladder(allsl), "wt_d": ladder(allwt),
+                    "n": len(homes)}}
 
 
 if __name__ == "__main__":
-    recs = build()
-    OUT.write_text(json.dumps(recs, ensure_ascii=False), "utf8")
+    data = build()
+    recs = data["districts"]
+    OUT.write_text(json.dumps(data, ensure_ascii=False), "utf8")
 
     print(f"{'區':<7}{'住宅':>7}{'方位':>5}{'木':>5}{'火':>5}{'土':>5}{'水':>5}"
           f"   {'高中位':>7}{'瘦削':>6}{'尖%':>6}{'密度':>6}{'近水%':>7}")
@@ -241,4 +271,10 @@ if __name__ == "__main__":
               f"{r['h_med']:>7.1f}{r['slender']:>6.2f}{r['spike']:>6.1f}"
               f"{r['density']:>6}{r['shore']:>7.1f}")
     print(f"\n-> {OUT}  ({OUT.stat().st_size/1024:.0f} KB)")
-    print("金 冇形嘅數據支持，只由方位定 —— 見檔案開頭。")
+    ref = data["ref"]
+    print(f"\n全港參考階梯（{ref['n']:,} 幢住宅）")
+    for k in ("h", "slender", "wt_d"):
+        q = ref[k]
+        print(f"  {k:<8} 最低 {q[0]:>7} · 四分一 {q[5]:>7} · 中位 {q[10]:>7}"
+              f" · 四分三 {q[15]:>7} · 最高 {q[20]:>8}")
+    print("\n金 冇形嘅數據支持，只由方位定 —— 見檔案開頭。")

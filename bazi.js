@@ -266,26 +266,15 @@ export function strength(c){
           avoid: WUXING.filter(w=>!useful.includes(w))};
 }
 
-/* 五行 -> 方位 -> 香港邊一忽。
+/* 五行 -> 方位。
    出處：風水雜誌《新玄機》第 231 期，區晉豪〈五行方向搵屋〉——
    「木代表東方。火代表南方。金代表西方。水代表北方。」
-   「新界屬北，香港島屬南，九龍屬中部，西貢及將軍澳屬東，大嶼山屬西。」
-   呢個唔係我哋發明，亦都唔係唯一講法，所以介面會寫明出處。 */
-export const WX_DIR = {木:"東", 火:"南", 土:"中", 金:"西", 水:"北"};
-export const HK_REGION_WX = [
-  {wx:"南", label:"香港島", districts:["中西區","灣仔區","東區","南區"]},
-  {wx:"北", label:"新界",   districts:["北區","元朗區","屯門區","大埔區","沙田區","荃灣區","葵青區"]},
-  {wx:"中", label:"九龍",   districts:["油尖旺區","深水埗區","九龍城區","黃大仙區","觀塘區"]},
-  {wx:"東", label:"西貢／將軍澳", districts:["西貢區"]},
-  {wx:"西", label:"大嶼山／離島", districts:["離島區"]},
-];
 
-/** 用神對應邊幾個區。回傳 [{wx, dir, label, districts}]。 */
-export function regionsFor(useful){
-  const want = new Set(useful.map(w => WX_DIR[w]));
-  return HK_REGION_WX.filter(r => want.has(r.wx))
-    .map(r => ({...r, wx: Object.keys(WX_DIR).find(k => WX_DIR[k] === r.wx), dir: r.wx}));
-}
+   佢同一篇仲寫咗邊一忽香港屬邊個方位（新界屬北、九龍屬中…），我哋以前
+   照抄咗做一張五個區域嘅表。而家唔用嗰張表：方位由每個區自己嘅座標計,
+   而每個區屬咩五行係量返佢嘅形（pipeline/make_elements.py）。抄返嚟嗰張
+   表最多得五個答案，度唔到區同區之間嘅分別。木東、火南、金西、水北、
+   土中呢個對應，而家寫喺 pipeline 嗰邊，隨住每個區嘅座標一齊出。 */
 
 /* ------------------------------------------------------- 寒熱命（蘇民峰） --- */
 /*

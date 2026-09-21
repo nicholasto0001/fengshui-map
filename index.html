@@ -548,6 +548,13 @@
             font-size:17px; font-weight:700}
   .area .an{flex:1; font-size:12.5px; color:var(--ink3); line-height:1.45}
   .area .an b{display:block; font-size:16px; font-weight:650; color:var(--ink)}
+  .area .asub{color:var(--ink3); opacity:.75; font-size:11.5px}
+  /* 個人榜同全港榜答唔同問題，而佢哋經常唔同答案 —— 唔講清楚，人哋會
+     以為我哋推緊爛樓。所以擺喺清單正下面，唔係擺落聲明度。 */
+  .clash{background:var(--card2,#f3f1ec); border:1px solid var(--line);
+         border-radius:14px; padding:12px 14px; margin-top:10px;
+         font-size:12.5px; line-height:1.55; color:var(--ink3)}
+  .clash b{color:var(--ink)}
   .area .ac{font-size:16px; font-weight:650; font-variant-numeric:tabular-nums}
   .area .ac em{font-style:normal; font-size:11.5px; color:var(--ink3); margin-inline-start:2px}
   .area i{font-style:normal; font-size:19px; color:var(--ink3); flex:none}
@@ -1515,6 +1522,20 @@ function decodeRing(enc){
   return pts;
 }
 
+// 地基面積（平方米）。Shoelace，緯度嗰度照計，經度按緯度收窄。
+// 八字配樓要用嚟計「高度對地基闊度」—— 一幢樓瘦唔瘦，要有個底先講得出。
+function ringArea(enc){
+  const pts = decodeRing(enc);
+  if(!pts || pts.length < 4) return 0;
+  const kx = 111320 * Math.cos(pts[0][0] * Math.PI / 180);
+  let a = 0;
+  for(let i = 0; i < pts.length - 1; i++){
+    const [y1, x1] = pts[i], [y2, x2] = pts[i+1];
+    a += (x1*kx) * (y2*110540) - (x2*kx) * (y1*110540);
+  }
+  return Math.abs(a) / 2;
+}
+
 // ---------------------------------------------------------------------------
 // Diverging scale: red = below average, neutral = middle, teal = above.
 //
@@ -1603,11 +1624,13 @@ function refreshGuaDirs(){
   if(!(guaOn && bzMod && birth)) return;
   const g = myGua();
   if(g) guaDirSet = new Set(bzMod.goodDirs(g).map(d => DIR8.indexOf(d)));
-  const c = bzMod.chart(birth.y, birth.m, birth.d,
-                        birth.h == null ? 12 : birth.h, 0);
-  if(c){
-    const regs = bzMod.regionsFor(bzMod.strength(c).useful);
-    if(regs.length) guaRegions = new Set(regs.flatMap(r => r.districts));
+  const hh = birth.h == null ? 12 : birth.h;
+  const c = bzMod.chart(birth.y, birth.m, birth.d, hh, 0);
+  const hc = bzMod.hotCold(birth.y, birth.m, birth.d, hh, 0);
+  // elements.json 未返到就唔篩地區 —— 篩錯好過唔篩呢句係啱嘅反面。
+  if(c && hc){
+    const {areas} = rankAreas(hc.like, bzMod.strength(c).pct);
+    if(areas.length) guaRegions = new Set(areas.map(a => a.tc));
   }
 }
 
@@ -2287,37 +2310,104 @@ function showFavs(){
    西貢及將軍澳屬東，大嶼山屬西。」所以我哋計方位，唔斷言屬性。
 
    港島自己一個參考框 —— 啲清單本身都係咁分（港島東西南北中另計）。 */
-const ISLAND_D = new Set(["中西區","灣仔區","東區","南區"]);
-const DIR_WX = {東:"木", 南:"火", 中:"土", 西:"金", 北:"水"};
-let dirCache = null;
+/* 十八區嘅五行，由 pipeline/make_elements.py 量出嚟，唔係查表。
 
-function districtDirs(){
-  if(dirCache || !districtData.length) return dirCache;
-  const frame = names => {
-    const g = districtData.filter(d => names.has(d.tc));
-    return [g.reduce((a,d)=>a+d.lon,0)/g.length, g.reduce((a,d)=>a+d.lat,0)/g.length];
-  };
-  const kln = new Set(districtData.map(d=>d.tc).filter(t=>!ISLAND_D.has(t) && t!=="離島區"));
-  const out = {};
-  for(const [names, isle] of [[ISLAND_D,true],[kln,false]]){
-    const [cx, cy] = frame(names);
-    const rows = districtData.filter(d=>names.has(d.tc)).map(d=>{
-      const dx = (d.lon-cx)*Math.cos(22.36*Math.PI/180), dy = d.lat-cy;
-      return {tc:d.tc, brg:(Math.atan2(dx,dy)*180/Math.PI+360)%360,
-              r:Math.hypot(dx,dy)*111.32};
-    });
-    // 最近中心嗰兩成當「中」（土）。
-    const cut = rows.map(r=>r.r).sort((a,b)=>a-b)[Math.max(0,Math.floor(rows.length/5))];
-    for(const r of rows){
-      const d = r.r < cut ? "中"
-        : (r.brg<45||r.brg>=315) ? "北" : r.brg<135 ? "東" : r.brg<225 ? "南" : "西";
-      out[r.tc] = {dir:d, wx:DIR_WX[d], isle};
-    }
-  }
-  // 大嶼山／離島：區晉豪明講屬西。
-  out["離島區"] = {dir:"西", wx:"金", isle:false};
-  return (dirCache = out);
+   撼龍經定五行係睇「形」—— 金圓、木直、水曲、火尖、土方 —— 而形係我哋
+   量得到嘅：每幢樓都有高度、地基輪廓、同離山離水幾遠。所以：
+
+     木  高而瘦     平均樓高、高度對地基闊度嘅比例
+     土  矮而闊     同一組數字反過來
+     火  尖         高出自己四周一倍以上嘅樓有幾多 ＋ 每平方公里幾多幢
+     水  近水       幾多成住宅喺離水邊 200 米內
+     金  —          冇。圓度要睇輪廓，而一半 footprint 係四點嘅長方形，
+                    計出嚟嘅圓度係噪音扮數字。金淨係由方位定，畫面會寫明。
+
+   分數係十八區入面嘅排名（0–100）：講「呢個區屬木」本來就只能夠係
+   「同全港其他區比」。 */
+let elemData = null, elemRef = null, elemPromise = null;
+function loadElements(){
+  if(!elemPromise)
+    elemPromise = fetch(dataUrl('../elements.json'))
+      .then(r => r.json())
+      .then(d => {
+        elemRef = d.ref;
+        elemData = Object.fromEntries(d.districts.map(x => [x.tc, x]));
+      })
+      .catch(() => (elemData = {}));
+  return elemPromise;
 }
+
+/* 一幢樓喺全港嘅位置 —— 「22 米高」本身冇意思，要同其餘五萬幢比先有。
+   階梯由 pipeline 出，每 5% 一級。 */
+function ladderPct(ladder, v){
+  if(!ladder || v == null) return 50;
+  if(v <= ladder[0]) return 0;
+  for(let i = 1; i < ladder.length; i++)
+    if(v <= ladder[i]) return (i - 1 + (v - ladder[i-1]) / (ladder[i] - ladder[i-1] || 1)) * 5;
+  return 100;
+}
+
+/* 逐幢樓嘅形。木同土睇佢自己幾高幾瘦，水睇佢離水幾遠 —— 呢三樣係
+   樓本身嘅屬性。火唔係：「高出四周」一定要有四周，所以火跟返佢
+   嗰個區。金照舊由方位定。 */
+function bldWx(b, wx, dEl){
+  if(wx === "火") return dEl ? dEl.form.火 : 50;
+  if(wx === "金") return dEl && dEl.dir_wx === "金" ? 70 : 30;
+  if(wx === "水") return Math.round(100 - ladderPct(elemRef && elemRef.wt_d, b.wt_d));
+  const tall = ladderPct(elemRef && elemRef.h, b.h);
+  const area = ringArea(b.ring);
+  const sl = area > 0 && b.h ? ladderPct(elemRef && elemRef.slender, b.h / Math.sqrt(area)) : tall;
+  const mu = Math.round((tall + sl) / 2);
+  return wx === "木" ? mu : 100 - mu;
+}
+
+/* 個人化權重。
+
+   寒熱命話你知要邊兩個五行，但佢本身淨係得三個答案 —— 實測六個唔同
+   出世日期，得返兩張一模一樣嘅單，咁就唔算度身訂造。
+
+   第二層由你自己個盤嚟。同樣係寒命，有人盤入面火佔 47%、木得 13%,
+   有人反過嚟火得 6%、木有 47%。缺邊樣補邊樣，本來就係八字度嘅做法,
+   所以次序唔變（寒熱命話咗邊個行先），但兩者之間嘅比重跟返你自己
+   實際缺幾多。 */
+function wxWeights(like, pct){
+  const [p1, p2] = like;
+  const short = w => 1 - Math.min(pct[w] || 0, 60) / 100;   // 0.40 – 1.00
+  const a = 0.70 * short(p1), b = 0.30 * short(p2), t = a + b;
+  return [[p1, a / t], [p2, b / t]];
+}
+
+/* 夾你嘅地區。面板同地圖篩選一定要行同一條數 —— 之前面板用寒熱命，
+   地圖篩選用扶抑用神加一張寫死嘅五區表，所以面板叫你睇觀塘，撳「睇合
+   我嘅樓」之後個地圖淨係剩返新界。 */
+function rankAreas(like, pct, n = 6){
+  const wts = wxWeights(like, pct);
+  if(!elemData || !districtData.length) return {wts, areas: []};
+  const areas = districtData.map(d => {
+    const e = elemData[d.tc];
+    if(!e) return null;
+    return {tc: d.tc, avg: d.avg, n: d.n, e, wx: like[0], dir: e.zone,
+            f1: fitFor(e, like[0]), f2: fitFor(e, like[1]),
+            fit: Math.round(wts.reduce((t, [w, k]) => t + k * fitFor(e, w), 0))};
+  }).filter(Boolean).sort((a, b) => b.fit - a.fit).slice(0, n);
+  return {wts, areas};
+}
+
+const NO_FORM = "金";
+function fitFor(d, wx){
+  if(wx === NO_FORM) return d.dir_wx === "金" ? 70 : 30;
+  return d.form[wx];
+}
+
+/* 每個結論都要講得出量咗啲乜。冇數字嘅推薦同街邊嗰啲清單冇分別。 */
+const REASON = {
+  木: d => `平均樓高 ${d.h_med} 米，高度係地基闊度嘅 ${d.slender} 倍`,
+  土: d => `平均樓高得 ${d.h_med} 米，矮而闊`,
+  火: d => `${d.spike.toFixed(1)}% 樓宇高出四周一倍以上，每平方公里 ${d.density} 幢`,
+  水: d => `${d.shore.toFixed(1)}% 住宅喺離水邊 200 米內`,
+  金: d => d.dir_wx === "金" ? "位處全港西面" : "唔喺全港西面",
+};
+const MEASURED = wx => wx !== NO_FORM;
 
 /* ---------- 八字 ----------
 
@@ -2435,13 +2525,15 @@ function bzResult(){
   // 係判斷，所以佢做印證，唔做擴充。
   const want = hc.like.slice();
   const agree = known && hc.like.some(w => st.useful.includes(w));
-  const WX_D = {木:"東", 火:"南", 土:"中", 金:"西", 水:"北"};
-  const dirs2 = new Set(want.map(w => WX_D[w]));
-  const dd = districtDirs() || {};
-  const areas = districtData
-    .filter(d => dd[d.tc] && dirs2.has(dd[d.tc].dir))
-    .map(d => ({tc: d.tc, avg: d.avg, n: d.n, ...dd[d.tc]}))
-    .sort((a, b) => b.avg - a.avg);
+  // 主用神行七成，次用神三成 —— 寒命喜火，木生火，所以火先係要嗰個，
+  // 木係幫手。兩個等量齊觀會令到「幫手」蓋過「要嗰個」。
+  const [p1, p2] = want;
+  const {wts, areas} = rankAreas(want, st.pct);
+  // 夾你嗰幾個區，九運分數可以係全港最低嗰批 —— 寒命喜火，而火形就係
+  // 舊區嗰種密而尖嘅樓。呢個唔係計錯，但唔出聲就似係推爛樓。
+  const terr = districtData.reduce((t, d) => t + d.avg * d.n, 0)
+             / districtData.reduce((t, d) => t + d.n, 0);
+  const clash = areas.length && areas[0].avg < terr;
 
   // 五行分佈由多至少排。最多嗰個做基準，長短先睇得出分別。
   const rows = m.WUXING.slice().sort((a, b) => st.pct[b] - st.pct[a]);
@@ -2492,21 +2584,36 @@ function bzResult(){
         所以照計得到。</p>`}
 
     <h3 class="bzh">宜住邊區</h3>
-    <p class="bznote" style="margin-top:-2px">${want.map(w =>
-      `<b class="wx-${w}">${w}</b> → ${WX_D[w]}方`).join("　")}</p>
+    <p class="bznote" style="margin-top:-2px">你<b>${hc.type}</b>，喜
+      <b class="wx-${p1}">${p1}</b>，其次<b class="wx-${p2}">${p2}</b>。
+      而你盤入面<b class="wx-${p1}">${p1}</b>佔 ${st.pct[p1].toFixed(0)}%、
+      <b class="wx-${p2}">${p2}</b>佔 ${st.pct[p2].toFixed(0)}%，
+      所以呢次<b class="wx-${wts[0][1] >= wts[1][1] ? p1 : p2}">${
+        wts[0][1] >= wts[1][1] ? p1 : p2}</b>行得重啲
+      （${wts.map(([w, k]) => `${w} ${(k*100).toFixed(0)}%`).join("、")}）。<br>
+      下面唔係「邊個區風水好」—— 係全港十八區量返出嚟之後，<b>最夾你呢個命</b>
+      嗰六個。同樣${hc.type}但五行分佈唔同嘅人，出嚟嘅次序會唔一樣。</p>
     <div class="arealist">${areas.length ? areas.map(a => `
       <button class="area${locked ? " lock" : ""}" data-d="${esc(a.tc)}">
         <span class="ab wx-${a.wx}">${a.wx}</span>
-        <span class="an"><b>${esc(a.tc)}</b>${a.dir}方 · 平均 ${a.avg.toFixed(1)} 分</span>
-        <span class="ac">${a.n.toLocaleString()}<em>幢</em></span>
+        <span class="an"><b>${esc(a.tc)}</b>${REASON[p1](a.e)}<br>
+          <span class="asub">九運平均 ${a.avg.toFixed(1)} 分</span></span>
+        <span class="ac">${a.fit}<em>夾你</em></span>
         <i>${locked ? "🔒" : "›"}</i>
       </button>`).join("") : '<p class="bznote">計唔到合適地區。</p>'}</div>
+    ${clash ? `
+      <div class="clash"><b>留意：呢張單同全港排名唔同，係正常嘅。</b><br>
+        全港排名答嘅係「邊幢樓九運格局好」—— 同邊個住冇關,
+        大部分人見到嘅都係同一個答案。呢張單答嘅係「邊個區嘅形夾你個命」。
+        ${esc(areas[0].tc)}九運平均 ${areas[0].avg.toFixed(1)} 分,
+        低過全港嘅 ${terr.toFixed(1)} 分，但佢嘅形屬<b class="wx-${p1}">${p1}</b>,
+        而你要<b class="wx-${p1}">${p1}</b>。兩件事唔矛盾 —— 你要自己揀行邊一套。</div>` : ""}
 
     ${locked ? `
       <div class="gate">
         <p class="gh">點解呢幾個區啱你？</p>
-        <p class="gs">登入就睇到每個區嘅解釋 —— 由你嘅五行推到方位，
-          再推到點解呢個區合，同埋撳得入去睇入面逐個屋苑同逐座樓。</p>
+        <p class="gs">登入就睇到每個區嘅解釋 —— 由你嘅五行推到要乜嘢形,
+          再到嗰個區實際量到嘅數字，同埋撳得入去睇入面逐個屋苑同逐座樓。</p>
         <p class="gs">同時會幫你<b>存低呢個結果</b>，換部電話、用電腦開返都仲喺度
           —— 唔使再打一次出生日期。</p>
         <button class="pbtn dark" id="bzLogin" style="margin-top:14px">登入睇解釋</button>
@@ -2514,17 +2621,28 @@ function bzResult(){
       </div>` : `
       <div class="whywrap">
         <p class="fhd">點解呢幾個區啱你</p>
-        ${areas.slice(0, 6).map(a => `
-          <p class="why"><b class="wx-${a.wx}">${esc(a.tc)}</b>
-            喺${a.dir}方，${a.dir}方屬<b class="wx-${a.wx}">${a.wx}</b>。
-            ${whyLine(a.wx)}</p>`).join("")}
+        ${areas.map(a => `
+          <p class="why"><b class="wx-${p1}">${esc(a.tc)}</b>
+            ${MEASURED(p1)
+              ? `${REASON[p1](a.e)} —— <b class="wx-${p1}">${p1}</b>形喺全港十八區排
+                 ${a.f1}／100。`
+              : `${REASON[p1](a.e)}（${a.e.zone}方）。`}
+            ${p2 && a.f2 >= 50
+              ? `同時${REASON[p2](a.e)}，<b class="wx-${p2}">${p2}</b> ${a.f2}／100。` : ""}
+            ${whyLine(p1)}</p>`).join("")}
       </div>`}
-    <p class="bznote">⚠ 呢部分係<b>綜合網上師傅嘅講法</b>，唔係我哋自己計出嚟嘅數據。
-      寒熱命出自蘇民峰《寒熱命論》；五行對方位同香港地理嘅分配，出自風水雜誌
-      《新玄機》第 231 期區晉豪〈五行方向搵屋〉。逐區嘅方位由我哋按地理位置計，
-      <b>唔係斷言「某區屬某五行」</b> —— 我搵過幾位大師都冇一份完整嘅十八區
-      五行表，而坊間流傳嗰份自己都有矛盾（上環屬金、中環屬水，但兩者同屬中西區）。
-      呢個只係初步參考，認真揀樓請搵專業師傅。</p>
+
+    <p class="bznote"><b>邊部分係我哋自己量嘅：</b>每個區嘅形。
+      ${MEASURED(p1) ? `${p1}` : "木、火、土、水"}
+      係由全港 ${Object.values(elemData || {}).reduce((t, d) => t + d.n, 0).toLocaleString()}
+      幢住宅嘅實際高度、地基輪廓同離水距離計出嚟，逐個數字上面都寫咗。
+      方法出自楊筠松《撼龍經》定五行嘅老規矩 —— 金圓、木直、水曲、火尖、土方。
+      <b>金</b>我哋計唔到：圓度要睇樓宇輪廓，而一半 footprint 係四點嘅長方形,
+      算出嚟嘅圓度係噪音，所以金淨係按方位講。<br>
+      <b>邊部分係綜合師傅講法：</b>由你出生日期定寒熱命，出自蘇民峰《寒熱命論》；
+      五行對方位（木東火南金西水北土中）出自《新玄機》第 231 期區晉豪
+      〈五行方向搵屋〉。<br>
+      呢個係電腦計算，唔係師傅睇。認真揀樓請搵專業風水師傅。</p>
 
     <h3 class="bzh">本命卦</h3>
     <div class="guabox"><div class="gg">${gua}</div>
@@ -2544,9 +2662,11 @@ function bzResult(){
 
 async function showBazi(){
   await ensureBazi();
-  // 地區清單要 district_stats 先計得到方位。八字面板可以喺佢載入之前
-  // 就開咗，嗰陣清單會係空嘅 —— 所以等埋佢。
+  // 地區清單要 district_stats（幢數、平均分）同 elements（每區量出嚟嘅形）
+  // 兩份都齊先砌得出。八字面板可以喺佢哋載入之前就開咗，嗰陣清單會係空嘅
+  // —— 所以等埋。
   if(!districtData.length) await loadDistricts().catch(() => {});
+  if(!elemData) await loadElements();
   gripText.textContent = "八字";
   if(!birth){
     sheetBody.innerHTML = bzForm();
@@ -3640,10 +3760,9 @@ function renderMatches(list){
           <button class="bzmore" id="guaBand">睇埋真太陽時、門派分歧同刪除資料　›</button>
           <div class="guahr"></div>`;
       } else {
+        // 橫額寫返而家實際篩緊邊幾個區，唔好另外叫一套名。
         const rl = guaRegions
-          ? [...new Set(bzMod.regionsFor(bzMod.strength(bzMod.chart(
-              birth.y, birth.m, birth.d, birth.h == null ? 12 : birth.h, 0
-            )).useful).map(r => r.label))].join("、")
+          ? [...guaRegions].map(t => t.replace(/區$/, "")).join("、")
           : "";
         guaTop = `<button class="guaband" id="guaBand">
           <span class="gg2">${g}</span>
@@ -3938,6 +4057,7 @@ map.whenReady(async ()=>{
   saveFavs();
   const handled = await openDeepLink();
   loadDistricts();
+  loadElements();
   if(!handled) loadBuildings();
 });
 /* 電腦版一開就攤開個清單。
