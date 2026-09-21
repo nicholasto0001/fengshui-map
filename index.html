@@ -1287,6 +1287,19 @@
   .luckside{flex:1 1 auto; min-width:0}
   .lkb{font-size:15px; font-weight:700; margin:0 0 3px}
   .lks{font-size:12.5px; line-height:1.55; color:var(--ink3); margin:0}
+  .flip{font-size:13px; line-height:1.7; margin:10px 0 0; padding:11px 13px;
+    border-radius:12px}
+  .flip b{display:block; margin-bottom:3px}
+  .flip.good{background:#e8f2ef; color:#2c5a51}
+  .flip.good b{color:#0f6354}
+  .flip.bad{background:#fdf0ee; color:#7a4a44}
+  .flip.bad b{color:#a01f1f}
+  .lowhint{background:#fdf6e8; border:1px solid #e8d9b4; border-radius:14px;
+    padding:13px 14px; margin:14px 0 0}
+  .lowhint .lhh{font-size:15.5px; font-weight:750; color:var(--ink); margin:0 0 6px}
+  .lowhint .lhs{font-size:13px; line-height:1.7; color:var(--ink2); margin:0}
+  .lowhint .lhs b{color:var(--ink)}
+  .lowhint .pbtn{width:100%; margin-top:12px}
   .three{display:flex; flex-wrap:wrap; align-items:center; gap:6px;
     margin:12px 0 0; padding:11px 13px; border-radius:13px;
     background:var(--card); border:1px solid var(--line)}
@@ -3143,7 +3156,19 @@ function personalPanel(o, layer){
       <div><p class="ppv">${verdict}</p>
         <p class="ppvs">你${hc.type}，喜<b class="wx-${lead.wx}">${lead.wx}</b>。
           呢幢樓喺${lead.scope === "樓" ? "樓身" : "地區"}嗰度${lead.wx} ${lead.v} 分。</p></div>
-    </div>`;
+    </div>
+    ${(() => {
+      // 九運分同夾你分講兩件唔同嘅事，兩者唔一致嗰陣先係最值得講嘅一刻。
+      const pc = buildInfo && buildInfo.pct && buildInfo.pct[Math.round(o.total)];
+      if(pc == null) return "";
+      if(pc < 50 && fit >= 60) return `<p class="flip good">
+        <b>呢幢樓九運唔當旺（全港尾 ${Math.max(1, pc)}%），但夾你 ${fit} 分。</b>
+        兩個分答緊兩條唔同問題 —— 前者邊個睇都一樣，後者得你先有。</p>`;
+      if(pc >= 80 && fit <= 45) return `<p class="flip bad">
+        <b>呢幢樓九運好（全港頭 ${Math.max(1, 100 - pc)}%），但夾你得 ${fit} 分。</b>
+        格局好嘅樓唔一定啱你 —— 所以我哋兩個分都俾你，唔溝埋做一個。</p>`;
+      return "";
+    })()}`;
 
   const locked = !me;
   const detail = `
@@ -3319,6 +3344,20 @@ ${(() => {
           : `唔係住宅樓宇 · 地理環境 ${num(t,1)} / 100`}</p>
       </div>
     </div>
+    ${(() => {
+      if(!home) return "";
+      const pc = buildInfo && buildInfo.pct && buildInfo.pct[Math.round(t)];
+      if(pc == null || pc >= 50) return "";        // 中位以上唔使安慰
+      return `<div class="lowhint">
+        <p class="lhh">分低，唔代表唔啱你</p>
+        <p class="lhs">呢個分淨係計咗<b>風水</b>同<b>大運</b> —— 邊個住都一樣，
+          你改變唔到。<b>第三樣（你嘅八字）未計。</b>
+          同一幢樓，唔同人計出嚟可以爭成七十分 ——
+          九運唔當旺嘅樓，一樣可以好夾你。</p>
+        ${birth ? "" :
+          `<button class="pbtn dark" id="lowBz">打個出生日期，睇下夾唔夾你</button>`}
+      </div>`;
+    })()}
     ${home ? `<h3 class="pt" style="margin-top:18px"><span class="ptn">1</span>綜合評分<em>三樣入面計咗邊幾樣</em></h3>
     <div class="three${birth ? " done" : ""}" id="threeBar">
       <span class="tc on">風水 ✓</span><span class="tsep">＋</span>
@@ -3492,6 +3531,8 @@ ${(() => {
     pushBack(clean(o.tc) || clean(o.en) || "樓宇", () => renderBuilding(o, layer));
     showFamily();
   });
+  const lz = sheetBody.querySelector("#lowBz");
+  if(lz) lz.addEventListener("click", () => { track("low_bazi_cta", {}); showBazi(); });
   const pz = sheetBody.querySelector("#ppBz");
   if(pz) pz.addEventListener("click", () => { track("pp_bazi_cta", {}); showBazi(); });
   const pl = sheetBody.querySelector("#ppLogin");
