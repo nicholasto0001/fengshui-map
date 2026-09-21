@@ -154,6 +154,13 @@
     font-size:19px; color:var(--ink2); padding:0;
   }
   .tbtn:active{background:var(--bg)}
+  /* 工具列由兩粒變三粒（加咗分享），喺五吋屏幕度會逼到搜尋框，
+     個 placeholder 斷咗做「搵屋苑、大廈、」。細粒啲就兩樣都擺得落,
+     42px 仍然大過 44px 觸控下限嘅九成，而且呢三粒都唔係主要動作。 */
+  @media (max-width:1023px){
+    #tools{gap:6px}
+    .tbtn{width:42px; height:42px; font-size:17px}
+  }
   .tbtn.on{background:var(--brand); color:#fff}
 
   /* ---------- filter chips ----------
@@ -690,6 +697,8 @@
     #side[hidden]{display:none}
     /* 地圖嘅工具掣唔可以俾右欄冚住。 */
     #tools{margin-inline-end:374px}
+    /* 呢兩格搬咗上右欄，左欄唔使再擺多次。 */
+    .dtop{display:none}
   }
   .sidehd{display:flex; align-items:baseline; gap:8px; margin:0 0 3px}
   .sidehd b{font-size:17px; font-weight:650}
@@ -1174,12 +1183,15 @@
   <div id="searchwrap">
     <div class="searchbar">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-      <input id="q" type="search" placeholder="搜尋屋苑、大廈或地址" autocomplete="off" enterkeyhint="search">
+      <input id="q" type="search" placeholder="搵屋苑、大廈、地址" autocomplete="off" enterkeyhint="search">
       <button id="clear" aria-label="清除">×</button>
     </div>
     <ul id="results"></ul>
   </div>
   <div id="tools">
+    <!-- 分享本來淨係喺左欄最底 —— 要 scroll 成版先見到，即係冇人見到。
+         擺喺地圖工具列度，同「我嘅位置」一樣永遠喺同一個角落。 -->
+    <button class="tbtn" id="btnShareTop" title="分享俾朋友" aria-label="分享俾朋友">↗</button>
     <button class="tbtn" id="btnLayers" title="地圖樣式" aria-label="地圖樣式">◲</button>
     <button class="tbtn" id="btnLoc" title="我的位置" aria-label="我的位置">◉</button>
   </div>
@@ -2225,12 +2237,34 @@ function sideWx(tc){
     <p class="plancap">分數係全港十八區入面嘅排名。金冇形嘅數據支持，所以唔列。</p>`;
 }
 
+/* 冇揀嘢嗰陣右欄唔應該空住。呢啲嘢（678 版詳細資料頁、分享）本來喺左欄
+   最底，要 scroll 成版先見到 —— 實測係冇人 scroll 到落去。電腦有位，
+   就擺喺第一眼見到嘅地方。 */
+function sideHome(body){
+  body.innerHTML = `
+    <p class="sidehd"><b>詳細資料頁</b></p>
+    <p class="sidesub">地圖以外嘅嘢：逐區排名、逐個屋苑逐座、方法同限制。</p>
+    <a class="deep" href="/district/"><span><b>18 區風水評分排名</b>
+      每區平均分、最高分樓宇、格局分佈</span><i>›</i></a>
+    <a class="deep" href="/estate/"><span><b>658 個屋苑逐座評分</b>
+      航空平面圖、人口普查、發展商、成交價</span><i>›</i></a>
+    <a class="deep" href="/bazi-guide"><span><b>八字搵樓點計？</b>
+      四柱、五行、寒熱命、八宅 —— 連做唔到啲咩都寫明</span><i>›</i></a>
+    <a class="deep" href="/method"><span><b>評分方法</b>
+      逆向工程自政府風水地圖圖層，逐步寫明</span><i>›</i></a>
+    <div class="sharebar" style="margin-top:14px">
+      <div><b>介紹俾朋友</b><span>一條連結，唔使裝 App、唔使登記。</span></div>
+      <button id="sideShare">分享</button></div>`;
+  const b = body.querySelector("#sideShare");
+  if(b) b.addEventListener("click", shareApp);
+}
+
 function renderSide(o){
   const el = sideEl();
   if(!el || !matchMedia("(min-width:1360px)").matches){ if(el) el.hidden = true; return; }
   const body = document.getElementById("sidebody");
 
-  if(!o){ el.hidden = true; return; }
+  if(!o){ sideHome(body); el.hidden = false; return; }
   const title = clean(o.tc) || clean(o.en) || "未命名樓宇";
   const est = o.est ? clean(o.est) : null;
 
@@ -2395,20 +2429,6 @@ function bldWhy(o, wx, dEl){
   return {wx, v, txt: wx === "木" ? `${size} —— 高而直` : `${size} —— 矮而闊`, scope: "樓"};
 }
 
-/* 八宅以向論：呢幢樓個向，對你個命卦嚟講係邊隻遊年星。 */
-function guaWhy(o){
-  const g = myGua();
-  if(!g || !bzMod || o.face_m == null) return null;
-  const i = SHAN_D8[o.face_m];
-  if(i == null) return null;
-  if((o.conf ?? 0) < 0.6)
-    return {ok: null, txt: "坐向推算唔夠準（樓形太方正），所以呢一項唔計。"};
-  const dir = DIR8[i], star = bzMod.LUCK[g][dir];
-  const good = bzMod.goodDirs(g).includes(dir);
-  return {ok: good, dir, star, gua: g,
-          txt: `向${dir} —— 你係${g}命，${dir}方對你係「${star}」，八宅${good ? "取" : "唔取"}。`};
-}
-
 function personalPanel(o, layer){
   if(o.res === 0) return "";          // 唔係住宅，講夾唔夾冇意思
 
@@ -2432,7 +2452,8 @@ function personalPanel(o, layer){
 
   const w = myWeights();
   const dEl = elemData && elemData[o.district];
-  const fit = fitOf(o);
+  const parts = fitParts(o);
+  const fit = parts && parts.fit;
   if(!w || fit == null) return `
     <div class="pp"><p class="fhd">呢幢樓啱唔啱你？</p>
       <p class="ppq">呢幢樓冇高度紀錄，所以度唔到佢嘅形，夾唔夾你講唔出。
@@ -2440,8 +2461,11 @@ function personalPanel(o, layer){
 
   const hc = bzMod.hotCold(birth.y, birth.m, birth.d,
                            birth.h == null ? 12 : birth.h, 0);
-  const rows = w.map(([wx, k]) => ({...bldWhy(o, wx, dEl), k})).filter(r => r.v != null);
-  const gw = guaWhy(o);
+  // 形嗰半照舊逐個五行拆開；八宅嗰半淨係一行，因為佢本身就係一個判斷。
+  const gw = parts.gua;
+  const fw = gw ? FORM_W : 1;      // 推唔到坐向就得形嗰半，比重要講返實
+  const rows = w.map(([wx, k]) => ({...bldWhy(o, wx, dEl), k: k * fw}))
+                .filter(r => r.v != null);
   const lead = rows[0];
 
   // 分幾多先叫夾 —— 用全港住宅嘅分佈講，唔用一個冇根據嘅及格線。
@@ -2462,11 +2486,18 @@ function personalPanel(o, layer){
         <dt><b class="wx-${r.wx}">${r.wx}</b>　佔 ${(r.k * 100).toFixed(0)}%</dt>
         <dd><b>${r.v} / 100</b>（${r.scope === "樓" ? "呢一幢" : "成個區"}）<br>
           <span class="ppdt">${esc(r.txt.replace(/\s+/g, ""))}</span></dd>`).join("")}
-      ${gw ? `<dt>坐向</dt><dd class="${gw.ok === true ? "ppok" : gw.ok === false ? "ppno" : ""}">
-        ${esc(gw.txt)}</dd>` : ""}
+      ${gw ? `
+        <dt>八宅　佔 ${((1 - FORM_W) * 100).toFixed(0)}%</dt>
+        <dd class="${gw.good ? "ppok" : "ppno"}"><b>${gw.score} / 100</b>（你自己）<br>
+          <span class="ppdt">呢幢樓向${esc(gw.dir)}，你係${esc(gw.gua)}命，
+            ${esc(gw.dir)}方對你係「<b>${esc(gw.star)}</b>」—— 八宅${gw.good ? "四吉" : "四凶"}之一。</span></dd>`
+      : `<dt>八宅</dt><dd><span class="ppdt">呢幢樓嘅坐向推唔準（樓形太方正，
+          或者查唔到入伙年份），所以八宅嗰半計唔到，上面個分淨係形。</span></dd>`}
     </dl>
-    <p class="ppnote">八宅同五行係兩套唔同嘅方法，都係師傅嘅講法；
-      樓高、地基同離水距離係我哋自己量嘅。兩者分開睇。</p>`;
+    <p class="ppnote">${gw ? `形同八宅各佔一半。` : ""}八宅睇你個命卦配樓宇個向，
+      五行睇樓宇同地區量出嚟嘅形 —— 兩套唔同嘅方法，我哋分開計完先合埋。
+      <b>吉凶次序係傳統嘅，但由次序變成分數係我哋自己定。</b>
+      樓高、地基同離水距離係我哋自己量嘅；寒熱命同八宅係師傅嘅講法。</p>`;
 
   // 一個人嘅分上面，再加一層：成屋人。加咗家人先有，所以亦都係
   // 開戶口之後最明顯嘅一個好處。
@@ -2928,8 +2959,48 @@ function myWeights(){ return weightsFor(birth); }
    呢一幢樓自己嘅形，對唔對得上你缺嗰啲五行。
 
    同九運分數係兩件事：九運答「呢幢樓格局好唔好」，呢個答「啱唔啱你」。 */
-function fitOf(o, who){
-  const w = weightsFor(who || birth);
+/* 八宅嘅遊年星，逐個人計。
+
+   點解要加呢一層：淨靠五行，同一個寒熱命嘅人實際上攞同一個分。實測 120
+   個隨機出生日期，76 個寒命人喺同一幢樓只得四個唔同嘅分（55–58）——
+   因為寒命喜火，而火嗰份係成個區嘅屬性，全區每個人都一樣。
+
+   八宅先係真正分到人嘅嘢：命卦有八個，遊年星有八隻，同一幢樓對乾命係
+   「六煞」，對巽命可以係「生氣」。而呢套嘢我哋驗過（400 個命卦、64 對
+   遊年關係全中）。
+
+   吉凶次序係傳統嘅：生氣 > 天醫 > 延年 > 伏位｜禍害 > 六煞 > 五鬼 > 絕命。
+   ⚠ 次序係傳統，但**由次序變成分數係我哋自己定**，唔係邊位師傅嘅規矩。 */
+const STAR_SCORE = {生氣:100, 天醫:85, 延年:75, 伏位:60,
+                    禍害:40, 六煞:30, 五鬼:20, 絕命:10};
+const FORM_W = 0.5;               // 另外一半係八宅
+
+const guaCache = new Map();
+function guaOf(p){
+  if(!(bzMod && p)) return null;
+  const key = `${p.y}/${p.m}/${p.d}/${p.h}/${p.male ? "m" : "f"}`;
+  if(guaCache.has(key)) return guaCache.get(key);
+  const c = bzMod.chart(p.y, p.m, p.d, p.h == null ? 12 : p.h, 0);
+  const g = c ? bzMod.mingGua(c.baziYear, p.male) : null;
+  guaCache.set(key, g);
+  return g;
+}
+
+/** 呢幢樓個向，對呢個人嚟講係邊隻遊年星。坐向推唔準就 null —— 唔估。 */
+function guaStar(o, p){
+  if((o.conf ?? 0) < 0.6 || o.face_m == null) return null;
+  const g = guaOf(p);
+  if(!g) return null;
+  const i = SHAN_D8[o.face_m];
+  if(i == null) return null;
+  const dir = DIR8[i], star = bzMod.LUCK[g][dir];
+  return {gua: g, dir, star, score: STAR_SCORE[star] ?? null,
+          good: bzMod.GOOD.includes(star)};
+}
+
+/** 淨係形嗰半。 */
+function formFit(o, p){
+  const w = weightsFor(p);
   if(!w) return null;
   const dEl = elemData && elemData[o.district];
   let t = 0;
@@ -2938,7 +3009,24 @@ function fitOf(o, who){
     if(v == null) return null;   // 量唔到就唔出分，唔好當佢啱一半
     t += k * v;
   }
-  return Math.round(t);
+  return t;
+}
+
+/** 夾你分。回傳 {fit, form, gua} —— gua 係 null 即係推唔到坐向。 */
+function fitParts(o, who){
+  const p = who || birth;
+  const form = formFit(o, p);
+  if(form == null) return null;
+  const g = guaStar(o, p);
+  const fit = (g && g.score != null)
+    ? Math.round(form * FORM_W + g.score * (1 - FORM_W))
+    : Math.round(form);
+  return {fit, form: Math.round(form), gua: g};
+}
+
+function fitOf(o, who){
+  const r = fitParts(o, who);
+  return r ? r.fit : null;
 }
 
 /* 夾你嘅地區。面板同地圖篩選一定要行同一條數 —— 之前面板用寒熱命，
@@ -3394,6 +3482,11 @@ document.getElementById("btnGua").addEventListener("click", async () => {
   showOverview();          // guaOn 嘅時候佢會路由去清單，上面帶條命卦橫額
 });
 
+document.getElementById("btnShareTop").addEventListener("click", () => {
+  track("share_app", {from: "toolbar"});
+  shareApp();
+});
+
 document.getElementById("btnFav").addEventListener("click", ()=>{
   favView = !favView;
   sharedList = null;
@@ -3416,6 +3509,7 @@ async function showOverview(){
     if(list){ renderMatches(list.sort((a,b)=>(b.total||0)-(a.total||0))); return; }
   }
   const filtered = false;
+  renderSide(null);                 // 冇揀樓 —— 右欄行返主頁嗰版
   gripText.textContent = "揀一區開始 · 撳我";
   const rows = filtered
     ? [...districtData].map(a=>({...a, metric:bandCount(a)})).sort((x,y)=>y.metric-x.metric)
@@ -3458,7 +3552,7 @@ async function showOverview(){
         </div>
         <div class="chev2">›</div></li>`;
     }).join("")}</ul>
-    <div class="deepwrap">
+    <div class="deepwrap dtop">
       <p class="fhd">詳細資料頁</p>
       <a class="deep" href="/district/"><span><b>18 區風水評分排名</b>
         每區平均分、最高分樓宇、格局分佈</span><i>›</i></a>
@@ -3467,7 +3561,7 @@ async function showOverview(){
       <a class="deep" href="/estate/"><span><b>658 個屋苑逐座評分</b>
         航空平面圖、人口普查、發展商、成交價</span><i>›</i></a>
     </div>
-    <div class="sharebar">
+    <div class="sharebar dtop">
       <div><b>介紹俾朋友</b><span>一條連結，唔使裝 App、唔使登記，撳開就用得。</span></div>
       <button id="btnShareApp">分享</button></div>
     <p class="note-foot" style="border-top:1px solid var(--line)">
