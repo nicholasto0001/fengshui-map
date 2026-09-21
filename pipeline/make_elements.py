@@ -129,10 +129,12 @@ def bearing_zone(lon: float, lat: float, box: tuple[float, float, float, float])
     east-west axis does not push everything into 東 or 西.
 
     Checked against the only published Hong Kong statement of this framework,
-    區晉豪〈五行方向搵屋〉《新玄機》231. Of his five calls this reproduces
-    新界北=水, 九龍=中土, 西貢=東木 and 大嶼山=西金; it puts 沙田 in the north
-    where he groups it with the southern New Territories. Four and a half of
-    five, from geometry alone.
+    區晉豪〈五行方向搵屋〉《新玄機》231. Fourteen of the eighteen districts land
+    where he puts them, from geometry alone: all four on Hong Kong Island come
+    out 南, 西貢 comes out 東, 大嶼山 西, and four of the five Kowloon districts
+    中 -- the reading that a centroid frame drawn from the districts themselves
+    could not produce. The four that differ are 觀塘 (東 here), 屯門 (西), and
+    荃灣 and 葵青 (中), all of which he files under a single 新界屬北.
     """
     c_lon, c_lat, span_lon, span_lat = box
     dx = (lon - c_lon) / (span_lon / 2)
