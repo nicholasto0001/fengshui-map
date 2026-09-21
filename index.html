@@ -89,6 +89,10 @@
     font:inherit; font-size:16px; height:100%; color:var(--ink);
   }
   #q::placeholder{color:var(--ink3)}
+  /* type="search" 令瀏覽器自己畫多一個清除掣，同我哋 #clear 並排 ——
+     搜尋框入面兩個 ×，睇落似壞咗。 */
+  #q::-webkit-search-cancel-button{-webkit-appearance:none; display:none}
+  #q::-webkit-search-decoration{-webkit-appearance:none}
   #clear{
     border:0; background:transparent; font-size:20px; color:var(--ink3);
     width:34px; height:34px; border-radius:50%; cursor:pointer; display:none;
@@ -107,6 +111,13 @@
     float:right; font-size:12px; font-weight:700; font-variant-numeric:tabular-nums;
     color:#fff; border-radius:999px; padding:2px 9px; margin-left:8px;
   }
+  #results .grp{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding:6px 12px 8px; margin:0 0 2px; cursor:default;
+    font-weight:700; font-size:15px; color:var(--ink);
+    border-bottom:1px solid var(--line);
+  }
+  #results .grp span{font-weight:500; font-size:12.5px; color:var(--ink3)}
   #results .empty{color:var(--ink3); font-size:13.5px; padding:10px 12px; cursor:default}
 
   /* ---------- right buttons ---------- */
@@ -1205,6 +1216,11 @@
   .card .tag{font-size:13px; color:var(--ink3); margin:0 0 18px}
   .card ol{margin:0 0 18px; padding-left:20px; font-size:14.5px; line-height:1.85; color:var(--ink2)}
   .card ol b{color:var(--ink)}
+  .bzsex.need button{border-color:var(--bad); color:var(--bad)}
+  .bzsex.need{animation:sexShake .4s}
+  @keyframes sexShake{0%,100%{transform:translateX(0)}
+    25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
   .card .warn{font-size:11.5px; color:var(--ink3); line-height:1.5; margin:0 0 10px}
   /* 主要掣。之前呢個樣式淨係綁死喺 .card 入面，所以 sheet 度嘅掣（八字
      嗰兩個）出返個瀏覽器預設灰掣，同成個 app 格格不入。抽咗做一個
@@ -1931,6 +1947,18 @@ function markBase(name){
 
 /* -------------------------------------------------------------- toast --- */
 const toastEl=document.getElementById("toast"); let toastT=null;
+/* 未揀性別就撳「計」。唔可以淨係出個頂部 toast —— 隻手指同隻眼都喺
+   個掣度，離個 toast 成 700px。標紅、震一下、捲入畫面，三樣一齊先見到。 */
+function needSex(){
+  const sx = sheetBody.querySelector(".bzsex");
+  if(sx){
+    sx.classList.add("need");
+    sx.scrollIntoView({block:"center", behavior:"smooth"});
+    setTimeout(() => sx.classList.remove("need"), 2000);
+  }
+  toast("仲爭揀男定女");
+}
+
 function toast(msg,ms=2200,action){
   clearTimeout(toastT);
   if(!msg){toastEl.classList.remove("show");return;}
@@ -3667,6 +3695,7 @@ async function showBazi(edit){
   gripText.textContent = "八字";
   setView("bazi");
   if(!birth || edit){
+    setSheet("full");                   // 表格太長，half 之下個掣喺畫面外
     sheetBody.innerHTML = bzForm(edit && birth ? true : false);
     const f = sheetBody;
     let sex = edit && birth ? birth.male : null;
@@ -3675,7 +3704,7 @@ async function showBazi(edit){
       f.querySelectorAll(".bzsex button").forEach(x => x.classList.toggle("on", x === b));
     }));
     f.querySelector("#bzGo").addEventListener("click", () => {
-      if(sex === null){ toast("揀返男定女"); return; }
+      if(sex === null){ needSex(); return; }
       const h = f.querySelector("#bzH").value;
       birth = {y: +f.querySelector("#bzY").value, m: +f.querySelector("#bzM").value,
                d: +f.querySelector("#bzD").value, h: h === "" ? null : +h, male: sex};
@@ -4016,7 +4045,18 @@ async function doSearch(){
   hits.push(...byName.filter(o=>o.res), ...byEstate.filter(o=>o.res),
             ...byName.filter(o=>!o.res), ...byEstate.filter(o=>!o.res));
   hits.length = Math.min(hits.length, 12);
-  if(hits.length){ reportSearch(q, hits.length, "index"); renderHits(hits); return; }
+  if(hits.length){
+    // 過半結果屬同一個屋苑，而個屋苑名又撞中佢打嘅字 —— 開個標題，
+    // 等佢認得返自己打嗰幾隻字。
+    const tally = {};
+    for(const h of hits){
+      const e = clean(h.est);
+      if(e && e.includes(q)) tally[e] = (tally[e] || 0) + 1;
+    }
+    const top = Object.entries(tally).sort((a,b) => b[1]-a[1])[0];
+    const estHead = (top && top[1] >= Math.ceil(hits.length/2)) ? top[0] : null;
+    reportSearch(q, hits.length, "index"); renderHits(hits, estHead); return;
+  }
 
   const als=await searchALS(q);
   if(als.length){ reportSearch(q, als.length, "address"); renderHits(als); return; }
@@ -4043,10 +4083,15 @@ async function searchALS(q){
   }catch{ return []; }
 }
 
-function renderHits(hits){
-  resEl.innerHTML=hits.map((h,i)=>{
+function renderHits(hits, estHead){
+  const head = estHead
+    ? `<li class="grp">${esc(estHead)}<span>逐座列出</span></li>` : "";
+  resEl.innerHTML=head+hits.map((h,i)=>{
     const name=clean(h.tc)||clean(h.en)||h.name||"—";
-    const note=[clean(h.district), h.note, h.now].filter(Boolean).join(" · ");
+    // 屋苑名行先 —— 搵嘅人打嘅係屋苑名，佢要認得返自己打嗰幾隻字。
+    const est=clean(h.est);
+    const note=[est && est!==name ? est : null,
+                clean(h.district), h.note, h.now].filter(Boolean).join(" · ");
     return `<li data-i="${i}">
       ${h.total!=null?`<span class="pill" style="background:${colorFor(h.total)}">${h.total.toFixed(0)}</span>`:""}
       <div class="nm">${esc(name)}</div><div class="ad">${esc(note)}</div></li>`;
@@ -4370,7 +4415,7 @@ async function showFamily(edit){
       sheetBody.querySelectorAll(".bzsex button").forEach(x => x.classList.toggle("on", x === b));
     }));
     sheetBody.querySelector("#fmSave").addEventListener("click", async () => {
-      if(sex === null){ toast("揀返男定女"); return; }
+      if(sex === null){ needSex(); return; }
       const g = id => sheetBody.querySelector(id);
       const hv = g("#fmH").value;
       const saved = await savePerson({
