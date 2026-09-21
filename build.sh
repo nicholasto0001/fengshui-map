@@ -39,6 +39,7 @@ cp -R og public/og          # one preview card per score, chosen by the Worker
 if [ -d pages/district ]; then cp -R pages/district public/district; fi
 if [ -d pages/estate ];   then cp -R pages/estate   public/estate;   fi
 if [ -d pages/plan ];     then cp -R pages/plan     public/plan;     fi
+if [ -d pages/learn ];    then cp -R pages/learn    public/learn;    fi
 
 mkdir -p public/data
 cp -R data/tiles public/data/tiles

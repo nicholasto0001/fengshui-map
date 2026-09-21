@@ -23,6 +23,7 @@ PAGES = [
     ("/",             "daily",   "1.0"),
     ("/method",       "monthly", "0.8"),
     ("/bazi-guide",   "monthly", "0.8"),
+    ("/learn/",       "monthly", "0.9"),
     ("/district/",    "weekly",  "0.8"),
     ("/estate/",      "weekly",  "0.8"),
 ]
@@ -33,7 +34,8 @@ def generated() -> list:
     Google 撞到 404 會當成個 sitemap 唔可信。"""
     out = []
     for kind, freq, pri in (("district", "weekly", "0.7"),
-                            ("estate", "weekly", "0.6")):
+                            ("estate", "weekly", "0.6"),
+                            ("learn", "monthly", "0.9")):
         d = ROOT / "pages" / kind
         if not d.exists():
             continue

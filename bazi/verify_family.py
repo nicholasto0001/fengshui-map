@@ -51,11 +51,15 @@ def hot_cold(y: int, m: int, d: int, hh: int = 12) -> tuple[str, list[str]]:
 
     立夏→立秋 熱命；立秋→驚蟄 寒命；中間平命，清明前偏寒、後偏熱。
     """
-    # term_jd_hkt 本身已經係香港時間嘅儒略日，所以出世時刻都要用同一個
-    # 框：jd_from 收一個小數日，加 hh/24 就係當日嗰個鐘。
+    # ⚠ 兩個模組嘅節氣索引唔同，撞過一次：
+    #     bazi.js  —— 只數十二個「節」，立秋 = 6
+    #     astro.py —— 二十四個節氣全數，立秋 = 12
+    #   呢度係 Python，所以用 24 個嗰套。用錯咗會攞到立夏當立秋,
+    #   而且唔會有任何測試失敗 —— 因為冇嘢會話你知你攞錯咗節氣。
+    LICHUN, JINGZHE, QINGMING, LIXIA, LIQIU = 0, 2, 4, 6, 12
     at = lambda k: astro.term_jd_hkt(y, k)             # noqa: E731
     jd = astro.jd_from(y, m, d + hh / 24.0)
-    lixia, liqiu, jingzhe, qingming = at(3), at(6), at(1), at(2)
+    lixia, liqiu, jingzhe, qingming = at(LIXIA), at(LIQIU), at(JINGZHE), at(QINGMING)
     if lixia <= jd < liqiu:
         return "熱命", ["水", "金"]
     if jd >= liqiu or jd < jingzhe:

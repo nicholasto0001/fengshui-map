@@ -15,6 +15,7 @@ Output: pages/district/*.html, pages/estate/*.html
 from __future__ import annotations
 
 import collections
+import datetime
 import html
 import json
 import re
@@ -169,6 +170,18 @@ table.kvt td{white-space:normal;font-weight:550}
 footer{margin:40px 0 0;padding:20px 0 0;border-top:1px solid var(--line);
  font-size:13px;color:var(--ink3);line-height:1.7}
 footer a{color:var(--ink2)}
+/* 文章入面嘅表同屋苑頁嗰啲唔同：呢度有長句，全站嗰條 th,td 嘅
+   white-space:nowrap 會令佢喺電話度撐爆成版（實測 375px 屏幕、
+   表寬 429px，第三欄啲字俾切走）。 */
+.terms th,.terms td{white-space:normal;word-break:break-word;line-height:1.6}
+.terms tr.now{background:#f3f7fd}
+.terms tr.now th{font-weight:700}
+@media(max-width:560px){
+  .terms{font-size:13.5px}
+  .terms th,.terms td{padding:8px 8px}
+}
+.lede{font-size:17px;line-height:1.8;margin:0 0 20px}
+.lede b{font-weight:650}
 .faqs{margin:34px 0 0}
 .faq{border-top:1px solid var(--line);padding:18px 0 0;margin:18px 0 0}
 .faq h2{font-size:19px;margin:0 0 8px}
@@ -256,11 +269,13 @@ def shell(title, desc, canon, crumbs, body, faqs=None):
   <p>打個出生日期落去，就會排出你嘅四柱、計出你缺邊幾樣五行，再用八宅睇你個
      命卦配唔配呢幢樓個向，逐幢計返一個<b>得你一個人有</b>嘅分。屋企人都加得埋，
      一齊計。</p>
-  <p><a class="bzlink" href="/bazi-guide">八字揀樓點計？逐步寫明 →</a></p>
+  <p><a class="bzlink" href="/bazi-guide">八字揀樓點計？逐步寫明 →</a><br>
+     <a class="bzlink" href="/learn/%E5%AF%92%E7%86%B1%E5%91%BD">寒熱命係咩？點知自己係寒命定熱命 →</a></p>
 </div>
 <footer>
   <p>評分由電腦計算，數據嚟自政府公開資料。<a href="/method">計算方法同數據限制</a> ·
      <a href="/bazi-guide">八字揀樓</a> ·
+     <a href="/learn/">八字基礎</a> ·
      <a href="/privacy.html">私隱政策</a> · <a href="/">返地圖</a></p>
   <p>人口統計數字：政府統計處《2021 年人口普查》，經「空間數據共享平台」發佈。
      樓宇資料：地政總署、屋宇署、香港房屋委員會。以上數據版權歸香港特別行政區政府所有。</p>
@@ -774,6 +789,174 @@ def write(path, text):
     return p
 
 
+# ---------------------------------------------------------------- 文章 ---
+#
+# 點解要有呢一層：AI 爬蟲唔行 JavaScript。八字功能全部係 JS 跑出嚟嘅,
+# 所以喺 ChatGPT、Gemini、Perplexity 眼中，我哋個網站就只係一版地圖。
+# 呢啲靜態文章係我哋喺 AI 度唯一嘅門面。
+#
+# 寫嘅規矩（見 docs/content-plan.md）：問題做標題、第一句就答、每個講法
+# 有出處、講埋做唔到嘅嘢。追唔到源頭嘅講法唔寫 —— 唔寫「據說」。
+
+sys.path.insert(0, str(ROOT / "bazi"))
+import astro                                                  # noqa: E402
+
+# ⚠ astro.py 數 24 個節氣，bazi.js 只數 12 個「節」。兩邊索引唔同,
+#   撞過一次（立秋攞成立夏，而且唔會有測試失敗）。呢度係 Python。
+T_JINGZHE, T_QINGMING, T_LIXIA, T_LIQIU = 2, 4, 6, 12
+
+
+def term_rows(index, years):
+    out = []
+    for y in years:
+        _, m, d, mins = astro.term_hkt(y, index)
+        out.append((y, m, d, mins // 60, mins % 60))
+    return out
+
+
+def hot_cold_article():
+    now = datetime.date.today().year
+    years = range(now - 6, now + 6)
+    rows = term_rows(T_LIQIU, years)
+    off = [r for r in rows if (r[1], r[2]) != (8, 8)]
+
+    tbl = "".join(
+        f'<tr{" class=\"now\"" if y == now else ""}>'
+        f"<th>{y}</th><td>{m} 月 {d} 日</td><td>{hh:02d}:{mm:02d}</td>"
+        f'<td>{"—" if (m, d) == (8, 8) else "唔係 8 月 8 日"}</td></tr>'
+        for y, m, d, hh, mm in rows)
+
+    ly, lm, ld, lhh, lmm = next(r for r in rows if r[0] == now)
+
+    body = f"""
+<p class="lede"><b>寒熱命係蘇民峰喺 1994 年創立嘅一套命理分法，用出生嗰日
+喺邊個節氣之間，將人分做寒命、熱命同平命。</b>
+立秋之後至驚蟄之前出世係<b>寒命</b>，喜火，以木生火；立夏之後至立秋之前
+出世係<b>熱命</b>，喜水，以金生水；中間嗰段係平命。</p>
+
+<p>佢唔使時辰，淨係要出生日期 —— 呢點同傳統扶抑法好唔同，亦都係佢好用
+嘅原因：好多人唔記得自己幾點出世。</p>
+
+<h2>點樣分寒命、熱命、平命</h2>
+
+<table class="terms">
+<tr><th>命格</th><th>出生時段</th><th>喜用五行</th></tr>
+<tr><td><b>寒命</b></td><td>立秋 → 驚蟄</td><td>喜火，以木生火</td></tr>
+<tr><td><b>熱命</b></td><td>立夏 → 立秋</td><td>喜水，以金生水</td></tr>
+<tr><td><b>平命</b></td><td>驚蟄 → 立夏</td><td>水火不忌；清明前較寒，清明後較熱</td></tr>
+</table>
+
+<p class="src">出處：蘇民峰喺風水雜誌《新玄機》第 53 期自述 ——
+「立秋後（西曆八月八日）驚蟄前（西曆三月六日）為寒命。立夏後（西曆五月
+六日）立秋前為熱命。驚蟄後，立夏前為平命。」</p>
+
+<h2>但「八月八日」呢個約數，四分三年份都係錯</h2>
+
+<p><b>節氣唔係固定日期。</b>佢係太陽行到黃經某個度數嗰一刻，每年爭幾個
+鐘，所以會喺兩日之間游走。蘇民峰自己寫嗰幾個日期係方便記嘅約數，唔係
+界線本身。</p>
+
+<p>以立秋為例，{years[0]} 至 {years[-1]} 年入面，<b>{len(off)} 年唔係
+8 月 8 日</b>：</p>
+
+<table class="terms">
+<tr><th>年</th><th>立秋日期</th><th>時刻（香港時間）</th><th></th></tr>
+{tbl}
+</table>
+
+<p class="src">節氣時刻用 VSOP87 截斷級數計算太陽視黃經，加 Espenak–Meeus
+ΔT 修正。同香港天文台曆書對照過 220 個節氣，1950 年後零差異；戰前有 6 個
+踩正午夜，差一分鐘之內。</p>
+
+<h2>差一日，答案可以完全相反</h2>
+
+<p>{ly} 年立秋係 <b>{lm} 月 {ld} 日 {lhh:02d}:{lmm:02d}</b>。假設有人
+2020 年 8 月 7 日下午三點出世：</p>
+
+<ul>
+  <li><b>用約數</b>（立秋 = 8 月 8 日）：未到立秋 → <b>熱命</b>，喜水、金</li>
+  <li><b>用真實節氣</b>（2020 年立秋 = 8 月 7 日 09:06）：已經過咗立秋 →
+      <b>寒命</b>，喜火、木</li>
+</ul>
+
+<p>一個要水金，一個要火木，<b>完全相反</b>。而由呢一步推落去嘅所有嘢 ——
+適合邊個方位、邊個地區、邊種樓 —— 都會跟住反晒。</p>
+
+<p>生喺節氣前後一兩日嘅人，一定要查返嗰年嘅真實時刻。</p>
+
+<h2>知道自己寒定熱，有咩用</h2>
+
+<p>最直接嘅用法係<b>方向</b>。五行對方位係固定嘅：木東、火南、金西、
+水北、土中。寒命喜火，火對應南方；熱命喜水，水對應北方。</p>
+
+<p class="src">五行對方位再對香港地理，出處：風水雜誌《新玄機》第 231 期，
+區晉豪〈五行方向搵屋〉——「木代表東方。火代表南方。金代表西方。水代表
+北方。」</p>
+
+<p>再落一層就係樓宇本身嘅<b>形</b>。楊筠松《撼龍經》以形定五行 ——
+金圓、木直、水曲、火尖、土方 —— 而形係量得到嘅：樓幾高、地基幾闊、
+離水幾遠。我哋由全港住宅嘅實際數據量出每個區同每幢樓嘅形，所以「你喜火」
+可以一路推到「所以呢幢樓夾你幾多分」。</p>
+
+<h2>呢套嘢做唔到啲咩</h2>
+
+<ul>
+  <li><b>係一家之言。</b>寒熱命係蘇民峰創立嘅，唔係八字嘅共識。傳統扶抑法
+      用完全另一套邏輯，兩者會得出唔同答案。</li>
+  <li><b>蘇民峰本人否定扶抑法。</b>佢喺同一篇文寫「根本不用再詳細計算
+      命者身旺身弱，以何為用神」。所以唔好將兩套溝埋一齊當成互相印證。</li>
+  <li><b>只分三類。</b>全香港人分做寒、熱、平三組，所以單靠佢分唔到人。
+      要真係度身訂造，仲要睇埋你自己盤入面五行嘅比例同本命卦。</li>
+  <li><b>唔係師傅睇。</b>呢啲係電腦計算嘅參考，唔等同專業風水師傅嘅判斷。</li>
+</ul>
+"""
+
+    faqs = [
+        ("寒熱命係咩？",
+         "寒熱命係香港堪輿學家蘇民峰喺 1994 年創立嘅一套命理分法，用出生日期"
+         "落喺邊個節氣之間，將人分做寒命、熱命同平命。立秋至驚蟄出世係寒命，"
+         "喜火；立夏至立秋出世係熱命，喜水；中間係平命。佢唔使時辰，淨係要"
+         "出生日期。"),
+        ("點樣知自己係寒命定熱命？",
+         f"睇你出生嗰日喺立秋同立夏之間邊個位置。但唔可以用「8 月 8 日」"
+         f"呢類約數 —— 節氣每年爭幾個鐘，{years[0]} 至 {years[-1]} 年入面有 "
+         f"{len(off)} 年嘅立秋唔係 8 月 8 日。生喺界線前後一兩日嘅人，"
+         f"一定要查返嗰年嘅真實節氣時刻。"),
+        ("寒命同熱命分別喺邊？",
+         "寒命人喜火，以木生火；熱命人喜水，以金生水。推落去，寒命偏向南方"
+         "同火形嘅環境，熱命偏向北方同近水嘅環境。五行對方位嘅講法出自"
+         "《新玄機》第 231 期區晉豪〈五行方向搵屋〉。"),
+        ("寒熱命準唔準？",
+         "寒熱命係蘇民峰一家之言，唔係八字嘅共識，而且只分三類，所以單靠佢"
+         "分唔到人。蘇民峰本人喺同一篇文否定咗傳統扶抑法，所以兩套唔應該"
+         "溝埋當互相印證。要真係因人而異，仲要睇你盤入面五行嘅比例同本命卦。"),
+    ]
+    title = "寒熱命係咩？點知自己係寒命定熱命｜香港風水地圖"
+    desc = (f"寒熱命由蘇民峰 1994 年創立，用出生日期分寒命、熱命、平命。"
+            f"但坊間用嘅「8 月 8 日立秋」係約數 —— {years[0]}–{years[-1]} 年入面"
+            f"有 {len(off)} 年唔係嗰日，差一日可以令答案完全相反。")
+    crumbs = [("香港風水地圖", "/"), ("八字", "/learn/"), ("寒熱命", None)]
+    return shell(title, desc, url("learn", "寒熱命"), crumbs, body, faqs)
+
+
+def learn_hub():
+    body = """
+<p class="lede">八字同風水嘅基礎概念，逐個講清楚 —— 每個講法寫明出處，
+連做唔到啲咩都講埋。</p>
+<ul class="links">
+  <li><a href="/learn/%E5%AF%92%E7%86%B1%E5%91%BD"><b>寒熱命係咩？</b>
+    點知自己係寒命定熱命，同埋點解「8 月 8 日立秋」係錯嘅</a></li>
+  <li><a href="/bazi-guide"><b>八字揀樓點計？</b>
+    四柱、五行、寒熱命、八宅 —— 連做唔到啲咩都寫明</a></li>
+  <li><a href="/method"><b>九運風水評分點計？</b>
+    山水方位、玄空飛星、逆向工程自政府圖層</a></li>
+</ul>
+"""
+    return shell("八字同風水基礎｜香港風水地圖",
+                 "八字同風水嘅基礎概念，每個講法寫明出處，連做唔到啲咩都講埋。",
+                 "/learn/", [("香港風水地圖", "/"), ("八字", None)], body)
+
+
 def main() -> None:
     only = sys.argv[1:] or None
     sc, home, ds, est = gather()
@@ -821,7 +1004,9 @@ def main() -> None:
     if not only:
         write("estate/index.html", hub_estates(ranked))
         write("district/index.html", hub_districts(ds, drank, by_dist))
-        made += 2
+        write("learn/index.html", learn_hub())
+        write("learn/寒熱命.html", hot_cold_article())
+        made += 4
 
     got = sum(1 for x in ranked if plans.get(x["name"]))
     print(f"{made} 版 -> {OUT}")

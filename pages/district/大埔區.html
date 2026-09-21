@@ -100,6 +100,18 @@ table.kvt td{white-space:normal;font-weight:550}
 footer{margin:40px 0 0;padding:20px 0 0;border-top:1px solid var(--line);
  font-size:13px;color:var(--ink3);line-height:1.7}
 footer a{color:var(--ink2)}
+/* 文章入面嘅表同屋苑頁嗰啲唔同：呢度有長句，全站嗰條 th,td 嘅
+   white-space:nowrap 會令佢喺電話度撐爆成版（實測 375px 屏幕、
+   表寬 429px，第三欄啲字俾切走）。 */
+.terms th,.terms td{white-space:normal;word-break:break-word;line-height:1.6}
+.terms tr.now{background:#f3f7fd}
+.terms tr.now th{font-weight:700}
+@media(max-width:560px){
+  .terms{font-size:13.5px}
+  .terms th,.terms td{padding:8px 8px}
+}
+.lede{font-size:17px;line-height:1.8;margin:0 0 20px}
+.lede b{font-weight:650}
 .faqs{margin:34px 0 0}
 .faq{border-top:1px solid var(--line);padding:18px 0 0;margin:18px 0 0}
 .faq h2{font-size:19px;margin:0 0 8px}
@@ -160,11 +172,13 @@ footer a{color:var(--ink2)}
   <p>打個出生日期落去，就會排出你嘅四柱、計出你缺邊幾樣五行，再用八宅睇你個
      命卦配唔配呢幢樓個向，逐幢計返一個<b>得你一個人有</b>嘅分。屋企人都加得埋，
      一齊計。</p>
-  <p><a class="bzlink" href="/bazi-guide">八字揀樓點計？逐步寫明 →</a></p>
+  <p><a class="bzlink" href="/bazi-guide">八字揀樓點計？逐步寫明 →</a><br>
+     <a class="bzlink" href="/learn/%E5%AF%92%E7%86%B1%E5%91%BD">寒熱命係咩？點知自己係寒命定熱命 →</a></p>
 </div>
 <footer>
   <p>評分由電腦計算，數據嚟自政府公開資料。<a href="/method">計算方法同數據限制</a> ·
      <a href="/bazi-guide">八字揀樓</a> ·
+     <a href="/learn/">八字基礎</a> ·
      <a href="/privacy.html">私隱政策</a> · <a href="/">返地圖</a></p>
   <p>人口統計數字：政府統計處《2021 年人口普查》，經「空間數據共享平台」發佈。
      樓宇資料：地政總署、屋宇署、香港房屋委員會。以上數據版權歸香港特別行政區政府所有。</p>
