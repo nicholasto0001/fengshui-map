@@ -157,7 +157,18 @@
     pointer-events:none;
   }
   #maphint b{color:var(--ink)}
-  @media (min-width:1024px){ #maphint{left:auto; right:14px; width:min(340px,32vw)} }
+  /* 呢條嘢講緊地圖上面啲圈，所以要浮喺地圖上面，唔可以壓住兩邊嘅欄。
+     左邊避開 --rail（側欄），右邊喺 1360px 以上再避開詳細資料欄。 */
+  @media (min-width:1024px){
+    #maphint{
+      /* 頂列（搜尋欄同右上角三個工具掣）佔住 14–62，所以要落一行。 */
+      left:calc(var(--rail) + 28px); right:28px; width:auto;
+      max-width:520px; margin-inline:auto; top:76px;
+    }
+  }
+  @media (min-width:1360px){
+    #maphint{right:calc(360px + 28px)}
+  }
   .chip{
     flex:0 0 auto; display:flex; align-items:center; gap:6px;
     border:0; border-radius:999px; padding:8px 13px; cursor:pointer;
