@@ -286,3 +286,43 @@ export function regionsFor(useful){
   return HK_REGION_WX.filter(r => want.has(r.wx))
     .map(r => ({...r, wx: Object.keys(WX_DIR).find(k => WX_DIR[k] === r.wx), dir: r.wx}));
 }
+
+/* ------------------------------------------------------- 寒熱命（蘇民峰） --- */
+/*
+ * 蘇民峰 1994 年創立嘅寒熱命論。佢喺《新玄機》第 53 期自己寫嘅：
+ *
+ *   「立秋後（西曆八月八日）驚蟄前（西曆三月六日）為寒命。
+ *     立夏後（西曆五月六日）立秋前為熱命。驚蟄後，立夏前為平命。」
+ *   「寒命出生人喜火，以木生火。而熱命人喜水，以金生水。
+ *     平命人水火不忌，然以水運較佳。」
+ *   平命再分：清明前為較寒之平命，清明後為較熱之平命。
+ *
+ * 點解加呢個：佢完全由出生日期決定，冇一步要判斷 —— 同扶抑法嗰個用神
+ * 唔同，扶抑法要睇身強身弱，而嗰步係判斷。兩套並排顯示，夾到就講夾到,
+ * 夾唔到就照講夾唔到。
+ *
+ * ⚠ 蘇民峰喺同一篇文明言「根本不用再詳細計算命者身旺身弱，以何為用神」
+ * —— 即係佢本人否定扶抑法。我哋唔會扮兩套係同一回事。
+ *
+ * 界線用返節氣時刻，唔用嗰幾個約數日期：西曆 8 月 8 日只係立秋嘅大概,
+ * 真正立秋每年爭幾個鐘。生喺嗰日嘅人，用約數就會分錯邊。
+ */
+const JIE_I = {立春:0, 驚蟄:1, 清明:2, 立夏:3, 立秋:6};
+
+export function hotCold(y, m, d, hh = 12, mi = 0){
+  if(!TERMS) throw new Error("要先 await ready()");
+  const now = minutesOf(y, m, d, hh, mi);
+  if(y < TERMS.y0 + 1 || y > TERMS.y1) return null;
+  const at = k => termAt(y, k);
+
+  if(now >= at(JIE_I.立夏) && now < at(JIE_I.立秋))
+    return {type:"熱命", like:["水","金"], note:"熱命人喜水，以金生水"};
+  if(now >= at(JIE_I.立秋) || now < at(JIE_I.驚蟄))
+    return {type:"寒命", like:["火","木"], note:"寒命人喜火，以木生火"};
+  const warmer = now >= at(JIE_I.清明);
+  return {type: warmer ? "平命（較熱）" : "平命（較寒）",
+          like: warmer ? ["水","金"] : ["火","木"],
+          note: warmer
+            ? "平命水火不忌，清明後較熱，偏向喜水"
+            : "平命水火不忌，清明前較寒，偏向喜火"};
+}

@@ -487,6 +487,34 @@
   .wxr em b{display:inline-block; min-width:18px; margin-inline-start:6px;
             color:var(--ink2); font-weight:600}
 
+  .srcbox{background:var(--card); border:1px solid var(--line); border-radius:14px;
+          padding:12px 14px; margin:0 0 9px}
+  .srcbox .sl{margin:0; font-size:16px; font-weight:600; color:var(--ink)}
+  .srcbox .sl b{font-weight:700; color:var(--wx,var(--ink))}
+  .srcbox .ss{margin:5px 0 0; font-size:12.5px; line-height:1.6; color:var(--ink3)}
+  .tag{font-size:11.5px; font-weight:600; padding:2px 8px; border-radius:999px;
+       margin-inline-start:7px; vertical-align:2px}
+  .tag.ok{background:#e4f0e9; color:#0f6354}
+  .tag.no{background:#f6e7e7; color:#a01f1f}
+
+  /* 地區先，樓宇後。撳一個區入去先至見到入面啲樓 —— 一開就掉幾千幢樓
+     出嚟，人係揀唔到嘅。 */
+  .arealist{display:flex; flex-direction:column; gap:8px}
+  .area{
+    display:flex; align-items:center; gap:12px; width:100%; padding:12px 14px;
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    font:inherit; text-align:start; cursor:pointer; color:var(--ink);
+  }
+  .area:active{background:var(--card2,#f3f1ec)}
+  .area .ab{width:38px; height:38px; border-radius:50%; flex:none; display:grid;
+            place-items:center; background:var(--wx,#888); color:#fff;
+            font-size:17px; font-weight:700}
+  .area .an{flex:1; font-size:12.5px; color:var(--ink3); line-height:1.45}
+  .area .an b{display:block; font-size:16px; font-weight:650; color:var(--ink)}
+  .area .ac{font-size:16px; font-weight:650; font-variant-numeric:tabular-nums}
+  .area .ac em{font-style:normal; font-size:11.5px; color:var(--ink3); margin-inline-start:2px}
+  .area i{font-style:normal; font-size:19px; color:var(--ink3); flex:none}
+
   .regs{display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px}
   .reg{background:var(--card); border:1px solid var(--line); border-radius:14px;
        padding:12px 14px}
@@ -2178,6 +2206,50 @@ function showFavs(){
   }));
 }
 
+/* 每個區喺香港邊個方位 —— 用嚟對五行。
+
+   點解用方位唔用「某區屬某五行」：我搵過蘇民峰、李丞責、麥玲玲同幾份
+   坊間清單，冇一份完整嘅十八區五行表。唯一有清單嗰個係 2011 年一篇
+   標住「摘錄」嘅匿名網誌，而佢自己都矛盾（上環屬金、中環屬水，但兩個
+   同屬中西區），下面十幾年留言一直有人問「荃灣屬咩」冇人答得到。
+
+   但兩位師傅嘅框架係一致嘅：五行對方位（木東、火南、金西、水北、土中）,
+   再對地理。區晉豪〈五行方向搵屋〉：「新界屬北，香港島屬南，九龍屬中部,
+   西貢及將軍澳屬東，大嶼山屬西。」所以我哋計方位，唔斷言屬性。
+
+   港島自己一個參考框 —— 啲清單本身都係咁分（港島東西南北中另計）。 */
+const ISLAND_D = new Set(["中西區","灣仔區","東區","南區"]);
+const DIR_WX = {東:"木", 南:"火", 中:"土", 西:"金", 北:"水"};
+let dirCache = null;
+
+function districtDirs(){
+  if(dirCache || !districtData.length) return dirCache;
+  const frame = names => {
+    const g = districtData.filter(d => names.has(d.tc));
+    return [g.reduce((a,d)=>a+d.lon,0)/g.length, g.reduce((a,d)=>a+d.lat,0)/g.length];
+  };
+  const kln = new Set(districtData.map(d=>d.tc).filter(t=>!ISLAND_D.has(t) && t!=="離島區"));
+  const out = {};
+  for(const [names, isle] of [[ISLAND_D,true],[kln,false]]){
+    const [cx, cy] = frame(names);
+    const rows = districtData.filter(d=>names.has(d.tc)).map(d=>{
+      const dx = (d.lon-cx)*Math.cos(22.36*Math.PI/180), dy = d.lat-cy;
+      return {tc:d.tc, brg:(Math.atan2(dx,dy)*180/Math.PI+360)%360,
+              r:Math.hypot(dx,dy)*111.32};
+    });
+    // 最近中心嗰兩成當「中」（土）。
+    const cut = rows.map(r=>r.r).sort((a,b)=>a-b)[Math.max(0,Math.floor(rows.length/5))];
+    for(const r of rows){
+      const d = r.r < cut ? "中"
+        : (r.brg<45||r.brg>=315) ? "北" : r.brg<135 ? "東" : r.brg<225 ? "南" : "西";
+      out[r.tc] = {dir:d, wx:DIR_WX[d], isle};
+    }
+  }
+  // 大嶼山／離島：區晉豪明講屬西。
+  out["離島區"] = {dir:"西", wx:"金", isle:false};
+  return (dirCache = out);
+}
+
 /* ---------- 八字 ----------
 
    點解八字係一個「篩選」，唔係另開一個 tab：佢答嘅係同一條問題 ——
@@ -2263,7 +2335,20 @@ function bzResult(){
                       {trueSolar: true});
   const altDiff = known && alt && alt.hour !== c.hour;
   const notes = c.notes.filter(n => n.startsWith("⚠"));
-  const regions = m.regionsFor(st.useful);
+  const hc = m.hotCold(birth.y, birth.m, birth.d,
+                       birth.h == null ? 12 : birth.h, 0);
+  // 寒熱命只需要日期，所以永遠有；扶抑用神要時辰，而且好敏感。
+  const want = known
+    ? [...new Set([...hc.like, ...st.useful])]
+    : hc.like.slice();
+  const agree = known && hc.like.some(w => st.useful.includes(w));
+  const WX_D = {木:"東", 火:"南", 土:"中", 金:"西", 水:"北"};
+  const dirs2 = new Set(hc.like.concat(known ? st.useful : []).map(w => WX_D[w]));
+  const dd = districtDirs() || {};
+  const areas = districtData
+    .filter(d => dd[d.tc] && dirs2.has(dd[d.tc].dir))
+    .map(d => ({tc: d.tc, avg: d.avg, n: d.n, ...dd[d.tc]}))
+    .sort((a, b) => b.avg - a.avg);
 
   // 五行分佈由多至少排。最多嗰個做基準，長短先睇得出分別。
   const rows = m.WUXING.slice().sort((a, b) => st.pct[b] - st.pct[a]);
@@ -2292,23 +2377,39 @@ function bzResult(){
     <p class="bznote">月令係<b>${st.monthZhi}</b>，所以同一個五行喺呢個盤入面力量唔同
       —— 旺、相、休、囚、死係按月令計嘅。日主本身唔計入分數。</p>
 
-    <h3 class="bzh">參考用神</h3>
-    <div class="dirs">
-      ${st.useful.map(w => `<span class="best"><b>${w}</b> 宜</span>`).join("")}
-      ${st.avoid.map(w => `<span><b>${w}</b> 忌</span>`).join("")}
+    <h3 class="bzh">你嘅喜用五行</h3>
+    <div class="srcbox">
+      <p class="sl"><b>${hc.type}</b>　喜 ${hc.like.map(w=>`<b class="wx-${w}">${w}</b>`).join("、")}</p>
+      <p class="ss">${esc(hc.note)}　—— 蘇民峰《寒熱命論》，由出生日期定，同時辰無關</p>
     </div>
-    <p class="bznote">⚠ 用神<b>唔係純算術</b>，係判斷。呢度用最通行嘅扶抑法，
-      但師傅仲會睇調候、通關、病藥，所以坊間軟件出嚟嘅用神都唔一定一樣 ——
-      佢哋自己都寫「參考用神」。認真睇樓請搵師傅確認。</p>
+    ${known ? `
+      <div class="srcbox">
+        <p class="sl">扶抑用神　${st.useful.map(w=>`<b class="wx-${w}">${w}</b>`).join("、")}
+          ${agree ? '<span class="tag ok">同上面一致</span>'
+                  : '<span class="tag no">同上面唔同</span>'}</p>
+        <p class="ss">傳統扶抑法：${st.strong ? "身強" : "身弱"}（支持度 ${st.supportPct}%）。
+          ⚠ 呢一步係判斷唔係算術，而且<b>好睇時辰</b> —— 同一個人早四個鐘出世，
+          答案可以完全相反。蘇民峰本人亦都唔用呢套。</p>
+      </div>` : `
+      <p class="bznote">冇時辰，所以計唔到扶抑用神 —— 呢套方法對時辰好敏感，
+        同一個人早幾個鐘出世可以得出完全相反嘅用神。上面寒熱命只需要日期，
+        所以照計得到。</p>`}
 
     <h3 class="bzh">宜住邊區</h3>
-    <div class="regs">${regions.map(r => `
-      <div class="reg"><b class="wx-${r.wx}">${r.label}</b>
-        <span>${r.wx} · ${r.dir}方</span></div>`).join("")}</div>
-    <p class="bznote">五行對應方位（木東、火南、金西、水北、土中），再對應香港
-      地理。出處：風水雜誌《新玄機》第 231 期，區晉豪〈五行方向搵屋〉——
-      「新界屬北，香港島屬南，九龍屬中部，西貢及將軍澳屬東，大嶼山屬西」。
-      呢個唔係唯一講法，唔同師傅分法可以唔同。</p>
+    <p class="bznote" style="margin-top:-2px">${want.map(w =>
+      `<b class="wx-${w}">${w}</b> → ${WX_D[w]}方`).join("　")}</p>
+    <div class="arealist">${areas.length ? areas.map(a => `
+      <button class="area" data-d="${esc(a.tc)}">
+        <span class="ab wx-${a.wx}">${a.wx}</span>
+        <span class="an"><b>${esc(a.tc)}</b>${a.dir}方 · 平均 ${a.avg.toFixed(1)} 分</span>
+        <span class="ac">${a.n.toLocaleString()}<em>幢</em></span><i>›</i>
+      </button>`).join("") : '<p class="bznote">計唔到合適地區。</p>'}</div>
+    <p class="bznote">⚠ 呢部分係<b>綜合網上師傅嘅講法</b>，唔係我哋自己計出嚟嘅數據。
+      寒熱命出自蘇民峰《寒熱命論》；五行對方位同香港地理嘅分配，出自風水雜誌
+      《新玄機》第 231 期區晉豪〈五行方向搵屋〉。逐區嘅方位由我哋按地理位置計，
+      <b>唔係斷言「某區屬某五行」</b> —— 我搵過幾位大師都冇一份完整嘅十八區
+      五行表，而坊間流傳嗰份自己都有矛盾（上環屬金、中環屬水，但兩者同屬中西區）。
+      呢個只係初步參考，認真揀樓請搵專業師傅。</p>
 
     <h3 class="bzh">本命卦</h3>
     <div class="guabox"><div class="gg">${gua}</div>
@@ -2326,6 +2427,9 @@ function bzResult(){
 
 async function showBazi(){
   await ensureBazi();
+  // 地區清單要 district_stats 先計得到方位。八字面板可以喺佢載入之前
+  // 就開咗，嗰陣清單會係空嘅 —— 所以等埋佢。
+  if(!districtData.length) await loadDistricts().catch(() => {});
   gripText.textContent = "八字";
   if(!birth){
     sheetBody.innerHTML = bzForm();
@@ -2347,6 +2451,18 @@ async function showBazi(){
     return;
   }
   sheetBody.innerHTML = bzResult();
+  sheetBody.querySelectorAll(".area").forEach(b => b.addEventListener("click", () => {
+    // 揀咗區就即刻入到嗰區嘅樓宇清單，同時保留八宅篩選。
+    districtFilter = b.dataset.d;
+    guaOn = true;
+    favView = false; sharedList = null; pickingDistrict = false;
+    document.getElementById("btnGua").classList.add("on");
+    refreshGuaDirs();
+    track("bazi_area", {district: districtFilter});
+    const d = districtData.find(x => x.tc === districtFilter);
+    if(d) map.setView([d.lat, d.lon], 14);
+    loadBuildings(); drawDistricts(); showOverview();
+  }));
   sheetBody.querySelector("#bzSee").addEventListener("click", () => {
     guaOn = true;
     favView = false; sharedList = null; pickingDistrict = false;
