@@ -39,14 +39,14 @@ y = 96
 
 d.text((PAD, y), "香港風水地圖", font=f_title, fill=INK)
 y += 108
-d.text((PAD, y), "樓本身好唔好 · 再睇啱唔啱你", font=f_sub, fill=INK2)
+d.text((PAD, y), "睇樓、睇風水、睇你八字 — 一個網站做齊", font=f_sub, fill=INK2)
 y += 86
 
 # 卡上面嗰句要講返我哋同人唔同嗰樣 —— 分數邊個睇都一樣，啱唔啱你先係
 # 得你一個人有。所以問句係「啱你八字」，唔係「幾多分」。
 d.rounded_rectangle([PAD, y, PAD + 530, y + 66], radius=33, fill=(238, 244, 251),
                     outline=(214, 228, 244), width=2)
-d.text((PAD + 30, y + 16), "風水評分 ＋ 八字配對", font=f_pill, fill=BRAND)
+d.text((PAD + 30, y + 16), "搵樓 ＋ 風水 ＋ 八字，三樣一齊", font=f_pill, fill=BRAND)
 y += 118
 
 stats = [("84,720", "幢逐幢計"), ("18", "區"), ("每日", "更新")]
