@@ -757,6 +757,21 @@
            color:var(--ink3)}
   .famnote b{color:#1b4f8f}
 
+  /* 唔係為咗爬蟲而收埋嘅連結 —— 佢哋真係有用，而且真係俾人睇。
+     收埋連結係 cloaking，Google 會罰。 */
+  .sitelinks{margin:22px 0 0; padding-top:18px; border-top:1px solid var(--line)}
+  .sitelinks .slh{font-size:12px; font-weight:650; color:var(--ink3);
+                  letter-spacing:.04em; margin:0 0 10px}
+  .sitelinks ul{list-style:none; margin:0; padding:0; display:grid; gap:8px}
+  .sitelinks a{display:block; padding:11px 13px; border-radius:12px;
+               background:var(--card); border:1px solid var(--line);
+               color:var(--ink3); text-decoration:none; font-size:12.5px;
+               line-height:1.55}
+  .sitelinks a b{display:block; color:var(--ink); font-size:14.5px;
+                 font-weight:650; margin-bottom:2px}
+  .sitelinks a:hover{background:var(--bg)}
+  @media (min-width:700px){ .sitelinks ul{grid-template-columns:1fr 1fr} }
+
   .tagline{font-size:13.5px; font-weight:600; color:var(--gold,#8a6d2f); margin:-2px 0 6px;
            letter-spacing:.01em}
 
@@ -1488,6 +1503,32 @@
       傳統排法，由入伙年份定元運，由樓宇外形同明堂開闊度推算坐向。
       <b>查唔到年份、或者外形太方正嘅，我哋會老實寫「未能起盤」，唔會夾硬砌一個假盤。</b></p>
       <p><a href="/method">睇完整評分方法、數據來源同限制 →</a></p>
+
+      <!-- 呢啲連結一定要係靜態 <a>，唔可以淨係喺 JS 入面。
+           實測：剷走 JS 之後，成版首頁爬得到嘅內部連結只剩一條（/method）
+           —— /district/、/estate/、/learn/ 全部只存在於 JS 字串。
+           Googlebot 會行 JS 所以最終搵到，但 AI 爬蟲（GPTBot、
+           PerplexityBot、OAI-SearchBot）唔會，即係對佢哋嚟講我哋成個
+           網站由首頁只去得到一版。678 版同啲文章等於唔存在。 -->
+      <!-- 呢五條連結唔係淨係俾爬蟲睇嘅 —— app 入面「詳細資料頁」嗰格
+           （手機）同右欄（電腦）有一模一樣嘅五條。呢度係靜態鏡像,
+           因為 AI 爬蟲唔行 JS，見唔到嗰邊。兩邊要一致，唔一致就係
+           cloaking。 -->
+      <nav class="sitelinks" aria-label="網站內容">
+        <p class="slh">全部內容</p>
+        <ul>
+          <li><a href="/district/"><b>18 區風水評分排名</b>
+            每區平均分、最高分樓宇、格局分佈、屬咩五行</a></li>
+          <li><a href="/estate/"><b>658 個屋苑逐座評分</b>
+            航空平面圖、人口普查、發展商、成交價</a></li>
+          <li><a href="/learn/"><b>八字同風水基礎</b>
+            寒熱命、四柱、八宅 —— 每個講法寫明出處</a></li>
+          <li><a href="/bazi-guide"><b>八字揀樓點計？</b>
+            由出生日期到逐幢樓，每一步點計、做唔到啲咩</a></li>
+          <li><a href="/method"><b>九運風水評分點計？</b>
+            山水方位、玄空飛星、逆向工程自政府圖層</a></li>
+        </ul>
+      </nav>
     </div>
   </div>
 </div>
@@ -2429,8 +2470,10 @@ function sideHome(body){
       每區平均分、最高分樓宇、格局分佈</span><i>›</i></a>
     <a class="deep" href="/estate/"><span><b>658 個屋苑逐座評分</b>
       航空平面圖、人口普查、發展商、成交價</span><i>›</i></a>
-    <a class="deep" href="/bazi-guide"><span><b>八字搵樓點計？</b>
+    <a class="deep" href="/bazi-guide"><span><b>八字揀樓點計？</b>
       四柱、五行、寒熱命、八宅 —— 連做唔到啲咩都寫明</span><i>›</i></a>
+    <a class="deep" href="/learn/"><span><b>八字同風水基礎</b>
+      寒熱命、四柱、八宅 —— 每個講法寫明出處</span><i>›</i></a>
     <a class="deep" href="/method"><span><b>評分方法</b>
       逆向工程自政府風水地圖圖層，逐步寫明</span><i>›</i></a>
     <div class="sharebar" style="margin-top:14px">
@@ -3824,6 +3867,8 @@ async function showOverview(){
         每區平均分、最高分樓宇、格局分佈</span><i>›</i></a>
       <a class="deep" href="/bazi-guide"><span><b>八字揀樓點計？</b>
         四柱、五行、寒熱命、八宅 —— 連做唔到啲咩都寫明</span><i>›</i></a>
+      <a class="deep" href="/learn/"><span><b>八字同風水基礎</b>
+        寒熱命、四柱、八宅 —— 每個講法寫明出處</span><i>›</i></a>
       <a class="deep" href="/estate/"><span><b>658 個屋苑逐座評分</b>
         航空平面圖、人口普查、發展商、成交價</span><i>›</i></a>
     </div>
