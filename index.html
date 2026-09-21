@@ -285,6 +285,11 @@
   #layers button:hover{background:var(--bg)}
   #layers button.sel{background:var(--bg); font-weight:600}
   #layers button.sel::after{content:"✓"; float:right; color:var(--brand)}
+  #layers .lgh{margin:6px 12px 3px; font-size:11px; font-weight:650; color:var(--ink3);
+               letter-spacing:.03em}
+  #layers .lgh:first-child{margin-top:2px}
+  #layers button i{display:block; font-style:normal; font-size:11.5px; color:var(--ink3);
+                   font-weight:400; margin-top:1px}
   #layers{width:auto; min-width:150px}
 
   /* ---------- basemap treatment ----------
@@ -1280,6 +1285,10 @@
 </div>
 
 <div id="layers">
+  <p class="lgh">顏色代表</p>
+  <button data-mode="nine" class="sel">九運格局<i>邊個睇都一樣</i></button>
+  <button data-mode="bazi">夾唔夾你<i>跟你同屋企人嘅八字</i></button>
+  <p class="lgh">底圖</p>
   <button data-base="street" class="sel">街道圖</button>
   <button data-base="satellite">衛星圖</button>
 </div>
@@ -1961,8 +1970,93 @@ const buildingLayer=L.layerGroup().addTo(map);
 // in neutral grey instead: still on the map, because knowing a school is next
 // door matters, but plainly not part of the housing comparison.
 const NONRES = "#c7c5bd";
+/* ---------- 兩個圖層 ----------
+
+   原本地圖淨係一種顏色意思：九運格局好唔好 —— 邊個睇都一樣。加咗八字
+   之後，應該有第二種睇法：呢幢樓啱唔啱你。同一張地圖，兩個問題。
+
+   分界線唔亂訂。九運嗰邊有自己一套（BREAKS，由全港分數分佈定出嚟），
+   而「夾你」嗰個分每個人嘅分佈都唔同 —— 一個東四命嘅人同一個西四命嘅人，
+   同一批樓會得出完全唔同嘅高低。所以色階係即時由你自己嗰份分佈切五等份：
+   深綠 = 全港最夾你嗰兩成，深紅 = 最唔夾嗰兩成。
+
+   即係話，顏色講嘅唔係「呢幢樓夠唔夠 70 分」，而係「喺全港住宅入面,
+   呢幢樓對你嚟講排邊個位」。 */
+let scoreMode = "nine";                 // "nine" | "bazi"
+let fitBreaks = null, fitBreaksKey = null;
+
+function countedKey(){
+  return counted().map(p => `${p.y}/${p.m}/${p.d}/${p.h}/${p.male}`).join("|");
+}
+
+let areaFitCache = null, areaFitKey = null;
+function areaFitMap(){
+  const key = countedKey();
+  if(areaFitKey === key && areaFitCache) return areaFitCache;
+  const {areas} = rankAreas(18);
+  if(!areas.length) return {};
+  areaFitKey = key;
+  return (areaFitCache = Object.fromEntries(areas.map(a => [a.tc, a.fit])));
+}
+
+function fitScale(){
+  const key = countedKey();
+  if(fitBreaksKey === key && fitBreaks) return fitBreaks;
+  if(!searchIndex || !key) return null;
+  const vals = [];
+  for(const o of searchIndex){
+    if(o.res === 0) continue;
+    const f = houseFit(o);
+    if(f != null) vals.push(f);
+  }
+  if(vals.length < 200) return null;
+  vals.sort((a, b) => a - b);
+  const q = t => vals[Math.floor(vals.length * t)];
+  fitBreaksKey = key;
+  return (fitBreaks = [q(.2), q(.4), q(.6), q(.8)]);
+}
+
+/** 八字圖層開得成未 —— 淨係睇有冇八字。引擎同數據係我哋去載，唔關佢事。 */
+const baziLayerReady = () => !!birth;
+
+/** 地圖上面呢幢樓應該用邊個分上色。 */
+function scoreOf(o){
+  if(scoreMode !== "bazi") return o.total;
+  return houseFit(o);
+}
+
+function colorForScore(v){
+  if(scoreMode !== "bazi") return colorFor(v);
+  const b = fitScale();
+  if(v == null || !b) return NODATA;
+  const i = b.findIndex(x => v < x);
+  return RAMP[i === -1 ? RAMP.length - 1 : i];
+}
+
+async function setScoreMode(m){
+  if(m === "bazi" && !baziLayerReady()){
+    toast("要先入咗出生日期先用得八字圖層");
+    showBazi();
+    return;
+  }
+  scoreMode = m;
+  fitBreaks = null; fitBreaksKey = null;
+  areaFitCache = null; areaFitKey = null;
+  if(m === "bazi"){
+    // 引擎、形嘅數據、搜尋索引三樣都係用到先載。有八字就去攞，唔好因為
+    // 佢未載就話人哋「未入出生日期」—— 佢入咗，係我哋未準備好。
+    toast("計緊…", 1500);
+    await Promise.all([ensureBazi(), loadElements(), ensureIndex()]).catch(() => {});
+    if(me) await loadFamily().catch(() => {});
+  }
+  document.querySelectorAll("#layers button[data-mode]").forEach(b =>
+    b.classList.toggle("sel", b.dataset.mode === m));
+  track("score_mode", {mode: m});
+  loadBuildings(); drawDistricts(); showOverview();
+}
+
 function styleFor(score, res){
-  const c = (res === 0) ? NONRES : colorFor(score);
+  const c = (res === 0) ? NONRES : colorForScore(score);
   return {renderer:buildingRenderer, fillColor:c, fillOpacity: res === 0 ? .6 : .88,
           color:c, weight:.6, opacity:.55};
 }
@@ -2041,11 +2135,11 @@ async function loadBuildings(){
       if(!passesGua(o)) continue;
       const ring=decodeRing(o.ring);
       const lyr = ring
-        ? L.polygon(ring, styleFor(o.total, o.res))
-        : L.circleMarker([o.lat,o.lon], {...styleFor(o.total, o.res), radius:5});
+        ? L.polygon(ring, styleFor(scoreOf(o), o.res))
+        : L.circleMarker([o.lat,o.lon], {...styleFor(scoreOf(o), o.res), radius:5});
       lyr.on("click",()=>select(o,lyr));
       lyr.on("mouseover",()=>{ if(o.id!==minSel) lyr.setStyle({weight:1.6,opacity:1}); });
-      lyr.on("mouseout", ()=>{ if(o.id!==minSel) lyr.setStyle(styleFor(o.total, o.res)); });
+      lyr.on("mouseout", ()=>{ if(o.id!==minSel) lyr.setStyle(styleFor(scoreOf(o), o.res)); });
       lyr.addTo(buildingLayer);
       if(o.id===minSel) selLayer={o,lyr};
       n++;
@@ -2102,8 +2196,12 @@ function drawDistricts(){
     // With a filter on, the useful number is how many buildings there MATCH,
     // not the district average - that is what "where is the good stock" means.
     const cnt = bandCount(a);
-    const shown = band==="all" ? a.avg.toFixed(0) : cnt.toLocaleString();
-    const tint  = band==="all" ? colorFor(a.avg) : RAMP[["bad","poor","mid","good","best"]
+    // 八字模式：泡泡講嘅係呢個區夾你幾多，唔係佢嘅九運平均分。
+    const pf = scoreMode === "bazi" ? (areaFitMap()[a.tc] ?? null) : null;
+    const shown = scoreMode === "bazi" ? (pf == null ? "–" : String(pf))
+                : band==="all" ? a.avg.toFixed(0) : cnt.toLocaleString();
+    const tint  = scoreMode === "bazi" ? colorFor(pf)
+                : band==="all" ? colorFor(a.avg) : RAMP[["bad","poor","mid","good","best"]
                     .indexOf(BAND_KEY[band])];
     const size  = band==="all" ? 40 : Math.max(34, Math.min(54, 30 + Math.sqrt(cnt)));
     const icon=L.divIcon({
@@ -3118,12 +3216,19 @@ function guaOf(p){
   return g;
 }
 
-/** 呢幢樓個向，對呢個人嚟講係邊隻遊年星。坐向推唔準就 null —— 唔估。 */
+/** 呢幢樓個向，對呢個人嚟講係邊隻遊年星。坐向推唔準就 null —— 唔估。
+
+    兩個來源：圖磚有 face_m（二十四山）同 conf；搜尋索引冇，但有 d8 ——
+    build_tiles 出 d8 嗰陣已經做咗 conf >= 0.6 呢一關，唔夠準嘅係 null。
+
+    ⚠ 之前淨係讀 face_m，所以清單（讀搜尋索引）計唔到八宅，變咗淨係形；
+    而樓宇頁（讀圖磚）計到。同一幢樓喺兩個地方出兩個唔同嘅分。 */
 function guaStar(o, p){
-  if((o.conf ?? 0) < 0.6 || o.face_m == null) return null;
   const g = guaOf(p);
   if(!g) return null;
-  const i = SHAN_D8[o.face_m];
+  const i = (o.d8 != null) ? o.d8
+          : ((o.conf ?? 0) >= 0.6 && o.face_m != null) ? SHAN_D8[o.face_m]
+          : null;
   if(i == null) return null;
   const dir = DIR8[i], star = bzMod.LUCK[g][dir];
   return {gua: g, dir, star, score: STAR_SCORE[star] ?? null,
@@ -5191,6 +5296,8 @@ document.addEventListener("click",e=>{
 });
 document.querySelectorAll('#layers button[data-base]').forEach(b=>
   b.addEventListener("click",()=>{ setBase(b.dataset.base); document.getElementById("layers").classList.remove("show"); }));
+document.querySelectorAll('#layers button[data-mode]').forEach(b=>
+  b.addEventListener("click",()=>{ setScoreMode(b.dataset.mode); document.getElementById("layers").classList.remove("show"); }));
 
 document.getElementById("btnLoc").addEventListener("click",()=>{
   if(!navigator.geolocation){ toast("此瀏覽器唔支援定位"); return; }
