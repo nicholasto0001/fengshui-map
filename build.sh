@@ -11,7 +11,7 @@ set -euo pipefail
 rm -rf public
 mkdir -p public
 
-cp index.html privacy.html admin.html method.html sitemap.xml manifest.webmanifest public/
+cp index.html privacy.html admin.html method.html bazi-guide.html sitemap.xml manifest.webmanifest public/
 cp bazi.js card.js public/               # 八字引擎同分享卡，用到先載
 cp og.png favicon.ico apple-touch-icon.png icon-192.png icon-512.png public/
 cp -R og public/og          # one preview card per score, chosen by the Worker

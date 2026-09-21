@@ -22,6 +22,7 @@ SITE = "https://hkfengshuimap.com"
 PAGES = [
     ("/",             "daily",   "1.0"),
     ("/method",       "monthly", "0.8"),
+    ("/bazi-guide",   "monthly", "0.8"),
     ("/privacy.html", "yearly",  "0.3"),
     ("/district/",    "weekly",  "0.8"),
     ("/estate/",      "weekly",  "0.8"),

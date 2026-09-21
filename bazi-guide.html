@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>八字揀樓 — 點計、根據咩、唔做得啲咩 · 香港風水地圖</title>
+<meta name="description" content="八字揀樓功能全公開：四柱點排、五行點計、寒熱命同扶抑用神點解會唔同答案、八宅命卦點配樓向、地區方位出自邊位師傅。連我哋做唔到啲咩都寫明。出生資料淨係留喺你部機。">
+<link rel="canonical" href="https://hkfengshuimap.com/bazi-guide">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="香港風水地圖">
+<meta property="og:title" content="八字揀樓 — 點計、根據咩、唔做得啲咩">
+<meta property="og:description" content="四柱、五行、寒熱命、八宅命卦點樣配返全港八萬幢樓。連限制都寫明。">
+<meta property="og:url" content="https://hkfengshuimap.com/bazi-guide">
+<meta property="og:image" content="https://hkfengshuimap.com/og.png">
+<meta property="og:locale" content="zh_HK">
+<style>
+  :root{ --ink:#0b0b0b; --ink2:#55534e; --ink3:#86847d; --bg:#faf9f6; --card:#fff;
+         --line:#e6e4de; --brand:#1b4f8f; --good:#0f6354; --bad:#a01f1f; }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#f2f1ee; --ink2:#c2c0ba; --ink3:#8e8c85; --bg:#14140f; --card:#1b1b16;
+      --line:#2c2b26; --brand:#7fb0e8; --good:#4da79a; --bad:#d76f6f; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font:17px/1.75 -apple-system,BlinkMacSystemFont,"PingFang HK","Noto Sans HK",system-ui,sans-serif;
+    -webkit-text-size-adjust:100%}
+  main{max-width:720px; margin:0 auto; padding:26px 20px 90px}
+  a{color:var(--brand)}
+  .back{display:inline-block; margin-bottom:16px; text-decoration:none; font-weight:600}
+  h1{font-size:30px; line-height:1.3; letter-spacing:-.02em; margin:6px 0 8px}
+  .lede{font-size:19px; color:var(--ink2); margin:0 0 28px; line-height:1.65}
+  h2{font-size:22px; letter-spacing:-.01em; margin:40px 0 10px; padding-top:8px}
+  h3{font-size:17.5px; margin:26px 0 6px}
+  p,li{color:var(--ink2)}
+  ul,ol{padding-left:22px} li{margin:7px 0}
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:15.5px}
+  th,td{text-align:left; padding:10px; border-bottom:1px solid var(--line); vertical-align:top}
+  th{color:var(--ink); font-size:14.5px} td{color:var(--ink2)}
+  .box{background:var(--card); border:1px solid var(--line); border-radius:14px;
+       padding:16px 18px; margin:20px 0}
+  .box b{color:var(--ink)}
+  .warn{border-left:3px solid var(--bad)}
+  .cta{display:inline-block; background:var(--good); color:#fff; text-decoration:none;
+       font-weight:700; padding:14px 24px; border-radius:13px; margin-top:8px; min-height:52px}
+  .n{font-variant-numeric:tabular-nums}
+</style>
+<main>
+  <a class="back" href="/">‹ 返回地圖</a>
+  <h1>八字揀樓</h1>
+  <p class="lede">入你嘅出生日期，我哋會排四柱、計五行、定本命卦，
+  再喺全港 84,720 幢樓宇入面揀出合你嗰批。呢一版講清楚：每一步點計、
+  根據邊個講法、邊啲位我哋做唔到。</p>
+
+  <div class="box">
+    <p style="margin:0"><b>一句講晒：</b>排盤嗰部分係純算術，我哋驗到足;
+    揀樓嗰部分係綜合師傅講法，只係初步參考。<b>你嘅出生資料唔會離開你部機。</b></p>
+  </div>
+
+  <h2>一、四柱點排</h2>
+  <p>年柱喺<b>立春</b>轉，唔係年初一，亦唔係一月一日。月柱喺十二個<b>節</b>轉。
+  兩者都係天文時刻，唔係日曆日期 —— 立春爭十分鐘，可以換成個年柱。</p>
+  <p>所以節氣我哋自己計（VSOP87 級數），唔用坊間嗰啲約數日期。驗證：</p>
+  <table>
+    <tr><th>對照</th><th>數量</th><th>結果</th></tr>
+    <tr><td>天文台《公曆與農曆對照表》1901–2100 嘅節氣日期</td><td>4,800</td>
+        <td>1950 年後<b>零差異</b>；戰前 6 個，全部踩正午夜十五分鐘內</td></tr>
+    <tr><td>天文台節氣時刻（2019–2028），逐分鐘</td><td>220</td>
+        <td>206 個完全一致，最大差 <b>1 分鐘</b></td></tr>
+    <tr><td>四柱 vs lunar-python（獨立開源曆法庫）</td><td>30,000</td>
+        <td>年月日時<b>全部一致</b></td></tr>
+  </table>
+  <p>過程中捉到兩個真錯：日柱曾經早咗一日（排出嚟個盤照樣似模似樣，
+  淨係睇輸出永遠睇唔出），同埋 1923 年雨水啱啱好落喺 00:00:00 嗰陣日期推多咗一日。
+  兩個都係靠同外面對先發現。</p>
+
+  <h3>晚子時：三個門派三個答案</h3>
+  <p>夜晚 11 點到 12 點出世點排，冇統一答案。我哋對過三個實作：</p>
+  <table>
+    <tr><th></th><th>日柱</th><th>時柱</th></tr>
+    <tr><td>子時起新日</td><td>轉下一日</td><td>跟下一日</td></tr>
+    <tr><td>晚子時</td><td>留當日</td><td>跟當日</td></tr>
+    <tr><td>lunar-python</td><td>留當日</td><td>跟下一日</td></tr>
+  </table>
+  <p>影響嘅人係二十四分一。<b>唔係邊個計錯，係門派分歧</b>，而各家軟件靜靜雞
+  揀咗一個都冇講。我哋會喺盤上面寫明用咗邊一種。</p>
+
+  <h3>真太陽時</h3>
+  <p>香港喺東經 114.17°，但用緊東經 120° 嘅時區，差 23 分鐘；加均時差最多差 39 分鐘。
+  一個時辰兩個鐘，所以生喺時辰頭尾嘅人可能換咗成個時柱。</p>
+  <p>我哋<b>預設唔校正</b>，跟返市面排盤工具嘅做法，等你攞去第二度對得返；
+  但會喺下面講「按真太陽時會係另一個時柱」，等你知道有呢回事。</p>
+
+  <h2>二、五行同用神</h2>
+  <p>日主五行、五行分數、旺相休囚死 —— 呢啲係按藏干同月令計，我哋將
+  <b>每個字貢獻咗幾多都列出嚟</b>，等你自己睇得到條數點嚟。各家軟件嘅藏干比重
+  同月令倍數都唔同，所以絕對數唔會一樣。</p>
+
+  <h3>兩套方法，會出唔同答案</h3>
+  <table>
+    <tr><th></th><th>寒熱命</th><th>扶抑用神</th></tr>
+    <tr><td>出處</td><td>蘇民峰《寒熱命論》，1994 年創立</td><td>傳統扶抑法</td></tr>
+    <tr><td>要咩</td><td><b>只需要出生日期</b></td><td>要出生時辰</td></tr>
+    <tr><td>係咪判斷</td><td>否，純日期</td><td><b>係</b></td></tr>
+  </table>
+  <p>蘇民峰喺《新玄機》第 53 期自己寫：「立秋後（西曆八月八日）驚蟄前
+  （西曆三月六日）為寒命。立夏後（西曆五月六日）立秋前為熱命。」
+  「寒命出生人喜火，以木生火。而熱命人喜水，以金生水。」
+  我哋用返真正嘅節氣時刻做界線，唔用嗰幾個約數日期 —— 生喺嗰日嘅人先分得啱邊。</p>
+  <div class="box">
+    <p style="margin:0"><b>點解扶抑用神要有時辰先計：</b>同一個人（1994 年 12 月 23 日），
+    04:00 出世係身弱、用神水金；16:00 出世係身強、用神木火土 —— <b>完全相反</b>。
+    唔知時辰就唔應該畀一個咁易反轉嘅答案你。</p>
+  </div>
+  <p>蘇民峰喺同一篇文明講「根本不用再詳細計算命者身旺身弱，以何為用神」——
+  即係佢本人否定扶抑法。我哋唔會扮兩套係同一回事：兩個答案並排顯示，
+  夾到會標「一致」，夾唔到會標「唔同」。</p>
+
+  <h2>三、本命卦點配樓</h2>
+  <p>八宅：出生年（立春為界）同性別 → 本命卦 → 東四命或西四命 → 四個吉方。
+  呢一步<b>完全確定性</b>，冇一步要判斷。</p>
+  <p>我哋驗過三樣：本命卦同坊間公式 1900–2099 × 男女 共 400 個<b>零差異</b>；
+  遊年表 64 對關係<b>完全對稱</b>；每個命卦嘅四個吉方啱啱好等於四個同組卦嘅方位
+  —— 最後呢個就係「東四」「西四」呢兩個名嘅由來，佢成立即係證明條規則啱。</p>
+  <p>（第一次我憑記憶打嗰張 8×8 遊年表，<b>64 格錯咗 15 格</b>。而家由變爻規則推導，
+  唔再打表。）</p>
+  <p>八宅<b>以向論</b> —— 配嘅係樓宇向邊，唔係坐邊。我哋有 52,383 幢住宅嘅向首，
+  但只用坐向信心值 0.6 以上嗰批（樓形太接近正方形就推唔準長軸）。</p>
+  <div class="box">
+    <p style="margin:0"><b>要留意：</b>八宅只分東四、西四<b>兩組宅</b>。
+    所以同組嘅人，合嘅樓係同一批；因人而異嘅係邊個方位對你嚟講係邊個遊年星。
+    我哋唔會講「為你度身揀樓」。</p>
+  </div>
+
+  <h2>四、地區方位 —— 呢部分唔係我哋嘅數據</h2>
+  <p>我哋搵過蘇民峰、李丞責、麥玲玲同幾份坊間清單，<b>冇一份完整嘅十八區五行表</b>。
+  唯一有清單嗰個係一篇標住「摘錄」嘅匿名網誌，而佢自己都矛盾
+  —— 上環屬金、中環屬水，但兩者同屬中西區；下面十幾年留言一直有人問
+  「荃灣屬咩」「黃埔屬咩」，冇人答得到。</p>
+  <p>但師傅之間嘅<b>框架</b>係一致嘅：五行對方位（木東、火南、金西、水北、土中），
+  方位再對地理。風水雜誌《新玄機》第 231 期，區晉豪〈五行方向搵屋〉：
+  「新界屬北，香港島屬南，九龍屬中部，西貢及將軍澳屬東，大嶼山屬西。」</p>
+  <p>所以我哋<b>講方位，唔斷言屬性</b>：唔會話「呢個區屬火」，會話
+  「你喜火，火對應南方，以下係香港偏南嘅區」。逐區嘅方位由我哋按地理位置計，
+  所以覆蓋到全香港，唔會出現「荃灣屬咩」答唔到。</p>
+  <div class="box">
+    <p style="margin:0"><b>呢部分係綜合網上師傅嘅講法，唔係我哋自己計出嚟嘅數據，
+    亦都唔係唯一講法。</b>認真揀樓請搵專業師傅。</p>
+  </div>
+
+  <h2>五、我哋做唔到啲咩</h2>
+  <ul>
+    <li><b>唔係師傅睇。</b>冇人入過屋、冇羅盤實測、冇睇門口爐灶床位。</li>
+    <li><b>用神係判斷，唔係算術。</b>師傅仲會睇調候、通關、病藥。坊間軟件自己
+    都寫「參考用神」，我哋一樣。</li>
+    <li><b>推唔到山形五行。</b>巒頭講尖火、圓金、方土、曲水、直木，但我哋嘅地形
+    數據只有山水邊界點，<b>冇高程</b>，所以推唔到山係尖定圓。</li>
+    <li><b>坐向係推算。</b>由樓宇外形推，誤差 ±10–20°，唔係羅盤實測。</li>
+    <li><b>節氣界線兩分鐘內唔夠肯定。</b>我哋嘅節氣準到大約一分鐘，所以生喺
+    界線嗰兩分鐘之內，個盤會自己標明「唔夠肯定」。</li>
+  </ul>
+
+  <h2>六、你嘅出生資料</h2>
+  <p>排盤同配樓<b>全部喺你個瀏覽器入面計</b>，所以你嘅出生日期同時間
+  <b>由頭到尾冇離開過你部機</b>。</p>
+  <ul>
+    <li>存喺你部機嘅瀏覽器，方便下次唔使再打過</li>
+    <li><b>唔會同步去其他裝置</b>，亦唔會存喺我哋個資料庫</li>
+    <li>唔會放入 Google Analytics 或者任何廣告追蹤碼</li>
+    <li>八字版面隨時撳「刪除我嘅出生資料」清走，即時生效</li>
+  </ul>
+  <p>詳情見<a href="/privacy.html">私隱政策</a>第三節。</p>
+
+  <p style="margin-top:36px"><a class="back" href="/">‹ 返回地圖，試下八字揀樓</a></p>
+</main>
+</body>
+</html>
