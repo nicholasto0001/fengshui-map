@@ -2566,6 +2566,8 @@ function bzResult(){
   // 木係幫手。兩個等量齊觀會令到「幫手」蓋過「要嗰個」。
   const [p1, p2] = want;
   const {wts, areas} = rankAreas(want, st.pct);
+  const wxb = w => `<b class="wx-${w}">${w}</b>`;
+  const lead = wts[0][1] >= wts[1][1] ? p1 : p2;
   // 夾你嗰幾個區，九運分數可以係全港最低嗰批 —— 寒命喜火，而火形就係
   // 舊區嗰種密而尖嘅樓。呢個唔係計錯，但唔出聲就似係推爛樓。
   const terr = districtData.reduce((t, d) => t + d.avg * d.n, 0)
@@ -2621,15 +2623,18 @@ function bzResult(){
         所以照計得到。</p>`}
 
     <h3 class="bzh">宜住邊區</h3>
-    <p class="bznote" style="margin-top:-2px">你<b>${hc.type}</b>，喜
-      <b class="wx-${p1}">${p1}</b>，其次<b class="wx-${p2}">${p2}</b>。
-      而你盤入面<b class="wx-${p1}">${p1}</b>佔 ${st.pct[p1].toFixed(0)}%、
-      <b class="wx-${p2}">${p2}</b>佔 ${st.pct[p2].toFixed(0)}%，
-      所以呢次<b class="wx-${wts[0][1] >= wts[1][1] ? p1 : p2}">${
-        wts[0][1] >= wts[1][1] ? p1 : p2}</b>行得重啲
-      （${wts.map(([w, k]) => `${w} ${(k*100).toFixed(0)}%`).join("、")}）。<br>
-      下面唔係「邊個區風水好」—— 係全港十八區量返出嚟之後，<b>最夾你呢個命</b>
-      嗰六個。同樣${hc.type}但五行分佈唔同嘅人，出嚟嘅次序會唔一樣。</p>
+    <p class="bznote" style="margin-top:-2px">${
+      // 一句中文中間唔應該有空隙，所以呢兩段用駁字串砌，唔用換行 ——
+      // 模板字串一換行就會喺句子中間留低一個空格。
+      [`你<b>${hc.type}</b>，喜${wxb(p1)}，其次${wxb(p2)}。`,
+       `而你盤入面${wxb(p1)}佔 ${st.pct[p1].toFixed(0)}%、`,
+       `${wxb(p2)}佔 ${st.pct[p2].toFixed(0)}%，`,
+       `所以呢次${wxb(lead)}行得重啲`,
+       `（${wts.map(([w, k]) => `${w} ${(k * 100).toFixed(0)}%`).join("、")}）。`,
+      ].join("")}<br>${
+      [`下面唔係「邊個區風水好」—— 係全港十八區量返出嚟之後，`,
+       `<b>最夾你呢個命</b>嗰六個。同樣${hc.type}但五行分佈唔同嘅人，`,
+       `出嚟嘅次序會唔一樣。`].join("")}</p>
     <div class="arealist">${areas.length ? areas.map(a => `
       <button class="area${locked ? " lock" : ""}" data-d="${esc(a.tc)}">
         <span class="ab wx-${a.wx}">${a.wx}</span>
