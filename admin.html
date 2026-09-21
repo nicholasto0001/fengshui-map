@@ -13,7 +13,7 @@
     font:17px/1.6 -apple-system,BlinkMacSystemFont,"PingFang HK","Noto Sans HK",system-ui,sans-serif;
     -webkit-text-size-adjust:100%;
   }
-  main{max-width:720px; margin:0 auto; padding:22px 16px 80px}
+  main{max-width:1060px; margin:0 auto; padding:22px 16px 80px}
   h1{font-size:26px; margin:6px 0 2px; letter-spacing:-.02em}
   .as{color:var(--ink3); font-size:14px; margin:0 0 22px}
   h2{font-size:13px; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
@@ -56,6 +56,57 @@
   }
   a{color:#1b4f8f}
   .back{display:inline-block; margin-bottom:14px; text-decoration:none; font-weight:600}
+
+  /* ---- 圖表 ---------------------------------------------------------- */
+  .chart{background:var(--card); border:1px solid var(--line); border-radius:16px;
+         padding:16px 16px 10px; margin-bottom:10px}
+  .chart .ct{font-size:14px; font-weight:600; margin:0 0 2px}
+  .chart .cs{font-size:12.5px; color:var(--ink3); margin:0 0 12px}
+  .chart svg{display:block; width:100%; height:auto; overflow:visible}
+  .chart rect.b{transition:opacity .12s}
+  .chart rect.b:hover{opacity:.62}
+  .ax{font-size:11px; fill:var(--ink3)}
+  .gl{stroke:var(--line); stroke-width:1}
+
+  /* ---- 漏斗 ---------------------------------------------------------- */
+  .fn{list-style:none; margin:0; padding:0}
+  .fn li{padding:9px 0; border-bottom:1px solid var(--line)}
+  .fn .fr{display:flex; justify-content:space-between; align-items:baseline;
+          font-size:15px; margin-bottom:6px}
+  .fn .fr b{font-variant-numeric:tabular-nums}
+  .fn .fr i{font-style:normal; color:var(--ink3); font-size:13px; margin-left:8px}
+  .tr{height:9px; border-radius:5px; background:#eeece6; overflow:hidden}
+  .tr > span{display:block; height:100%; border-radius:5px; background:var(--good)}
+  .fn .drop{font-size:12.5px; color:var(--warn); margin-top:5px}
+
+  /* ---- 表 ------------------------------------------------------------ */
+  .tw{background:var(--card); border:1px solid var(--line); border-radius:16px;
+      overflow:auto; -webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse; width:100%; font-size:14px}
+  th,td{text-align:left; padding:10px 12px; white-space:nowrap;
+        border-bottom:1px solid var(--line)}
+  th{font-size:12px; letter-spacing:.05em; color:var(--ink3); font-weight:700;
+     text-transform:uppercase; position:sticky; top:0; background:var(--card); z-index:1}
+  td.n,th.n{text-align:right; font-variant-numeric:tabular-nums}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:#fbfaf7}
+  .tag{display:inline-block; padding:1px 7px; border-radius:20px; font-size:12px;
+       font-weight:600; background:#eeece6; color:var(--ink2)}
+  .tag.on{background:#e2efe9; color:var(--good)}
+  .tag.adm{background:#f3e4e4; color:var(--warn)}
+  .em{color:var(--ink3)}
+
+  /* ---- 名單工具列 ---------------------------------------------------- */
+  .tools{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:10px}
+  .tools input,.tools select{
+    font:inherit; font-size:15px; padding:9px 12px; border:1px solid var(--line);
+    border-radius:11px; background:var(--card); color:var(--ink); min-height:42px}
+  .tools input{flex:1 1 200px; min-width:0}
+  .tools button{width:auto; min-height:42px; padding:0 16px; font-size:15px; flex:0 0 auto}
+  .note{font-size:12.5px; color:var(--ink3); margin:8px 2px 0}
+
+  /* 手提電話：表照樣打橫捲，唔壓縮 */
+  @media (max-width:560px){ h1{font-size:23px} .k .n{font-size:30px} }
 </style>
 
 <main>
@@ -73,6 +124,7 @@ const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
 const out = document.getElementById("out");
 const asof = document.getElementById("asof");
 const n = v => (v ?? 0).toLocaleString();
+const n2 = n;
 const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
 // 留存係「呢批人入面有幾多返咗嚟」，唔係一個淨數。冇分母嘅百分比冇意思，
@@ -90,25 +142,129 @@ function card(num, label, hint, cls){
     ${hint ? `<div class="h">${hint}</div>` : ""}</div>`;
 }
 
-function render(m){
+/* ---------------------------------------------------------------- 圖表 --
+   冇用任何 library。呢啲圖得幾十個數據點，SVG 畫得晒，
+   而且唔使為咗一條柱狀圖拉 100KB 落嚟。 */
+
+const MAXW = 960, CH = 120;
+
+/* 柱狀圖。data = [{d, v}]。淨係標頭尾同最高嗰支 —— 每支都標數字
+   就變成一堆字，睇唔到個形狀。 */
+function bars(data, key, color, title, sub){
+  const vals = data.map(r => r[key] || 0);
+  const max = Math.max(1, ...vals);
+  const n = data.length, gap = n > 80 ? 1 : 2;
+  const bw = (MAXW - gap*(n-1)) / n;
+  const peak = vals.indexOf(max);
+  const total = vals.reduce((a,c)=>a+c,0);
+
+  const rects = data.map((r,i) => {
+    const v = r[key] || 0;
+    const h = v ? Math.max(2, v/max * (CH-18)) : 0;
+    return `<rect class="b" x="${(i*(bw+gap)).toFixed(2)}" y="${(CH-18-h).toFixed(2)}"
+      width="${bw.toFixed(2)}" height="${h.toFixed(2)}" rx="${Math.min(2,bw/2).toFixed(1)}"
+      fill="${color}"><title>${esc(r.d)}：${n2(v)}</title></rect>`;
+  }).join("");
+
+  const lab = (i, anchor) => `<text class="ax" x="${(i*(bw+gap)+bw/2).toFixed(1)}"
+      y="${CH-4}" text-anchor="${anchor}">${esc((data[i]||{}).d||"").slice(5)}</text>`;
+
+  return `<div class="chart">
+    <p class="ct">${esc(title)}</p>
+    <p class="cs">${esc(sub)} · 合共 ${n2(total)} · 最高一日 ${n2(max)}</p>
+    <svg viewBox="0 0 ${MAXW} ${CH}" preserveAspectRatio="none" role="img">
+      <line class="gl" x1="0" y1="${CH-18}" x2="${MAXW}" y2="${CH-18}"/>
+      ${rects}
+      <text class="ax" x="${(peak*(bw+gap)+bw/2).toFixed(1)}"
+            y="${(CH-18-Math.max(2,max/max*(CH-18))-5).toFixed(1)}"
+            text-anchor="middle">${n2(max)}</text>
+    </svg>
+    <svg viewBox="0 0 ${MAXW} 16" preserveAspectRatio="none" style="height:16px">
+      ${lab(0,"start")}${lab(n-1,"end")}
+    </svg>
+  </div>`;
+}
+
+/* 漏斗。每層都係上一層嘅子集，所以「跌咗幾多」先係重點，
+   唔係每層有幾多人。 */
+function funnel(f, members){
+  const steps = [
+    ["登入咗",        f.members, "有 Google 帳戶落嚟"],
+    ["撳過樓",        f.viewed,  "起碼撳開一幢樓睇"],
+    ["收藏過",        f.saved,   "儲低至少一個"],
+    ["入咗八字",      f.bazi,    "填咗出生日期"],
+    ["填埋屋企人",    f.family,  "唔只自己一個"],
+  ];
+  const top = Math.max(1, members);
+  return `<ul class="fn">${steps.map((st,i) => {
+    const [name, v, hint] = st;
+    const prev = i ? steps[i-1][1] : null;
+    const drop = prev != null && prev > 0 ? Math.round(100*(prev-v)/prev) : null;
+    return `<li>
+      <div class="fr"><span>${esc(name)}<i>${esc(hint)}</i></span>
+        <b>${n2(v)} <span class="em">· ${Math.round(100*v/top)}%</span></b></div>
+      <div class="tr"><span style="width:${Math.max(0,Math.min(100,100*v/top)).toFixed(1)}%"></span></div>
+      ${drop != null && drop >= 20 ? `<div class="drop">呢一步甩咗 ${drop}%</div>` : ""}
+    </li>`;
+  }).join("")}</ul>`;
+}
+
+function cohortTable(cs){
+  if(!cs || !cs.length) return `<p class="note">仲未夠一個星期數據。</p>`;
+  return `<div class="tw"><table>
+    <thead><tr><th>邊個星期入嚟</th><th class="n">幾多人</th>
+      <th class="n">30 日內仲返嚟</th><th>存活</th><th class="n">中位數留低幾耐</th></tr></thead>
+    <tbody>${cs.map(c => {
+      const p = c.size ? Math.round(100*c.alive/c.size) : 0;
+      return `<tr><td>${esc(c.wk)}</td><td class="n">${n2(c.size)}</td>
+        <td class="n">${c.size < 5 ? `${c.alive}/${c.size}` : p+"%"}</td>
+        <td><div class="tr" style="width:110px"><span style="width:${p}%"></span></div></td>
+        <td class="n">${c.med_days == null ? "—" : c.med_days + " 日"}</td></tr>`;
+    }).join("")}</tbody></table></div>
+    <p class="note">冇逐日活動紀錄，所以「存活」係指最近 30 日內見過佢。</p>`;
+}
+
+function renderOverview(m, o){
   asof.textContent = "截至 " + new Date(m.as_of).toLocaleString("zh-HK");
   const act = pct(m.activated, m.members, 40);
-  const d1  = pct(m.ret_d1, m.cohort_d1);
   const d7  = pct(m.ret_d7, m.cohort_d7, 20);
   const sticky = pct(m.wau, m.mau, 20);
+  const b = o.bazi || {};
 
   out.innerHTML = `
     <div class="grid">
       ${card(n(m.members), "會員總數", `今日新增 ${n(m.new_today)} · 七日 ${n(m.new_7d)}`, "hero")}
-    </div>
-
-    <h2>有幾多人真係喺度</h2>
-    <div class="grid">
       ${card(n(m.dau), "今日活躍")}
       ${card(n(m.wau), "七日活躍")}
       ${card(n(m.mau), "三十日活躍")}
-      ${card(`<span class="pc ${sticky.low?"low":""}">${sticky.txt}</span>`, "黏性 WAU/MAU",
-             "20% 以上算好")}
+      ${card(`<span class="pc ${sticky.low?"low":""}">${sticky.txt}</span>`,
+             "黏性 WAU/MAU", "20% 以上算好")}
+    </div>
+
+    <h2>走勢（60 日）</h2>
+    ${bars(o.daily, "signups", "#0f6354", "每日新會員", "由註冊時間計")}
+    ${bars(o.daily, "saves",   "#9a6f1f", "每日收藏動作", "唯一一個有日期嘅使用訊號")}
+
+    <h2>人哋行到邊一步</h2>
+    ${funnel(o.funnel || {}, m.members)}
+    <p class="note">「肯收催旺提示」唔喺上面條鏈度 —— 佢係登入嗰陣剔嘅，
+      唔係做完上面啲步驟先剔，擺入去會令條 bar 反彈，睇落似後面多過前面。</p>
+    <div class="grid" style="margin-top:10px">
+      ${card(n((o.funnel||{}).optin), "肯收催旺提示",
+             m.members ? `${Math.round(100*((o.funnel||{}).optin||0)/m.members)}% 會員 · 呢批先 email 得` : "")}
+    </div>
+
+    <h2>每批人返唔返嚟</h2>
+    ${cohortTable(o.cohorts)}
+
+    <h2>八字（全部係數量，冇任何一個人嘅出生資料）</h2>
+    <div class="grid">
+      ${card(n(b.with_birth), "入咗出生日期嘅人次",
+             b.people ? `建咗 ${n(b.people)} 個檔案` : "")}
+      ${card(n(b.hour_known), "記得時辰",
+             b.with_birth ? `${Math.round(100*b.hour_known/b.with_birth)}% —— 唔記得係常態` : "")}
+      ${card(`${n(b.male)} / ${n(b.female)}`, "男 / 女", "命卦男女兩條公式")}
+      ${card(n((o.funnel||{}).family), "填埋屋企人", "一家人分東四西四先有價值")}
     </div>
 
     <h2>有冇真係用</h2>
@@ -118,25 +274,149 @@ function render(m){
       ${card(n(m.saved_total), "收藏總數",
              m.members ? `人均 ${(m.saved_total/m.members).toFixed(1)} 個` : "")}
       ${card(n(m.lists_total), "清單總數")}
-      ${card(n(m.viewed_total), "睇過嘅樓宇")}
-    </div>
-
-    <h2>返唔返嚟（最重要）</h2>
-    <div class="grid">
-      ${card(d1.txt, "第二日返嚟", `${n(m.cohort_d1)} 人夠鐘計`)}
       ${card(`<span class="pc ${d7.low?"low":""}">${d7.txt}</span>`, "第七日返嚟",
-             `${n(m.cohort_d7)} 人夠鐘計 · 呢個先係北極星`)}
+             `${n(m.cohort_d7)} 人夠鐘計`)}
     </div>
 
-    <h2>其他</h2>
-    <div class="grid">
-      ${card(n(m.marketing_optin), "肯收通知", "可以 email 嘅人數")}
-    </div>
+    ${o.score_bands && o.score_bands.length ? `
+      <h2>人哋收藏嘅係咩分數</h2>
+      ${bars(o.score_bands.map(x => ({d: x.lo+"–"+(x.lo+9)+" 分", n: x.n})), "n",
+             "#0f6354", "收藏分數分佈", "睇下係咪淨係儲高分樓")}` : ""}
+
+    ${o.top_buildings && o.top_buildings.length ? `
+      <h2>最多人收藏嘅樓</h2>
+      <div class="tw"><table>
+        <thead><tr><th>樓</th><th>區</th><th class="n">幾多人收藏</th><th class="n">平均分</th></tr></thead>
+        <tbody>${o.top_buildings.map(x => `<tr>
+          <td>${esc(x.tc)}</td><td>${esc(x.district||"")}</td>
+          <td class="n">${n2(x.n)}</td><td class="n">${x.avg_total ?? "—"}</td></tr>`).join("")}
+        </tbody></table></div>` : ""}
 
     ${m.top_districts && m.top_districts.length ? `
       <h2>最多人收藏嘅區</h2>
       <ul class="d">${m.top_districts.map(d =>
-        `<li><span>${esc(d.district)}</span><b>${n(d.n)}</b></li>`).join("")}</ul>` : ""}`;
+        `<li><span>${esc(d.district)}</span><b>${n(d.n)}</b></li>`).join("")}</ul>` : ""}
+
+    <h2>會員名單</h2>
+    <div class="tools">
+      <input id="q" type="search" placeholder="搵 email 或者名" autocomplete="off">
+      <select id="sort">
+        <option value="new">最新入嚟</option>
+        <option value="seen">最近見過</option>
+        <option value="active">收藏最多</option>
+      </select>
+      <button id="csv">下載 CSV</button>
+    </div>
+    <div id="mlist"></div>`;
+
+  wireMembers();
+}
+
+/* ------------------------------------------------------------ 會員名單 -- */
+let mState = {q:"", sort:"new", offset:0, limit:50, rows:[], total:0};
+
+function memberTable(){
+  const d = mState;
+  const fmt = t => t ? new Date(t).toLocaleDateString("zh-HK",
+                  {year:"2-digit", month:"2-digit", day:"2-digit"}) : "—";
+  const ago = t => {
+    if(!t) return "—";
+    const h = (Date.now() - new Date(t)) / 3.6e6;
+    if(h < 1) return "啱啱";
+    if(h < 24) return Math.floor(h) + " 個鐘前";
+    const dd = Math.floor(h/24);
+    return dd < 30 ? dd + " 日前" : Math.floor(dd/30) + " 個月前";
+  };
+  if(!d.rows.length) return `<p class="note">${d.q ? "搵唔到。" : "仲未有會員。"}</p>`;
+
+  return `<div class="tw"><table>
+    <thead><tr>
+      <th>Email</th><th>名</th><th>幾時入嚟</th><th>最近見過</th>
+      <th class="n">收藏</th><th class="n">睇過</th><th class="n">八字</th>
+      <th>最多收藏嘅區</th><th>催旺提示</th>
+    </tr></thead>
+    <tbody>${d.rows.map(r => `<tr>
+      <td>${esc(r.email||"")}${r.role==="admin"?' <span class="tag adm">admin</span>':""}</td>
+      <td>${esc(r.name||"") || '<span class="em">—</span>'}</td>
+      <td>${fmt(r.created_at)}</td>
+      <td>${ago(r.last_seen_at)}</td>
+      <td class="n">${n2(r.saves)}</td>
+      <td class="n">${n2(r.views)}</td>
+      <td class="n">${r.people ? n2(r.people) : '<span class="em">—</span>'}</td>
+      <td>${esc(r.top_district||"") || '<span class="em">—</span>'}</td>
+      <td>${r.optin ? '<span class="tag on">肯收</span>' : '<span class="tag">冇剔</span>'}</td>
+    </tr>`).join("")}</tbody></table></div>
+    <div class="tools" style="margin-top:10px">
+      <button id="prev" ${d.offset ? "" : "disabled"}>‹ 前</button>
+      <span class="note" style="margin:0">
+        ${d.offset+1}–${d.offset+d.rows.length} / 共 ${n2(d.total)}</span>
+      <button id="next" ${d.offset + d.rows.length < d.total ? "" : "disabled"}>後 ›</button>
+    </div>
+    <p class="note">呢張表係個人資料。自己睇冇問題，但《私隱條例》第 35J 條
+      列明將個人資料交俾第三方做直接促銷係刑事罪行 —— 所以唔可以俾代理、
+      發展商或者師傅。要俾人睇就淨係俾上面啲統計數字。</p>`;
+}
+
+async function loadMembers(){
+  const el = document.getElementById("mlist");
+  if(el) el.innerHTML = `<p class="note">載入緊…</p>`;
+  const {data, error} = await sb.rpc("admin_members", {
+    p_limit: mState.limit, p_offset: mState.offset,
+    p_q: mState.q || null, p_sort: mState.sort});
+  if(error){ if(el) el.innerHTML = `<p class="note">攞唔到名單：${esc(error.message)}</p>`; return; }
+  mState.rows = data.rows || []; mState.total = data.total || 0;
+  if(el) el.innerHTML = memberTable();
+  const prev = document.getElementById("prev"), next = document.getElementById("next");
+  if(prev) prev.onclick = () => { mState.offset = Math.max(0, mState.offset - mState.limit); loadMembers(); };
+  if(next) next.onclick = () => { mState.offset += mState.limit; loadMembers(); };
+}
+
+function wireMembers(){
+  const q = document.getElementById("q"), sort = document.getElementById("sort");
+  let t;
+  if(q) q.addEventListener("input", () => {
+    clearTimeout(t);
+    t = setTimeout(() => { mState.q = q.value.trim(); mState.offset = 0; loadMembers(); }, 280);
+  });
+  if(sort) sort.addEventListener("change", () => {
+    mState.sort = sort.value; mState.offset = 0; loadMembers();
+  });
+  const csv = document.getElementById("csv");
+  if(csv) csv.addEventListener("click", downloadCSV);
+  loadMembers();
+}
+
+/* 一次過攞晒（上限 200 一版，所以要一版版攞）。 */
+async function downloadCSV(){
+  const btn = document.getElementById("csv");
+  if(btn){ btn.disabled = true; btn.textContent = "整緊…"; }
+  const all = [];
+  for(let off = 0; ; off += 200){
+    const {data, error} = await sb.rpc("admin_members", {
+      p_limit: 200, p_offset: off, p_q: mState.q || null, p_sort: mState.sort});
+    if(error || !data.rows || !data.rows.length) break;
+    all.push(...data.rows);
+    if(all.length >= (data.total || 0)) break;
+  }
+  const cols = ["email","name","created_at","last_seen_at","saves","views","people","top_district","optin"];
+  const head = ["Email","名","幾時入嚟","最近見過","收藏","睇過","八字檔案","最多收藏嘅區","肯收提示"];
+  // Excel 開 UTF-8 要 BOM，否則啲中文會變亂碼。
+  const q = v => `"${String(v ?? "").replace(/"/g,'""')}"`;
+  // Excel 睇到 true/false 唔知咩意思；日期都出返香港格式。
+  const cell = (r, c) =>
+    c === "optin" ? (r.optin ? "肯收" : "冇剔") :
+    (c === "created_at" || c === "last_seen_at")
+      ? (r[c] ? new Date(r[c]).toLocaleString("zh-HK") : "") : r[c];
+  const body = all.map(r => cols.map(c => q(cell(r, c))).join(",")).join("\r\n");
+  const blob = new Blob(["﻿" + head.join(",") + "\r\n" + body],
+                        {type:"text/csv;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  // toISOString 係 UTC —— 香港凌晨落會差一日，所以用本地日期。
+  const d = new Date(), pad = x => String(x).padStart(2,"0");
+  a.download = `members-${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}.csv`;
+  a.click(); URL.revokeObjectURL(a.href);
+  if(btn){ btn.disabled = false; btn.textContent = "下載 CSV"; }
 }
 
 function needSignIn(){
@@ -162,8 +442,22 @@ function needAdmin(email){
 (async () => {
   const {data:{session}} = await sb.auth.getSession();
   if(!session){ needSignIn(); return; }
-  const {data, error} = await sb.rpc("admin_metrics");
-  if(error){ needAdmin(session.user.email); return; }
-  render(data);
+  const [a, b] = await Promise.all([
+    sb.rpc("admin_metrics"),
+    sb.rpc("admin_overview", {p_days: 60}),
+  ]);
+  if(a.error){ needAdmin(session.user.email); return; }
+  if(b.error){
+    // admin_overview 係新加嘅：未跑過 schema 就會冇。唔好成版死埋，
+    // 出返舊嗰啲數字先，同埋講返要做咩。
+    asof.insertAdjacentHTML("afterend",
+      `<div class="msg"><p>新嘅圖表同名單要先更新一次資料庫。</p>
+       <p>喺 Supabase SQL Editor 跑一次 <code>supabase/schema.sql</code> 最底嗰段，
+          然後重新整理。</p>
+       <pre>${esc(b.error.message)}</pre></div>`);
+    renderOverview(a.data, {daily:[], funnel:{}, cohorts:[], bazi:{}});
+    return;
+  }
+  renderOverview(a.data, b.data);
 })();
 </script>
