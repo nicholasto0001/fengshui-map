@@ -1165,6 +1165,29 @@
   .barcap{font-size:12px; line-height:1.6; color:var(--ink3); margin:9px 0 0}
   .barcap b{color:var(--ink2)}
   .barcap u{text-decoration:none; color:var(--bad); font-weight:600}
+  .liv{background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:12px 14px; margin:2px 0 20px}
+  .liv > summary{list-style:none; cursor:pointer; font-size:13.5px; line-height:1.6;
+    color:var(--ink2); display:flex; align-items:center; gap:6px; min-height:34px}
+  .liv > summary::-webkit-details-marker{display:none}
+  .liv > summary b{color:var(--ink)}
+  .liv > summary u{text-decoration:none; color:var(--brand); font-weight:650}
+  .liv > summary .chev{margin-inline-start:auto; color:var(--ink3); font-size:12px;
+    transition:transform .2s}
+  .liv[open] > summary .chev{transform:rotate(180deg)}
+  .liv .livl{font-size:13px; line-height:1.6; color:var(--ink3); margin:11px 0 11px}
+  .liv .livl b{color:var(--ink2)}
+  .livchips{display:flex; flex-wrap:wrap; gap:8px}
+  .livchips button{
+    font:inherit; font-size:14.5px; font-weight:600; padding:9px 15px;
+    border:1.5px solid var(--line); border-radius:999px; background:var(--bg);
+    color:var(--ink2); cursor:pointer; min-height:42px;
+  }
+  .livchips button.on{background:var(--brand); border-color:var(--brand); color:#fff}
+  .livnow{font-size:12.5px; line-height:1.7; color:var(--ink3); margin:11px 0 0}
+  .livnow b{color:var(--ink2)}
+  .livclear{font:inherit; font-size:13px; padding:8px 0 0; border:0; background:none;
+    color:var(--brand); text-decoration:underline; cursor:pointer}
   .offrec{background:#fdf6e8; border:1px solid #e8d9b4; border-radius:12px;
     padding:11px 13px; margin:0 0 12px; font-size:13px; line-height:1.6;
     color:var(--ink2)}
@@ -2887,6 +2910,7 @@ function personalPanel(o, layer){
 
 function renderBuilding(o, layer){
   if(clean(o.district)) lastDistrictSeen = clean(o.district);
+  noteInterest(o.district, "open");        // 撳入一幢樓 —— 最直接嘅訊號
   nudgeFor = o;
   armNudge(o);
   const title = clean(o.tc) || clean(o.en) || "未命名樓宇";
@@ -3427,6 +3451,96 @@ function houseFit(o){
 
 /* 地區排名。一個人就係佢自己嗰份；一屋人就逐個計完取平均 —— 同樓宇嗰邊
    用同一條規矩，唔好一處平均一處唔平均。 */
+/* ── 邊度先算「佢關心」：唔好問，睇佢做過乜 ──────────────────
+
+   問「你住邊？喺邊返工？」係最易嚇走人嘅一類問題，而且多數人唔會答 ——
+   佢入嚟係想睇自己幢樓，唔係想填表。
+
+   但佢由入嚟到而家已經講晒答案：撳過邊幾幢樓、收藏咗乜、搜尋跳咗去邊。
+   我哋幫每一個區積分，重嘅動作分數高（收藏 > 撳入一幢樓 > 掃過），
+   跟住由呢個分推佢實際考慮緊邊一頭。
+
+   分數存喺部機，唔會上伺服器 —— 呢啲係「佢睇過咩」，同出生日期一樣
+   敏感。 */
+const INT_KEY = "fs_interest";
+const INT_W = {fav: 6, pick: 4, open: 3, search: 3, browse: 1};
+let interest = (() => {
+  try{
+    const v = JSON.parse(localStorage.getItem(INT_KEY) || "{}");
+    return (v && typeof v === "object" && !Array.isArray(v)) ? v : {};
+  }catch{ return {}; }
+})();
+function noteInterest(tc, kind){
+  const t = clean(tc);
+  if(!t) return;
+  interest[t] = (interest[t] || 0) + (INT_W[kind] || 1);
+  try{ localStorage.setItem(INT_KEY, JSON.stringify(interest)); }catch{}
+}
+
+/* 由積分推返佢關心邊一頭。返 null 即係未夠料講得出任何嘢 —— 嗰陣寧願
+   照出全港，唔好靠估。 */
+function focusOf(){
+  const ent = Object.entries(interest).filter(([, v]) => v > 0)
+                    .sort((a, b) => b[1] - a[1]);
+  if(!ent.length) return null;
+  const total = ent.reduce((t, [, v]) => t + v, 0);
+
+  // 先按大區加總。攞單一個區最高分係錯嘅：一個收藏（6）會贏到三個
+  // 港島區（各 3），於是一個由頭到尾睇緊港島嘅人被當成新界東。
+  const byRegion = Object.entries(REGIONS).map(([r, ds]) => [r,
+    ent.filter(([t]) => ds.includes(t)).reduce((t, [, x]) => t + x, 0)])
+    .filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+
+  // 兩個大區打平就唔好揀邊個 —— 寧願話「睇唔出」。
+  const tie = byRegion.length > 1 && byRegion[0][1] === byRegion[1][1];
+  const region = (byRegion.length && !tie) ? byRegion[0][0] : null;
+  const regionScore = region ? byRegion[0][1] : 0;
+
+  return {tc: ent[0][0], score: ent[0][1], share: ent[0][1] / total, region,
+          regionShare: region ? regionScore / total : 0, total,
+          anyFav: ent.some(([t]) => (interest[t] || 0) >= INT_W.fav)};
+}
+
+/* 八字計完之後，先決定出咩俾佢睇。三種情況三個做法 —— 唔係永遠同一版。
+
+   focus：佢一路喺同一邊度揾（六成以上動作落喺同一個大區），而且動作夠多。
+          咁就唔好再叫佢睇全港排名 —— 直接出嗰頭嘅樓，區排名擺落後面。
+   hint ：有明顯一個區，但散開咗。照出全港排名，不過揀區個掣預設佢嗰個。
+   wide ：乜都未做過就直接打八字。照出全港，冇得估就唔好估。
+
+   門檻 8 分 = 撳過兩三幢樓，或者收藏過一個。低過呢個數，推斷唔可靠。 */
+function baziPlan(){
+  const f = focusOf();
+  if(!f || (f.total < 8 && !f.anyFav)) return {mode: "wide", f: null};
+  if(f.region && f.regionShare >= 0.6) return {mode: "focus", f};
+  return {mode: "hint", f};
+}
+
+const LIV_KEY = "fs_livable";
+const REGIONS = {
+  "港島":   ["中西區", "灣仔區", "東區", "南區"],
+  "九龍":   ["油尖旺區", "深水埗區", "九龍城區", "黃大仙區", "觀塘區"],
+  "新界東": ["沙田區", "大埔區", "北區", "西貢區"],
+  "新界西": ["荃灣區", "葵青區", "屯門區", "元朗區"],
+  "離島":   ["離島區"],
+};
+let livable = (() => {
+  try{
+    const v = JSON.parse(localStorage.getItem(LIV_KEY) || "[]");
+    return new Set(Array.isArray(v) ? v : []);
+  }catch{ return new Set(); }
+})();
+let livAuto = null;      // 由行為推出嚟嘅範圍，唔存落部機 —— 佢隨時會變
+/* 佢自己揀過就用佢嗰個，冇揀過就用推出嚟嗰個，兩樣都冇就係全港。 */
+const livSet = () => (livable.size ? livable : livAuto);
+const livOn = () => !!(livSet() && livSet().size);
+const inLiv = tc => !livOn() || livSet().has(tc);
+function setLivable(next){
+  livable = next;
+  try{ localStorage.setItem(LIV_KEY, JSON.stringify([...livable])); }catch{}
+  areaFitCache = null; areaFitKey = null; wCache.clear();
+}
+
 function rankAreas(n = 6){
   const ppl = counted();
   const cs = chartsOf(ppl);
@@ -3439,8 +3553,13 @@ function rankAreas(n = 6){
     return {tc: d.tc, avg: d.avg, n: d.n, e, wx: lead.hc.like[0], dir: e.zone,
             f1: fitFor(e, lead.hc.like[0]), f2: fitFor(e, lead.hc.like[1]),
             fit: Math.round(each.reduce((t, v) => t + v, 0) / each.length)};
-  }).filter(Boolean).sort((a, b) => b.fit - a.fit).slice(0, n);
-  return {cs, areas};
+  }).filter(Boolean);
+  const byFit = (a, b) => b.fit - a.fit;
+  const all = [...areas].sort(byFit);           // 唔受範圍限制 —— 用嚟老實講「全港最夾嘅係邊個」
+  const lv = livSet();
+  let pick = livOn() ? areas.filter(a => lv.has(a.tc)) : areas;
+  if(!pick.length) pick = areas;                // 範圍揀到一個區都冇就跌返全港
+  return {cs, areas: pick.sort(byFit).slice(0, n), all};
 }
 
 const NO_FORM = "金";
@@ -3615,13 +3734,24 @@ function bzResult(){
   // 主用神行七成，次用神三成 —— 寒命喜火，木生火，所以火先係要嗰個，
   // 木係幫手。兩個等量齊觀會令到「幫手」蓋過「要嗰個」。
   const [p1, p2] = want;
-  const {cs, areas} = rankAreas();
+  // 出咩俾佢睇，由佢做過乜決定 —— 唔係問佢。要喺 rankAreas 之前定,
+  // 因為排區、排樓同地圖圖層全部跟呢個範圍走。
+  const plan = baziPlan();
+  livAuto = (plan.mode === "focus" && plan.f.region)
+          ? new Set(REGIONS[plan.f.region]) : null;
+  const {cs, areas, all} = rankAreas();
   // 留低畫分享卡要用嗰幾樣。唔喺 shareBazi 度重新計一次 —— 重計就有機會
   // 同螢幕上面見到嗰個唔同，而張卡係會俾第三者見到嘅嘢。
   bzSnapshot = {pillars: pil, type: hc.type, likes: hc.like.slice(), areas};
   // 預設揀返佢啱啱睇緊嗰個區 —— 搵完太古城嘅人，答案應該喺東區。
-  const homeD = districtFilter || lastDistrictSeen
+  const seen = districtFilter || lastDistrictSeen
+            || (plan.f && plan.f.tc);          // hint 模式靠佢揀返個預設
+  const homeD = (seen && inLiv(seen) ? seen : null)
               || (areas[0] && areas[0].tc) || (districtData[0] || {}).tc || "";
+  // 全港最夾嗰個唔喺佢住得去嘅範圍 —— 要照講，唔好扮咗冇呢回事。
+  const bestOut = livOn() && all.length && areas.length
+                  && all[0].tc !== areas[0].tc && !livable.has(all[0].tc)
+                  ? all[0] : null;
   const wts = cs.length ? cs[0].w : wxWeights(want, st.pct);
   const nPeople = cs.length;
   const wxb = w => `<b class="wx-${w}">${w}</b>`;
@@ -3703,21 +3833,59 @@ function bzResult(){
         : "加屋企人（要先登入）"}</button>
     </div>
 
+    <details class="liv">
+      <summary>${livable.size
+        ? `計緊 <b>${[...livable].map(t => esc(t.replace(/區$/, ""))).join("、")}</b>
+           　<u>改</u>`
+        : livAuto
+          ? `你一直喺<b>${esc(plan.f.region)}</b>度揾，所以下面<b>淨係計${
+             esc(plan.f.region)}</b>　<u>改</u>`
+          : `計緊<b>全港十八區</b>　<u>縮窄範圍</u>`}<span class="chev">▾</span></summary>
+      <p class="livl">返工、返學、屋企人 —— 總有啲地方你根本唔會搬過去。
+        揀咗之後，下面排區同排樓全部只計呢個範圍。</p>
+      <div class="livchips">${Object.keys(REGIONS).map(r => {
+        const cur = livSet();
+        const on = cur && REGIONS[r].every(d => cur.has(d));
+        return `<button type="button" data-r="${esc(r)}"${on ? ' class="on"' : ""}>${esc(r)}</button>`;
+      }).join("")}</div>
+      ${livOn() ? `<button type="button" class="livclear" id="livClear">全港都可以</button>` : ""}
+    </details>
+
     <h3 class="bzh">邊幾幢樓最夾你</h3>
     <div class="pickd">
       <p class="pdl">喺邊個區揀？</p>
       <select id="bzPickD" aria-label="揀一個區">
-        ${[...districtData].sort((a,b)=>a.tc.localeCompare(b.tc,"zh-HK"))
-          .map(a=>`<option value="${esc(a.tc)}"${a.tc===homeD?" selected":""}>${esc(a.tc)}</option>`)
-          .join("")}
+        ${(() => {
+          const opt = a => `<option value="${esc(a.tc)}"${
+            a.tc === homeD ? " selected" : ""}>${esc(a.tc)}</option>`;
+          const sorted = [...districtData].sort((a,b)=>a.tc.localeCompare(b.tc,"zh-HK"));
+          if(!livOn()) return sorted.map(opt).join("");
+          // 範圍外嘅區唔收埋 —— 佢隨時想睇一睇，淨係唔好擺喺前面。
+          const inn = sorted.filter(a => livable.has(a.tc));
+          const out = sorted.filter(a => !livable.has(a.tc));
+          return `<optgroup label="你揀嘅範圍">${inn.map(opt).join("")}</optgroup>`
+               + `<optgroup label="其他區">${out.map(opt).join("")}</optgroup>`;
+        })()}
       </select>
       <button class="pbtn dark" id="bzGoList">睇呢個區邊幾幢最夾我</button>
-      <p class="bznote"><b>呢一層先係真係得你先有。</b>同一幢樓，
-        唔同人計出嚟可以爭成七十分 —— 因為除咗個區嘅形，仲夾埋你個本命卦
-        同樓宇個向。下面「你個命夾咩形」係講緊成個區，粗好多。</p>
+      <p class="bznote"><b>同一幢樓，唔同人計出嚟可以爭成七十分</b>
+        —— 除咗個區嘅形，仲夾埋你個本命卦同樓宇個向。所以就算成個區唔算
+        最夾你，區入面一樣有夾你嘅樓。</p>
     </div>
 
-    <h3 class="bzh">你個命夾咩形</h3>
+    <h3 class="bzh">${!livOn() ? "全港邊個區最夾你"
+      : livable.size ? "你揀嘅範圍入面，邊個區最夾你"
+      : "你睇緊嗰邊，邊個區最夾你"}</h3>
+    ${areas.length && areas[0].fit < 50 ? `<p class="offrec">
+      <b>喺呢個範圍入面，最夾你嗰個區都只係 ${areas[0].fit} 分。</b>
+      即係<u>成個範圍本身就唔多夾你個命</u> —— 下面個次序照有用（邊個冇咁差），
+      但唔好當第一名就等於夾。區入面逐幢樓計出嚟仲可以高好多，
+      因為嗰層仲夾埋你嘅本命卦同樓宇個向。</p>` : ""}
+    ${bestOut ? `<p class="offrec"><b>全港最夾你嘅係${esc(bestOut.tc)}（${bestOut.fit} 分），
+      但${livable.size ? "佢唔喺你揀嘅範圍" : "你一直冇睇過嗰頭"}。</b>
+      下面係<u>${livable.size ? "你揀咗嗰個範圍" : "你睇緊嗰邊"}入面</u>最夾你嘅幾個區
+      —— ${esc(areas[0].tc)}排第一（${areas[0].fit} 分）。
+      ${livable.size ? "" : "想睇埋全港就撳上面嗰個「改」。"}</p>` : ""}
     ${nPeople > 1 ? `<p class="famnote"><b>計緊 ${nPeople} 個人。</b>
       下面每個區嘅分，係${cs.map(c => esc(c.p.name || relTC(c.p.relation))).join("、")}
       逐個計完取平均。${
@@ -3736,9 +3904,8 @@ function bzResult(){
       ].join("")}<br>${
       [`下面唔係「邊個區風水好」—— 係全港十八區量返出嚟之後，`,
        `<b>最夾你呢個命</b>嗰六個。`].join("")}<br>
-      <b>講明先：呢六個區係按命格分嘅，粗嘅。</b>同你一樣${hc.type}、
-      五行分佈又接近嘅人，見到嘅名單會同你差唔多 ——
-      真正逐個人唔同嗰層係上面嘅逐幢樓。</p>
+      <b>呢個排名係按命格分嘅</b> —— 同你一樣${hc.type}、五行分佈又接近嘅人，
+      見到嘅次序會同你差唔多。再細一層（邊一幢）先真係逐個人唔同。</p>
     ${locked ? `<p class="lockbar"><b>🔓　下面六個區、夾你幾多分、
       量到嘅數字，而家已經睇到，唔使登記。</b>
       <br>每行右邊嗰個「逐座睇」要登入先撳得入去 —— 入面係嗰個區逐個屋苑
@@ -3855,6 +4022,29 @@ async function showBazi(edit){
     pushBack("八字", () => showBazi());
     showFamily();
   });
+  sheetBody.querySelectorAll(".livchips button").forEach(b =>
+    b.addEventListener("click", () => {
+      const ds = REGIONS[b.dataset.r] || [];
+      // 由而家實際計緊嗰個範圍做起點 —— 推斷出嚟嗰個一改就變咗佢自己揀。
+      const next = new Set(livSet() || []);
+      // 成個範圍已經揀晒就當撳一下係取消，否則補齊佢
+      if(ds.every(d => next.has(d))) ds.forEach(d => next.delete(d));
+      else ds.forEach(d => next.add(d));
+      setLivable(next);
+      livAuto = null;                      // 佢講咗嘢，就唔再靠估
+      track("livable_set", {regions: [...next].length, from: "chip"});
+      refreshGuaDirs();                    // 可住範圍一改，建議地區跟住改
+      showBazi();
+    }));
+  const lc = sheetBody.querySelector("#livClear");
+  if(lc) lc.addEventListener("click", () => {
+    setLivable(new Set());
+    livAuto = null;
+    track("livable_set", {regions: 0, from: "clear"});
+    refreshGuaDirs();
+    showBazi();
+  });
+
   const bl = sheetBody.querySelector("#bzGoList");
   if(bl) bl.addEventListener("click", () => {
     const d = sheetBody.querySelector("#bzPickD").value;
@@ -4248,6 +4438,7 @@ function renderHits(hits, estHead){
 }
 
 function goto(h){
+  noteInterest(h.district, "search");      // 搜尋跳過去 —— 佢主動揾嗰度
   resEl.classList.remove("show"); qEl.blur();
   const lat=h.lat, lon=h.lon!==undefined?h.lon:h.lng;
   map.setView([lat,lon],17);
@@ -4840,6 +5031,7 @@ function loadLocalFavs(){
 })();
 
 function toggleFav(o){
+  noteInterest(o.district, "fav");         // 收藏 = 真係考慮緊
   const k = favKeyOf(o);
   const i = favs.findIndex(f => favKeyOf(f) === k);
   if(i >= 0){
@@ -5164,7 +5356,7 @@ let pickingDistrict = false;
 
 function setDistrict(tc){
   districtFilter = tc || "";
-  if(tc) lastDistrictSeen = tc;
+  if(tc){ lastDistrictSeen = tc; noteInterest(tc, "pick"); }
   track("filter_district", {district: districtFilter || "all", from: "picker"});
   const chip = document.getElementById("btnDistrict");
   chip.innerHTML = '<b>地區</b>' + (districtFilter || "全港") + ' <span class="caret">▾</span>';
