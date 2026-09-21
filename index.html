@@ -493,6 +493,25 @@
   .reg b{display:block; font-size:16px; font-weight:650; color:var(--wx,var(--ink))}
   .reg span{font-size:12.5px; color:var(--ink3)}
 
+  /* 八字嘅入口。之前得篩選列上面一個細細嘅「✦ 八字」掣，同另外七個掣
+     排埋一齊 —— 用家開咗個 app 都唔知有呢個功能。所以總覽度擺一張
+     講得清楚嘅卡，寫明入面係咩，唔係淨係得兩個字。 */
+  .bzcta{
+    display:flex; align-items:center; gap:13px; width:100%; margin:16px 0 0;
+    padding:15px 16px; border:0; border-radius:16px; cursor:pointer;
+    background:linear-gradient(135deg,#3d2f18,#5a4622); color:#fff;
+    font:inherit; text-align:start;
+  }
+  .bzcta .bzi{
+    width:42px; height:42px; border-radius:50%; flex:none; display:grid;
+    place-items:center; background:rgba(227,196,137,.18); color:#e3c489;
+    font-size:19px;
+  }
+  .bzcta .bzx{flex:1; font-size:13px; line-height:1.55; opacity:.88}
+  .bzcta .bzx b{display:block; font-size:16.5px; font-weight:650; opacity:1; margin:0 0 3px}
+  .bzcta i{font-style:normal; font-size:20px; opacity:.55; flex:none}
+  .bzcta:active{opacity:.9}
+
   .bzform{margin:6px 0 0}
   .bzform label{display:block; font-size:13.5px; color:var(--ink3); margin:14px 0 6px}
   .bzrow{display:flex; gap:8px}
@@ -2404,6 +2423,15 @@ async function showOverview(){
       <div class="lbar">${RAMP.map(c=>`<span style="background:${c}"></span>`).join("")}</div>
       <div class="lt"><b>差</b><i>平穩</i><b>大吉</b></div>
     </div>
+    <button class="bzcta" id="bzCta">
+      <span class="bzi">✦</span>
+      <span class="bzx"><b>${birth ? "睇返我嘅八字揀樓" : "用你嘅八字揀樓"}</b>
+        ${birth
+          ? "四柱、五行、本命卦，同埋合你嗰批樓"
+          : "入咗出生日期，就會計出你嘅五行同本命卦，再喺全港樓宇入面揀出合你嗰批"}</span>
+      <i>›</i>
+    </button>
+
     <div class="prompt">
       <b>👆 撳一撳</b>
       <span>揀任何一區，地圖即刻放大，同時列出嗰區嘅樓宇。</span>
@@ -2435,6 +2463,13 @@ async function showOverview(){
     </p>
     <p class="build" id="buildStamp">${APP_VERSION}</p>`;
   fillBuildStamp();
+  const bc = sheetBody.querySelector("#bzCta");
+  if(bc) bc.addEventListener("click", async () => {
+    await ensureBazi();
+    track("bazi_open", {has_birth: !!birth, from: "overview"});
+    openSheet(); setSheet("full");
+    showBazi();
+  });
   const sa = sheetBody.querySelector("#btnShareApp");
   if(sa) sa.addEventListener("click", shareApp);
   sheetBody.querySelectorAll(".dlist li").forEach(li=>li.addEventListener("click",()=>{
