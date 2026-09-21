@@ -22,7 +22,7 @@
 <meta property="og:site_name" content="香港風水地圖">
 <meta property="og:url" content="https://hkfengshuimap.com/">
 <meta property="og:title" content="邊幢樓啱你八字？香港風水地圖">
-<meta property="og:description" content="九運嘅好樓對大部分人好，唔代表對你好。打個八字入去，逐幢樓計返啱唔啱你。">
+<meta property="og:description" content="兩樣一齊睇：每幢樓本身好唔好（山水方位、坐向），同埋入你出生日期之後，邊幢真係啱你。全港 84,720 幢逐幢計。">
 <meta property="og:image" content="https://hkfengshuimap.com/og.png">
 <meta property="og:image:secure_url" content="https://hkfengshuimap.com/og.png">
 <meta property="og:image:type" content="image/png">
@@ -771,6 +771,33 @@
                  font-weight:650; margin-bottom:2px}
   .sitelinks a:hover{background:var(--bg)}
   @media (min-width:700px){ .sitelinks ul{grid-template-columns:1fr 1fr} }
+
+  /* 唔識風水嘅人一入嚟見到一地分數同「九運」兩隻字，係完全唔知發生咩事。
+     呢格要喺佢撳任何嘢之前，用人話講完：個分係乜、點解有兩個。 */
+  .twolayer{background:var(--card); border:1px solid var(--line); border-radius:16px;
+            padding:15px 16px; margin:16px 0 0}
+  .tlh{font-size:12px; font-weight:650; color:var(--ink3); letter-spacing:.04em;
+       margin:0 0 12px}
+  .tlrow{display:flex; gap:11px; margin:0 0 12px}
+  .tln{width:22px; height:22px; border-radius:50%; flex:none; display:grid;
+       place-items:center; background:var(--ink); color:var(--card);
+       font-size:12px; font-weight:700; margin-top:1px}
+  .tlrow b{display:block; font-size:15px; font-weight:650; margin-bottom:2px}
+  .tlrow em{display:block; font-style:normal; font-size:12.5px; line-height:1.6;
+            color:var(--ink3)}
+  .tlrow u{text-decoration:none; color:var(--ink2); font-weight:600}
+  .tlnote{font-size:12.5px; line-height:1.65; color:var(--ink3);
+          margin:0; padding-top:11px; border-top:1px solid var(--line)}
+  .tlnote b{color:var(--ink)}
+  .tlwhat{margin-top:11px; border-top:1px solid var(--line); padding-top:10px}
+  .tlwhat summary{display:flex; justify-content:space-between; align-items:center;
+                  cursor:pointer; font-size:13px; font-weight:600; color:var(--ink2);
+                  list-style:none}
+  .tlwhat summary::-webkit-details-marker{display:none}
+  .tlwhat[open] .chev{transform:rotate(180deg)}
+  .tlwhat .chev{transition:transform .15s; color:var(--ink3)}
+  .tlwhat p{font-size:12.5px; line-height:1.7; color:var(--ink3); margin:9px 0 0}
+  .tlwhat p b{color:var(--ink)}
 
   .tagline{font-size:13.5px; font-weight:600; color:var(--gold,#8a6d2f); margin:-2px 0 6px;
            letter-spacing:.01em}
@@ -3826,10 +3853,11 @@ async function showOverview(){
   const lo=Math.min(...rows.map(a=>a.metric)), hi=Math.max(...rows.map(a=>a.metric));
   sheetBody.innerHTML=`
     <p class="bname">香港風水地圖</p>
-    <!-- 個名淨係講咗「係咩」，講唔到「做到乜」。香港人搵樓打嘅係「搵樓」
-         （中原搵樓、美聯搵樓、搵樓街），唔係「風水地圖」—— 所以 tagline
-         擺實質功能，順便講埋我哋同人哋唔同嗰樣：份 advice 係跟你個人嘅。 -->
-    <p class="tagline">八字揀樓 · 全港 84,720 幢逐幢計</p>
+    <!-- 之前寫「八字揀樓」，等於將兩層入面嘅一層當咗全部 —— 人一睇就以為
+         我哋淨係做八字。實際係兩層：樓本身（九運，邊個睇都一樣）＋ 啱唔啱
+         你（八字，因人而異）。兩層加埋先係一個完整答案，所以 tagline 要
+         講返兩層。 -->
+    <p class="tagline">樓本身好唔好 · 再睇啱唔啱你</p>
     <p class="ben">${filtered
       ? `全港 ${rows.reduce((s,a)=>s+a.metric,0).toLocaleString()} 棟評為「${chipLabel()}」`
       : "全港 213,328 棟樓宇 · 平均 48.5 分 · 每日更新"}</p>
@@ -3837,6 +3865,33 @@ async function showOverview(){
       <div class="lbar">${RAMP.map(c=>`<span style="background:${c}"></span>`).join("")}</div>
       <div class="lt"><b>差</b><i>平穩</i><b>大吉</b></div>
     </div>
+
+    <!-- 「九運」喺呢一版出現咗幾十次，但由頭到尾冇解釋過。唔睇風水嘅人
+         唔知咩叫八運九運 —— 我哋一直當咗人人都知。呢格同時做兩件事：
+         用人話解釋個分係乜，同埋講清楚我哋係兩層唔係一層。 -->
+    <div class="twolayer">
+      <p class="tlh">呢個網站點用</p>
+      <div class="tlrow"><span class="tln">1</span>
+        <div><b>每幢樓本身好唔好</b>
+          <em>睇山水方位、周邊環境、樓宇坐向。<u>邊個住都一樣</u>，
+            上面啲顏色就係呢個分。</em></div></div>
+      <div class="tlrow"><span class="tln">2</span>
+        <div><b>呢幢樓啱唔啱你</b>
+          <em>入你嘅出生日期，用你自己嘅八字同命卦計。
+            <u>同一幢樓，唔同人唔同分</u>。</em></div></div>
+      <p class="tlnote"><b>兩樣要一齊睇。</b>格局好嘅樓唔一定啱你，
+        啱你嘅樓格局又未必最好 —— 所以我哋兩個分都俾你，唔溝埋做一個。</p>
+
+      <details class="tlwhat">
+        <summary><span>咩叫「九運」？</span><span class="chev">▾</span></summary>
+        <p>風水將時間分做九個二十年一轉嘅「運」。<b>而家係第九個，
+          叫九運，由 2024 年行到 2043 年</b>。</p>
+        <p>每一個運，吉嘅方位都唔同。即係話 <b>2004–2023 年（八運）當旺嘅樓，
+          今日未必當旺</b> —— 呢個就係點解要分開講「幾時嘅風水」。</p>
+        <p>上面每幢樓嘅分，全部係按<b>而家呢個九運</b>計嘅。</p>
+      </details>
+    </div>
+
     <button class="bzcta" id="bzCta">
       <span class="bzi">✦</span>
       <span class="bzx"><b>${birth ? "睇返我嘅八字揀樓" : "用你嘅八字揀樓"}</b>
@@ -4894,10 +4949,12 @@ function shareList(){
    睇緊嗰幢樓，而嗰幢樓同佢完全無關。 */
 function shareApp(){
   doShare("香港風水地圖",
-    ["邊幢樓啱你八字？",
+    ["香港風水地圖 —— 兩樣一齊睇",
      "",
-     "九運嘅好樓對大部分人好，唔代表對你好。",
-     "打個八字入去，全港 84,720 幢樓逐幢計返啱唔啱你。",
+     "1. 每幢樓本身好唔好：山水方位、周邊、坐向。全港 84,720 幢都計咗分。",
+     "2. 呢幢樓啱唔啱你：入你出生日期，用你自己嘅八字計。",
+     "",
+     "格局好嘅樓唔一定啱你 —— 所以兩個分都俾你睇。",
      "",
      "免費、免登記、免裝 App。"].join("\n"),
     location.origin + "/", "app");
