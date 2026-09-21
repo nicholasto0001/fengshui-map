@@ -499,6 +499,25 @@
 
   /* 地區先，樓宇後。撳一個區入去先至見到入面啲樓 —— 一開就掉幾千幢樓
      出嚟，人係揀唔到嘅。 */
+  /* 屋苑呢一層。之前撳個區就直接掉幾千幢樓出嚟 —— 但人搵樓諗嘅係
+     「長安邨點？」，唔係「第 437 幢點？」。 */
+  .estwrap{margin:14px 0 4px}
+  .estwrap .fhd span{color:var(--ink3); font-weight:500}
+  .estlist{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:7px;
+           margin:8px 0 0}
+  .estrow{display:flex; align-items:center; gap:9px; padding:9px 11px; width:100%;
+          background:var(--card); border:1px solid var(--line); border-radius:12px;
+          font:inherit; text-align:start; cursor:pointer; color:var(--ink)}
+  .estrow:active{background:var(--card2,#f3f1ec)}
+  .estrow .ep{width:30px; height:30px; border-radius:50%; flex:none; display:grid;
+              place-items:center; font-size:13px; font-weight:700; font-variant-numeric:tabular-nums}
+  .estrow .en2{flex:1; min-width:0; font-size:11.5px; color:var(--ink3); line-height:1.4}
+  .estrow .en2 b{display:block; font-size:14px; font-weight:600; color:var(--ink);
+                 white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .estrow i{font-style:normal; color:var(--ink3); flex:none}
+  .backrow{background:transparent; border:0; font:inherit; font-size:14px; color:var(--ink2);
+           padding:0 0 10px; cursor:pointer; min-height:36px}
+
   .arealist{display:flex; flex-direction:column; gap:8px}
   .area{
     display:flex; align-items:center; gap:12px; width:100%; padding:12px 14px;
@@ -3336,8 +3355,89 @@ function matches(){
     (!okDir || (o.d8 != null && okDir.has(o.d8))));
 }
 
+/* 由樓宇清單整返一層屋苑出嚟。
+
+   之前撳一個區就直接掉幾千幢樓出嚟，但人搵樓唔係咁搵嘅 —— 佢哋諗嘅係
+   「長安邨點？」唔係「第 437 幢點？」。而屋苑呢一層我哋本來有齊資料
+   （678 版頁），只係喺 app 入面完全入唔到。 */
+function estatesIn(list){
+  const g = new Map();
+  for(const o of list){
+    if(!o.est || !o.res) continue;
+    const e = g.get(o.est) || {name: o.est, n: 0, sum: 0, top: null};
+    e.n++; e.sum += o.total || 0;
+    if(!e.top || (o.total || 0) > e.top.total) e.top = o;
+    g.set(o.est, e);
+  }
+  return [...g.values()].map(e => ({...e, avg: e.sum / e.n}))
+    .sort((a, b) => b.avg - a.avg);
+}
+
+/* 一個屋苑逐座。最尾有條連去完整資料頁嘅路 —— 嗰度有航空平面圖、
+   人口普查、發展商同成交價，全部係地圖上面放唔落嘅嘢。 */
+async function showEstate(name){
+  await ensureIndex();
+  const rows = searchIndex.filter(o => o.est === name && o.res)
+                          .sort((a, b) => (b.total || 0) - (a.total || 0));
+  if(!rows.length) return;
+  const e = (estateData || {})[name] || {};
+  if(estateData === null) loadEstates().then(() => showEstate(name));
+  const avg = rows.reduce((a, o) => a + (o.total || 0), 0) / rows.length;
+  const facts = [
+    e.kind, e.year && `${e.year} 年入伙`,
+    `${rows.length} 座`, e.flats && `${e.flats.toLocaleString()} 伙`,
+  ].filter(Boolean).join(" · ");
+
+  gripText.textContent = name;
+  openSheet(); setSheet("full");
+  sheetBody.innerHTML = `
+    <button class="backrow" id="estBack">‹　返${esc(districtFilter || "上一頁")}</button>
+    <p class="bname">${esc(name)}</p>
+    <p class="ben">${esc(facts)}</p>
+    <div class="scorerow">
+      <div class="bigscore" style="background:${colorFor(avg)};color:${inkOn(avg)}">${num(avg,0)}</div>
+      <div><p class="verdict" style="background:${colorFor(avg)};color:${inkOn(avg)}">屋苑平均</p>
+      <p class="vsub">${rows.length} 座，最高 ${num(rows[0].total,1)}、最低 ${num(rows[rows.length-1].total,1)}</p></div>
+    </div>
+    <ul class="mlist">${rows.map((o, i) => `
+      <li data-i="${i}">
+        <div class="sc" style="background:${colorFor(o.total)};color:${inkOn(o.total)}">${num(o.total,0)}</div>
+        <div><div class="nm">${esc(clean(o.tc) || clean(o.en))}</div>
+             <div class="mt">${esc(o.now || "")}</div></div>
+        <div class="go">›</div></li>`).join("")}</ul>
+    <a class="deep" href="/estate/${encodeURIComponent(name)}">
+      <span><b>${esc(name)}　詳細資料</b>
+      航空平面圖、人口普查、發展商、成交價</span><i>›</i></a>`;
+  sheetBody.querySelector("#estBack").addEventListener("click", showOverview);
+  sheetBody.querySelectorAll(".mlist li").forEach(li =>
+    li.addEventListener("click", () => {
+      const o = rows[+li.dataset.i];
+      map.setView([o.lat, o.lon], 18);
+      setTimeout(() => {
+        let best = null, bd = Infinity;
+        buildingLayer.eachLayer(l => {
+          const c = l.getBounds ? l.getBounds().getCenter() : l.getLatLng();
+          const d = (c.lat - o.lat) ** 2 + (c.lng - o.lon) ** 2;
+          if(d < bd){ bd = d; best = l; }
+        });
+        if(best && bd < 1e-7) best.fire("click");
+      }, 900);
+    }));
+}
+
 function renderMatches(list){
   const shown = list.slice(0, MATCH_LIMIT);
+  const ests = districtFilter ? estatesIn(list) : [];
+  const estBlock = ests.length ? `
+    <div class="estwrap">
+      <p class="fhd">區內屋苑　<span>${ests.length} 個</span></p>
+      <div class="estlist">${ests.slice(0, 40).map(e => `
+        <button class="estrow" data-e="${esc(e.name)}">
+          <span class="ep" style="background:${colorFor(e.avg)};color:${inkOn(e.avg)}">${num(e.avg,0)}</span>
+          <span class="en2"><b>${esc(e.name)}</b>${e.n} 座</span><i>›</i>
+        </button>`).join("")}</div>
+      ${ests.length > 40 ? `<p class="bznote">仲有 ${ests.length - 40} 個，喺下面嘅樓宇清單度搵得到。</p>` : ""}
+    </div>` : "";
   const where = districtFilter || "全港";
   const what  = band === "all" ? "所有評分" : chipLabel();
   // The list can only show buildings that carry a name; the map and the
@@ -3397,6 +3497,7 @@ function renderMatches(list){
       unnamed ? `<br>另有未命名樓宇未計在內，可以直接喺地圖撳。` : ""}</p>
     <label class="homes"><input type="checkbox" id="homesOnly" ${homesOnly?"checked":""}>
       <span>只顯示住宅樓宇</span></label>
+    ${estBlock}
     ${districtFilter ? `<a class="deep" href="/district/${encodeURIComponent(districtFilter)}">
       <span><b>${esc(districtFilter)}　詳細資料</b>
       區內排名、格局分佈、區內屋苑逐個睇</span><i>›</i></a>` : ""}
@@ -3415,6 +3516,8 @@ function renderMatches(list){
     <p class="build" id="buildStamp">${APP_VERSION}</p>`;
   fillBuildStamp();
   const hb = sheetBody.querySelector("#homesOnly");
+  sheetBody.querySelectorAll(".estrow").forEach(b =>
+    b.addEventListener("click", () => showEstate(b.dataset.e)));
   const gb = sheetBody.querySelector("#guaBand");
   if(gb) gb.addEventListener("click", showBazi);
   if(hb) hb.addEventListener("change",()=>track("toggle_homes_only",{on:hb.checked}));
