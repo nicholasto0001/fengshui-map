@@ -1165,6 +1165,8 @@
   .barcap{font-size:12px; line-height:1.6; color:var(--ink3); margin:9px 0 0}
   .barcap b{color:var(--ink2)}
   .barcap u{text-decoration:none; color:var(--bad); font-weight:600}
+  .pbtn.ghost{background:transparent; color:var(--brand);
+    border:1.5px solid var(--brand); font-weight:650}
   .dsub{font-size:12px; line-height:1.5; color:var(--ink3)}
   .legcap{font-size:12px; line-height:1.55; color:var(--ink3); margin:9px 0 0}
   .legcap b{color:var(--ink2)}
@@ -3565,6 +3567,8 @@ function whyLine(wx){
   return `扶抑用神入面有${wx}。`;
 }
 
+let bzSnapshot = null;
+
 function bzResult(){
   const m = bzMod;
   const c = m.chart(birth.y, birth.m, birth.d, birth.h == null ? 12 : birth.h, 0);
@@ -3596,6 +3600,9 @@ function bzResult(){
   // 木係幫手。兩個等量齊觀會令到「幫手」蓋過「要嗰個」。
   const [p1, p2] = want;
   const {cs, areas} = rankAreas();
+  // 留低畫分享卡要用嗰幾樣。唔喺 shareBazi 度重新計一次 —— 重計就有機會
+  // 同螢幕上面見到嗰個唔同，而張卡係會俾第三者見到嘅嘢。
+  bzSnapshot = {pillars: pil, type: hc.type, likes: hc.like.slice(), areas};
   const wts = cs.length ? cs[0].w : wxWeights(want, st.pct);
   const nPeople = cs.length;
   const wxb = w => `<b class="wx-${w}">${w}</b>`;
@@ -3763,6 +3770,7 @@ function bzResult(){
       因人而異嘅係邊個方位對你嚟講係邊個遊年星。</p>
 
     <button class="pbtn dark" id="bzSee" style="margin-top:20px">睇合我嘅樓</button>
+    <button class="pbtn ghost" id="bzShare" style="margin-top:10px">分享我嘅八字揀樓卡</button>
     <p class="bznote" style="text-align:center">
       <a href="/bazi-guide" target="_blank" rel="noopener">每一步點計、根據邊個講法、做唔到啲咩 →</a></p>
     <div class="bzfoot">
@@ -3810,6 +3818,8 @@ async function showBazi(edit){
     pushBack("八字", () => showBazi());
     showFamily();
   });
+  const bs = sheetBody.querySelector("#bzShare");
+  if(bs) bs.addEventListener("click", shareBazi);
   const be = sheetBody.querySelector("#bzEdit");
   if(be) be.addEventListener("click", () => {
     pushBack("八字", () => showBazi());
@@ -5035,6 +5045,43 @@ async function shareBuilding(o){
     }catch(e){ /* 畫唔到就當冇呢回事，跌返落連結分享 */ }
   }
   doShare("香港風水地圖", text, url, "building");
+}
+
+/* 分享自己個八字。樓宇卡講嘅係一幢樓，收到嘅人多數同嗰幢樓無關 ——
+   所以冇人傳。呢張講嘅係「我」，而底下一句叫對方打自己個出生日期,
+   出嚟就係另一張。要 viral 就要係呢種。
+
+   出生日期一個字都唔會出現喺張卡或者條 link 度：張卡會落去 group chat,
+   而出生日期係我哋成個私隱承諾入面唯一真正敏感嗰樣。 */
+async function shareBazi(){
+  if(!bzSnapshot) return;
+  const {type, likes, areas} = bzSnapshot;
+  const top = areas.slice(0, 3);
+  const text = [
+    `我嘅八字：${type}，喜${likes.join("、")}`,
+    top.length ? `全港十八區入面最夾我嘅：${
+      top.map(a => `${a.tc} ${a.fit}分`).join("、")}` : "",
+    "",
+    "呢個唔係「邊區風水好」—— 同一幢樓，唔同人唔同分。",
+    "打你自己個出生日期，出嚟係另一張。",
+  ].filter(x => x !== null).join("\n");
+  const url = location.origin + "/";
+
+  if(navigator.canShare){
+    try{
+      const m = await cardBits();
+      const blob = await (await m).baziCard({...bzSnapshot, mark: brandMark});
+      const file = new File([blob], "我嘅八字揀樓.png", {type: "image/png"});
+      if(navigator.canShare({files: [file]})){
+        trip.shared = true;
+        track("share", {what: "bazi_card"});
+        try{ await navigator.share({files: [file], text: `${text}\n\n${url}`}); }
+        catch{}
+        return;
+      }
+    }catch(e){ /* 畫唔到就跌返落文字分享 */ }
+  }
+  doShare("我嘅八字揀樓", text, url, "bazi");
 }
 
 function shareList(){

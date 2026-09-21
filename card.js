@@ -144,3 +144,103 @@ export async function buildingCard(o, {name, en, district, level, rank, mark}){
 
   return new Promise(res => cv.toBlob(res, "image/png"));
 }
+
+/**
+ * 八字卡 —— 真正有人肯 forward 嗰張。
+ *
+ * 樓宇卡講嘅係一幢樓，收到嘅人多數同嗰幢樓無關。呢張講嘅係「我」：
+ * 我嘅四柱、我嘅命格、最夾我嘅三個區。人肯傳嘅係自己嘅嘢。
+ *
+ * 底下嗰句係整張卡嘅重點 —— 收到嘅人打自己個出生日期，出嚟係另一張。
+ * 冇呢句就淨係一張圖；有咗就係一個邀請。
+ *
+ * 一個字都唔會印出生日期：張卡會落去 WhatsApp group、會俾唔認識嘅人
+ * 見到，而出生日期係我哋成個私隱承諾入面唯一一樣真正敏感嘅嘢。
+ */
+export async function baziCard({pillars, type, likes, areas, mark}){
+  await (document.fonts ? document.fonts.ready : Promise.resolve());
+  const cv = document.createElement("canvas");
+  cv.width = W; cv.height = H;
+  const c = cv.getContext("2d");
+
+  c.fillStyle = IVORY; c.fillRect(0, 0, W, H);
+
+  /* 頂：同樓宇卡一樣嘅品牌條，等兩張卡認得出係同一個網站 */
+  c.fillStyle = RED; c.fillRect(0, 0, W, 132);
+  if(mark){
+    c.save(); rr(c, 48, 26, 80, 80, 20); c.clip();
+    c.drawImage(mark, 48, 26, 80, 80); c.restore();
+  }
+  c.fillStyle = "#fff"; c.font = `700 40px ${FONT}`; c.textBaseline = "alphabetic";
+  c.fillText("香港風水地圖", 148, 62);
+  c.fillStyle = GOLD; c.font = `500 25px ${FONT}`;
+  c.fillText("八字 × 風水 × 全港樓宇", 148, 100);
+
+  c.save();
+  c.shadowColor = "rgba(0,0,0,.09)"; c.shadowBlur = 34; c.shadowOffsetY = 10;
+  c.fillStyle = "#fff"; rr(c, 48, 186, W - 96, 706, 36); c.fill();
+  c.restore();
+
+  c.textAlign = "center";
+  c.fillStyle = INK; c.font = `700 52px ${FONT}`;
+  c.fillText("我嘅八字揀樓", W / 2, 268);
+
+  /* 四柱 —— 張卡最搶眼嗰行，亦都係最多人唔知自己有嘅嘢 */
+  const bw = 176, gap = 22, total = bw * 4 + gap * 3;
+  let x = (W - total) / 2;
+  pillars.forEach(([lab, val]) => {
+    c.fillStyle = "#faf9f6"; rr(c, x, 306, bw, 148, 20); c.fill();
+    c.strokeStyle = LINE; c.lineWidth = 2; rr(c, x, 306, bw, 148, 20); c.stroke();
+    c.fillStyle = INK3; c.font = `500 24px ${FONT}`;
+    c.fillText(lab, x + bw / 2, 344);
+    c.fillStyle = INK; c.font = `700 56px ${FONT}`;
+    c.fillText(val || "—", x + bw / 2, 416);
+    x += bw + gap;
+  });
+
+  /* 命格 */
+  const badge = `${type}　喜 ${likes.join("、")}`;
+  c.font = `700 36px ${FONT}`;
+  const bwid = Math.min(c.measureText(badge).width + 72, W - 160);
+  c.fillStyle = "#3d2f18"; rr(c, (W - bwid) / 2, 492, bwid, 76, 38); c.fill();
+  c.fillStyle = "#e3c489"; c.font = `700 36px ${FONT}`;
+  c.fillText(badge, W / 2, 541);
+
+  /* 最夾我嘅三個區 —— 呢個先係「得你先有」嗰部分 */
+  c.fillStyle = INK2; c.font = `600 30px ${FONT}`;
+  c.fillText("最夾我嘅地區", W / 2, 626);
+
+  const rows = areas.slice(0, 3);
+  const RX = 108, RW = W - RX * 2;
+  rows.forEach((a, i) => {
+    const y = 664 + i * 78;
+    c.textAlign = "left";
+    c.fillStyle = band(a.fit); c.beginPath();
+    c.arc(RX + 24, y + 22, 22, 0, Math.PI * 2); c.fill();
+    c.fillStyle = "#fff"; c.font = `700 24px ${FONT}`; c.textAlign = "center";
+    c.fillText(String(i + 1), RX + 24, y + 31);
+    c.textAlign = "left";
+    c.fillStyle = INK; c.font = `650 38px ${FONT}`;
+    c.fillText(a.tc, RX + 68, y + 35);
+    c.textAlign = "right";
+    c.fillStyle = band(a.fit); c.font = `700 42px ${FONT}`;
+    c.fillText(String(a.fit), RX + RW - 66, y + 35);
+    c.fillStyle = INK3; c.font = `500 24px ${FONT}`;
+    c.fillText("夾我", RX + RW, y + 35);
+    if(i < rows.length - 1){
+      c.strokeStyle = LINE; c.lineWidth = 1; c.beginPath();
+      c.moveTo(RX, y + 60); c.lineTo(RX + RW, y + 60); c.stroke();
+    }
+  });
+
+  /* 底 —— 呢句就係成張卡嘅意義：叫收到嘅人自己試 */
+  c.textAlign = "center";
+  c.fillStyle = INK; c.font = `650 34px ${FONT}`;
+  c.fillText("打你自己個出生日期，出嚟係另一張", W / 2, 956);
+  c.fillStyle = INK3; c.font = `500 27px ${FONT}`;
+  c.fillText("hkfengshuimap.com   ·   免費   ·   免登記   ·   免裝 App", W / 2, 1002);
+  c.fillStyle = "#a9a59c"; c.font = `500 22px ${FONT}`;
+  c.fillText("電腦計算，僅供參考。認真睇樓請搵專業風水師傅。", W / 2, 1042);
+
+  return new Promise(res => cv.toBlob(res, "image/png"));
+}
