@@ -13,6 +13,18 @@ mkdir -p public
 
 cp index.html privacy.html admin.html method.html bazi-guide.html sitemap.xml manifest.webmanifest public/
 cp bazi.js card.js public/               # 八字引擎同分享卡，用到先載
+
+# Supabase 個 client。由 CDN 載嘅話，廣告攔截器一擋就登入死 —— 同源就冇得擋。
+# 攞唔到就唔好整冧成個 build：index.html 會自己跌返去 CDN。
+mkdir -p public/vendor
+SUPA_JS_URL="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js"
+if curl -fsSL --max-time 45 "$SUPA_JS_URL" -o public/vendor/supabase.js \
+   && [ -s public/vendor/supabase.js ]; then
+  echo "vendored supabase-js ($(wc -c < public/vendor/supabase.js) bytes)"
+else
+  echo "::warning::could not vendor supabase-js; the page will fall back to the CDN"
+  rm -f public/vendor/supabase.js
+fi
 cp og.png favicon.ico apple-touch-icon.png icon-192.png icon-512.png public/
 cp -R og public/og          # one preview card per score, chosen by the Worker
 # An allowlist, not a delete list. Every new pipeline stage drops another

@@ -554,7 +554,10 @@
   .gate .gs{margin:0 0 8px; font-size:13.5px; line-height:1.65; opacity:.88}
   .gate .gs b{color:#e3c489}
   .gate .gf{margin:9px 0 0; font-size:12px; opacity:.7; text-align:center}
-  .gate .pbtn{background:#fff; color:#3d2f18}
+  /* .dark 都要寫埋，唔係就會輸俾下面嗰條 `.pbtn.dark{background:#3d2f18}`
+     —— 兩條同分數，後面嗰條贏底色，但贏唔到文字色，結果深啡字寫喺深啡
+     底上面，成個掣隱形。個掣仲撳得，但冇人知佢喺度。 */
+  .gate .pbtn, .gate .pbtn.dark{background:#fff; color:#3d2f18}
 
   .whywrap{margin:12px 0 0}
   .why{margin:0 0 8px; font-size:13.5px; line-height:1.7; color:var(--ink2);
@@ -740,6 +743,17 @@
   .famrow.off{opacity:.45}
   .famrow.off .fnm b{text-decoration:line-through; text-decoration-thickness:1px}
   .fsw{width:20px; flex:none; text-align:center; font-size:14px; color:var(--good,#1d6b4f)}
+
+  /* 加屋企人係第二個最重要嘅動作（第一個係入自己八字），所以佢要有自己
+     一格，唔好變成一行字跟喺最尾。 */
+  .famcta{background:linear-gradient(135deg,#3d2f18,#5a4622); color:#fff;
+          border-radius:16px; padding:16px 17px; margin:18px 0 6px}
+  .famcta.has{background:var(--card); color:var(--ink); border:1px solid var(--line)}
+  .fch{font-size:16.5px; font-weight:650; margin:0 0 5px}
+  .fcs{font-size:13px; line-height:1.6; opacity:.85; margin:0 0 13px}
+  .famcta.has .fcs{opacity:1; color:var(--ink3)}
+  .famcta .pbtn{width:100%}
+  .famcta:not(.has) .pbtn{background:#fff; color:#3d2f18}
 
   .tagline{font-size:13.5px; font-weight:600; color:var(--gold,#8a6d2f); margin:-2px 0 6px;
            letter-spacing:.01em}
@@ -3333,6 +3347,22 @@ function bzResult(){
         同一個人早幾個鐘出世可以得出完全相反嘅用神。上面寒熱命只需要日期，
         所以照計得到。</p>`}
 
+    <!-- 屋企人擺喺睇完自己個盤之後、揀地區之前。擺喺最尾冇人 scroll 到,
+         而香港冇乜人係一個人住 —— 呢一步應該喺佢啱啱明白咗「原來我個盤
+         係咁」嗰一刻就問。 -->
+    <div class="famcta${me && family.length > 1 ? " has" : ""}">
+      <p class="fch">${me && family.length > 1
+        ? `你屋企有 ${family.length} 個人`
+        : "你自己一個住？"}</p>
+      <p class="fcs">${me && family.length > 1
+        ? "每一幢樓都會逐個人計，話你知邊個夾、邊個唔夾。撳入去睇每個人自己嘅盤。"
+        : "大部分人都唔係。加埋老婆、仔女嘅八字，每一幢樓就會逐個人計 —— "
+          + "一間屋啱你，唔代表啱佢哋。"}</p>
+      <button class="pbtn dark" id="bzFam">${me
+        ? (family.length > 1 ? "睇／管理屋企人" : "加第一個屋企人")
+        : "加屋企人（要先登入）"}</button>
+    </div>
+
     <h3 class="bzh">宜住邊區</h3>
     <p class="bznote" style="margin-top:-2px">${
       // 一句中文中間唔應該有空隙，所以呢兩段用駁字串砌，唔用換行 ——
@@ -3406,15 +3436,6 @@ function bzResult(){
     <p class="bznote">八宅以<b>向</b>論 —— 配嘅係樓宇向邊，唔係坐邊。
       八宅只分東四、西四兩組宅，所以同組嘅人合嘅樓係同一批；
       因人而異嘅係邊個方位對你嚟講係邊個遊年星。</p>
-
-    <h3 class="bzh">屋企人</h3>
-    <p class="bznote" style="margin-top:-2px">搵樓好少係一個人嘅事。加咗屋企人，
-      每一幢樓會同時計埋佢哋嘅八字，話你知邊個夾、邊個唔夾。</p>
-    <button class="famadd" id="bzFam">${me
-      ? (family.length > 1
-          ? `＋　管理屋企人（而家有 ${family.length - 1} 個）`
-          : "＋　加一個屋企人")
-      : "＋　加屋企人（要先登入）"}</button>
 
     <button class="pbtn dark" id="bzSee" style="margin-top:20px">睇合我嘅樓</button>
     <p class="bznote" style="text-align:center">
@@ -3843,7 +3864,16 @@ function saveFavs(){
    ------------------------------------------------------------------ */
 const SUPA_URL = "https://dpobzqzflmgkuzxqiggt.supabase.co";
 const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwb2J6cXpmbG1na3V6eHFpZ2d0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NzgzNzcsImV4cCI6MjEwNTQ1NDM3N30.8cqTo4SZbWhmvX2u69J1fHyp6gNu9N8vFedgeCVD_5M";
-const SUPA_JS  = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js";
+/* 自己 host 一份行先，CDN 做後備。
+
+   廣告攔截器同公司／學校網絡最常擋嘅就係 cdn.jsdelivr.net 呢類網域,
+   而一擋，ensureSupabase 就返 null，登入直接死 —— 用家只見到一句
+   「連唔到伺服器」，唔會知係俾自己部機擋咗。同源就冇呢個問題。
+
+   build.sh 會喺出版嗰陣抽一份落 public/vendor/。抽唔到（例如本機開發
+   冇網絡）就照用 CDN。 */
+const SUPA_JS  = "vendor/supabase.js";
+const SUPA_JS_CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js";
 const PRIVACY_VERSION = "2026-09-20";
 
 let sb = null, me = null, myLists = [], curListId = null;
@@ -3851,14 +3881,20 @@ let sbLoading = null;
 
 const LAST_LIST_KEY = "fs_last_list";
 
+function loadScript(src){
+  return new Promise((res, rej) => {
+    const el = document.createElement("script");
+    el.src = src; el.async = true;
+    el.onload = res; el.onerror = () => rej(new Error(src));
+    document.head.appendChild(el);
+  });
+}
+
 async function ensureSupabase(){
   if(sb) return sb;
-  if(!sbLoading) sbLoading = new Promise((res, rej) => {
-    const el = document.createElement("script");
-    el.src = SUPA_JS; el.async = true;
-    el.onload = res; el.onerror = rej;
-    document.head.appendChild(el);
-  }).then(() => {
+  if(!sbLoading) sbLoading = loadScript(SUPA_JS)
+    .catch(() => loadScript(SUPA_JS_CDN))
+    .then(() => {
     sb = window.supabase.createClient(SUPA_URL, SUPA_KEY, {
       auth: {persistSession: true, autoRefreshToken: true, detectSessionInUrl: true},
     });
