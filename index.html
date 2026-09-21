@@ -1179,6 +1179,21 @@
   .bigscore.pctbox b{font-size:24px; font-weight:800; letter-spacing:-.02em}
   .vsub .raw{color:var(--ink3); font-size:12px}
   /* 三樣入面計咗幾多樣 —— 一眼睇到仲爭邊一樣。 */
+  .pt{display:flex; align-items:center; gap:9px; font-size:18px; font-weight:750;
+    color:var(--ink); margin:26px 0 4px}
+  .pt .ptn{flex:0 0 26px; height:26px; border-radius:50%; display:grid;
+    place-items:center; background:var(--ink); color:#fff; font-size:13px; font-weight:700}
+  .pt em{font-style:normal; font-size:13px; font-weight:500; color:var(--ink3)}
+  .ptq{font-size:13px; line-height:1.65; color:var(--ink3); margin:0 0 12px}
+  .ptq b{color:var(--ink2)}
+  .luckrow{display:flex; gap:14px; align-items:center; padding:13px 14px;
+    border:1px solid var(--line); border-radius:14px; background:var(--card)}
+  .luckbig{flex:0 0 auto; text-align:center; line-height:1}
+  .luckbig b{display:block; font-size:34px; font-weight:800}
+  .luckbig small{display:block; font-size:11px; color:var(--ink3); margin-top:3px}
+  .luckside{flex:1 1 auto; min-width:0}
+  .lkb{font-size:15px; font-weight:700; margin:0 0 3px}
+  .lks{font-size:12.5px; line-height:1.55; color:var(--ink3); margin:0}
   .three{display:flex; flex-wrap:wrap; align-items:center; gap:6px;
     margin:12px 0 0; padding:11px 13px; border-radius:13px;
     background:var(--card); border:1px solid var(--line)}
@@ -2718,6 +2733,18 @@ const NOW_TONE = {
   "當運旺山旺向": "good", "當運旺財": "good", "當運旺丁": "good",
   "當運平平": "mid", "入囚": "bad",
 };
+/* 樓宇本身嘅元運 vs 而家嘅九運。三元九運本身就話樓有自己嘅運：
+   當運為旺，下一運為生，上一運為退，再早就過氣。 */
+const PERIOD_BAND = {
+  9: ["當運", "而家正行緊呢個運", "#0f6354"],
+  1: ["生氣", "下一個運（2044 起）當旺", "#4da79a"],
+  8: ["退氣", "上一個運（2004–2023）當旺，啱啱過去", "#8a8477"],
+  7: ["過氣", "1984–2003 當旺，已經過咗兩個運", "#a01f1f"],
+  6: ["過氣", "1964–1983 當旺，已經過咗三個運", "#a01f1f"],
+  5: ["過氣", "1944–1963 當旺，已經過咗四個運", "#a01f1f"],
+};
+const periodBand = per => PERIOD_BAND[per] || null;
+
 const NOW_PLAIN = {
   "當運旺山旺向":"人同錢都旺", "當運旺財":"旺錢", "當運旺丁":"旺人",
   "當運平平":"呢廿年普通", "入囚":"氣被困住",
@@ -2981,10 +3008,13 @@ function personalPanel(o, layer){
 
   if(!birth) return `
     <div class="pp">
-      <p class="fhd">呢幢樓啱唔啱你？</p>
-      <p class="ppq">上面嗰個分數，答嘅係「呢幢樓格局好唔好」—— 邊個睇都一樣。
-        入咗出生日期，就會用你自己個八字，逐項度返呢一幢樓夾唔夾你。</p>
-      <button class="pbtn dark" id="ppBz">用我嘅八字睇呢幢樓</button>
+      <h3 class="pt" style="margin-top:0"><span class="ptn">4</span>八字<em>你自己</em></h3>
+      <p class="ptq">上面三樣，<b>邊個睇都一樣</b> —— 你喺邊個網站都搵到同一個答案。
+        八字係唯一一樣屬於你自己嘅。</p>
+      <p class="ppq">打個出生日期落去，我哋會用你嘅四柱、喜用五行同本命卦，
+        逐項度返呢一幢樓夾唔夾你 —— <b>同一幢樓，唔同人可以爭七十分</b>。
+        打完之後，上面個綜合評分會加埋呢一層。</p>
+      <button class="pbtn dark" id="ppBz">打我嘅出生日期，計埋第四樣</button>
     </div>`;
 
   const w = myWeights();
@@ -3190,7 +3220,8 @@ ${(() => {
           : `唔係住宅樓宇 · 地理環境 ${num(t,1)} / 100`}</p>
       </div>
     </div>
-    ${home ? `<div class="three${birth ? " done" : ""}" id="threeBar">
+    ${home ? `<h3 class="pt" style="margin-top:18px"><span class="ptn">1</span>綜合評分<em>三樣入面計咗邊幾樣</em></h3>
+    <div class="three${birth ? " done" : ""}" id="threeBar">
       <span class="tc on">風水 ✓</span><span class="tsep">＋</span>
       <span class="tc on">大運 ✓</span><span class="tsep">＋</span>
       <span class="tc${birth ? " on" : ""}">八字 ${birth ? "✓" : "—"}</span>
@@ -3203,10 +3234,35 @@ ${(() => {
          84,720 幢都係 50。畫一條人人一樣嘅 bar，係當住人講緊一樣我哋
          根本冇量過嘅嘢。佢仲係佔總分 5%（即係人人加同一個 2.5 分,
          唔影響任何排名），所以分數唔郁，只係唔再扮量過。 -->
+    ${home ? `<h3 class="pt"><span class="ptn">2</span>風水<em>個地方本身</em></h3>
+    <p class="ptq">山喺邊、水喺邊、離得幾遠、周圍有冇煞。
+      <b>呢啲幾十年都唔會變</b>，所以係個底。</p>` : ""}
     <div class="bars">${bar("環境",o.env)}${bar("避煞",o.ancil)}</div>
     <p class="barcap"><b>環境</b>＝ 山水方位同開揚度。
       <b>避煞</b>＝ 離醫院、油站、橋樑、消防局有幾遠（越高＝越遠）。
       <u>「避煞」唔係講生活配套</u>，商場同地鐵唔計喺呢度。</p>
+    ${home && o.luck != null ? (() => {
+      const pb = periodBand(o.period);
+      return `
+      <h3 class="pt"><span class="ptn">3</span>大運<em>而家行緊咩運</em></h3>
+      <p class="ptq">同一個地方，唔同年代旺唔同方位，<b>二十年轉一次</b>。
+        而家行緊<b>九運（2024–2043）</b>。</p>
+      <div class="luckrow">
+        <div class="luckbig" style="color:${colorFor(o.luck)}">
+          <b>${num(o.luck,0)}</b><small>大運分</small></div>
+        <div class="luckside">
+          ${pb ? `<p class="lkb" style="color:${pb[2]}">${o.period} 運樓 · ${pb[0]}</p>
+                  <p class="lks">${pb[1]}</p>` : `<p class="lks">查唔到入伙元運。</p>`}
+          <p class="lks">山水配對：${o.mwds8 > 0
+            ? `合九運格局（${o.mwds8}/9）`
+            : "唔係正對 —— 呢一項唔夠分"}</p>
+        </div>
+      </div>
+      <p class="barcap"><b>全港 80.9% 住宅都係七運或更早</b>（六、七運佔咗六成八），
+        所以大運分低唔代表你特別黑仔 —— 全香港大部分樓都係咁。
+        <u>呢個分冇計入上面個綜合評分</u>：綜合評分係逆向工程政府嘅風水地圖
+        圖層得返嚟，改咗就對唔返。呢度另外出，俾你自己睇。</p>` ;
+    })() : ""}
     ${liqi}
     <dl class="facts">
       <dt>山在</dt><dd>${dirTC(o.mt_dir)}方　${num(o.mt_d,0)} 米</dd>

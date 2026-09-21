@@ -50,6 +50,45 @@ def ancillary_penalty(dist_m: float) -> float:
     return max(0.0, 10.0 - math.floor(dist_m / 100.0))
 
 
+
+# --------------------------------------------------------------------------
+# 大運分：一個獨立嘅讀數，唔計入 total。
+#
+# total 係逆向工程 2023 年政府風水地圖圖層得返嚟、逐項對過嘅。一改佢就
+# 全港重新排名、676 版靜態頁要重出，而且「對得返政府圖層」呢個講法就
+# 冇咗。所以呢個分另外出，淨係俾樓宇頁「大運」嗰一節用。
+#
+# 點解要重新計過：本來直接攞 MWDS 配對做大運分，但嗰張表淨係收「山同水
+# 啱啱正對」嘅八個組合，於是 80.6% 住宅得 0 分、69.9% 撞同一個數 ——
+# 同一幅冇高低嘅地圖冇分別。而 0 唔係「冇數據」：每一幢樓都有山同水嘅
+# 方向，個 0 淨係話佢哋唔係正對。
+#
+# 兩個改動：
+#   1. 配對改成分級。135° 離理想得一格，同 0°（山水同一邊）當成一樣係
+#      過度精確 —— 我哋個方位本身係八格推出嚟，每格 ±22.5°。
+#   2. 加入元運。98.8% 住宅查得到入伙元運，而三元九運本身就話樓宇有
+#      自己嘅運，當運為旺、上一運為退。呢個先係最字面嘅「大運」，
+#      而我哋一直冇用過。
+ORD8 = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+# 正對嘅八個組合，按第九運嘅吉凶次序（9 > 1 > 2 > 3 > 4 > 5 > 6 > 7 > 8）
+PAIR_RANK = {9: 100, 8: 92, 7: 84, 6: 74, 5: 64, 3: 48, 2: 38, 1: 28}
+NEAR_PAIR = {3: 70, 2: 40, 1: 15, 0: 0}      # 離正對差幾多格
+# 當運 9 為旺，下一個運（1）為生，八運退氣，再早逐級落
+PERIOD_FIT = {9: 100, 1: 85, 8: 55, 7: 35, 6: 20, 5: 10, 4: 5, 3: 5, 2: 5}
+
+
+def luck_score(r: dict) -> float:
+    m, w = dir8(r["m16"]), dir8(r["w16"])
+    if m and w:
+        d = abs(ORD8.index(m) - ORD8.index(w)) % 8
+        d = min(d, 8 - d)
+        pair = PAIR_RANK.get(r["s8"], 20) if d == 4 else NEAR_PAIR[d]
+    else:
+        pair = 0
+    per = PERIOD_FIT.get(r.get("period"), 25)   # 查唔到元運當中間偏低
+    return round(0.5 * pair + 0.5 * per, 2)
+
+
 def main() -> None:
     terrain = load("terrain.json")
     buildings = load("buildings.json")
@@ -235,9 +274,9 @@ def main() -> None:
         # 剩返 0.05 係 traffic placeholder，全港一律 50，唔歸邊一樣。
         #
         # total 一個字都唔郁 —— 拆開淨係為咗講得明，唔係改評分。
-        luck = pair
         wind = (W_ENV * (W_MTDIS * p_md[i] + W_WTDIS * p_wd[i])
                 + W_ANCIL * ancil) / (W_ENV * (W_MTDIS + W_WTDIS) + W_ANCIL)
+        luck = luck_score(r)
         traffic = 50.0            # placeholder until the traffic census layer is wired
         b = r["b"]
         out.append({
