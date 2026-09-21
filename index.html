@@ -1162,6 +1162,10 @@
   .liqi-none .liqi-hd{color:var(--ink3)}
 
   /* legend inside sheet */
+  .barcap{font-size:12px; line-height:1.6; color:var(--ink3); margin:9px 0 0}
+  .barcap b{color:var(--ink2)}
+  .barcap u{text-decoration:none; color:var(--bad); font-weight:600}
+  .dsub{font-size:12px; line-height:1.5; color:var(--ink3)}
   .legcap{font-size:12px; line-height:1.55; color:var(--ink3); margin:9px 0 0}
   .legcap b{color:var(--ink2)}
   .legend{margin:2px 0 16px}
@@ -2485,6 +2489,12 @@ const NOW_TONE = {
   "當運旺山旺向": "good", "當運旺財": "good", "當運旺丁": "good",
   "當運平平": "mid", "入囚": "bad",
 };
+const NOW_PLAIN = {
+  "當運旺山旺向":"人同錢都旺", "當運旺財":"旺錢", "當運旺丁":"旺人",
+  "當運平平":"呢廿年普通", "入囚":"氣被困住",
+};
+const nowPlain = t => (t && NOW_PLAIN[t]) ? `${t}（${NOW_PLAIN[t]}）` : (t || "");
+
 const NOW_NOTE = {
   "當運旺山旺向":"九運丁財兩旺", "當運旺財":"九運利財",
   "當運旺丁":"九運利人丁", "當運平平":"九運當旺星未到坐向",
@@ -2883,7 +2893,7 @@ function renderBuilding(o, layer){
     liqi = `
       <div class="liqi">
         <div class="liqi-hd">九運當下</div>
-        <p class="liqi-now t-${NOW_TONE[o.now]||"mid"}">${esc(o.now||"—")}</p>
+        <p class="liqi-now t-${NOW_TONE[o.now]||"mid"}">${esc(nowPlain(o.now)||"—")}</p>
         <p class="liqi-sub">${esc(NOW_NOTE[o.now]||"")}</p>
         <dl class="facts" style="margin-top:12px">
           <dt>坐向</dt><dd>${esc(o.sit_m||"?")}山${esc(o.face_m||"?")}向　${num(o.facing,0)}°</dd>
@@ -2896,7 +2906,9 @@ function renderBuilding(o, layer){
     const why = !o.op_year ? "查唔到入伙年份，未能定元運"
               : "樓宇外形接近方形，坐向推算唔可靠";
     liqi = `<div class="liqi liqi-none"><div class="liqi-hd">九運當下</div>
-            <p class="liqi-sub">未能起盤 — ${why}。</p></div>`;
+            <p class="liqi-sub">未能起盤 — ${why}。<br>
+              <b>唔係壞咗</b>：排飛星盤要知樓宇坐向同入伙年份，兩樣有一樣
+              唔夠準，我哋就唔砌 —— 上面個分數照計，唔受影響。</p></div>`;
   }
 
   // Blocks in the Housing Authority register come with what a buyer asks first:
@@ -2945,12 +2957,18 @@ function renderBuilding(o, layer){
          84,720 幢都係 50。畫一條人人一樣嘅 bar，係當住人講緊一樣我哋
          根本冇量過嘅嘢。佢仲係佔總分 5%（即係人人加同一個 2.5 分,
          唔影響任何排名），所以分數唔郁，只係唔再扮量過。 -->
-    <div class="bars">${bar("環境",o.env)}${bar("配套",o.ancil)}</div>
+    <div class="bars">${bar("環境",o.env)}${bar("避煞",o.ancil)}</div>
+    <p class="barcap"><b>環境</b>＝ 山水方位同開揚度。
+      <b>避煞</b>＝ 離醫院、油站、橋樑、消防局有幾遠（越高＝越遠）。
+      <u>「避煞」唔係講生活配套</u>，商場同地鐵唔計喺呢度。</p>
     ${liqi}
     <dl class="facts">
       <dt>山在</dt><dd>${dirTC(o.mt_dir)}方　${num(o.mt_d,0)} 米</dd>
       <dt>水在</dt><dd>${dirTC(o.wt_dir)}方　${num(o.wt_d,0)} 米</dd>
-      <dt>山水配對</dt><dd>${o.mwds8>0?`合九運格局（${o.mwds8}/9）`:"不成對，此項 0 分"}</dd>
+      <dt>山水配對</dt><dd>${o.mwds8>0
+        ? `合九運格局（${o.mwds8}/9）<br><span class="dsub">山同水嘅方位夾到九運嗰張配對表，
+           九項啱咗 ${o.mwds8} 項</span>`
+        : `不成對，此項 0 分<br><span class="dsub">山同水嘅方位夾唔到九運嗰張配對表</span>`}</dd>
       <dt>樓高</dt><dd>${num(o.h,0)} 米${o.storeys?`　${num(o.storeys,0)} 層`:""}</dd>
     </dl>
     ${personalPanel(o, layer)}
@@ -2995,7 +3013,9 @@ function renderBuilding(o, layer){
             <h5>扣減周邊不利設施</h5>
             <p>醫院、警署、油站、橋樑、消防局 —— 風水上主病、主刑、主火、主沖。
                100 米內扣最多，每遠 100 米扣少一分，1000 米外唔再扣。</p>
-            <p class="mine">呢棟樓配套分：<b>${num(o.ancil,0)} / 100</b>（分數越高代表越少不利設施）</p>
+            <p class="mine">呢棟樓避煞分：<b>${num(o.ancil,0)} / 100</b>
+               —— 越高即係離呢啲設施越遠。<b>唔係講生活配套</b>：商場、
+               地鐵、學校唔計喺呢個分入面。</p>
           </div>
         </div>
 
@@ -3008,7 +3028,7 @@ function renderBuilding(o, layer){
                唔係「合格」。</p>
             <div class="wbar">
               <div style="flex:80"><span>環境</span>80%</div>
-              <div style="flex:15"><span>配套</span>15%</div>
+              <div style="flex:15"><span>避煞</span>15%</div>
               <div style="flex:5" class="wpend"><span>交通</span>5%</div>
             </div>
             <p class="pend">交通嗰 5% 仲未接數據 —— 全港每一幢都當 50 分,
@@ -3167,7 +3187,7 @@ function showFavs(){
       <li data-i="${i}">
         <div class="sc" style="background:${colorFor(o.total)};color:${inkOn(o.total)}">${num(o.total,0)}</div>
         <div><div class="nm">${esc(clean(o.tc)||clean(o.en)||"未命名樓宇")}</div>
-             <div class="mt">${esc([clean(o.district), o.now].filter(Boolean).join(" · "))}</div></div>
+             <div class="mt">${esc([clean(o.district), nowPlain(o.now)].filter(Boolean).join(" · "))}</div></div>
         <div class="go">›</div>
       </li>`).join("")}</ul>
     <p class="build" id="buildStamp">${APP_VERSION}</p>`;
@@ -3601,8 +3621,11 @@ function bzResult(){
 
     <div class="wxbox wx-${st.dayWx}">
       <div class="wxg">${st.dayWx}</div>
-      <div class="wxt">你嘅日主係 <b>${st.dayMaster}${st.dayWx}</b><br>
-        <b>${st.strong ? "身強" : "身弱"}</b>　同我同生我嘅力量佔 ${st.supportPct}%</div>
+      <div class="wxt">你嘅日主係 <b>${st.dayMaster}${st.dayWx}</b>
+        （「日主」＝ 出世嗰日嘅天干，代表你自己）<br>
+        <b>${st.strong ? "身強" : "身弱"}</b>（你本身呢個五行${
+          st.strong ? "夠力，唔使再補" : "偏弱，要幫返佢"}）　——
+        幫到你嘅五行佔咗 ${st.supportPct}%</div>
     </div>
 
     <h3 class="bzh">五行分佈</h3>
@@ -3610,8 +3633,12 @@ function bzResult(){
       <div class="wxr"><u class="wx-${w}">${w}</u>
         <span class="wtrack"><i class="wx-${w}" style="width:${100 * st.pct[w] / top}%"></i></span>
         <em>${st.pct[w]}%<b>${st.phases[w]}</b></em></div>`).join("")}</div>
-    <p class="bznote">月令係<b>${st.monthZhi}</b>，所以同一個五行喺呢個盤入面力量唔同
-      —— 旺、相、休、囚、死係按月令計嘅。日主本身唔計入分數。</p>
+    <p class="bznote"><b>旺</b>（最強）· <b>相</b>（次強）· <b>休</b>（開始弱）·
+      <b>囚</b>（受制）· <b>死</b>（最弱）—— 呢五個字係風水術語，
+      <u>講緊強弱，唔係講好壞</u>。「死」唔代表出事，淨係話呢個五行喺你個盤
+      入面最弱。<br>
+      你出世嗰個月嘅地支係<b>${st.monthZhi}</b>（術語叫「月令」），同一個五行
+      喺唔同月份力量唔同，所以上面五個強弱係按佢計。日主本身唔計入分數。</p>
 
     <h3 class="bzh">你嘅喜用五行</h3>
     <div class="srcbox">
@@ -3670,17 +3697,17 @@ function bzResult(){
       [`下面唔係「邊個區風水好」—— 係全港十八區量返出嚟之後，`,
        `<b>最夾你呢個命</b>嗰六個。同樣${hc.type}但五行分佈唔同嘅人，`,
        `出嚟嘅次序會唔一樣。`].join("")}</p>
-    ${locked ? `<p class="lockbar"><b>🔓　以下係免費睇嘅</b>
-      六個區、夾你幾多分、量到嘅數字，全部唔使登記。
-      <br><b>登入之後仲可以：</b>撳入每個區睇逐個屋苑逐座樓、睇每一項點解夾你、
-      加埋屋企人一齊計、下次開返都仲喺度。</p>` : ""}
+    ${locked ? `<p class="lockbar"><b>🔓　下面六個區、夾你幾多分、
+      量到嘅數字，而家已經睇到，唔使登記。</b>
+      <br>每行右邊嗰個「逐座睇」要登入先撳得入去 —— 入面係嗰個區逐個屋苑
+      逐座樓、每一項點解夾你、同埋加埋屋企人一齊計。</p>` : ""}
     <div class="arealist">${areas.length ? areas.map(a => `
       <button class="area${locked ? " lock" : ""}" data-d="${esc(a.tc)}">
         <span class="ab wx-${a.wx}">${a.wx}</span>
         <span class="an"><b>${esc(a.tc)}</b>${REASON[p1](a.e)}<br>
           <span class="asub">九運平均 ${a.avg.toFixed(1)} 分</span></span>
         <span class="ac">${a.fit}<em>夾你</em></span>
-        <i>${locked ? `<span class="lockpill">登入解鎖</span>` : "›"}</i>
+        <i>${locked ? `<span class="lockpill">逐座睇</span>` : "›"}</i>
       </button>`).join("") : '<p class="bznote">計唔到合適地區。</p>'}</div>
     ${clash ? `
       <div class="clash"><b>留意：呢張單同全港排名唔同，係正常嘅。</b><br>
@@ -4152,7 +4179,7 @@ function renderHits(hits, estHead){
     // 屋苑名行先 —— 搵嘅人打嘅係屋苑名，佢要認得返自己打嗰幾隻字。
     const est=clean(h.est);
     const note=[est && est!==name ? est : null,
-                clean(h.district), h.note, h.now].filter(Boolean).join(" · ");
+                clean(h.district), h.note, nowPlain(h.now)].filter(Boolean).join(" · ");
     return `<li data-i="${i}">
       ${h.total!=null?`<span class="pill" style="background:${colorFor(h.total)}">${h.total.toFixed(0)}</span>`:""}
       <div class="nm">${esc(name)}</div><div class="ad">${esc(note)}</div></li>`;
