@@ -29,7 +29,7 @@ if [ -d pages/plan ];     then cp -R pages/plan     public/plan;     fi
 
 mkdir -p public/data
 cp -R data/tiles public/data/tiles
-for f in district_stats.json estates.json solar_terms.json; do
+for f in district_stats.json estates.json solar_terms.json elements.json; do
   cp "data/$f" "public/data/$f"
 done
 

@@ -201,6 +201,7 @@ jobs:
         run: |
           python pipeline/score.py
           python pipeline/build_tiles.py
+          python pipeline/make_elements.py
 
       # 屋苑頁同區頁。平面圖擺喺頁之前，因為 make_pages 會讀
       # plan-report.json 去砌張圖嘅標籤 —— 冇圖就冇嗰格，唔會爆。
