@@ -249,6 +249,11 @@
   }
   .mlist .nm{font-size:17px; font-weight:600; line-height:1.3}
   .mlist .mt{font-size:13.5px; color:var(--ink3); margin-top:2px}
+  /* 左邊個大數係九運格局分，呢個係「啱唔啱你」。兩個一定要分得開,
+     唔係人哋以為我哋改咗個評分。 */
+  .mlist .fitb{display:inline-block; margin-inline-start:4px; padding:1px 7px;
+    border-radius:999px; background:var(--card2,#f3f1ec); border:1px solid var(--line);
+    font-size:12px; font-weight:600; color:var(--ink); vertical-align:1px}
   .mlist .go{color:var(--ink3); font-size:17px}
   .mcount{font-size:14.5px; color:var(--ink3); margin:0 0 12px; line-height:1.55}
   .homes{
@@ -1522,20 +1527,6 @@ function decodeRing(enc){
   return pts;
 }
 
-// 地基面積（平方米）。Shoelace，緯度嗰度照計，經度按緯度收窄。
-// 八字配樓要用嚟計「高度對地基闊度」—— 一幢樓瘦唔瘦，要有個底先講得出。
-function ringArea(enc){
-  const pts = decodeRing(enc);
-  if(!pts || pts.length < 4) return 0;
-  const kx = 111320 * Math.cos(pts[0][0] * Math.PI / 180);
-  let a = 0;
-  for(let i = 0; i < pts.length - 1; i++){
-    const [y1, x1] = pts[i], [y2, x2] = pts[i+1];
-    a += (x1*kx) * (y2*110540) - (x2*kx) * (y1*110540);
-  }
-  return Math.abs(a) / 2;
-}
-
 // ---------------------------------------------------------------------------
 // Diverging scale: red = below average, neutral = middle, teal = above.
 //
@@ -2324,41 +2315,28 @@ function showFavs(){
 
    分數係十八區入面嘅排名（0–100）：講「呢個區屬木」本來就只能夠係
    「同全港其他區比」。 */
-let elemData = null, elemRef = null, elemPromise = null;
+let elemData = null, elemPromise = null;
 function loadElements(){
   if(!elemPromise)
     elemPromise = fetch(dataUrl('../elements.json'))
       .then(r => r.json())
-      .then(d => {
-        elemRef = d.ref;
-        elemData = Object.fromEntries(d.districts.map(x => [x.tc, x]));
-      })
+      .then(d => (elemData = Object.fromEntries(d.map(x => [x.tc, x]))))
       .catch(() => (elemData = {}));
   return elemPromise;
 }
 
-/* 一幢樓喺全港嘅位置 —— 「22 米高」本身冇意思，要同其餘五萬幢比先有。
-   階梯由 pipeline 出，每 5% 一級。 */
-function ladderPct(ladder, v){
-  if(!ladder || v == null) return 50;
-  if(v <= ladder[0]) return 0;
-  for(let i = 1; i < ladder.length; i++)
-    if(v <= ladder[i]) return (i - 1 + (v - ladder[i-1]) / (ladder[i] - ladder[i-1] || 1)) * 5;
-  return 100;
-}
+/* 逐幢樓嘅形。mu 同 wa 由 pipeline 度好（見 pipeline/formwx.py）——
+   mu 係「高而直」喺全港五萬幾幢住宅入面排第幾，土就係佢嘅反面；
+   wa 係離水邊幾近。兩個都係位置，唔係絕對值：「22 米高」本身冇意思。
 
-/* 逐幢樓嘅形。木同土睇佢自己幾高幾瘦，水睇佢離水幾遠 —— 呢三樣係
-   樓本身嘅屬性。火唔係：「高出四周」一定要有四周，所以火跟返佢
-   嗰個區。金照舊由方位定。 */
+   火唔喺樓身上面：「高出四周」一定要有四周，所以火係成個區嘅屬性。
+   金照舊由方位定。 */
 function bldWx(b, wx, dEl){
-  if(wx === "火") return dEl ? dEl.form.火 : 50;
+  if(wx === "火") return dEl ? dEl.form.火 : null;
   if(wx === "金") return dEl && dEl.dir_wx === "金" ? 70 : 30;
-  if(wx === "水") return Math.round(100 - ladderPct(elemRef && elemRef.wt_d, b.wt_d));
-  const tall = ladderPct(elemRef && elemRef.h, b.h);
-  const area = ringArea(b.ring);
-  const sl = area > 0 && b.h ? ladderPct(elemRef && elemRef.slender, b.h / Math.sqrt(area)) : tall;
-  const mu = Math.round((tall + sl) / 2);
-  return wx === "木" ? mu : 100 - mu;
+  if(wx === "水") return b.wa ?? null;
+  if(b.mu == null) return null;
+  return wx === "木" ? b.mu : 100 - b.mu;
 }
 
 /* 個人化權重。
@@ -2375,6 +2353,40 @@ function wxWeights(like, pct){
   const short = w => 1 - Math.min(pct[w] || 0, 60) / 100;   // 0.40 – 1.00
   const a = 0.70 * short(p1), b = 0.30 * short(p2), t = a + b;
   return [[p1, a / t], [p2, b / t]];
+}
+
+/* 而家用緊嘅個人權重。出生資料改咗就要清返 —— myBirthKey 記住係邊個。 */
+let myW = null, myWKey = null;
+function myWeights(){
+  if(!(bzMod && birth)) return null;
+  const key = `${birth.y}/${birth.m}/${birth.d}/${birth.h}`;
+  if(myWKey === key) return myW;
+  const hh = birth.h == null ? 12 : birth.h;
+  const c = bzMod.chart(birth.y, birth.m, birth.d, hh, 0);
+  const hc = bzMod.hotCold(birth.y, birth.m, birth.d, hh, 0);
+  if(!c || !hc) return null;
+  myWKey = key;
+  return (myW = wxWeights(hc.like, bzMod.strength(c).pct));
+}
+
+/* 一幢樓幾夾你。
+
+   個區話你知大概去邊一帶，但區入面差天共地 —— 元朗有三層高嘅村屋,
+   隔離就係天水圍成三十層嘅公屋，兩幢樓形完全唔同。個分數就係度返
+   呢一幢樓自己嘅形，對唔對得上你缺嗰啲五行。
+
+   同九運分數係兩件事：九運答「呢幢樓格局好唔好」，呢個答「啱唔啱你」。 */
+function fitOf(o){
+  const w = myWeights();
+  if(!w) return null;
+  const dEl = elemData && elemData[o.district];
+  let t = 0;
+  for(const [wx, k] of w){
+    const v = bldWx(o, wx, dEl);
+    if(v == null) return null;   // 量唔到就唔出分，唔好當佢啱一半
+    t += k * v;
+  }
+  return Math.round(t);
 }
 
 /* 夾你嘅地區。面板同地圖篩選一定要行同一條數 —— 之前面板用寒熱命，
@@ -2682,6 +2694,7 @@ async function showBazi(){
       birth = {y: +f.querySelector("#bzY").value, m: +f.querySelector("#bzM").value,
                d: +f.querySelector("#bzD").value, h: h === "" ? null : +h, male: sex};
       try{ localStorage.setItem(BIRTH_KEY, JSON.stringify(birth)); }catch{}
+      myWKey = null;
       track("bazi_saved", {has_hour: h !== ""});
       showBazi();
     });
@@ -3175,6 +3188,7 @@ async function syncBirth(){
                h: row.hour_known ? hk.getUTCHours() : null,
                male: row.sex !== "f"};
       try{ localStorage.setItem(BIRTH_KEY, JSON.stringify(birth)); }catch{}
+      myWKey = null;
       track("bazi_synced", {dir: "down"});
     }
   }catch{ /* 同步唔到唔應該搞冧登入 */ }
@@ -3709,6 +3723,14 @@ async function showEstate(name){
 }
 
 function renderMatches(list){
+  // 開咗八字就按「夾你」排，唔係按九運分排 —— 兩個答唔同問題，而開咗
+  // 八字嘅人問嘅係嗰個。冇形嘅數據（例如冇高度）就跌返去九運分。
+  const personal = guaOn && myWeights() && elemData;
+  if(personal){
+    for(const o of list) o._fit = fitOf(o);
+    list = [...list].sort((a, b) =>
+      (b._fit ?? -1) - (a._fit ?? -1) || (b.total || 0) - (a.total || 0));
+  }
   const shown = list.slice(0, MATCH_LIMIT);
   const ests = districtFilter ? estatesIn(list) : [];
   const estBlock = ests.length ? `
@@ -3775,7 +3797,8 @@ function renderMatches(list){
   sheetBody.innerHTML = `
     ${guaTop}
     <p class="bname">${esc(where)} · ${esc(what)}</p>
-    <p class="mcount">${list.length.toLocaleString()} 棟符合，按分數由高至低排列。撳一下跳去該幢樓。${
+    <p class="mcount">${list.length.toLocaleString()} 棟符合，${
+      personal ? "按同你夾唔夾由高至低排列" : "按分數由高至低排列"}。撳一下跳去該幢樓。${
       unnamed ? `<br>另有未命名樓宇未計在內，可以直接喺地圖撳。` : ""}</p>
     <label class="homes"><input type="checkbox" id="homesOnly" ${homesOnly?"checked":""}>
       <span>只顯示住宅樓宇</span></label>
@@ -3787,11 +3810,13 @@ function renderMatches(list){
       <li data-i="${i}">
         <div class="sc" style="background:${colorFor(o.total)};color:${inkOn(o.total)}">${num(o.total,0)}</div>
         <div><div class="nm">${esc(clean(o.tc)||clean(o.en)||"未命名樓宇")}</div>
-             <div class="mt">${esc([clean(o.district), o.now].filter(Boolean).join(" · "))}</div></div>
+             <div class="mt">${esc([clean(o.district), o.now].filter(Boolean).join(" · "))}${
+               personal && o._fit != null
+                 ? ` <b class="fitb">夾你 ${o._fit}</b>` : ""}</div></div>
         <div class="go">›</div>
       </li>`).join("")}</ul>
     ${list.length > MATCH_LIMIT
-      ? `<p class="mmore">只顯示分數最高嘅 ${MATCH_LIMIT} 棟，收窄地區或評分條件可以睇到更多。</p>` : ""}
+      ? `<p class="mmore">只顯示${personal ? "最夾你" : "分數最高"}嘅 ${MATCH_LIMIT} 棟，收窄地區或評分條件可以睇到更多。</p>` : ""}
     <p class="note-foot" style="border-top:1px solid var(--line)">
       地理環境分屬「外巒頭」分析，唔包括單位樓層同室內佈局。僅供參考，不構成置業建議。
     </p>

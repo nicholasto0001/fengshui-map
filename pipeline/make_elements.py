@@ -37,11 +37,10 @@ An element score is a rank among the 18 districts, because "this district is
 wood" only ever means "compared with the rest of Hong Kong". The raw figures
 travel with it so the app can say why.
 
-Alongside the 18 district records the file carries `ref`: where every
-residential building in Hong Kong sits on each measure, as 5% steps. The page
-needs that to place ONE building -- "22 metres tall" only means something
-against the rest of the stock -- and shipping the ladder costs a few hundred
-bytes where shipping 53,634 precomputed scores would cost a megabyte.
+A single building's own 木/土/水 is not here: build_tiles.py writes those into
+every tile and search row as `mu` and `wa`, from the same measurements via
+formwx.py. This file is the district layer, and 火 -- standing clear of the
+neighbours -- only exists at this scale.
 
 Output: data/elements.json
 Self-test: `python3 pipeline/make_elements.py`
@@ -52,34 +51,21 @@ import json
 import math
 import pathlib
 import statistics as st
+import sys
 from collections import defaultdict
+
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
+from formwx import (M_PER_DEG_LAT, m_per_deg_lon,  # noqa: E402
+                    ring_area_perimeter, slenderness)
 
 ROOT = pathlib.Path(__file__).parent.parent
 OUT = ROOT / "data" / "elements.json"
 
-M_PER_DEG_LAT = 110540.0
 NEAR_M = 300.0      # radius that counts as "its own neighbourhood"
 SPIKE = 2.0         # twice the neighbourhood's height is a 尖
 SHORE_M = 200.0     # within this of the water edge is 近水
 
 WX = ("木", "火", "土", "金", "水")
-
-
-def m_per_deg_lon(lat: float) -> float:
-    return 111320.0 * math.cos(math.radians(lat))
-
-
-def ring_area_perimeter(ring: list) -> tuple[float, float]:
-    """Shoelace area (m²) and perimeter (m) of a lon/lat ring."""
-    lat0 = sum(p[1] for p in ring) / len(ring)
-    kx = m_per_deg_lon(lat0)
-    pts = [(p[0] * kx, p[1] * M_PER_DEG_LAT) for p in ring]
-    a = per = 0.0
-    for i in range(len(pts) - 1):
-        (x1, y1), (x2, y2) = pts[i], pts[i + 1]
-        a += x1 * y2 - x2 * y1
-        per += math.hypot(x2 - x1, y2 - y1)
-    return abs(a) / 2, per
 
 
 def prominence(rows: list[dict]) -> dict[str, float]:
@@ -175,13 +161,11 @@ def build() -> list[dict]:
         hs, slen, spikes, shore, wts = [], [], 0, 0, []
         for r in rs:
             h = r.get("h") or 0.0
-            ring = r.get("ring")
             if h > 0:
                 hs.append(h)
-                if ring and len(ring) >= 4:
-                    area, _ = ring_area_perimeter(ring)
-                    if area > 0:
-                        slen.append(h / math.sqrt(area))
+                sl = slenderness(r)
+                if sl is not None:
+                    slen.append(sl)
                 if prom.get(r["id"], 0) >= SPIKE:
                     spikes += 1
             wd = r.get("wt_d")
@@ -231,35 +215,12 @@ def build() -> list[dict]:
 
     out.sort(key=lambda r: -r["n"])
 
-    # The ladder the page measures a single building against. 火 is missing on
-    # purpose: standing out is relative to the neighbours, so it is a property
-    # of the block, not of the building, and the page reads it off the district.
-    allh, allsl, allwt = [], [], []
-    for r in homes:
-        h = r.get("h") or 0.0
-        if h > 0:
-            allh.append(h)
-            ring = r.get("ring")
-            if ring and len(ring) >= 4:
-                area, _ = ring_area_perimeter(ring)
-                if area > 0:
-                    allsl.append(h / math.sqrt(area))
-        if r.get("wt_d") is not None:
-            allwt.append(r["wt_d"])
-
-    def ladder(vals: list[float]) -> list[float]:
-        v = sorted(vals)
-        return [round(v[min(len(v) - 1, int(len(v) * i / 20))], 3) for i in range(21)]
-
-    return {"districts": out,
-            "ref": {"h": ladder(allh), "slender": ladder(allsl), "wt_d": ladder(allwt),
-                    "n": len(homes)}}
+    return out
 
 
 if __name__ == "__main__":
-    data = build()
-    recs = data["districts"]
-    OUT.write_text(json.dumps(data, ensure_ascii=False), "utf8")
+    recs = build()
+    OUT.write_text(json.dumps(recs, ensure_ascii=False), "utf8")
 
     print(f"{'區':<7}{'住宅':>7}{'方位':>5}{'木':>5}{'火':>5}{'土':>5}{'水':>5}"
           f"   {'高中位':>7}{'瘦削':>6}{'尖%':>6}{'密度':>6}{'近水%':>7}")
@@ -271,10 +232,4 @@ if __name__ == "__main__":
               f"{r['h_med']:>7.1f}{r['slender']:>6.2f}{r['spike']:>6.1f}"
               f"{r['density']:>6}{r['shore']:>7.1f}")
     print(f"\n-> {OUT}  ({OUT.stat().st_size/1024:.0f} KB)")
-    ref = data["ref"]
-    print(f"\n全港參考階梯（{ref['n']:,} 幢住宅）")
-    for k in ("h", "slender", "wt_d"):
-        q = ref[k]
-        print(f"  {k:<8} 最低 {q[0]:>7} · 四分一 {q[5]:>7} · 中位 {q[10]:>7}"
-              f" · 四分三 {q[15]:>7} · 最高 {q[20]:>8}")
-    print("\n金 冇形嘅數據支持，只由方位定 —— 見檔案開頭。")
+    print("金 冇形嘅數據支持，只由方位定 —— 見檔案開頭。")

@@ -18,6 +18,9 @@ import pathlib
 import sys
 import shutil
 
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
+import formwx  # noqa: E402
+
 # z13 put ~10k buildings and 2.7 MB into a single dense-Kowloon tile, which is a
 # bad first fetch on mobile. z14 quarters that.
 Z = 14
@@ -63,6 +66,9 @@ COLUMNS = [
                  #    a tile spans one or two districts, so an integer costs a
                  #    byte where the name would cost eleven, 84,720 times over
     "ring",      # 27 footprint: [lon0, lat0, then integer deltas x1e-5 deg]
+    "mu",        # 28 木 0-100 by height and slenderness; 土 is 100 - mu.
+                 #    null when the height is unrecorded — see formwx.py
+    "wa",        # 29 水 0-100 by closeness to the water's edge
 ]
 
 
@@ -155,6 +161,12 @@ def encode_ring(ring: list) -> list | None:
     return out
 
 
+# Built once in main() off the residential stock, then read by row_for and
+# build_search. A module-level handle because both of those are called from
+# several places and threading it through every one buys nothing.
+LADDERS: dict[str, list[float]] = {}
+
+
 def row_for(r: dict, districts: list) -> list:
     """`districts` is the tile's own name list, extended in place as new ones
     are met; the row stores a position in it."""
@@ -178,6 +190,7 @@ def row_for(r: dict, districts: list) -> list:
         (r.get("estate") or {}).get("estate") or None,
         di,
         flat,
+        *formwx.profile(r, LADDERS),
     ]
 
 
@@ -249,6 +262,11 @@ def build_estates(scores: list[dict]) -> None:
 def main() -> None:
     all_scores = json.loads((DATA / "scores.json").read_text())
     scores = [r for r in all_scores if keep(r)]
+
+    # The ladder is the residential stock only: "tall for a home" is the
+    # question, and including power stations and container terminals would
+    # answer a different one.
+    LADDERS.update(formwx.ladders([r for r in all_scores if r.get("residential")]))
     print(f"{len(all_scores):,} scored buildings -> {len(scores):,} on the map "
           f"({len(all_scores) - len(scores):,} unnamed low-rise structures dropped)")
     join_census(scores)
@@ -383,11 +401,16 @@ def build_search(scores: list[dict]) -> None:
                      (r.get("estate") or {}).get("estate") or None,
                      # 向首八方，俾八宅配樓用。坐向唔可靠就擺 None。
                      (SHAN_D8.get(r.get("face_m"))
-                      if (r.get("conf") or 0) >= FACE_CONF else None)])
+                      if (r.get("conf") or 0) >= FACE_CONF else None),
+                     # 形五行，俾八字配樓用。個區話你去邊一帶，呢兩個數
+                     # 話你聽區入面邊一幢 —— 元朗三層高嘅村屋同天水圍
+                     # 三十層嘅公屋，兩幢樓形差天共地。
+                     *formwx.profile(r, LADDERS)])
     rows.sort(key=lambda x: -(x[5] or 0))
     p = OUT / "search.json"
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps({"c": ["tc", "en", "district", "lon", "lat", "total", "now", "res", "est", "d8"],
+    p.write_text(json.dumps({"c": ["tc", "en", "district", "lon", "lat", "total", "now", "res",
+                                   "est", "d8", "mu", "wa"],
                              "b": rows}, separators=(",", ":"), ensure_ascii=False))
     print(f"  of which look residential: {sum(r[7] for r in rows):,}")
     print(f"  with an estate name: {sum(1 for r in rows if r[8]):,}")
