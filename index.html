@@ -1162,6 +1162,8 @@
   .liqi-none .liqi-hd{color:var(--ink3)}
 
   /* legend inside sheet */
+  .legcap{font-size:12px; line-height:1.55; color:var(--ink3); margin:9px 0 0}
+  .legcap b{color:var(--ink2)}
   .legend{margin:2px 0 16px}
   .legend .lbar{display:flex; height:14px; border-radius:4px; overflow:hidden; gap:2px}
   .legend .lbar span{flex:1; border-radius:2px}
@@ -1813,6 +1815,23 @@ function levelFor(v){
   return LEVELS[BREAKS.findIndex(b => v < b) === -1 ? LEVELS.length - 1
                                                     : BREAKS.findIndex(b => v < b)];
 }
+/* 「吉以上」＝ best ＋ good 兩格加埋，佔呢個區幾多成樓。 */
+const goodShare = a => {
+  const b = a && a.bands;
+  return (a && a.n && b) ? 100 * ((b.best || 0) + (b.good || 0)) / a.n : null;
+};
+let shareBreaks = null;          // 由 districtData 自己算，唔寫死
+function calcShareBreaks(list){
+  const v = list.map(goodShare).filter(x => x != null).sort((a,b) => a-b);
+  shareBreaks = v.length >= 5 ? [1,2,3,4].map(i => v[Math.floor(v.length*i/5)]) : null;
+}
+// 唔可以借用樓宇分數嗰套 BREAKS —— 嗰套係按 0–100 分校準，唔係按比例。
+const colorForShare = p => {
+  if(p == null || !shareBreaks) return NODATA;
+  const i = shareBreaks.findIndex(b => p < b);
+  return RAMP[i === -1 ? RAMP.length - 1 : i];
+};
+
 const colorFor = v => {
   if (v == null || isNaN(v)) return NODATA;
   const i = BREAKS.findIndex(b => v < b);
@@ -1903,7 +1922,11 @@ const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">
 /* ---------------------------------------------------------------- map --- */
 const map = L.map("map",{
   center:[22.3450,114.1400], zoom:11, minZoom:10, maxZoom:19,
-  maxBounds:[[22.10,113.78],[22.62,114.47]], maxBoundsViscosity:.9,
+  // 南邊本來係 22.10。喺 844 高嘅電話、zoom 11，視野有成 0.53° 高，
+  // 由市區做中心向南已經爆界 —— Leaflet 會夾硬將中心推返上北，開場就
+  // 永遠淨係見到新界，而任何補償嘅平移都會被佢抵銷。放鬆到 21.98：
+  // 香港最南都係 22.15，多出嗰啲係海，冇嘢好睇但都冇害。
+  maxBounds:[[21.98,113.78],[22.62,114.47]], maxBoundsViscosity:.9,
   zoomControl:false, attributionControl:true,
 });
 L.control.attribution({prefix:false}).addTo(map);
@@ -2207,20 +2230,46 @@ function loadEstates(){
   return estatePromise;
 }
 
+/* 開場個視角。地圖中心本身冇偏，但個 sheet 冚住下半版，所以睇得見嗰
+   半淨係上半 —— 開場永遠望住新界，市區喺個 sheet 底下。
+
+   試過 fitBounds，唔得：喺電話度可見範圍得三百幾 px 高，要塞十八個區
+   落去就會撞到 minZoom 10，個個圈細到睇唔到，上下仲吉一大截。
+
+   所以唔改 zoom，淨係平移：度返上面條 filter 同下面個 sheet 各自冚咗
+   幾多，將地圖推返落可見嗰個窗嘅正中。 */
+function frameTerritory(){
+  const el = document.getElementById("sheet");
+  if(!el) return;
+  map.setView([22.355, 114.135], 11, {animate: false});
+  const r = el.getBoundingClientRect();
+  if(matchMedia("(min-width:1024px)").matches){
+    map.panBy([-Math.round(r.right / 2), 0], {animate: false});
+    return;
+  }
+  const f = document.getElementById("filters");
+  const top = f ? f.getBoundingClientRect().bottom : 0;      // chips 冚住上面
+  const bottom = Math.max(0, innerHeight - r.top);           // sheet 冚住下面
+  map.panBy([0, Math.round((bottom - top) / 2)], {animate: false});
+}
+
 function drawDistricts(){
   districtLayer.clearLayers();
   if(map.getZoom()>=BUILDING_ZOOM) return;
+  if(!shareBreaks) calcShareBreaks(districtData);
   districtData.forEach(a=>{
     const c=[a.lat,a.lon];
+    const share = goodShare(a);
     // With a filter on, the useful number is how many buildings there MATCH,
     // not the district average - that is what "where is the good stock" means.
     const cnt = bandCount(a);
     // 八字模式：泡泡講嘅係呢個區夾你幾多，唔係佢嘅九運平均分。
     const pf = scoreMode === "bazi" ? (areaFitMap()[a.tc] ?? null) : null;
     const shown = scoreMode === "bazi" ? (pf == null ? "–" : String(pf))
-                : band==="all" ? a.avg.toFixed(0) : cnt.toLocaleString();
+                : band==="all" ? (share == null ? "–" : share.toFixed(0) + "%")
+                : cnt.toLocaleString();
     const tint  = scoreMode === "bazi" ? colorFor(pf)
-                : band==="all" ? colorFor(a.avg) : RAMP[["bad","poor","mid","good","best"]
+                : band==="all" ? colorForShare(share) : RAMP[["bad","poor","mid","good","best"]
                     .indexOf(BAND_KEY[band])];
     const size  = band==="all" ? 40 : Math.max(34, Math.min(54, 30 + Math.sqrt(cnt)));
     const icon=L.divIcon({
@@ -2232,7 +2281,9 @@ function drawDistricts(){
     L.marker(c,{icon}).addTo(districtLayer)
       .on("click",()=>{ map.flyTo(c,BUILDING_ZOOM,{duration:.8});
                         toast(band==="all"
-                          ? `${a.tc} 平均 ${a.avg.toFixed(1)} 分 · ${a.n.toLocaleString()} 棟`
+                          ? `${a.tc}：${a.n.toLocaleString()} 棟入面 ${
+                              (((a.bands||{}).best||0)+((a.bands||{}).good||0)).toLocaleString()
+                            } 棟「吉」以上`
                           : `${a.tc} ${chipLabel()} ${cnt.toLocaleString()} 棟`); });
   });
 }
@@ -2331,10 +2382,18 @@ document.getElementById("grip").addEventListener("click", e=>{
 });
 
 // peek: grip only · half: enough to read without losing the map · full: the lot
+let framedOnce = false;
 function setSheet(state){
   sheet.dataset.state = state;
   sheet.classList.toggle("open", state !== "peek");
   if(state === "peek") sheetBody.scrollTop = 0;
+  // 第一次攤開嗰陣先框返個視角 —— 要等佢郁完先度得準。深層連結有自己
+  // 嘅視角，唔好搶。
+  if(!framedOnce && state !== "peek" && !location.search){
+    framedOnce = true;
+    sheet.addEventListener("transitionend", () => frameTerritory(), {once: true});
+    setTimeout(frameTerritory, 900);
+  }
 }
 const sheetState = () => sheet.dataset.state || "peek";
 function openSheet(){ if(sheetState() === "peek") setSheet("half"); }
@@ -3853,6 +3912,8 @@ async function showOverview(){
     <div class="legend">
       <div class="lbar">${RAMP.map(c=>`<span style="background:${c}"></span>`).join("")}</div>
       <div class="lt"><b>差</b><i>平穩</i><b>大吉</b></div>
+      <p class="legcap">地圖啲圈 ＝ 呢個區有<b>幾多成樓係「吉」以上</b>。
+        放大之後，每一幢樓先有自己嘅分。</p>
     </div>
 
     <!-- 「九運」喺呢一版出現咗幾十次，但由頭到尾冇解釋過。唔睇風水嘅人
@@ -5613,6 +5674,7 @@ map.whenReady(async ()=>{
 setTimeout(()=>{
   const wide = matchMedia("(min-width:760px)").matches;
   if(wide || localStorage.getItem("seenIntro")) openSheet();
+
 },600);
 </script>
 </body>
