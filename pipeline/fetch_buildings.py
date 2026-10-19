@@ -65,7 +65,9 @@ def main() -> None:
             "resultRecordCount": PAGE,
             "f": "geojson",
         })
-        batch = gj.get("features") or []
+        if not isinstance(gj.get("features"), list):
+            raise RuntimeError("CSDI response missing features; refusing incomplete snapshot")
+        batch = gj["features"]
         for f in batch:
             geom = f.get("geometry") or {}
             c = centroid_of(geom)
