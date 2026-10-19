@@ -5356,7 +5356,9 @@ async function signIn(){
 
 async function signOut(){
   if(!sb) return;
-  await sb.auth.signOut();
+  // Staging shares Auth with production: testing logout must not revoke other sessions.
+  const {error} = await sb.auth.signOut(location.hostname.endsWith('.workers.dev') ? {scope:'local'} : undefined);
+  if(error){ toast("未能登出，請再試。"); return; }
   me = null; myLists = []; curListId = null;
   track("signout", {});
   loadLocalFavs();
