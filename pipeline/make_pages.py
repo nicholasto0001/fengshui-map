@@ -251,6 +251,7 @@ def shell(title, desc, canon, crumbs, body, faqs=None):
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
+<script src="/analytics.js" defer></script>
 <style>{CSS}</style>
 </head>
 <body>
@@ -403,13 +404,20 @@ def tx_panel(name, tx):
                f'</table></div>' if recent else ""))
 
 
-def blocks_table(rows):
+def journey_url(estate=None, row=None, personal=False):
+    params = {"entry": "estate", "intent": "personal" if personal else "map"}
+    if estate: params["estate"] = estate
+    if row: params.update(b=f"{row['lat']},{row['lon']}", bid=str(row['id']))
+    return "/?" + urllib.parse.urlencode(params)
+
+
+def blocks_table(rows, estate=None):
     tr = []
     for r in rows:
         lbl, tone = band(r["total"])
         sit = (f'坐{r["sit_m"]}向{r["face_m"]}' if r.get("sit_m") else "—")
         tr.append(
-            f'<tr><td class="nm">{e(r["tc"] or r["en"])}</td>'
+            f'<tr><td class="nm"><a data-journey="building" href="{e(journey_url(estate, r, True))}">{e(r["tc"] or r["en"])} · 睇配對</a></td>'
             f'<td class="sc"><span class="dot" style="background:var(--{tone})"></span>'
             f'{r["total"]:.1f}</td><td>{lbl}</td><td>{sit}</td>'
             f'<td>{e(r.get("pattern") or "—")}</td><td>{e(r.get("now") or "—")}</td>'
@@ -567,6 +575,8 @@ def estate_page(es, rank, total_est, siblings, extra):
     body = f"""
 <h1>{e(nm)}風水評分</h1>
 <p class="sub">{e(facts)}</p>
+<a class="cta" data-journey="personal" href="{e(journey_url(nm, personal=True))}">睇{e(nm)}邊座夾我 →</a>
+<p class="note">揀樓座後設定或沿用八字，即刻睇返同一座嘅個人結果。</p>
 {plan_figure(nm, extra["plan"])}
 
 <div class="hero">
@@ -580,7 +590,7 @@ def estate_page(es, rank, total_est, siblings, extra):
 
 <h2>逐座評分</h2>
 <p class="note">按評分由高至低排。{e(spread)}</p>
-{blocks_table(rows)}
+{blocks_table(rows, nm)}
 
 {meta_panel(extra["meta"])}
 
@@ -590,13 +600,13 @@ def estate_page(es, rank, total_est, siblings, extra):
 
 {'<h2>同區其他屋苑</h2><p class="note">按平均分排</p><ul class="links">' + sib + '</ul>' if sib else ''}
 
-<a class="cta" href="/">喺地圖睇{e(nm)} →</a>
+<a class="cta" data-journey="map" href="{e(journey_url(nm))}">喺地圖睇{e(nm)} →</a>
 {DISCLAIM}
 """
     crumbs = [("香港風水地圖", "/"), ("屋苑", "/estate/"),
               (es["district"], url("district", es["district"])), (nm, None)]
     return shell(title, desc, url("estate", nm), crumbs, body,
-                 estate_faqs(es, rank, total_est))
+                 estate_faqs(es, rank, total_est)).replace('<a class="go" href="/">', f'<a class="go" data-journey="header" href="{e(journey_url(nm))}">')
 
 
 def market_panel(dname, mk):
@@ -696,7 +706,7 @@ def district_page(d, rank, rows, estates, n_est, mk):
             f"區內最高分樓宇同 {n_est} 個屋苑排名。想知邊幢最旺你，再夾埋八字計。")
 
     tr = "".join(
-        f'<tr><td class="nm">{e(r["tc"] or r["en"])}</td>'
+        f'<tr><td class="nm"><a data-journey="building" href="{e(journey_url(None, r, True))}">{e(r["tc"] or r["en"])} · 睇配對</a></td>'
         f'<td class="sc"><span class="dot" style="background:var(--{band(r["total"])[1]})">'
         f'</span>{r["total"]:.1f}</td><td>{band(r["total"])[0]}</td>'
         f'<td>{e(r.get("pattern") or "—")}</td><td>{e(r.get("now") or "—")}</td></tr>'
@@ -726,7 +736,7 @@ def district_page(d, rank, rows, estates, n_est, mk):
 
 {f'<h2>區內屋苑</h2><p class="note">按平均分排，列出頭 {len(estates)} 個（共 {n_est} 個）</p><ul class="links">' + est + '</ul>' if est else ''}
 
-<a class="cta" href="/">喺地圖睇{e(d['tc'])} →</a>
+<a class="cta" data-journey="district" href="/?{e(urllib.parse.urlencode({"d":d["tc"],"entry":"district"}))}">喺地圖睇{e(d['tc'])} →</a>
 {DISCLAIM}
 """
     crumbs = [("香港風水地圖", "/"), ("地區", "/district/"), (d["tc"], None)]
@@ -971,6 +981,8 @@ def main() -> None:
         tx[t["estate"]].append(t)
     print(f"  平面圖 {len(plans)} · 屋苑資料 {len(meta)} · 居屋成交 {len(tx)} 個屋苑")
     ranked = sorted(est.values(), key=lambda x: -x["avg"])
+    routes = {x["name"]: [{k:r.get(k) for k in ("id","tc","en","lat","lon","total")} for r in x["rows"]] for x in ranked}
+    (ROOT / "data/estate_routes.json").write_text(json.dumps(routes, ensure_ascii=False), encoding="utf-8")
     for i, x in enumerate(ranked):
         x["rank"] = i + 1
     by_dist = collections.defaultdict(list)

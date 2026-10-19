@@ -1867,6 +1867,7 @@
   </div>
 </div>
 
+<script src="/analytics.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 /* =========================================================================
@@ -1884,93 +1885,8 @@ const APP_VERSION = "v17";
 // Replaced at deploy time by pipeline/stamp_build.py; "dev" when run locally.
 const BUILD_ID = "dev";
 
-// ---------------------------------------------------------------------------
-// Analytics
-//
-// GA_ID stays empty until a real measurement ID is pasted in; track() is then
-// a no-op, so nothing breaks and nothing is sent. Every call goes through this
-// one function so the provider can be swapped without touching call sites.
-// ---------------------------------------------------------------------------
-const GA_ID = "G-P7981MBHEF";   // public by design - a measurement ID identifies the property, it is not a secret
-
-// Meta pixel. Empty until the id is pasted in, exactly like GA_ID above, so
-// nothing loads and nothing is sent until then. It is not a secret either —
-// a pixel id identifies an ad account's dataset, it grants nothing.
-const META_PIXEL = "1098404802535226";
-
-/* The same events go to both. Meta has its own vocabulary for the handful of
-   actions it optimises against, so ours are mapped onto it where one fits and
-   sent as custom events where none does. Without this the pixel would only
-   ever see page views, and an ad campaign optimising on page views buys
-   people who arrive and leave. */
-const FB_EVENT = {
-  view_building:  ["ViewContent",         o => ({content_type: "building",
-                                                 content_name: o.name,
-                                                 content_category: o.district})],
-  search:         ["Search",              o => ({search_string: o.term})],
-  save_building:  ["AddToWishlist",       o => ({content_name: o.name})],
-  signin_done:    ["CompleteRegistration", () => ({})],
-  share:          ["Share",               o => ({method: o.what})],
-};
-
-/* 開發同測試用嘅關掉開關。
-   開 /?notrack=1 一次，呢部機就永遠唔再上報（/?notrack=0 開返）。
-   用 localStorage 而唔用 IP 過濾：手機同家居寬頻嘅 IP 會變，而呢個唔會，
-   亦都跟得住無痕模式以外嘅所有分頁。自己試 app 試到成日都唔會污染數據。 */
-const NOTRACK_KEY = "fs_notrack";
-(function notrackSwitch(){
-  const v = new URLSearchParams(location.search).get("notrack");
-  if(v === null) return;
-  try{
-    if(v === "0"){ localStorage.removeItem(NOTRACK_KEY); alert("已重新開始統計呢部機嘅數據。"); }
-    else { localStorage.setItem(NOTRACK_KEY, "1"); alert("已停止統計呢部機嘅數據。\n\n以後喺呢部機點撳都唔會影響 GA 同 Meta。\n想開返就開 /?notrack=0"); }
-  }catch{}
-})();
-let NOTRACK = false;
-try{ NOTRACK = localStorage.getItem(NOTRACK_KEY) === "1"; }catch{}
-
-function track(event, params){
-  if(NOTRACK) return;
-  params = params || {};
-  try{
-    if (window.gtag) window.gtag("event", event, params);
-    if (window.fbq){
-      const m = FB_EVENT[event];
-      if (m) fbq("track", m[0], m[1](params));
-      else   fbq("trackCustom", event, params);
-    }
-    if (!GA_ID) console.debug("[track]", event, params);
-  }catch{}
-}
-
-(function initAnalytics(){
-  if(NOTRACK) return;          // 連個 script 都唔好載
-  if(GA_ID){
-    const sc = document.createElement("script");
-    sc.async = true;
-    sc.src = "https://www.googletagmanager.com/gtag/js?id=" + GA_ID;
-    document.head.appendChild(sc);
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function(){ window.dataLayer.push(arguments); };
-    gtag("js", new Date());
-    // anonymize_ip keeps this the least intrusive configuration that still
-    // answers "how many, how long, doing what".
-    gtag("config", GA_ID, {anonymize_ip: true, app_version: APP_VERSION});
-  }
-
-  if(META_PIXEL){
-    /* Meta's own snippet, with the queue kept so calls made before the
-       script lands are not lost. */
-    (function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){
-      n.callMethod ? n.callMethod.apply(n,arguments) : n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n; n.push=n; n.loaded=!0; n.version="2.0"; n.queue=[];
-      t=b.createElement(e); t.async=!0; t.src=v;
-      s=b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t,s);
-    })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
-    fbq("init", META_PIXEL);
-    fbq("track", "PageView");
-  }
-})();
+// Measurement is shared with the static estate/district pages.
+function track(event, params){ window.FSTrack?.track(event, params); }
 
 // ---------------------------------------------------------------------------
 // Keep visitors on the current build.
@@ -2745,6 +2661,10 @@ let curView = "root";
 function setView(v){ curView = v; syncBack(); }
 
 function fallbackBack(){
+  if(personalTarget && ["personal","bazi","signin"].includes(curView)){
+    const target=personalTarget;
+    return ["返樓座",()=>{personalTarget=null;rememberBuilding(target,"map");renderBuilding(target,null);}];
+  }
   if(curView === "list"){
     if(groupSel) return ["上一層", () => { groupSel = null; showOverview(); }];
     if(districtFilter) return ["全港", () => {
@@ -2877,7 +2797,107 @@ function openSheet(){ if(sheetState() === "peek") setSheet("half"); }
   addEventListener("mouseup", up);
 })();
 
+// A building journey is represented by public building coordinates + ID only.
+// No birth fields or auth tokens are persisted in navigation state.
+let selectedBuilding = null, personalTarget = null;
+let estateRoutesPromise = null;
+const personalResultsSeen = new Set();
+function rememberBuilding(o, intent){
+  const u=new URL(location.href);
+  u.searchParams.set('b',`${o.lat},${o.lon}`);
+  u.searchParams.set('bid',String(o.id));
+  u.searchParams.set('intent',intent);
+  u.searchParams.delete('list');
+  history.replaceState(null,'',u);
+}
+async function estateRoutes(){
+  if(!estateRoutesPromise) estateRoutesPromise=fetch(dataUrl('../estate_routes.json'))
+    .then(r=>{if(!r.ok)throw Error('routes');return r.json();})
+    .catch(e=>{estateRoutesPromise=null;throw e;});
+  return estateRoutesPromise;
+}
+async function resolveBuilding(pt,id){
+  // Fetch the source tile directly. Do not depend on animated map bounds,
+  // arbitrary timers or filtered display layers to find the chosen building.
+  const [x,y]=lonLat2tile(pt.lon,pt.lat,TILE_Z);
+  const tiles=await Promise.all(leavesUnder(TILE_Z,x,y).map(([z,a,b])=>getTile(z,a,b)));
+  let match=null;
+  for(const t of tiles){
+    if(!t)continue;
+    for(const row of t.b){
+      const o=Object.fromEntries(t.c.map((k,i)=>[k,row[i]]));
+      o.district=(t.dn&&o.dn!=null)?t.dn[o.dn]:null;
+      const exact=id ? String(o.id)===String(id) : Math.abs(o.lat-pt.lat)<0.000015 && Math.abs(o.lon-pt.lon)<0.000015;
+      if(exact){if(match&&!id)return null;match=o;}
+    }
+  }
+  return match;
+}
+function journeyFailure(reason){
+  track('journey_failed',{reason});
+  openSheet();setSheet('full');
+  sheetBody.innerHTML='<p class="bname">暫時未能開啟呢座樓</p><p class="mcount">資料可能載入失敗或樓宇已更新。可以重新載入，或者返回屋苑再揀一次。</p><button class="pbtn dark" id="journeyRetry">重新載入</button><a class="deep" href="/estate/">返回屋苑目錄</a>';
+  sheetBody.querySelector('#journeyRetry').onclick=()=>location.reload();
+}
+async function openJourneyBuilding(row,personal=false){
+  const o=await resolveBuilding(row,row.id);
+  if(!o){journeyFailure('building_not_found');return;}
+  map.setView([o.lat,o.lon],18,{animate:false});
+  select(o,null);
+  openSheet();setSheet('full');
+  track('map_target_loaded',{building_id:String(o.id),intent:personal?'personal':'map',status:'success'});
+  if(personal)await startPersonal(o);
+}
+async function openEstateJourney(name,personal){
+  try{
+    const rows=(await estateRoutes())[name];
+    if(!rows?.length){journeyFailure('estate_not_found');return;}
+    selectedBuilding=null;personalTarget=null;
+    const u=new URL(location.href);u.searchParams.set('estate',name);u.searchParams.delete('b');u.searchParams.delete('bid');u.searchParams.set('intent',personal?'personal':'map');history.replaceState(null,'',u);
+    map.fitBounds(rows.map(r=>[r.lat,r.lon]),{padding:[35,35],maxZoom:17,animate:false});
+    gripText.textContent=name;setView('estate');openSheet();setSheet('full');
+    sheetBody.innerHTML=`<p class="bname">${esc(name)}</p><p class="mcount">已定位屋苑 · 揀一座${personal?'睇同你嘅八字配對':'睇詳情'}</p><ul class="mlist">${rows.map((r,i)=>`<li><div style="min-width:0;flex:1"><div class="nm">${esc(r.tc||r.en)}</div><div class="mt">環境分 ${num(r.total,1)}</div></div><button class="pbtn" data-journey-row="${i}">${personal?'睇配對':'睇詳情'}</button></li>`).join('')}</ul><a class="deep" href="/estate/${encodeURIComponent(name)}">返回屋苑介紹</a>`;
+    sheetBody.querySelectorAll('[data-journey-row]').forEach(b=>b.onclick=()=>openJourneyBuilding(rows[+b.dataset.journeyRow],personal).catch(()=>journeyFailure('building_load')));
+    track('map_target_loaded',{estate:name,intent:personal?'personal':'map',status:'success'});
+  }catch{journeyFailure('estate_load');}
+}
+async function startPersonal(o){
+  personalTarget=o;selectedBuilding=o;rememberBuilding(o,'personal');
+  hideNudge();
+  track('personal_start',{building_id:String(o.id),entry:'building'});
+  document.getElementById('intro').classList.add('hide');
+  openSheet();setSheet('full');
+  try{
+    if(!birth){await showBazi();return;}
+    await showPersonalResult(o);
+  }catch{journeyFailure('personal_load');}
+}
+async function showPersonalResult(o){
+  personalTarget=o;rememberBuilding(o,'personal');
+  await Promise.all([ensureBazi(),loadElements()]);
+  if(!birth){await showBazi();return;}
+  const hc=bzMod.hotCold(birth.y,birth.m,birth.d,birth.h==null?12:birth.h,0);
+  const parts=fitParts(o);
+  const name=clean(o.tc)||clean(o.en)||'呢座樓';
+  gripText.textContent=name+' · 個人配對';setView('personal');openSheet();setSheet('full');
+  sheetBody.innerHTML=`<p class="bname">${esc(name)}</p><p class="mcount">個人八字結果 · 你自己</p><div class="pp"><p class="fhd">用緊你已設定嘅八字</p><p class="ppq">${esc(hc?.type||'')} · 本命卦 ${esc(String(myGua()||'未能計算'))}<br>${birth.h==null?'未提供出生時辰：時柱未知；部分分析以中午作暫時計算，結果僅供初步參考。':'已提供出生時辰。'}</p><button class="pbtn" id="journeyEdit">查看／更改出生資料</button></div><p class="mcount">樓宇環境分 ${num(o.total,1)} / 100（與個人配對分開）</p>${parts && !parts.gua ? '<p class="bznote">已計到五行環境配對；呢座暫缺可靠坐向，未能計八宅配對。以下係部分結果，唔係完整配對分。</p>' : ''}${personalPanel(o,null)}<button class="pbtn dark" id="journeyOthers">睇同屋苑其他樓座</button><button class="pbtn" id="journeyBuilding" style="margin-top:10px">返回呢座樓嘅環境資料</button><p class="bznote">配對由現有八字引擎計算；不是實測單位風水，僅供參考。</p>`;
+  sheetBody.querySelector('#journeyEdit').onclick=()=>showBazi(true);
+  sheetBody.querySelector('#journeyBuilding').onclick=()=>{personalTarget=null;rememberBuilding(o,'map');renderBuilding(o,null);};
+  const estate=new URLSearchParams(location.search).get('estate')||o.est;
+  const other=sheetBody.querySelector('#journeyOthers');
+  if(estate)other.onclick=()=>openEstateJourney(estate,true);else other.hidden=true;
+  const login=sheetBody.querySelector('#ppLogin');if(login)login.onclick=()=>{rememberBuilding(o,'personal');askSignIn(null);};
+  const fam=sheetBody.querySelector('#ppFam');if(fam)fam.onclick=()=>{pushBack(name,()=>showPersonalResult(o));showFamily();};
+  sheetBody.querySelectorAll('.famrow').forEach(li=>{const flip=()=>{toggleFam(li.dataset.fid);showPersonalResult(o);};li.onclick=flip;li.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();flip();}};});
+  const status=parts?(parts.gua?'complete':'partial'):'unavailable';
+  const key=String(o.id)+':'+status+':'+!!me;
+  if(!personalResultsSeen.has(key)){personalResultsSeen.add(key);track('personal_result_view',{building_id:String(o.id),status,has_hour:birth.h!=null,after_signin:!!me});}
+}
+
 function select(o,layer){
+  selectedBuilding = o;
+  personalTarget = null;
+  rememberBuilding(o, "map");
   minSel=o.id;
   trip.buildings++;
   markViewed(o);
@@ -3185,7 +3205,7 @@ function personalPanel(o, layer){
   // 嗰陣佢仲未喺度，成格嘢會當「量唔到」。載咗佢再畫過。
   if(birth && (!bzMod || !elemData)){
     Promise.all([ensureBazi(), loadElements()]).then(() => {
-      if(minSel === o.id) renderBuilding(o, layer);
+      if(minSel === o.id && curView === "building") renderBuilding(o, layer);
     }).catch(() => {});
     return `<div class="pp"><p class="fhd">呢幢樓啱唔啱你？</p>
             <p class="ppq">計緊…</p></div>`;
@@ -3255,8 +3275,7 @@ function personalPanel(o, layer){
         <dd class="${gw.good ? "ppok" : "ppno"}"><b>${gw.score} / 100</b>（你自己）<br>
           <span class="ppdt">呢幢樓向${esc(gw.dir)}，你係${esc(gw.gua)}命，
             ${esc(gw.dir)}方對你係「<b>${esc(gw.star)}</b>」—— 八宅${gw.good ? "四吉" : "四凶"}之一。</span></dd>`
-      : `<dt>八宅</dt><dd><span class="ppdt">呢幢樓嘅坐向推唔準（樓形太方正，
-          或者查唔到入伙年份），所以八宅嗰半計唔到，上面個分淨係形。</span></dd>`}
+      : `<dt>八宅</dt><dd><span class="ppdt">呢幢樓暫缺可靠坐向，所以八宅配對未能計算；上面個分只計五行環境配對，唔係完整配對分。</span></dd>`}
     </dl>
     <p class="ppnote">${gw ? `形同八宅各佔一半。` : ""}八宅睇你個命卦配樓宇個向，
       五行睇樓宇同地區量出嚟嘅形 —— 兩套唔同嘅方法，我哋分開計完先合埋。
@@ -3374,7 +3393,7 @@ function renderBuilding(o, layer){
   let estate = "";
   if (o.est){
     if (estateData === null) loadEstates().then(() => {
-      if (minSel === o.id) renderBuilding(o, layer);   // still the open one
+      if (minSel === o.id && curView === "building") renderBuilding(o, layer);   // still the open one
     });
     const e = (estateData || {})[o.est] || {};
     const rows = [
@@ -3402,6 +3421,7 @@ function renderBuilding(o, layer){
 
   sheetBody.innerHTML=`
     <p class="bname">${esc(title)}</p>
+    ${home ? `<button class="pbtn dark" id="journeyPersonal">睇呢座同我夾唔夾</button>` : ""}
     <p class="ben">${esc([clean(o.en)!==title?clean(o.en):null, clean(o.district)].filter(Boolean).join(" · "))}</p>
 ${(() => {
       const tp = home ? topPct(t) : null;
@@ -3617,6 +3637,8 @@ ${(() => {
       </div>
     </details>`;
 
+  const jp=sheetBody.querySelector("#journeyPersonal");
+  if(jp)jp.onclick=()=>startPersonal(o);
   const bs = sheetBody.querySelector("#btnSave");
   // toggleFav 有機會自己接管咗成個面板（未登入去收藏），嗰陣唔可以再畫返
   // 樓宇資料落去，否則個登入畫面出咗一剎就冇咗。
@@ -3644,17 +3666,18 @@ ${(() => {
   if(lz) lz.addEventListener("click", () => {
     track("low_bazi_cta", {});
     pushBack(clean(o.tc) || clean(o.en) || "樓宇", () => renderBuilding(o, layer));
-    goBazi("3");                      // 佢想知「咁我應該點揀」，唔係「我係咩命」
+    startPersonal(o);
   });
   const pz = sheetBody.querySelector("#ppBz");
   if(pz) pz.addEventListener("click", () => {
     track("pp_bazi_cta", {});
     pushBack(clean(o.tc) || clean(o.en) || "樓宇", () => renderBuilding(o, layer));
-    goBazi("3");
+    startPersonal(o);
   });
   const pl = sheetBody.querySelector("#ppLogin");
   if(pl) pl.addEventListener("click", () => {
     track("pp_signin_prompt", {});
+    personalTarget=o; rememberBuilding(o,"personal");
     askSignIn(null);
   });
 }
@@ -4245,7 +4268,7 @@ function bzFields(yrs, mos, dys, sel, edit){
       </div>
       <button class="pbtn dark" id="bzGo" style="margin-top:18px">${
         edit ? "存返" : "計我嘅八字"}</button>
-      <p class="bznote">出生資料<b>淨係存喺你部機</b>，唔會上我哋個伺服器 ——
+      <p class="bznote">未登入時出生資料<b>只存喺你部機</b>；登入後會同步到你嘅戶口。
         排盤全部喺你個瀏覽器度計。詳情見<a href="/privacy.html" target="_blank"
         rel="noopener">私隱政策</a>。<br>
         呢個係電腦計算嘅結果，唔係師傅睇。認真睇樓請搵專業風水師傅。<br>
@@ -4772,7 +4795,8 @@ async function showBazi(edit){
   setView("bazi");
   if(!birth || edit){
     setSheet("full");                   // 表格太長，half 之下個掣喺畫面外
-    sheetBody.innerHTML = bzForm(edit && birth ? true : false);
+    sheetBody.innerHTML = (personalTarget ? `<p class="mcount">計緊：${esc(clean(personalTarget.tc)||clean(personalTarget.en))} · 填完會直接睇返呢座</p>` : "") + (personalTarget ? bzForm(true).replace("改返出生資料",birth?"確認你嘅八字資料":"設定你嘅八字").replace("改咗之後，地區、樓宇同屋企人嗰邊會即刻重新計過。","用嚟計算呢座樓同你嘅配對；時辰唔記得可以留空。").replace(">存返</button>",">睇呢座嘅個人結果</button>") : bzForm(edit && birth ? true : false));
+    track("bazi_setup_start", {entry:personalTarget ? "building" : "general"});
     const f = sheetBody;
     let sex = edit && birth ? birth.male : null;
     f.querySelectorAll(".bzsex button").forEach(b => b.addEventListener("click", () => {
@@ -4782,13 +4806,17 @@ async function showBazi(edit){
     f.querySelector("#bzGo").addEventListener("click", () => {
       if(sex === null){ needSex(); return; }
       const h = f.querySelector("#bzH").value;
+      const yy=+f.querySelector("#bzY").value, mm=+f.querySelector("#bzM").value, dd=+f.querySelector("#bzD").value;
+      const date=new Date(yy,mm-1,dd);
+      if(date.getMonth()!==mm-1 || date.getDate()!==dd || date>new Date()){ toast("請揀有效嘅出生日期"); return; }
       birth = {y: +f.querySelector("#bzY").value, m: +f.querySelector("#bzM").value,
                d: +f.querySelector("#bzD").value, h: h === "" ? null : +h, male: sex};
       try{ localStorage.setItem(BIRTH_KEY, JSON.stringify(birth)); }catch{}
       wCache.clear();
       if(me) syncBirth();                 // 改咗就推返上戶口，唔係淨係改咗部機
       track("bazi_saved", {has_hour: h !== "", edit: !!edit});
-      showBazi();
+      track("bazi_setup_complete", {has_hour:h !== "",entry:personalTarget?"building":"general"});
+      if(personalTarget) showPersonalResult(personalTarget); else showBazi();
     });
     return;
   }
@@ -4918,6 +4946,7 @@ async function showBazi(edit){
 }
 
 document.getElementById("btnGua").addEventListener("click", async () => {
+  personalTarget=null;
   await ensureBazi();
   if(!birth){                       // 未有資料：開表，但唔好即刻篩
     guaOn = false;
@@ -5432,7 +5461,7 @@ function applySession(session){
     email: u.email || "",
   } : null;
   // GA 認得同一個人喺唔同部機，但收到嘅係一串無意義嘅 id，唔係電郵。
-  if(me && window.gtag) gtag("config", GA_ID, {user_id: me.id});
+  // No additional config/page_view on authentication; no user ID is sent.
   paintFavChip();
 }
 
@@ -5450,10 +5479,11 @@ async function signIn(){
     at: Date.now(),
   }));
   track("signin_start", {});
-  await s.auth.signInWithOAuth({
+  const {error} = await s.auth.signInWithOAuth({
     provider: "google",
     options: {redirectTo: location.origin + location.pathname + location.search},
   });
+  if(error){ track("signin_failed", {reason:"oauth_start"}); toast("登入未能開始，請再試。你揀嘅樓座已保留。"); }
 }
 
 async function signOut(){
@@ -5493,7 +5523,7 @@ async function afterSignIn(){
   await syncBirth();
   await loadFamily();
   // 佢係為咗睇解釋先去登入嘅，返到嚟就要見到解釋，唔係要佢自己撳返入去。
-  if(birth && sheetBody.querySelector(".gate, .arealist")){
+  if(birth && new URLSearchParams(location.search).get("intent") !== "personal" && sheetBody.querySelector(".gate, .arealist")){
     refreshGuaDirs();
     showBazi();
   }
@@ -5894,7 +5924,7 @@ function loadLocalFavs(){
 }
 
 /* 開頁嗰陣只做一件事：如果係由 Google 跳返嚟，就即刻接手。 */
-(async function bootMember(){
+const memberReady = (async function bootMember(){
   if(!hasAuthResponse()) {
     // 之前登入過嘅人，session 喺 localStorage 度，值得靜靜哋續返。
     const hasSession = Object.keys(localStorage).some(k => k.startsWith("sb-"));
@@ -6086,6 +6116,7 @@ function hideNudge(){
 }
 
 function showNudge(o, why){
+  if(curView !== "building") return;
   const st = nudgeState();
   if(st.done || st.n >= 3) return;
   nudgeFor = o;
@@ -6898,20 +6929,16 @@ function unpack(str){
 async function openDeepLink(){
   const q = new URLSearchParams(location.search);
 
-  const one = unpack(q.get("b"))[0];
-  if(one){
-    track("open_shared", {what: "building"});
-    localStorage.setItem("seenIntro","1");
-    document.getElementById("intro").classList.add("hide");
-    map.setView([one.lat, one.lon], 18);
-    await loadBuildings();
-    let best=null, bd=Infinity;
-    buildingLayer.eachLayer(l=>{
-      const c=l.getBounds?l.getBounds().getCenter():l.getLatLng();
-      const d=(c.lat-one.lat)**2+(c.lng-one.lon)**2;
-      if(d<bd){ bd=d; best=l; }
-    });
-    if(best && bd < 1e-6) best.fire("click");
+  const estate=q.get('estate');
+  const one = unpack(q.get('b'))[0];
+  if(estate || one){
+    document.getElementById('intro').classList.add('hide');
+    try{localStorage.setItem('seenIntro','1');}catch{}
+    await memberReady;
+    if(one){
+      if(!q.has('intent'))track('open_shared',{what:'building'});
+      await openJourneyBuilding({...one,id:q.get('bid')},q.get('intent')==='personal');
+    }else await openEstateJourney(estate,q.get('intent')==='personal');
     return true;
   }
 
@@ -6967,8 +6994,9 @@ map.whenReady(async ()=>{
   await loadBuildStamp();      // must precede any data fetch: it sets the token
   await loadTileIndex();
   saveFavs();
-  const handled = await openDeepLink();
-  loadDistricts();
+  await loadDistricts();
+  let handled=false;
+  try{handled=await openDeepLink();}catch{journeyFailure("deep_link_load");handled=true;}
   loadElements();
   if(!handled) loadBuildings();
 });
