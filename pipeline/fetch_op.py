@@ -72,7 +72,9 @@ def fetch_table(layer: int, fields: str, where: str = "1=1") -> list[dict]:
             "orderByFields": "OBJECTID", "resultOffset": offset,
             "resultRecordCount": PAGE, "f": "json",
         })
-        batch = [f["attributes"] for f in (d.get("features") or [])]
+        if not isinstance(d.get("features"), list):
+            raise RuntimeError("CSDI response missing features; refusing incomplete snapshot")
+        batch = [f["attributes"] for f in d["features"]]
         rows.extend(batch)
         if len(batch) < PAGE:
             break
@@ -103,7 +105,9 @@ def merge_works_history(out: dict) -> None:
             "resultRecordCount": PAGE,
             "f": "json",
         })
-        batch = [f["attributes"] for f in (d.get("features") or [])]
+        if not isinstance(d.get("features"), list):
+            raise RuntimeError("CSDI response missing features; refusing incomplete snapshot")
+        batch = [f["attributes"] for f in d["features"]]
         rows.extend(batch)
         if len(batch) < PAGE:
             break
@@ -174,9 +178,14 @@ def main() -> None:
             out[csuid] = rec
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(out, separators=(",", ":"), ensure_ascii=False))
 
     merge_works_history(out)
+
+    if len(out) < 10000:
+        raise RuntimeError("permit snapshot unexpectedly small; preserving previous data")
+    temporary = OUT.with_suffix('.tmp')
+    temporary.write_text(json.dumps(out, separators=(",", ":"), ensure_ascii=False))
+    temporary.replace(OUT)
 
     res = sum(1 for v in out.values() if v["residential"])
     years = sorted(v["year"] for v in out.values())

@@ -54,7 +54,10 @@ def get_json(url: str, params: dict, retries: int = 4, pause: float = 1.5):
         try:
             req = urllib.request.Request(full, headers={"User-Agent": UA, "Accept": "application/json"})
             with urllib.request.urlopen(req, timeout=120, context=SSL_CTX) as r:
-                return json.loads(r.read().decode("utf-8"))
+                data = json.loads(r.read().decode("utf-8"))
+                if isinstance(data, dict) and data.get("error"):
+                    raise RuntimeError(f"ArcGIS error: {data['error']}")
+                return data
         except Exception as exc:  # noqa: BLE001 - want any transport failure retried
             last = exc
             time.sleep(pause * (attempt + 1))
