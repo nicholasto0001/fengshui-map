@@ -92,47 +92,37 @@ jobs:
           key: csdi-${{ github.run_id }}
           restore-keys: csdi-
 
-      - name: Decide whether to crawl
-        id: fresh
-        run: |
-          # Re-crawl when asked, when nothing was restored, or when the cached
-          # crawl is from an earlier day.
-          if [ "${{ github.event.inputs.refresh }}" = "true" ] || [ ! -f data/buildings.json ]; then
-            echo "stale=true" >> "$GITHUB_OUTPUT"
-          elif [ "$(date -u -r data/buildings.json +%F)" != "$(date -u +%F)" ]; then
-            echo "stale=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "stale=false" >> "$GITHUB_OUTPUT"
-            echo "reusing crawl from $(date -u -r data/buildings.json)"
-          fi
+      - name: Refresh building snapshot
+        run: python pipeline/refresh_csdi.py buildings ${{ github.event.inputs.refresh == 'true' && '--force' || '' }}
 
-      # Terrain and the coastline do not move; monthly is ample.
-      - name: Rebuild terrain reference
-        if: github.event_name == 'schedule'
-        run: |
-          if [ ! -f data/terrain.json ] || [ "$(date -u +%d)" = "01" ]; then
-            python pipeline/reconstruct_terrain.py
-          else
-            echo "terrain.json present, rebuilt on the 1st"
-          fi
-
-      - name: Crawl CSDI
-        if: steps.fresh.outputs.stale == 'true'
-        run: |
-          python pipeline/fetch_buildings.py
-          python pipeline/fetch_op.py
-          python pipeline/fetch_districts.py
-          python pipeline/fetch_facilities.py
-
-      # Saved as soon as the crawl lands, before anything downstream can fail.
-      - name: Save the CSDI crawl
-        if: steps.fresh.outputs.stale == 'true'
+      # Save even if the independent permit service later fails. A successful
+      # 20-minute building crawl should never be thrown away for an OP 403.
+      - name: Save building progress
         uses: actions/cache/save@v4
         with:
           path: |
             data/buildings.json
             data/op.json
-          key: csdi-${{ github.run_id }}
+          key: csdi-${{ github.run_id }}-buildings
+
+      - name: Refresh occupation permits
+        run: python pipeline/refresh_csdi.py op ${{ github.event.inputs.refresh == 'true' && '--force' || '' }}
+
+      - name: Save the verified CSDI snapshots
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            data/buildings.json
+            data/op.json
+          key: csdi-${{ github.run_id }}-complete
+
+      - name: Refresh reference layers
+        run: |
+          python pipeline/fetch_districts.py
+          python pipeline/fetch_facilities.py
+          if [ "${{ github.event_name }}" = "schedule" ] && { [ ! -f data/terrain.json ] || [ "$(date -u +%d)" = "01" ]; }; then
+            python pipeline/reconstruct_terrain.py
+          fi
 
       # Outside the CSDI cache gate on purpose. These are two plain file
       # downloads, not a 213k-record crawl, and that cache only carries
