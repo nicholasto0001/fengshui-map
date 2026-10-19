@@ -12,7 +12,7 @@ rm -rf public
 mkdir -p public
 
 cp index.html privacy.html admin.html method.html bazi-guide.html sitemap.xml manifest.webmanifest public/
-cp bazi.js card.js public/               # 八字引擎同分享卡，用到先載
+cp bazi.js card.js analytics.js public/               # 八字引擎同分享卡，用到先載
 
 # Supabase 個 client。由 CDN 載嘅話，廣告攔截器一擋就登入死 —— 同源就冇得擋。
 # 攞唔到就唔好整冧成個 build：index.html 會自己跌返去 CDN。
@@ -45,7 +45,7 @@ if [ -d pages/learn ];    then cp -R pages/learn    public/learn;    fi
 
 mkdir -p public/data
 cp -R data/tiles public/data/tiles
-for f in district_stats.json estates.json solar_terms.json elements.json; do
+for f in district_stats.json estates.json estate_routes.json solar_terms.json elements.json; do
   cp "data/$f" "public/data/$f"
 done
 
