@@ -4937,7 +4937,10 @@ document.getElementById("btnFav").addEventListener("click", ()=>{
 });
 
 async function showOverview(){
-  if(IS_TRIAL && !favView && !sharedList && !pickingDistrict && !districtFilter && band==="all") return trialHome();
+  if(IS_TRIAL && !favView && !sharedList && !pickingDistrict && !districtFilter && band==="all"){
+    if(document.body.classList.contains('trial-focus'))return trialHome();
+    gripText.textContent='地圖 · 撳樓宇睇結果';setView('root');sheetBody.innerHTML='<p class="mcount">移動地圖，再撳一座樓睇結果。</p>';trialMap();return;
+  }
   if(pickingDistrict){ showDistrictPicker(); return; }
   if(favView || sharedList){ showFavs(); return; }
   // Either filter turns the panel into a pickable list of buildings rather
