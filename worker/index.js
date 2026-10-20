@@ -203,7 +203,7 @@ class Title {
 
 export default {
   async fetch(request, env, ctx) {
-    // Trial is fail-closed for member/admin paths and cannot reach the member API.
+    // Staging permits existing Google authentication only; member data APIs remain blocked.
     const trialUrl = new URL(request.url);
     if(trialUrl.hostname !== 'hkfengshuimap.com') {
       if(/^\/(admin|auth)(\/|\.|$)/.test(trialUrl.pathname)) return new Response('試用版不設會員後台。', {status:404});
@@ -214,7 +214,7 @@ export default {
       if(/^\/(estate|district|learn)(\/|$)/.test(trialUrl.pathname)) return Response.redirect(trialUrl.origin+'/',302);
       const response = await handle(request,env,ctx);
       const safe = new Response(response.body,response);
-      safe.headers.set('Content-Security-Policy', "connect-src 'self' https://mapapi.geodata.gov.hk https://www.als.gov.hk; form-action 'self'; frame-src 'none'; object-src 'none'");
+      safe.headers.set('Content-Security-Policy', "connect-src 'self' https://mapapi.geodata.gov.hk https://www.als.gov.hk https://dpobzqzflmgkuzxqiggt.supabase.co/auth/v1/; form-action 'self'; frame-src 'none'; object-src 'none'");
       safe.headers.set('X-Robots-Tag','noindex, nofollow');
       return safe;
     }
@@ -236,7 +236,7 @@ const LIVE_HOST = "hkfengshuimap.com";
    mistake. So it says so on its face and asks not to be indexed. */
 const STAGING_RIBBON = `<div style="position:fixed;z-index:9999;left:0;right:0;top:0;
   background:#b4530f;color:#fff;font:600 12px/1.6 -apple-system,system-ui,sans-serif;
-  text-align:center;padding:3px 8px;letter-spacing:.04em">獨立試用版 · 不連接正式會員</div>`;
+  text-align:center;padding:3px 8px;letter-spacing:.04em">試用版 · 登入沿用會員，資料不自動同步</div>`;
 
 async function handle(request, env, ctx) {
     const url = new URL(request.url);
