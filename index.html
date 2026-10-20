@@ -1673,6 +1673,16 @@ body.trial{background:#f6f6f1;color:#203b32}
 .trial .jscore{margin:16px 0}.trial .jlimit{color:#365341}
 @media(max-width:360px){.trial #sheetbody{padding:8px 16px 24px!important}.trial .journey h2{font-size:26px}}
 
+/* Trial-only grouped controls and bounded selection sheets. */
+.trial{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
+.trial .ios-form .bzrow{display:flex;gap:8px}.trial .ios-form .bzrow input:not([type=hidden]){flex:1.35;width:0}.trial .ios-form .bzrow button{flex:1}
+.trial .ios-value{border:0;background:#f2f2f7;color:#1c1c1e;border-radius:12px;min-height:52px;padding:10px;font-family:inherit;font-weight:500;font-size:16px;white-space:nowrap}.trial .ios-value span{color:#737780;margin-left:5px}.trial .ios-time{width:100%;text-align:left;padding:16px}
+.trial .ios-form label{display:block;margin:22px 0 10px;font-size:15px;color:#636366}.trial .bzsex{padding:4px;background:#f2f2f7;border-radius:12px;gap:4px}.trial .bzsex button{border:0;background:transparent;color:#636366;min-height:44px}.trial .bzsex button.on{background:white;color:#1c1c1e;box-shadow:0 2px 5px #0001;border-radius:9px}
+.trial .pbtn.dark{background:#23634e;border:0;border-radius:14px;min-height:52px;box-shadow:none}.trial .jmap{min-height:48px;text-decoration:none}.trial details summary{min-height:44px;padding:12px 0;box-sizing:border-box}
+.ios-picker{border:0;border-radius:24px 24px 0 0;padding:0;width:min(100%,480px);max-width:100%;max-height:85dvh;margin:auto auto 0;background:#f9f9fb;color:#1c1c1e;box-shadow:0 -8px 40px #0002;padding-bottom:env(safe-area-inset-bottom)}
+.ios-picker::backdrop{background:#0006}.ios-picker header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;background:#f9f9fb;padding:8px;border-bottom:1px solid #dedee3}.ios-picker h2{font-size:17px;margin:0}.ios-picker header button{border:0;background:none;color:#23634e;font-size:17px;min-height:48px;min-width:64px}.ios-picker [data-done]{font-weight:700}
+.ios-options{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:18px;overflow:auto}.ios-options button{border:1px solid transparent;background:#ededf2;color:#1c1c1e;border-radius:12px;min-height:48px;font-size:17px}.ios-options button[aria-pressed=true]{background:#23634e;color:white;box-shadow:inset 0 0 0 2px #174633}.ios-options.day-options{grid-template-columns:repeat(5,1fr);gap:6px}.ios-options.time-options{grid-template-columns:repeat(2,1fr)}.time-options button:first-child{grid-column:1/-1}.ios-picker button:focus-visible{outline:3px solid #007aff;outline-offset:2px}
+
 </style>
 </head>
 <body>
@@ -2783,7 +2793,7 @@ async function showPersonalResult(o){
   gripText.textContent=name+' · 個人配對';setView('personal');openSheet();setSheet('full');
   const fit=parts?.fit, complete=!!parts?.gua;
   const verdict=fit==null?'暫未能計算':fit>=75?'配對較高':fit>=55?'配對一般':'配對較低';
-  sheetBody.innerHTML=`<div class="journey"><p class="jstep">個人結果</p><h2>${esc(name)}</h2><p class="mcount">你同呢座樓嘅配對</p><div class="jscore"><div class="jscoreline"><span class="jnumber">${fit??'—'}</span><div><strong>${verdict}</strong><small>${fit==null?'未有足夠樓宇資料':`100 分滿分 · ${complete?'五行及八宅配對':'部分配對'}`}</small></div></div>${fit==null?'':`<div class="jmeter" aria-hidden="true"><i style="width:${Math.max(0,Math.min(100,fit))}%"></i></div>`}<p class="jlimit">${fit==null?'缺少計算需要嘅樓宇資料，唔代表配對差。':!complete?'未有可靠坐向，未能計完整配對。':'按現有樓宇資料與你嘅八字計算。'}${birth.h==null?' 出生時辰未知，部分分析暫用中午。':''}</p></div><button class="pbtn dark" id="journeyOthers">睇另一座</button><button class="jmap" id="journeyMap">喺地圖睇呢座樓</button><details class="jdetails"><summary>點解係呢個結果？</summary>${personalPanel(o,null)}</details><details><summary>樓宇環境分</summary><p>環境分 ${num(o.total,1)} / 100，評估樓宇周邊；上面嘅個人配對分加入你嘅八字，兩者唔係同一個分數。</p><button class="pbtn" id="journeyBuilding">查看樓宇環境資料</button></details><details><summary>查看／更改出生資料</summary><p>${esc(hc?.type||'')} · 本命卦 ${esc(String(myGua()||'未能計算'))}</p><button class="pbtn" id="journeyEdit">更改出生資料</button></details><p class="bznote">傳統命理參考 · 非實測單位風水</p></div>`;
+  sheetBody.innerHTML=`<div class="journey"><p class="jstep">個人結果</p><h2>${esc(name)}</h2><p class="mcount">你同呢座樓嘅配對</p><div class="jscore"><div class="jscoreline"><span class="jnumber">${fit??'—'}</span><div><strong>${verdict}</strong><small>${fit==null?'未有足夠樓宇資料':`100 分滿分 · ${complete?'五行及八宅配對':'部分配對'}`}</small></div></div>${fit==null?'':`<div class="jmeter" aria-hidden="true"><i style="width:${Math.max(0,Math.min(100,fit))}%"></i></div>`}<p class="jlimit">${fit==null?'缺少計算需要嘅樓宇資料，唔代表配對差。':!complete?'未有可靠坐向，未能計完整配對。':'按現有樓宇資料與你嘅八字計算。'}${birth.h==null?' 出生時辰未知，初步參考暫用中午。':''}</p></div><button class="pbtn dark" id="journeyOthers">睇另一座</button><button class="jmap" id="journeyMap">喺地圖睇呢座樓</button><details class="jdetails"><summary>點解係呢個結果？</summary>${personalPanel(o,null)}</details><details><summary>樓宇環境分</summary><p>環境分 ${num(o.total,1)} / 100，評估樓宇周邊；上面嘅個人配對分加入你嘅八字，兩者唔係同一個分數。</p><button class="pbtn" id="journeyBuilding">查看樓宇環境資料</button></details><details><summary>查看／更改出生資料</summary><p>${esc(hc?.type||'')} · 本命卦 ${esc(String(myGua()||'未能計算'))}</p><button class="pbtn" id="journeyEdit">更改出生資料</button></details><p class="bznote">傳統命理參考 · 非實測單位風水</p></div>`;
   sheetBody.querySelector('#journeyMap').onclick=()=>setSheet('peek');
   sheetBody.querySelector('#journeyEdit').onclick=()=>showBazi(true);
   sheetBody.querySelector('#journeyBuilding').onclick=()=>{personalTarget=null;rememberBuilding(o,'map');renderBuilding(o,null);};
@@ -4156,7 +4166,39 @@ function bzForm(edit){
     ${bzFields(yrs, mos, dys, sel, false)}`;
 }
 
+function trialBirthFields(sel,edit){
+  return `<div class="bzform ios-form"><label for="bzY">生日 · 西曆／陽曆</label><div class="bzrow"><input id="bzY" aria-label="年" inputmode="numeric" type="number" min="1900" max="${new Date().getFullYear()}" placeholder="例如 1990" value="${sel.y||''}"><input type="hidden" id="bzM" value="${sel.m||''}"><button type="button" class="ios-value" data-picker="month">${sel.m?sel.m+' 月':'揀月份'} <span>⌄</span></button><input type="hidden" id="bzD" value="${sel.d||''}"><button type="button" class="ios-value" data-picker="day">${sel.d?sel.d+' 日':'揀日期'} <span>⌄</span></button></div><label>出生時間 · 可以唔填</label><input type="hidden" id="bzH" value="${sel.h??''}"><button type="button" class="ios-value ios-time" data-picker="time">${sel.h==null?'唔記得出生時間':SHICHEN.find(x=>x[2]===sel.h)?.[1]||''} <span>⌄</span></button><p class="trial-note">唔填時間會暫用中午計算，結果只作初步參考。</p><label>性別</label><div class="bzsex"><button type="button" data-sex="1" aria-pressed="${sel.male===true}"${sel.male===true?' class="on"':''}>男</button><button type="button" data-sex="0" aria-pressed="${sel.male===false}"${sel.male===false?' class="on"':''}>女</button></div><button class="pbtn dark" id="bzGo" style="margin-top:24px">${edit?'存返':'計我嘅八字'}</button><p class="trial-note">出生資料只留喺呢部裝置，不連接正式會員。</p><details><summary>資料用途及限制</summary><p class="trial-note">按傳統命理計算，只作參考，唔係實地勘察。<a href="/privacy.html" target="_blank" rel="noopener">私隱政策</a></p></details></div>`;
+}
+function bindTrialPickers(f){
+  f.querySelectorAll('[data-picker]').forEach(trigger=>trigger.onclick=()=>{
+    if(document.querySelector('.ios-picker'))return;
+    const kind=trigger.dataset.picker, id=kind==='month'?'bzM':kind==='day'?'bzD':'bzH',field=f.querySelector('#'+id);
+    const year=+f.querySelector('#bzY').value,month=+f.querySelector('#bzM').value;
+    const days=month?new Date(year||2000,month,0).getDate():31;
+    const options=kind==='time'?[['','唔記得／唔提供'],...SHICHEN.map(([z,t,h])=>[String(h),t])]:Array.from({length:kind==='month'?12:days},(_,i)=>[String(i+1),(i+1)+(kind==='month'?' 月':'')]);
+    let draft=field.value;
+    const dialog=document.createElement('dialog');dialog.className='ios-picker';dialog.setAttribute('aria-labelledby','pickerTitle');
+    dialog.innerHTML=`<header><button type="button" data-cancel>取消</button><h2 id="pickerTitle">${kind==='month'?'揀出生月份':kind==='day'?'揀出生日期':'揀出生時間'}</h2><button type="button" data-done>完成</button></header><div class="ios-options ${kind==='time'?'time-options':kind==='day'?'day-options':''}">${options.map(([v,label])=>`<button type="button" data-value="${v}" aria-pressed="${v===draft}">${label}</button>`).join('')}</div>`;
+    document.body.append(dialog);
+    const close=()=>{dialog.close();dialog.remove();trigger.focus();};
+    dialog.querySelector('[data-cancel]').onclick=close;
+    dialog.addEventListener('cancel',e=>{e.preventDefault();close();});
+    dialog.querySelectorAll('[data-value]').forEach(b=>b.onclick=()=>{draft=b.dataset.value;dialog.querySelectorAll('[data-value]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));});
+    dialog.querySelector('[data-done]').onclick=()=>{
+      if(!options.some(([v])=>v===draft)){toast('請先揀一項');return;}
+      field.value=draft;trigger.innerHTML=(options.find(([v])=>v===draft)[1]+(kind==='day'?' 日':''))+' <span>⌄</span>';
+      if(kind==='month'){
+        const max=new Date(year||2000,+draft,0).getDate(),day=f.querySelector('#bzD');
+        if(+day.value>max){day.value='';f.querySelector('[data-picker="day"]').innerHTML='揀日期 <span>⌄</span>';}
+      }
+      close();
+    };
+    dialog.showModal();
+  });
+}
+
 function bzFields(yrs, mos, dys, sel, edit){
+  if(IS_TRIAL)return trialBirthFields(sel,edit);
   return `
     <div class="bzform">
       <label for="bzY">出生日期（公曆）</label>
@@ -4709,10 +4751,11 @@ async function showBazi(edit){
     const birthMap=sheetBody.querySelector('#birthMap');if(birthMap)birthMap.onclick=()=>setSheet('peek');
     track("bazi_setup_start", {entry:personalTarget ? "building" : "general"});
     const f = sheetBody;
+    if(IS_TRIAL)bindTrialPickers(f);
     let sex = edit && birth ? birth.male : null;
     f.querySelectorAll(".bzsex button").forEach(b => b.addEventListener("click", () => {
       sex = b.dataset.sex === "1";
-      f.querySelectorAll(".bzsex button").forEach(x => x.classList.toggle("on", x === b));
+      f.querySelectorAll(".bzsex button").forEach(x => {x.classList.toggle("on", x === b);x.setAttribute("aria-pressed",String(x===b));});
     }));
     f.querySelector("#bzGo").addEventListener("click", () => {
       if(sex === null){ needSex(); return; }
@@ -5073,7 +5116,7 @@ ${(() => {
     b.addEventListener("click", () => {
       hSex = b.dataset.sex === "1";
       sheetBody.querySelectorAll(".bnsex button").forEach(x =>
-        x.classList.toggle("on", x === b));
+        {x.classList.toggle("on", x === b);x.setAttribute("aria-pressed",String(x===b));});
     }));
   const hg = sheetBody.querySelector("#hGo");
   if(hg) hg.addEventListener("click", async () => {
@@ -5579,7 +5622,7 @@ async function showFamily(edit){
     let sex = p ? p.male : null;
     sheetBody.querySelectorAll(".bzsex button").forEach(b => b.addEventListener("click", () => {
       sex = b.dataset.sex === "1";
-      sheetBody.querySelectorAll(".bzsex button").forEach(x => x.classList.toggle("on", x === b));
+      sheetBody.querySelectorAll(".bzsex button").forEach(x => {x.classList.toggle("on", x === b);x.setAttribute("aria-pressed",String(x===b));});
     }));
     sheetBody.querySelector("#fmSave").addEventListener("click", async () => {
       if(sex === null){ needSex(); return; }
@@ -6859,7 +6902,7 @@ async function trialPersonalResult(o){
   await Promise.all([ensureBazi(),loadElements()]);if(!birth)return showBazi();
   const parts=fitParts(o),fit=parts?.fit,complete=!!parts?.gua,name=clean(o.tc)||clean(o.en)||'呢座樓';
   gripText.textContent='個人結果';setView('personal');setSheet('full');
-  sheetBody.innerHTML=`<div class="journey"><p class="jstep">個人結果 · 按你嘅出生資料計算</p><h2>${esc(name)}</h2><div class="jscore"><div class="jscoreline"><span class="jnumber">${fit??'—'}</span><div><strong>${fit==null?'暫未能計算':fit>=75?'配對較高':fit>=55?'配對一般':'配對較低'}</strong><small>個人配對分／100${complete?'':' · 部分分析'}</small></div></div><div class="jmeter" aria-hidden="true"><i style="width:${Math.max(0,Math.min(100,fit||0))}%"></i></div><p class="jlimit">${fit==null?'樓宇資料不足，唔代表配對差。':complete?'已計環境特徵同坐向配對。':'已計環境特徵配對；欠可靠坐向，未能計完整結果。'}${birth.h==null?' 未提供出生時間，部分計算暫用中午。':''}</p></div><button class="pbtn dark" id="trialAnother">睇另一座 →</button><button class="jmap" id="trialResultMap">喺地圖睇位置</button><details><summary>點樣理解呢個結果？</summary><p>用你嘅出生日期，按傳統命理方法配對樓宇特徵。呢個係參考指標，唔係入住後會好運嘅機率。</p><p>環境特徵配對：${parts?.form??'資料不足'}${parts?.form==null?'':'／100'}。${complete?`坐向配對：${parts.gua.score}／100。`:'坐向配對：資料不足，未計。'}</p><p>唔包括單位間隔、門口或床位；實際居住亦要考慮採光、交通同預算。</p></details><details><summary>出生資料</summary><p>${birth.y} 年 ${birth.m} 月 ${birth.d} 日 · ${birth.h==null?'時間未提供':birth.h+' 時'}</p><button class="jmap" id="trialEditBirth">更改出生資料</button></details><button class="jmap" id="trialEnvironment">睇返樓宇環境分</button><p class="trial-note">試用資料只留喺呢部裝置 · 非實地風水勘察</p></div>`;
+  sheetBody.innerHTML=`<div class="journey"><p class="jstep">個人結果 · 按你嘅出生資料計算</p><h2>${esc(name)}</h2><div class="jscore"><div class="jscoreline"><span class="jnumber">${fit??'—'}</span><div><strong>${fit==null?'暫未能計算':fit>=75?'配對較高':fit>=55?'配對一般':'配對較低'}</strong><small>個人配對分／100${complete?'':' · 初步參考'}</small></div></div><div class="jmeter" aria-hidden="true"><i style="width:${Math.max(0,Math.min(100,fit||0))}%"></i></div><p class="jlimit">${fit==null?'樓宇資料不足，唔代表配對差。':complete?'已計環境特徵同坐向配對。':'我哋未有呢座樓可靠嘅朝向資料，唔係你填漏。以下係初步配對。'}${birth.h==null?' 未提供出生時間，部分計算暫用中午。':''}</p></div><button class="pbtn dark" id="trialAnother">睇另一座 →</button><button class="jmap" id="trialResultMap">喺地圖睇位置</button><details><summary>點樣理解呢個結果？</summary><p>用你嘅出生日期，按傳統命理方法配對樓宇特徵。呢個係參考指標，唔係入住後會好運嘅機率。</p><p>環境特徵配對：${parts?.form??'資料不足'}${parts?.form==null?'':'／100'}。${complete?`坐向配對：${parts.gua.score}／100。`:'坐向配對：資料不足，未計。'}</p><p>唔包括單位間隔、門口或床位；實際居住亦要考慮採光、交通同預算。</p></details><details><summary>出生資料</summary><p>${birth.y} 年 ${birth.m} 月 ${birth.d} 日 · ${birth.h==null?'時間未提供':birth.h+' 時'}</p><button class="jmap" id="trialEditBirth">更改出生資料</button></details><button class="jmap" id="trialEnvironment">睇返樓宇環境分</button><p class="trial-note">試用資料只留喺呢部裝置 · 非實地風水勘察</p></div>`;
   const estate=o.est||new URLSearchParams(location.search).get('estate');
   document.getElementById('trialAnother').onclick=()=>estate?openEstateJourney(estate,true):trialHome();
   document.getElementById('trialResultMap').onclick=trialMap;
