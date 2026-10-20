@@ -6988,16 +6988,21 @@ function trialBuilding(o){
   document.getElementById('trialSave').onclick=()=>{toggleFav(o);trialBuilding(o);};
   trialBuildingExtras(o);
 }
+let finishTrialBoot;
+const trialBootWait=new Promise(resolve=>{finishTrialBoot=resolve;});
+let trialNavRequest=0;
+function trialNavigate(action){const request=++trialNavRequest;trialBootWait.then(()=>{if(request===trialNavRequest)action();});}
 if(IS_TRIAL){
   new MutationObserver(()=>{sheetBody.scrollTop=0;}).observe(sheetBody,{childList:true});
   document.body.insertAdjacentHTML('beforeend','<div id="trialBrand">香港風水地圖</div><nav id="trialNav" aria-label="主要功能"><button id="trialNavHome">⌂ 搵樓</button><button id="trialNavMap">⌖ 地圖</button><button id="trialNavCompare">⇄ 比較</button><button id="trialNavProfile">♡ 我的</button></nav>');
-  document.getElementById('trialNavHome').onclick=()=>{history.replaceState(null,'',location.pathname);trialHome();};
-  document.getElementById('trialNavMap').onclick=trialMap;
-  document.getElementById('trialNavCompare').onclick=trialCompare;
-  document.getElementById('trialNavProfile').onclick=trialProfile;
+  document.getElementById('trialNavHome').onclick=()=>trialNavigate(()=>{history.replaceState(null,'',location.pathname);trialHome();});
+  document.getElementById('trialNavMap').onclick=()=>trialNavigate(trialMap);
+  document.getElementById('trialNavCompare').onclick=()=>trialNavigate(trialCompare);
+  document.getElementById('trialNavProfile').onclick=()=>trialNavigate(trialProfile);
 }
 
 map.whenReady(async ()=>{
+  try{
   await loadBuildStamp();      // must precede any data fetch: it sets the token
   await loadTileIndex();
   saveFavs();
@@ -7007,6 +7012,7 @@ map.whenReady(async ()=>{
   try{handled=await openDeepLink();}catch{journeyFailure("deep_link_load");handled=true;}
   loadElements();
   if(!handled) loadBuildings();
+  }finally{finishTrialBoot();}
 });
 /* 電腦版一開就攤開個清單。
 
