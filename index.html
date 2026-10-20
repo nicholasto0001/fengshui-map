@@ -1643,6 +1643,36 @@
 #intro .journey{max-width:440px;padding:28px;margin:auto}#intro .journey .jscene{height:200px}#intro .journey .pbtn{width:100%}#intro .journey h1{font-size:34px}#intro .journey .jfine{font-size:14px;color:var(--ink2)}
 @media(max-width:360px){.journey .jscoreline{align-items:flex-start;flex-direction:column;gap:12px}.journey h2{font-size:26px}}
 
+
+/* Independent, phone-first trial. Production never receives this class. */
+body.trial{background:#f6f6f1;color:#203b32}
+.trial #intro,.trial #side,.trial #sidebody,.trial #maphint,.trial #btnGua,.trial #btnShareTop,.trial #btnLayers{display:none!important}
+.trial-focus #top,.trial-focus #filters{display:none!important}
+.trial #sheet{top:82px!important;bottom:75px!important;height:auto!important;max-height:none!important;left:50%!important;right:auto!important;width:min(100%,480px)!important;transform:translateX(-50%)!important;border:0;border-radius:24px!important;box-shadow:none!important;background:#fff}
+.trial #sheet[data-state="peek"]{top:auto!important;height:58px!important;bottom:75px!important}
+.trial #sheetbody{padding:12px 22px 28px!important;overflow:auto}
+.trial #grip{min-height:48px}
+.trial .journey{font-size:18px}
+.trial .journey h2{font-size:30px}
+.trial .jblock{min-height:78px;font-size:20px;font-weight:600}
+.trial .jgrid{gap:12px}
+.trial .bzrow input{width:100%;min-width:0;font:17px system-ui;border:1px solid var(--line);border-radius:10px;padding:10px;min-height:48px;background:white;color:var(--ink)}
+.trial .jstep{font-size:14px;color:#64756b}
+.trial .mcount{font-size:17px;line-height:1.6}
+.trial .jmap{color:#245c48;text-decoration:underline;text-underline-offset:4px}
+.trial button:focus-visible,.trial input:focus-visible,.trial select:focus-visible{outline:3px solid #27765a;outline-offset:3px}
+#trialNav{position:fixed;bottom:0;left:0;right:0;height:68px;padding-bottom:env(safe-area-inset-bottom);z-index:1000;background:#fff;border-top:1px solid #dce2da;display:flex;justify-content:center;gap:16px}
+#trialNav button{font:600 16px system-ui;background:none;border:0;color:#254d3d;min-width:90px;min-height:52px}
+#trialBrand{position:fixed;top:28px;left:0;right:0;z-index:600;background:#f6f6f1;text-align:center;padding:12px;font:600 17px system-ui}
+.trial:not(.trial-focus) #top{top:84px!important}.trial:not(.trial-focus) #filters{top:140px!important}
+.trial-search{width:100%;font:18px system-ui;padding:17px;border:1px solid #b6c8bc;border-radius:16px;background:#f8faf6;box-sizing:border-box}
+.trial-results{list-style:none;margin:16px 0;padding:0}.trial-results button{width:100%;text-align:left;font:600 18px system-ui;background:white;border:0;border-bottom:1px solid #e1e7de;padding:18px 4px;min-height:64px;color:#234835}.trial-results small{display:block;font-size:15px;font-weight:400;color:#607268;margin-top:6px}
+.trial-symbol{display:block;font-size:48px;text-align:center;background:#edf3eb;border-radius:24px;padding:18px;margin:12px 0 22px}
+.trial .trial-note{font-size:14px;color:#5c6e62;line-height:1.6}
+.trial-focus #map{opacity:.12;pointer-events:none}
+.trial .jscore{margin:16px 0}.trial .jlimit{color:#365341}
+@media(max-width:360px){.trial #sheetbody{padding:8px 16px 24px!important}.trial .journey h2{font-size:26px}}
+
 </style>
 </head>
 <body>
@@ -1737,6 +1767,9 @@
    address lookup      : Digital Policy Office ALS (als.gov.hk, no key)
    scores + footprints : our own pipeline, rebuilt daily from CSDI
    ========================================================================= */
+// This trial never constructs a production member client.
+const IS_TRIAL = location.hostname !== 'hkfengshuimap.com' && location.hostname !== 'www.hkfengshuimap.com';
+if(IS_TRIAL){document.body.classList.add('trial','trial-focus');document.title='香港風水地圖 · 獨立試用版';}
 const ALS  = "https://www.als.gov.hk/lookup";
 const TILE = "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/xyz";
 const DATA = "data/tiles";
@@ -2522,6 +2555,8 @@ let curView = "root";
 function setView(v){ curView = v; syncBack(); }
 
 function fallbackBack(){
+  if(IS_TRIAL && curView==="building") return ["揀樓座",()=>selectedBuilding?.est?openEstateJourney(selectedBuilding.est,false):trialHome()];
+  if(IS_TRIAL && curView==="estate") return ["搵屋苑",trialHome];
   if(personalTarget && ["personal","bazi","signin"].includes(curView)){
     const target=personalTarget;
     return ["返樓座",()=>{personalTarget=null;rememberBuilding(target,"map");renderBuilding(target,null);}];
@@ -2598,6 +2633,7 @@ document.getElementById("grip").addEventListener("click", e=>{
 // peek: grip only · half: enough to read without losing the map · full: the lot
 let framedOnce = false;
 function setSheet(state){
+  if(IS_TRIAL){document.body.classList.toggle("trial-focus",state!=="peek");if(state!=="peek")state="full";}
   sheet.dataset.state = state;
   sheet.classList.toggle("open", state !== "peek");
   if(state === "peek") sheetBody.scrollTop = 0;
@@ -2719,7 +2755,7 @@ async function openEstateJourney(name,personal){
     const u=new URL(location.href);u.searchParams.set('estate',name);u.searchParams.delete('b');u.searchParams.delete('bid');u.searchParams.set('intent',personal?'personal':'map');history.replaceState(null,'',u);
     map.fitBounds(rows.map(r=>[r.lat,r.lon]),{padding:[35,35],maxZoom:17,animate:false});
     gripText.textContent=name;setView('estate');openSheet();setSheet('full');
-    sheetBody.innerHTML=`<div class="journey"><p class="jstep">第 1 步 · 揀樓</p><h2>${esc(name)}<br>你想睇邊座？</h2><p class="mcount">撳樓座，${personal?'睇同你嘅八字配對':'睇樓宇資料'}。</p><div class="jgrid">${rows.map((r,i)=>`<button class="jblock" data-journey-row="${i}"><i class="jmini" aria-hidden="true"></i><span>${esc((r.tc||r.en).replace(name,'')||r.tc||r.en)}</span></button>`).join('')}</div><button class="jmap" id="journeyMap">喺地圖睇呢個屋苑</button><p class="bznote">樓宇圖為示意，並非實際外觀。</p><a class="deep" href="/estate/${encodeURIComponent(name)}">返回屋苑介紹</a></div>`;
+    sheetBody.innerHTML=`<div class="journey"><p class="jstep">揀樓座</p><h2>${esc(name)}<br>你想睇邊座？</h2><p class="mcount">撳樓座，${personal?'睇同你嘅八字配對':'睇樓宇資料'}。</p><div class="jgrid">${rows.map((r,i)=>`<button class="jblock" data-journey-row="${i}"><span>${esc((r.tc||r.en).replace(name,'')||r.tc||r.en)}</span></button>`).join('')}</div><button class="jmap" id="journeyMap">喺地圖睇呢個屋苑</button><p class="bznote">樓座按編號排列，並非實際位置。</p>${IS_TRIAL?'':`<a class="deep" href="/estate/${encodeURIComponent(name)}">返回屋苑介紹</a>`}</div>`;
     sheetBody.querySelectorAll('[data-journey-row]').forEach(b=>b.onclick=()=>openJourneyBuilding(rows[+b.dataset.journeyRow],personal).catch(()=>journeyFailure('building_load')));
     sheetBody.querySelector('#journeyMap').onclick=()=>setSheet('peek');
     track('map_target_loaded',{estate:name,intent:personal?'personal':'map',status:'success'});
@@ -2737,6 +2773,7 @@ async function startPersonal(o){
   }catch{journeyFailure('personal_load');}
 }
 async function showPersonalResult(o){
+  if(IS_TRIAL)return trialPersonalResult(o);
   personalTarget=o;rememberBuilding(o,'personal');
   await Promise.all([ensureBazi(),loadElements()]);
   if(!birth){await showBazi();return;}
@@ -2746,7 +2783,7 @@ async function showPersonalResult(o){
   gripText.textContent=name+' · 個人配對';setView('personal');openSheet();setSheet('full');
   const fit=parts?.fit, complete=!!parts?.gua;
   const verdict=fit==null?'暫未能計算':fit>=75?'配對較高':fit>=55?'配對一般':'配對較低';
-  sheetBody.innerHTML=`<div class="journey"><p class="jstep">第 3 步 · 睇結果</p><h2>${esc(name)}</h2><p class="mcount">個人八字結果 · 你自己</p><div class="jscore"><div class="jscoreline"><span class="jnumber">${fit??'—'}</span><div><strong>${complete?'':'五行環境'}${verdict}</strong><small>${fit==null?'未有足夠樓宇資料':`100 分滿分 · ${complete?'五行及八宅配對':'部分配對'}`}</small></div></div>${fit==null?'':`<div class="jmeter" aria-hidden="true"><i style="width:${Math.max(0,Math.min(100,fit))}%"></i></div>`}<p class="jlimit">${fit==null?'缺少計算需要嘅樓宇資料，唔代表配對差。':!complete?'未有可靠坐向，未能計完整配對。':'按現有樓宇資料與你嘅八字計算。'}${birth.h==null?' 出生時辰未知，部分分析暫用中午。':''}</p></div><button class="pbtn dark" id="journeyOthers">比較其他樓座</button><button class="jmap" id="journeyMap">喺地圖睇呢座樓</button><details class="jdetails"><summary>點解係呢個結果？</summary>${personalPanel(o,null)}</details><details><summary>樓宇環境分</summary><p>環境分 ${num(o.total,1)} / 100，評估樓宇周邊；上面嘅個人配對分加入你嘅八字，兩者唔係同一個分數。</p><button class="pbtn" id="journeyBuilding">查看樓宇環境資料</button></details><details><summary>查看／更改出生資料</summary><p>${esc(hc?.type||'')} · 本命卦 ${esc(String(myGua()||'未能計算'))}</p><button class="pbtn" id="journeyEdit">更改出生資料</button></details><p class="bznote">傳統命理參考 · 非實測單位風水</p></div>`;
+  sheetBody.innerHTML=`<div class="journey"><p class="jstep">個人結果</p><h2>${esc(name)}</h2><p class="mcount">你同呢座樓嘅配對</p><div class="jscore"><div class="jscoreline"><span class="jnumber">${fit??'—'}</span><div><strong>${verdict}</strong><small>${fit==null?'未有足夠樓宇資料':`100 分滿分 · ${complete?'五行及八宅配對':'部分配對'}`}</small></div></div>${fit==null?'':`<div class="jmeter" aria-hidden="true"><i style="width:${Math.max(0,Math.min(100,fit))}%"></i></div>`}<p class="jlimit">${fit==null?'缺少計算需要嘅樓宇資料，唔代表配對差。':!complete?'未有可靠坐向，未能計完整配對。':'按現有樓宇資料與你嘅八字計算。'}${birth.h==null?' 出生時辰未知，部分分析暫用中午。':''}</p></div><button class="pbtn dark" id="journeyOthers">睇另一座</button><button class="jmap" id="journeyMap">喺地圖睇呢座樓</button><details class="jdetails"><summary>點解係呢個結果？</summary>${personalPanel(o,null)}</details><details><summary>樓宇環境分</summary><p>環境分 ${num(o.total,1)} / 100，評估樓宇周邊；上面嘅個人配對分加入你嘅八字，兩者唔係同一個分數。</p><button class="pbtn" id="journeyBuilding">查看樓宇環境資料</button></details><details><summary>查看／更改出生資料</summary><p>${esc(hc?.type||'')} · 本命卦 ${esc(String(myGua()||'未能計算'))}</p><button class="pbtn" id="journeyEdit">更改出生資料</button></details><p class="bznote">傳統命理參考 · 非實測單位風水</p></div>`;
   sheetBody.querySelector('#journeyMap').onclick=()=>setSheet('peek');
   sheetBody.querySelector('#journeyEdit').onclick=()=>showBazi(true);
   sheetBody.querySelector('#journeyBuilding').onclick=()=>{personalTarget=null;rememberBuilding(o,'map');renderBuilding(o,null);};
@@ -2966,7 +3003,7 @@ let family = [];          // [{id, name, relation, is_self, y, m, d, h, male}]
    三條都會問。所以逐個人撳得著撳得熄，唔使開幾個 profile。
 
    揀邊幾個係睇緊嘅一刻嘅嘢，唔係身份，所以留喺部機就夠。 */
-const FAM_OFF_KEY = "fs_fam_off_v1";
+const FAM_OFF_KEY = (IS_TRIAL ? "trial_v2_" : "") + "fs_fam_off_v1";
 let famOff = new Set();
 try{ famOff = new Set(JSON.parse(localStorage.getItem(FAM_OFF_KEY) || "[]")); }catch{}
 const famOn = p => !famOff.has(p.id);
@@ -3212,6 +3249,7 @@ function personalPanel(o, layer){
 }
 
 function renderBuilding(o, layer){
+  if(IS_TRIAL) return trialBuilding(o);
   if(clean(o.district)) lastDistrictSeen = clean(o.district);
   noteInterest(o.district, "open");        // 撳入一幢樓 —— 最直接嘅訊號
   nudgeFor = o;
@@ -3556,6 +3594,7 @@ let sharedList = null;          // a shortlist opened from someone else's link
 /* 帳戶唔會出現喺頂部工具列 —— 九成半人入嚟只想睇自己屋企幾多分，一個登入
    掣對佢哋嚟講只係阻頭阻勢。佢淨係出現喺收藏面板，即係佢真正有用嗰個位。 */
 function accountHTML(){
+  if(IS_TRIAL) return `<p class="bznote">試用收藏只留喺呢部裝置，唔會同步正式戶口。</p>`;
   if(!me) return `
     <button class="pbtn dark acctbtn" id="btnAcctIn">
       <svg viewBox="0 0 18 18" width="17" height="17" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.9 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
@@ -3601,6 +3640,7 @@ function wireFavChrome(){
 }
 
 function showFavs(){
+  if(IS_TRIAL)return trialFavorites();
   const list = sharedList || favs;
   const mine = !sharedList;
   const title = mine ? (me ? curListName() : "我的收藏") : "朋友分享嘅清單";
@@ -3870,7 +3910,7 @@ function houseFit(o){
 
    分數存喺部機，唔會上伺服器 —— 呢啲係「佢睇過咩」，同出生日期一樣
    敏感。 */
-const INT_KEY = "fs_interest";
+const INT_KEY = (IS_TRIAL ? "trial_v2_" : "") + "fs_interest";
 const INT_W = {fav: 6, pick: 4, open: 3, search: 3, browse: 1};
 
 /* 啲分要識退。半年前掃過屯門唔代表今日仲喺度睇緊屯門 —— 冇衰減嘅話,
@@ -3962,7 +4002,7 @@ const GROUP_OF_REGION = {
   "新界東": "新界", "新界西": "新界", "離島": "離島",
 };
 
-const LIV_KEY = "fs_livable";
+const LIV_KEY = (IS_TRIAL ? "trial_v2_" : "") + "fs_livable";
 const REGIONS = {
   "港島":   ["中西區", "灣仔區", "東區", "南區"],
   "九龍":   ["油尖旺區", "深水埗區", "九龍城區", "黃大仙區", "觀塘區"],
@@ -4032,7 +4072,7 @@ const MEASURED = wx => wx !== NO_FORM;
 
    出生資料淨係存喺呢部機（localStorage），唔會上伺服器 —— 排盤同配樓
    全部喺瀏覽器度計，所以做得到。私隱政策第三節有寫。 */
-const BIRTH_KEY = "fs_birth_v1";
+const BIRTH_KEY = (IS_TRIAL ? "trial_v2_" : "") + "fs_birth_v1";
 let guaOn = false, birth = null, bzMod = null;
 try{ birth = JSON.parse(localStorage.getItem(BIRTH_KEY) || "null"); }catch{}
 
@@ -4071,6 +4111,9 @@ function bzForm(edit){
   const now = new Date().getFullYear();
   const sel = (edit && birth) || {};
   const yrs = [], mos = [], dys = [];
+  if(IS_TRIAL && !sel.y)yrs.push('<option value="" selected>年份</option>');
+  if(IS_TRIAL && !sel.m)mos.push('<option value="" selected>月份</option>');
+  if(IS_TRIAL && !sel.d)dys.push('<option value="" selected>日期</option>');
   // 改資料嗰陣要見返自己原本揀咗乜，唔係由 2026 年重新捹過。
   for(let y = now; y >= 1900; y--)
     yrs.push(`<option value="${y}"${sel.y === y ? " selected" : ""}>${y}</option>`);
@@ -4118,13 +4161,13 @@ function bzFields(yrs, mos, dys, sel, edit){
     <div class="bzform">
       <label for="bzY">出生日期（公曆）</label>
       <div class="bzrow">
-        <select id="bzY" aria-label="年">${yrs.join("")}</select>
+        ${IS_TRIAL?`<input id="bzY" aria-label="年" inputmode="numeric" type="number" min="1900" max="${new Date().getFullYear()}" placeholder="年份" value="${sel.y||''}">`:`<select id="bzY" aria-label="年">${yrs.join("")}</select>`}
         <select id="bzM" aria-label="月">${mos.join("")}</select>
         <select id="bzD" aria-label="日">${dys.join("")}</select>
       </div>
-      <label for="bzH">出生時辰</label>
+      <label for="bzH">出生時間（唔記得可以跳過）</label>
       <div class="bzrow"><select id="bzH" aria-label="時辰">
-        <option value="">唔記得 —— 一樣計到本命卦</option>
+        <option value="">唔記得／唔提供</option>
         ${SHICHEN.map(([z,t,h]) =>
           `<option value="${h}"${sel.h === h ? " selected" : ""}>${z}時　${t}</option>`).join("")}
       </select></div>
@@ -4135,7 +4178,7 @@ function bzFields(yrs, mos, dys, sel, edit){
       </div>
       <button class="pbtn dark" id="bzGo" style="margin-top:18px">${
         edit ? "存返" : "計我嘅八字"}</button>
-      <p class="bznote">未登入時出生資料<b>只存喺你部機</b>；登入後會同步到你嘅戶口。
+      <p class="bznote">${IS_TRIAL?"試用資料只留喺呢部裝置，唔會傳去正式會員戶口。":"未登入時出生資料只存喺你部機；登入後會同步到你嘅戶口。"}
         排盤全部喺你個瀏覽器度計。詳情見<a href="/privacy.html" target="_blank"
         rel="noopener">私隱政策</a>。<br>
         呢個係電腦計算嘅結果，唔係師傅睇。認真睇樓請搵專業風水師傅。<br>
@@ -4662,7 +4705,7 @@ async function showBazi(edit){
   setView("bazi");
   if(!birth || edit){
     setSheet("full");                   // 表格太長，half 之下個掣喺畫面外
-    sheetBody.innerHTML = personalTarget ? `<div class="journey"><p class="jstep">第 2 步 · 出生資料</p><h2>用你嘅八字，<br>睇呢座夾唔夾。</h2><div class="jcontext">${esc(clean(personalTarget.tc)||clean(personalTarget.en))}</div>${bzForm(true).replace(/<p class="bname">[\s\S]*?<\/p>/,'').replace('改咗之後，地區、樓宇同屋企人嗰邊會即刻重新計過。','填完會直接返回呢座樓；時辰唔記得可以留空。').replace('>存返</button>','>睇呢座嘅個人結果</button>')}<button class="jmap" id="birthMap">先睇地圖</button></div>` : bzForm(edit && birth ? true : false);
+    sheetBody.innerHTML = personalTarget ? `<div class="journey"><p class="jstep">填出生資料</p><h2>你幾時出世？</h2><div class="jcontext">${esc(clean(personalTarget.tc)||clean(personalTarget.en))}</div>${bzForm(true).replace(/<p class="bname">[\s\S]*?<\/p>/,'').replace('改咗之後，地區、樓宇同屋企人嗰邊會即刻重新計過。','用出生資料計你同呢座樓嘅配對。唔需要識八字。').replace('>存返</button>','>睇呢座嘅個人結果</button>')}<button class="jmap" id="birthMap">先睇地圖</button></div>` : bzForm(edit && birth ? true : false);
     const birthMap=sheetBody.querySelector('#birthMap');if(birthMap)birthMap.onclick=()=>setSheet('peek');
     track("bazi_setup_start", {entry:personalTarget ? "building" : "general"});
     const f = sheetBody;
@@ -4676,7 +4719,7 @@ async function showBazi(edit){
       const h = f.querySelector("#bzH").value;
       const yy=+f.querySelector("#bzY").value, mm=+f.querySelector("#bzM").value, dd=+f.querySelector("#bzD").value;
       const date=new Date(yy,mm-1,dd);
-      if(date.getMonth()!==mm-1 || date.getDate()!==dd || date>new Date()){ toast("請揀有效嘅出生日期"); return; }
+      if(!Number.isInteger(yy) || yy<1900 || !mm || !dd || date.getMonth()!==mm-1 || date.getDate()!==dd || date>new Date()){ toast("請揀有效嘅出生日期"); return; }
       birth = {y: +f.querySelector("#bzY").value, m: +f.querySelector("#bzM").value,
                d: +f.querySelector("#bzD").value, h: h === "" ? null : +h, male: sex};
       try{ localStorage.setItem(BIRTH_KEY, JSON.stringify(birth)); }catch{}
@@ -4851,6 +4894,7 @@ document.getElementById("btnFav").addEventListener("click", ()=>{
 });
 
 async function showOverview(){
+  if(IS_TRIAL && !favView && !sharedList && !pickingDistrict && !districtFilter && band==="all") return trialHome();
   if(pickingDistrict){ showDistrictPicker(); return; }
   if(favView || sharedList){ showFavs(); return; }
   // Either filter turns the panel into a pickable list of buildings rather
@@ -5201,6 +5245,7 @@ async function searchALS(q){
 }
 
 function renderHits(hits, estHead){
+  if(IS_TRIAL) return trialHits(hits, estHead);
   const head = estHead
     ? `<li class="grp">${esc(estHead)}<span>逐座列出</span></li>` : "";
   resEl.innerHTML=head+hits.map((h,i)=>{
@@ -5246,7 +5291,7 @@ function goto(h){
 // Kept in localStorage, so there is nothing to sign up for. A shortlist is
 // worth more shared than stored, so it also encodes into a link.
 // ---------------------------------------------------------------------------
-const FAV_KEY = "fs_favs_v1";
+const FAV_KEY = (IS_TRIAL ? "trial_v2_" : "") + "fs_favs_v1";
 let favs = [];
 try{ favs = JSON.parse(localStorage.getItem(FAV_KEY) || "[]"); }catch{ favs = []; }
 
@@ -5303,6 +5348,7 @@ function loadScript(src){
 }
 
 async function ensureSupabase(){
+  if(IS_TRIAL) return null;
   if(sb) return sb;
   if(!sbLoading) sbLoading = loadScript(SUPA_JS)
     .catch(() => loadScript(SUPA_JS_CDN))
@@ -5795,6 +5841,7 @@ function loadLocalFavs(){
 
 /* 開頁嗰陣只做一件事：如果係由 Google 跳返嚟，就即刻接手。 */
 const memberReady = (async function bootMember(){
+  if(IS_TRIAL) return;
   if(!hasAuthResponse()) {
     // 之前登入過嘅人，session 喺 localStorage 度，值得靜靜哋續返。
     const hasSession = Object.keys(localStorage).some(k => k.startsWith("sb-"));
@@ -5829,13 +5876,14 @@ function toggleFav(o){
   }
   // 睇幾多幢都得，分享出去照開得。要記低一樣嘢先至要有個戶口 —— 個理由
   // 自己成立，唔使砌。
-  if(!me){ askSignIn(o); return "took-over"; }
+  if(!me && !IS_TRIAL){ askSignIn(o); return "took-over"; }
   trip.saved = true;
   favs.unshift({id:o.id, tc:o.tc, en:o.en, district:o.district,
                 lat:o.lat, lon:o.lon, total:o.total, now:o.now});
   track("save_building", {name:o.tc||o.en||"", score:Math.round(o.total||0),
                           total_saved: favs.length});
   saveFavs();
+  if(IS_TRIAL){toast("已儲存喺試用收藏");return;}
   serverSave(o).catch(()=>toast("儲存失敗，請再試"));
   toast(`已收藏到「${curListName()}」`, 3600,
         myLists.length > 1 || true ? {label:"更改", run:()=>pickListFor(o)} : null);
@@ -5844,6 +5892,7 @@ function toggleFav(o){
 /* 撳咗收藏但未登入。唔係彈個錯誤出嚟叫佢走開 —— 記住佢想收藏邊幢樓，
    登入返嚟之後幫佢收藏埋，佢撳嗰一下唔會白撳。 */
 function askSignIn(o){
+  if(IS_TRIAL){toast("試用版不設登入；資料只留喺呢部裝置。");return;}
   if(o) try{ localStorage.setItem("fs_pending_save", JSON.stringify({
     id:o.id, tc:o.tc, en:o.en, district:o.district,
     lat:o.lat, lon:o.lon, total:o.total, now:o.now})); }catch{}
@@ -5998,6 +6047,7 @@ function showNudge(o, why){
 /* Restarted every time a building is opened; cancelled the moment they share,
    dismiss, or close the sheet. */
 function armNudge(o){
+  if(IS_TRIAL)return;
   hideNudge();
   const st = nudgeState();
   if(st.done || st.n >= 3) return;
@@ -6727,7 +6777,7 @@ document.getElementById("btnReload").addEventListener("click", ()=>{
   document.getElementById('introGo').onclick=()=>finish(true);
   document.getElementById('introSkip').onclick=()=>finish(false);
 })();
-if(localStorage.getItem("seenIntro")) document.getElementById("intro").classList.add("hide");
+if(IS_TRIAL || localStorage.getItem("seenIntro")) document.getElementById("intro").classList.add("hide");
 
 map.on("moveend zoomend",()=>{ loadBuildings(); drawDistricts(); });
 // A shared link has to land somewhere meaningful, otherwise sharing is
@@ -6803,6 +6853,63 @@ async function openDeepLink(){
   return false;
 }
 
+
+async function trialPersonalResult(o){
+  personalTarget=o;selectedBuilding=o;rememberBuilding(o,'personal');
+  await Promise.all([ensureBazi(),loadElements()]);if(!birth)return showBazi();
+  const parts=fitParts(o),fit=parts?.fit,complete=!!parts?.gua,name=clean(o.tc)||clean(o.en)||'呢座樓';
+  gripText.textContent='個人結果';setView('personal');setSheet('full');
+  sheetBody.innerHTML=`<div class="journey"><p class="jstep">個人結果 · 按你嘅出生資料計算</p><h2>${esc(name)}</h2><div class="jscore"><div class="jscoreline"><span class="jnumber">${fit??'—'}</span><div><strong>${fit==null?'暫未能計算':fit>=75?'配對較高':fit>=55?'配對一般':'配對較低'}</strong><small>個人配對分／100${complete?'':' · 部分分析'}</small></div></div><div class="jmeter" aria-hidden="true"><i style="width:${Math.max(0,Math.min(100,fit||0))}%"></i></div><p class="jlimit">${fit==null?'樓宇資料不足，唔代表配對差。':complete?'已計環境特徵同坐向配對。':'已計環境特徵配對；欠可靠坐向，未能計完整結果。'}${birth.h==null?' 未提供出生時間，部分計算暫用中午。':''}</p></div><button class="pbtn dark" id="trialAnother">睇另一座 →</button><button class="jmap" id="trialResultMap">喺地圖睇位置</button><details><summary>點樣理解呢個結果？</summary><p>用你嘅出生日期，按傳統命理方法配對樓宇特徵。呢個係參考指標，唔係入住後會好運嘅機率。</p><p>環境特徵配對：${parts?.form??'資料不足'}${parts?.form==null?'':'／100'}。${complete?`坐向配對：${parts.gua.score}／100。`:'坐向配對：資料不足，未計。'}</p><p>唔包括單位間隔、門口或床位；實際居住亦要考慮採光、交通同預算。</p></details><details><summary>出生資料</summary><p>${birth.y} 年 ${birth.m} 月 ${birth.d} 日 · ${birth.h==null?'時間未提供':birth.h+' 時'}</p><button class="jmap" id="trialEditBirth">更改出生資料</button></details><button class="jmap" id="trialEnvironment">睇返樓宇環境分</button><p class="trial-note">試用資料只留喺呢部裝置 · 非實地風水勘察</p></div>`;
+  const estate=o.est||new URLSearchParams(location.search).get('estate');
+  document.getElementById('trialAnother').onclick=()=>estate?openEstateJourney(estate,true):trialHome();
+  document.getElementById('trialResultMap').onclick=trialMap;
+  document.getElementById('trialEditBirth').onclick=()=>showBazi(true);
+  document.getElementById('trialEnvironment').onclick=()=>trialBuilding(o);
+  track('personal_result_view',{building_id:String(o.id),status:fit==null?'unavailable':complete?'complete':'partial',has_hour:birth.h!=null,after_signin:false});
+}
+
+// Trial UX uses the existing calculation engine and public building data only.
+function trialFavorites(){
+  gripText.textContent='試用收藏';setView('favs');setSheet('full');
+  sheetBody.innerHTML=`<div class="journey"><h2>收藏嘅樓座</h2><p class="mcount">${favs.length?'撳一座，繼續睇。':'未有收藏。睇樓座結果時，可以撳「收藏呢座」。'}</p><ul class="trial-results">${favs.map((f,i)=>`<li><button data-fav="${i}">${esc(f.tc||f.en||'樓座')}<small>${esc(f.district||'')} · 睇結果 →</small></button></li>`).join('')}</ul><button class="jmap" id="trialFavHome">繼續搵樓</button><p class="trial-note">只儲存喺呢部裝置，唔會同步正式戶口。</p></div>`;
+  sheetBody.querySelectorAll('[data-fav]').forEach(b=>b.onclick=()=>{favView=false;openJourneyBuilding(favs[+b.dataset.fav],false);});
+  document.getElementById('trialFavHome').onclick=trialHome;
+}
+
+function trialMap(){document.body.classList.remove('trial-focus');setSheet('peek');map.invalidateSize();}
+function trialHome(){
+  if(!IS_TRIAL)return;
+  selectedBuilding=null;personalTarget=null;favView=false;sharedList=null;districtFilter=null;band='all';guaOn=false;
+  gripText.textContent='搵屋苑';setView('root');setSheet('full');
+  sheetBody.innerHTML=`<div class="journey"><div class="trial-symbol" aria-hidden="true"><svg width="240" height="88" viewBox="0 0 240 88" fill="none"><path d="M0 70L43 30L76 66L114 12L172 70" fill="#d8e5d3"/><path d="M150 75Q180 52 240 69V88H150" fill="#bddbd9"/><rect x="87" y="18" width="46" height="66" rx="5" fill="#346b50"/><path d="M99 31H106M115 31H122M99 44H106M115 44H122M99 57H106M115 57H122M99 70H106M115 70H122" stroke="#edf3eb" stroke-width="5"/><path d="M135 46L157 29L179 46V84H135Z" fill="#d5be8e"/><rect x="153" y="62" width="10" height="22" fill="#fff9ed"/></svg></div><h2>呢座樓，<br>同你夾唔夾？</h2><p class="mcount">先搵屋苑，揀一座睇下。</p><label for="trialQuery" class="jstep">屋苑或大廈名稱</label><input id="trialQuery" class="trial-search" placeholder="例如：寶田邨、太古城" autocomplete="off" type="search"><ul class="trial-results" id="trialResults" aria-live="polite"></ul><button class="jmap" id="trialMapHome">用地圖搵樓</button><p class="trial-note">傳統風水參考，唔係實地勘察。</p><details><summary>關於呢個試用版</summary><p>呢度不設登入，出生資料及收藏只留喺呢部裝置，唔會影響正式戶口。</p><button class="jmap" id="trialReset">清除呢部裝置嘅試用資料</button></details></div>`;
+  let revision=0;
+  const input=document.getElementById('trialQuery'),out=document.getElementById('trialResults');
+  input.oninput=async()=>{const rev=++revision,q=input.value.trim();if(q.length<2){out.innerHTML=q?'<li>再輸入一個字，就可以搜尋。</li>':'';return;}out.innerHTML='<li>搵緊屋苑…</li>';try{const routes=await estateRoutes();if(rev!==revision)return;const names=Object.keys(routes).filter(n=>n.toLowerCase().includes(q.toLowerCase())).slice(0,10);if(names.length){out.innerHTML=names.map((n,i)=>`<li><button data-est="${i}">${esc(n)}<small>${routes[n].length} 座 · 揀樓座 →</small></button></li>`).join('');out.querySelectorAll('button').forEach(b=>b.onclick=()=>openEstateJourney(names[+b.dataset.est],false));}else{const idx=await ensureIndex();if(rev!==revision)return;const rows=idx.filter(o=>(o.tc||o.en||'').toLowerCase().includes(q.toLowerCase())).slice(0,8);out.innerHTML=rows.length?rows.map((o,i)=>`<li><button data-row="${i}">${esc(o.tc||o.en)}<small>${esc(o.district||'')} · 睇呢座 →</small></button></li>`).join(''):'<li>搵唔到，試下屋苑全名，或者用地圖搵樓。</li>';out.querySelectorAll('button').forEach(b=>b.onclick=()=>openJourneyBuilding(rows[+b.dataset.row],false));}}catch{if(rev===revision)out.innerHTML='<li>暫時載入唔到，請重新輸入再試。</li>';}};
+  document.getElementById('trialMapHome').onclick=trialMap;
+  document.getElementById('trialReset').onclick=()=>{for(const k of Object.keys(localStorage))if(k.startsWith('trial_v2_'))localStorage.removeItem(k);birth=null;favs=[];wCache.clear();paintFavChip();toast('已清除試用出生資料及收藏');trialHome();};
+}
+function trialHits(hits,estHead){
+  resEl.innerHTML=(estHead?`<li><button id="trialEstateSearch" class="jmap">${esc(estHead)} · 揀樓座 →</button></li>`:'')+hits.map((h,i)=>`<li data-i="${i}"><div class="nm">${esc(h.tc||h.en||h.name||'樓宇')}</div><div class="ad">${esc(h.district||'')} · 睇呢座</div></li>`).join('');
+  const e=document.getElementById('trialEstateSearch');if(e)e.onclick=()=>{resEl.classList.remove('show');openEstateJourney(estHead,false);};
+  resEl.querySelectorAll('[data-i]').forEach(li=>li.onclick=()=>{resEl.classList.remove('show');const row=hits[+li.dataset.i];row.kind==='als'?goto(row):openJourneyBuilding(row,false);});
+}
+function trialBuilding(o){
+  selectedBuilding=o;personalTarget=null;rememberBuilding(o,'map');
+  const name=clean(o.tc)||clean(o.en)||'呢座樓',score=o.total==null?null:Math.round(o.total);
+  gripText.textContent='樓宇環境';setView('building');setSheet('full');
+  const reliable=!!o.pattern && o.conf>=.6;
+  sheetBody.innerHTML=`<div class="journey"><p class="jstep">樓宇環境 · 未加入你嘅出生資料</p><h2>${esc(name)}</h2><p class="mcount">${esc(o.est||o.district||'')}</p><div class="jscore"><div class="jscoreline"><span class="jnumber">${score??'—'}</span><div><strong>${score==null?'資料不足':score>=58?'環境評分較高':score>=46?'環境評分中等':'環境評分較低'}</strong><small>環境分／100 · 所有人相同</small></div></div><div class="jmeter" aria-hidden="true"><i style="width:${Math.max(0,Math.min(100,score||0))}%"></i></div><p class="jlimit">按周邊山水及設施計算，唔代表單位內部情況。</p></div><button class="pbtn dark" id="trialPersonal">呢座同我夾唔夾？ →</button><button class="jmap" id="trialBuildingMap">喺地圖睇位置</button><details><summary>呢個分代表乜？</summary><p>呢個係樓宇周邊環境嘅參考分。個人配對會另外用你嘅出生資料計算，兩個分數唔一樣。</p><p>${reliable?'坐向由外形推算，唔係實測。':'未有足夠可靠資料判斷坐向，暫不提供完整坐向分析。'}</p></details><button class="jmap" id="trialSave">${favs.some(f=>favKeyOf(f)===favKeyOf(o))?'取消收藏':'♡ 收藏呢座'}</button><p class="trial-note">傳統風水參考 · 電腦計算，非實地勘察</p></div>`;
+  document.getElementById('trialPersonal').onclick=()=>startPersonal(o);
+  document.getElementById('trialBuildingMap').onclick=trialMap;
+  document.getElementById('trialSave').onclick=()=>{toggleFav(o);trialBuilding(o);};
+}
+if(IS_TRIAL){
+  document.body.insertAdjacentHTML('beforeend','<div id="trialBrand">香港風水地圖 · 簡易試用版</div><nav id="trialNav" aria-label="主要功能"><button id="trialNavHome">⌂ 搵樓</button><button id="trialNavMap">⌖ 地圖</button><button id="trialNavSaved">♡ 收藏</button></nav>');
+  document.getElementById('trialNavHome').onclick=()=>{history.replaceState(null,'',location.pathname);trialHome();};
+  document.getElementById('trialNavMap').onclick=trialMap;
+  document.getElementById('trialNavSaved').onclick=()=>{favView=true;showFavs();setSheet('full');};
+}
+
 map.whenReady(async ()=>{
   await loadBuildStamp();      // must precede any data fetch: it sets the token
   await loadTileIndex();
@@ -6840,7 +6947,7 @@ map.whenReady(async ()=>{
 
 setTimeout(()=>{
   const wide = matchMedia("(min-width:760px)").matches;
-  if(wide || localStorage.getItem("seenIntro")) openSheet();
+  if(!IS_TRIAL && (wide || localStorage.getItem("seenIntro"))) openSheet();
 
 },600);
 </script>
