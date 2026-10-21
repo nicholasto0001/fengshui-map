@@ -7235,7 +7235,8 @@ function trialReportLayout(title,back){
 function trialWireArticles(root,back){root.querySelectorAll('a[href]').forEach(a=>{const u=new URL(a.getAttribute('href'),location.origin);if(![location.origin,'https://hkfengshuimap.com'].includes(u.origin))return;if(/^\/(estate|district|learn)(\/|$)|^\/(method|bazi-guide|privacy)(\.html)?$/.test(u.pathname)){a.onclick=e=>{e.preventDefault();trialArticle(u.pathname,back);};a.removeAttribute('target');}else if(u.pathname==='/'){a.href=location.origin+u.pathname+u.search;}});}
 async function trialArticle(path,back=trialHome){
  const token=++trialNavRequest;trialScreen('資料載入中','<p role="status">正在打開完整資料…</p>');
- try{const u=new URL(path,location.origin);if(u.origin!==location.origin)throw Error('origin');let response=await fetch(u.pathname);if(!response.ok&&!u.pathname.endsWith('/'))response=await fetch(u.pathname+'.html');if(!response.ok)throw Error('load');const doc=new DOMParser().parseFromString(await response.text(),'text/html');
+ try{const u=new URL(path,location.origin);if(u.origin!==location.origin)throw Error('origin');let response=await fetch(u.pathname+'?reader=1');if(!response.ok&&!u.pathname.endsWith('/'))response=await fetch(u.pathname+'.html?reader=1');if(!response.ok)throw Error('load');const doc=new DOMParser().parseFromString(await response.text(),'text/html');
+ if(doc.querySelector('#trialNav,#sheetbody'))throw Error('reader redirect');
  const source=doc.querySelector('main')||doc.querySelector('body > .wrap')||doc.body;
  source.querySelectorAll('script,style,header.bar').forEach(e=>e.remove());source.querySelectorAll('*').forEach(e=>{for(const a of [...e.attributes])if(a.name.startsWith('on'))e.removeAttribute(a.name);});
  if(!source.querySelector('h1')){const title=doc.createElement('h1');title.textContent=doc.title.split('｜')[0];source.prepend(title);}
