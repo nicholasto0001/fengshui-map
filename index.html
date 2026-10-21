@@ -2641,6 +2641,7 @@ function fallbackBack(){
 function syncBack(){
   const b = document.getElementById("gripback");
   if(!b) return;
+  if(IS_TRIAL) b.style.display=curView==='trialhub'?'none':'';
   const t = backStack[backStack.length - 1]
          || (() => { const f = fallbackBack(); return f && {label: f[0], run: f[1]}; })();
   b.hidden = !t;
