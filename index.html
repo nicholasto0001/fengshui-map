@@ -7237,7 +7237,8 @@ async function trialArticle(path,back=trialHome){
  const token=++trialNavRequest;trialScreen('資料載入中','<p role="status">正在打開完整資料…</p>');
  try{const u=new URL(path,location.origin);if(u.origin!==location.origin)throw Error('origin');let response=await fetch(u.pathname);if(!response.ok&&!u.pathname.endsWith('/'))response=await fetch(u.pathname+'.html');if(!response.ok)throw Error('load');const doc=new DOMParser().parseFromString(await response.text(),'text/html');
  const source=doc.querySelector('main')||doc.querySelector('body > .wrap')||doc.body;
- source.querySelectorAll('script,style,header,footer').forEach(e=>e.remove());source.querySelectorAll('*').forEach(e=>{for(const a of [...e.attributes])if(a.name.startsWith('on'))e.removeAttribute(a.name);});
+ source.querySelectorAll('script,style,header.bar').forEach(e=>e.remove());source.querySelectorAll('*').forEach(e=>{for(const a of [...e.attributes])if(a.name.startsWith('on'))e.removeAttribute(a.name);});
+ if(!source.querySelector('h1')){const title=doc.createElement('h1');title.textContent=doc.title.split('｜')[0];source.prepend(title);}
  if(token!==trialNavRequest)return;
  trialScreen('完整資料',`<button class="jmap" id="articleBack">‹ 返回上一頁</button><article class="trial-reading">${source.innerHTML}</article>`);
  document.getElementById('articleBack').onclick=back;trialWireArticles(sheetBody,()=>trialArticle(path,back));
