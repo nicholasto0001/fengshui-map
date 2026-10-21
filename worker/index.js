@@ -207,11 +207,12 @@ export default {
     const trialUrl = new URL(request.url);
     if(trialUrl.hostname !== 'hkfengshuimap.com') {
       if(/^\/(admin|auth)(\/|\.|$)/.test(trialUrl.pathname)) return new Response('試用版不設會員後台。', {status:404});
-      if(/^\/estate\/.+/.test(trialUrl.pathname)) {
+      const readingPublicPage = trialUrl.searchParams.get('reader') === '1' && /^\/(estate|district|learn)(\/|$)/.test(trialUrl.pathname);
+      if(!readingPublicPage && /^\/estate\/.+/.test(trialUrl.pathname)) {
         const name=decodeURIComponent(trialUrl.pathname.split('/')[2]).replace(/\.html$/,'');
         return Response.redirect(trialUrl.origin+'/?estate='+encodeURIComponent(name)+'&intent=map',302);
       }
-      if(/^\/(estate|district|learn)(\/|$)/.test(trialUrl.pathname)) return Response.redirect(trialUrl.origin+'/',302);
+      if(!readingPublicPage && /^\/(estate|district|learn)(\/|$)/.test(trialUrl.pathname)) return Response.redirect(trialUrl.origin+'/',302);
       const response = await handle(request,env,ctx);
       const safe = new Response(response.body,response);
       safe.headers.set('Content-Security-Policy', "connect-src 'self' https://mapapi.geodata.gov.hk https://www.als.gov.hk https://dpobzqzflmgkuzxqiggt.supabase.co/auth/v1/; form-action 'self'; frame-src 'none'; object-src 'none'");
